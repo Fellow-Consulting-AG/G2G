@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXAdvancedDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+								  xmlns:s="library://ns.adobe.com/flex/spark" 
+								  xmlns:mx="library://ns.adobe.com/flex/mx" 
+								  focusEnabled="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import gadget.dao.Database;
+			import gadget.lists.List;
+			import gadget.lists.ListDetail;
+			import gadget.util.GUIUtils;
+			import gadget.util.Relation;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.AdvancedDataGrid;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+			import mx.controls.listClasses.BaseListData;
+			
+			import org.purepdf.colors.RGBColor;
+
+			
+			
+			public var column:AdvancedDataGridColumn;
+			private var grid:AdvancedDataGrid;
+			private var list:ArrayCollection ;			
+			private var _parentEntity:String;
+			private var _listDetail:ListDetail;
+			
+			
+			public function get listDetail():ListDetail
+			{
+				return _listDetail;
+			}
+
+			public function set listDetail(value:ListDetail):void
+			{
+				_listDetail = value;
+			}
+
+			public function get parentEntity():String
+			{
+				return _parentEntity;
+			}
+
+			public function set parentEntity(value:String):void
+			{
+				_parentEntity = value;
+			}
+
+			private function clickFunction(e:Event):void{
+				if(column!=null){
+					var entity:String = super.data.gadget_type;		
+					var relation:Object = Relation.getRelation(entity,parentEntity);
+					if(relation!=null){
+						var currentItem:Object = Database.getDao(entity).findByGadgetId(super.data.gadget_id);
+						var parentId:String = currentItem[relation.keySrc];
+						listDetail.list.editScreenDetail(Database.getDao(parentEntity).findByOracleId(parentId),parentEntity,null,false);					
+						
+					}else{
+						//TODO alert missing relation
+					}
+				}
+			}	
+			
+			override public function set data(value:Object):void{		
+				super.data = value;
+				if(column!=null && value){					
+					//TODO
+					btnLink.label = value[column.dataField];					
+					
+				}
+			}
+			
+			override public function set listData(value:BaseListData):void{
+				super.listData = value;
+				if(value!=null){
+					grid= value.owner as AdvancedDataGrid;
+					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
+					if(list!=null){					
+						column = grid.columns[list.columnIndex];						
+					}
+					
+				}
+			}
+			
+		]]>
+		
+	</fx:Script>
+	
+	<mx:LinkButton id="btnLink" click="clickFunction(event)" color="#2c79b8" textDecoration="underline" width="100%"/>
+</s:MXAdvancedDataGridItemRenderer>

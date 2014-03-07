@@ -134,6 +134,10 @@ package com.crmgadget.eval
 					return 'Status';
 				case 'ACTIVITY_DISPLAY_CODE':
 					return 'Activity';
+				case 'OCCAM_LEAD_SOURCE':
+					return 'Source';
+				case 'OCC_CUST_LOV_LEAD_1':
+					return 'CustomPickList1';
 				case 'OCC_CUST_LOV_CONTACT_4':
 					return 'CustomPickList4';//TODO later
 				default:

@@ -1186,7 +1186,9 @@
 			private var mapAddressFields:Array = ["PrimaryBillToStreetAddress", "PrimaryBillToCity", "PrimaryBillToCountry", "PrimaryBillToPostalCode","MainPhone","MainFax"];
 			private var mapShippingAddressFields:Array = ["PrimaryShipToStreetAddress", "PrimaryShipToCity", "PrimaryShipToCountry", "PrimaryShipToPostalCode","MainPhone","MainFax"];
 			private var mapLeadFields:Array = ["StreetAddress","City", "ZipCode", "Country","PrimaryPhone","FaxPhone"];
+			
 			private function initForm():void {
+				var isNew:Boolean = true;
 				var readOnlyFields:Object = Database.fieldManagementServiceDao.getReadOnlyField(entity);
 //				//bug #1912
 //				for each(var obj:Object in Database.fieldManagementServiceDao.readAll(entity)){
@@ -1478,8 +1480,12 @@
 									combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
 								}
 //								combo.addEventListener(Event.CHANGE,function(e:Event):void{
-//									fireEventRecordTypeChange(e.target as ComboBox)
+//									if(!isNew){
+//										fireEventRecordTypeChange(e.target as ComboBox);
+//									}
+//									
 //								});
+								
 							}else if(!create){
 								var obj2:Object = combo.selectedItem;
 								if(obj2 != null && !StringUtils.isEmpty(obj2.data)){
@@ -1502,7 +1508,9 @@
 								*/
 							}
 							combo.addEventListener(Event.CHANGE,function(e:Event):void{
-								fireEventRecordTypeChange(e.target as ComboBox)
+								if(!isNew){
+									fireEventRecordTypeChange(e.target as ComboBox);
+								}
 							});
 						} 
 						
@@ -1630,7 +1638,7 @@
 				for each (var inputFieldObj:Object in inputFields){
 					GUIUtils.setupCascadingCombo(inputFieldObj.component, inputFieldObj.formField, inputFields);
 				}
-				
+				isNew = false;
 				// setup window dimensions
 				for(var p:int=0;p<numOfPage;p++){
 					if (leftFormL[p].getChildren().length == 0 &&

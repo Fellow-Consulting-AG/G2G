@@ -394,6 +394,12 @@ package gadget.util {
 									while(tempVal.charAt(tempVal.length-1)=='-'){
 										tempVal = tempVal.substr(0,tempVal.length-1);
 									}
+									while(tempVal.charAt(0)=='-'){
+										tempVal = tempVal.substr(1);
+									}
+									if(tempVal=="No Match Row Id"){
+										tempVal ="";//
+									}									
 									if(StringUtils.isEmpty(tempVal)){
 										if(StringUtils.isEmpty(String(enityObject[fieldInfo.element_name]))){
 											enityObject[fieldInfo.element_name] = val;

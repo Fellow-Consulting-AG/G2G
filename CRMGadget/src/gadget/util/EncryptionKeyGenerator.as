@@ -65,7 +65,7 @@ package gadget.util
 			
 			var salt:ByteArray;
 			// now user can take db to run on another pc,only the new db that created from now.
-			//if (dbFile.exists) salt = EncryptedLocalStore.getItem(saltKey);
+			if (dbFile.exists) salt = EncryptedLocalStore.getItem(saltKey);
 			if (salt == null) salt = makeSalt();
 		
 			/*if (!dbFile.exists)

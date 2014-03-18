@@ -1,6 +1,7 @@
 package gadget.dao {
 	
 	import flash.data.SQLConnection;
+	import flash.utils.Dictionary;
 	
 	import gadget.service.LocaleService;
 	import gadget.util.FieldUtils;
@@ -76,7 +77,18 @@ package gadget.dao {
 			delete_({entity:entity, subtype:subtype});
 		}
 		
-		
+		public function getReadOnlyField(entity:String):Dictionary{
+			var where:String = " Where entity='" + entity + "' and readonly=true";
+			var result:Array = select_order("*", where, null, null,null);
+			var dic:Dictionary = new Dictionary();
+			if(result!=null && result.length>0){
+				for each(var obj:Object in result){
+					dic[obj.column_name]=obj;
+				}
+			}
+			
+			return dic;
+		}
 		/*public function selectAll(entity:String):ArrayCollection {
 			return new ArrayCollection(select_order(vars, "", {entity: entity}, "col, row", null));
 		}

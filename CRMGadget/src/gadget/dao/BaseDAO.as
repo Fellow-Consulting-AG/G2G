@@ -373,6 +373,21 @@ package gadget.dao
 					}
 				}
 			}
+			//read readonly fields from field management Bug #7267 CRO
+			
+			
+			
+		
+			var readOnlyFieldsLayout:Object = Database.layoutDao.getReadOnlyField(entity);
+			for (var column_name:String in readOnlyFieldsLayout){
+				dic[column_name] = column_name;
+			}
+			
+			var readOnlyFields:Object = Database.fieldManagementServiceDao.getReadOnlyField(entity);
+			for (var name:String in readOnlyFields){
+				dic[name] = name;
+			}
+			
 			
 			return dic;
 			

@@ -451,14 +451,14 @@ package gadget.sync.incoming {
 			var googleListUpdate:ArrayCollection;
 			if(getEntityName() == "Activity"){
 				googleListUpdate = new ArrayCollection();
-				trace(request);
-				trace(response);
+				//trace(request);
+				//trace(response);
 			}
 			
-			if(getEntityName() == "BusinessPlan"){
+			/*if(getEntityName() == "BusinessPlan"){
 				trace(request);
 				trace(response);
-			}
+			}*/
 			
 			Database.begin();
 			var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns2.uri,entityIDns)),googleListUpdate);

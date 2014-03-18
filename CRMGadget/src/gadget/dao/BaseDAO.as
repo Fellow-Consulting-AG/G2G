@@ -434,6 +434,18 @@ package gadget.dao
 			return result;
 		}
 		
+		public function count():int{
+			stmtFindAll.text = "SELECT count(*) FROM " + tableName;
+			exec(stmtFindAll, false);
+			
+			var result:Array = stmtFindAll.getResult().data;
+			if(result!=null && result.length>0){
+				var obj:Object = result[0];
+				return obj['count(*)'] as int;
+			}
+			return 0;
+		}
+		
 		
 		public function findAll(columns:ArrayCollection, filter:String = null, selectedId:String = null, limit:int = 1001,order_by:String=null,addColOODLastModified:Boolean=true, group_by:String=null):ArrayCollection {
 			var cols:String = '';

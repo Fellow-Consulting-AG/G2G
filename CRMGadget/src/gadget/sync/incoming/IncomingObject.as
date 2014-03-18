@@ -34,7 +34,10 @@ package gadget.sync.incoming {
 			return _listRetrieveId;
 		}
 
-		
+		public function set listRetrieveId(listObj:ArrayCollection):void
+		{
+			this._listRetrieveId = listObj;
+		}
 
 		protected override function canSave(incomingObject:Object):Boolean{
 			

@@ -1,5 +1,6 @@
 package gadget.sync.incoming
 {
+	import flash.errors.SQLError;
 	import flash.utils.getQualifiedClassName;
 	
 	import gadget.dao.DAOUtils;
@@ -81,7 +82,25 @@ package gadget.sync.incoming
 		}
 		
 		
-		override protected function doRequest():void {
+		override protected function doRequest():void {		
+			if(!dependOnParent){
+				var count:int = Database.getDao(entityIDour).count();					
+				if(count<=0){
+					_dependOnParent = true;
+					var fields:ArrayCollection = new ArrayCollection([{"element_name":DAOUtils.getOracleId(parentTask.entityIDour)}]);
+					try{
+						
+						if(!StringUtils.isEmpty(parentRelationField.ChildRelationId)){
+							fields.addItem({"element_name":parentRelationField.ChildRelationId});
+						}
+						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields);
+					}catch(e:SQLError){
+						fields.removeItemAt(fields.length-1);//remove last column
+						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields);
+					}
+				}
+				
+			}
 			if( dependOnParent && (_currentMinIndex>=parentTask.listRetrieveId.length)){
 				super.nextPage(true);
 			}else{

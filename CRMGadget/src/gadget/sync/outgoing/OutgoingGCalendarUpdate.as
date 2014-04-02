@@ -60,17 +60,29 @@ package gadget.sync.outgoing
 				if(faulted==0) logInfo(new LogEvent(LogEvent.INFO,"Starting update to google calendar..."));
 				for each(var rec:Object in records){
 					if(StringUtils.isEmpty(rec.GUID)) continue;
-					var event:GEvent = new GEvent(new XML(rec.GDATA));
-					event.title = rec.Subject;
-					event.content = StringUtils.isEmpty(rec.Description) ? "" : rec.Description;	
-					event.where = StringUtils.isEmpty(rec.Location) ? "" : rec.Location;
+					var data:XML  = new XML(rec.GDATA);
+					var isTask:Boolean = true;
+				
 					if(rec.Activity == "Appointment"){
-						event.startTime = DateUtils.parse(rec.StartTime, DateUtils.DATABASE_DATETIME_FORMAT);
-						event.endTime = DateUtils.parse(rec.EndTime, DateUtils.DATABASE_DATETIME_FORMAT);
-					}else{//Task
+						//example: 2008-05-13T06:56:40.000Z
+						var startTime:String = rec.StartTime;
+						startTime = startTime.substr(0,startTime.length-1)+".000Z";
+						var endTime:String = rec.EndTime;
+						var ns:Namespace = new Namespace('http://schemas.google.com/g/2005');
+						var when:XML = data.child(new QName(ns.uri,"when"))[0];
+						endTime = endTime.substr(0,endTime.length-1)+".000Z";
+						when.@startTime=startTime;
+						when.@endTime = endTime;			
+						isTask = false;
+					}
+					var event:GEvent = new GEvent(data);
+					if(isTask){
 						event.startTime = DateUtils.parse(rec.DueDate, DateUtils.DATABASE_DATE_FORMAT);
 						event.endTime = DateUtils.parse(rec.DueDate, DateUtils.DATABASE_DATE_FORMAT);
 					}
+					event.title = rec.Subject;
+					event.content = StringUtils.isEmpty(rec.Description) ? "" : rec.Description;	
+					event.where = StringUtils.isEmpty(rec.Location) ? "" : rec.Location;
 					updateEvent(event);
 				}
 			}else{

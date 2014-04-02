@@ -155,7 +155,10 @@ package gadget.dao
 					"ms_id",
 					"ms_change_key",
 					"facebook",
-					"linkedin"
+					"linkedin",			
+					"ReferredByFirstName",
+					"ReferredByFullName",					
+					"ReferredByLastName",
 				]);
 		private var textColumns:Array = [
 			"AccountExternalSystemId", 
@@ -243,6 +246,11 @@ package gadget.dao
 			"OwnerFullName", 
 			"OwnerId", 
 			"OwnorRent", 
+			"ReferredByExternalSystemId",
+			"ReferredByFirstName",
+			"ReferredByFullName",
+			"ReferredById",
+			"ReferredByLastName",
 			"PIMCompanyName", 
 			"PrimaryAddress",
 			"PrimaryAddressId", 

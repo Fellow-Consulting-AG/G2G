@@ -24,6 +24,7 @@ package gadget.util
 		//
 		private static const RELATIONS:ArrayCollection = new ArrayCollection([
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"UserId", keyDest:"Id", labelSrc:["ContactId"], labelSupport:["UserLastName","UserFirstName","UserRole","ContactAccess"],isColDynamic:true, labelDest:["LastName","FirstName"], entityDest:"User", supportTable:"Contact.Team"},
+			{entitySrc:"Contact", keySrc:"ReferredById", keyDest:"ContactId", labelSrc:["ReferredByFullName","ReferredByFirstName","ReferredByLastName"], labelDest:["ContactFullName","ContactFirstName", "ContactLastName"], entityDest:"Contact"},
 			{entitySrc:"Contact", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName", "PrimaryCity", "PrimaryCountry", "PrimaryAddress", "AccountLocation", "PrimaryZipCode"], labelDest:["AccountName", "PrimaryBillToCity", "PrimaryBillToCountry", "PrimaryBillToStreetAddress", "Location", "PrimaryBillToPostalCode"], entityDest:"Account"},
 			{entitySrc:"Contact", keySrc:"ManagerId", keyDest:"ContactId", labelSrc:["Manager"], labelDest:["ContactFullName"], entityDest:"Contact"},
 			{entitySrc:"Contact", keySrc:"SourceCampaignId", keyDest:"CampaignId", labelSrc:["SourceCampaignName"], labelDest:["CampaignName"], entityDest:"Campaign"},

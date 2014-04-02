@@ -160,8 +160,8 @@ package gadget.util
 					
 					if(!event.allDayEvent){
 						actEvent["Activity"] = "Appointment";
-						actEvent.StartTime = DateUtils.format(stTime, DateUtils.DATABASE_DATETIME_FORMAT);
-						actEvent.EndTime = DateUtils.format(edTime, DateUtils.DATABASE_DATETIME_FORMAT);
+						actEvent.StartTime = DateUtils.format(new Date(stTime.fullYearUTC,stTime.monthUTC,stTime.dateUTC,stTime.hoursUTC,stTime.minutesUTC,stTime.secondsUTC), DateUtils.DATABASE_DATETIME_FORMAT);
+						actEvent.EndTime = DateUtils.format(new Date(edTime.fullYearUTC,edTime.monthUTC,edTime.dateUTC,edTime.hoursUTC,edTime.minutesUTC,edTime.secondsUTC), DateUtils.DATABASE_DATETIME_FORMAT);
 					}else{
 						actEvent["Activity"] = "Task";
 						actEvent.DueDate = DateUtils.format(stTime, DateUtils.DATABASE_DATE_FORMAT);

@@ -11,6 +11,9 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.facebook.graph.FacebookDesktop;
+			
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.util.ImageUtils;
@@ -18,6 +21,7 @@
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			
 			[Bindable] private var profileProvider:ArrayCollection;
 			[Bindable] private var showSpinner:Boolean;
@@ -26,14 +30,30 @@
 			[Bindable] public var item:Object;
 			[Bindable] public var titleBarIcon:Class;
 			[Bindable] public var titleBarLabel:String;
-			
+			protected static const APP_ID:String = "521592177860864"; //Place your application id here
+			private static var token:String="";
 			private function init():void {
-				if(item != null && !StringUtils.isEmpty(item.ContactFirstName) && !StringUtils.isEmpty(item.ContactLastName)) {
+				if(facebook){
+					FacebookDesktop.manageSession = false;
+					FacebookDesktop.init(APP_ID);
+					
+					if(StringUtils.isEmpty(token)){
+						FacebookDesktop.login(handleLogin);
+						this.visible = false;
+					}
+				}
+				if((!StringUtils.isEmpty(token) || !facebook) && item != null && !StringUtils.isEmpty(item.ContactFirstName) && !StringUtils.isEmpty(item.ContactLastName)) {
 					txtFilter.text = item.ContactFirstName + " " + item.ContactLastName;
-					search(item.ContactFirstName, item.ContactLastName);
+					search(item.ContactFirstName,item.ContactLastName);
 				}
 			}
-
+			
+			protected function handleLogin(response:Object, fail:Object):void {
+				
+				if (!response) { return; }
+				token = FacebookDesktop.getSession().accessToken.toString();
+				this.visible =true;
+			}
 			protected function searchBtn_clickHandler(event:MouseEvent):void
 			{
 				filterText();
@@ -53,7 +73,7 @@
 					search(firstName, lastName);
 				}
 			}
-
+			
 			protected function saveBtn_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -71,13 +91,15 @@
 				close();
 			}
 			
-			private function search(firstName:String, lastName:String):void {
+			private function search(firstName:String,lastName:String):void {
 				try {
 					// facebook url : "http://www.facebook.com/search.php?q=sokchea+loeung";
 					// linkedin url : "http://www.linkedin.com/pub/dir/?first=Daniel&last=Jordan&search=Go";
 					toggleSpinner(true);
-					var url:String = facebook ? "http://www.facebook.com/search.php?q={FIRST_NAME}+{LAST_NAME}" : "http://www.linkedin.com/pub/dir/?first={FIRST_NAME}&last={LAST_NAME}&search=Go";
-					url = url.replace(/{FIRST_NAME}/gi, firstName).replace(/{LAST_NAME}/gi, lastName);
+					var url:String = facebook ? "https://graph.facebook.com/search?q="+ firstName + " " + lastName +"&fields=id,name,picture,email,link&type=user&access_token="+token : "http://www.linkedin.com/pub/dir/?first={FIRST_NAME}&last={LAST_NAME}&search=Go"; 
+					if(!facebook){
+						url = url.replace(/{FIRST_NAME}/gi, firstName).replace(/{LAST_NAME}/gi, lastName);
+					}
 					var loader:URLLoader = new URLLoader();				
 					var request:URLRequest = new URLRequest(url);
 					request.method = URLRequestMethod.GET;
@@ -91,6 +113,7 @@
 						// handler error here
 						toggleSpinner(false);
 						trace(e.text);
+						Alert.show(e.text, i18n._('GLOBAL_ERROR'), Alert.OK, this);
 					});
 					
 				}catch(e:Error) {
@@ -130,15 +153,24 @@
 			
 			private function facebookCompleted(e:Event):void {
 				try {
-					var xmlPrefs:XML = new XML((e.currentTarget as URLLoader).data);					
+					/*var xmlPrefs:XML = new XML((e.currentTarget as URLLoader).data);					
 					var xmlResult:XML = xmlPrefs.descendants().(attribute("id") == "pagelet_search_results_0").ul[0];
 					if(xmlResult != null) {
-						for each(var profil:XML in xmlResult.li) {
-							if(profil.div.attribute("class") == "UIImageBlock clearfix UIImageBlock_Entity") {
-								var facebook:String = (profil.descendants().(attribute("class") == "UIImageBlock_Image UIImageBlock_ENT_Image")[0]).attribute("href");
-								var source:String = (profil.descendants().(attribute("class") == "img")[0]).attribute("src");
-								var name:String = profil.descendants().(attribute("class") == "lfloat")[0];
-								profileProvider.addItem({name: name, link: facebook, source: source, rdg: rdg, facebook: facebook, selected: false});
+					for each(var profil:XML in xmlResult.li) {
+					if(profil.div.attribute("class") == "UIImageBlock clearfix UIImageBlock_Entity") {
+					var facebook:String = (profil.descendants().(attribute("class") == "UIImageBlock_Image UIImageBlock_ENT_Image")[0]).attribute("href");
+					var source:String = (profil.descendants().(attribute("class") == "img")[0]).attribute("src");
+					var name:String = profil.descendants().(attribute("class") == "lfloat")[0];
+					profileProvider.addItem({name: name, link: facebook, source: source, rdg: rdg, facebook: facebook, selected: false});
+					}
+					}
+					}*/
+					var response:String = (e.currentTarget as URLLoader).data;
+					if(response != null){
+						var users:Object = JSON.decode(response);
+						if(users.data != null){
+							for each(var user:Object in users.data){
+								profileProvider.addItem({name: user.name, link: user.link, source: ((user.picture as Object).data as Object).url, rdg: rdg, facebook: "", selected: false});
 							}
 						}
 					}
@@ -158,8 +190,8 @@
 					spinner.stop();
 				}
 			}
-
-
+			
+			
 			protected function txtFilter_keyDownHandler(event:KeyboardEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -167,10 +199,10 @@
 					filterText();
 				}
 			}
-
+			
 		]]>
 	</mx:Script>
-
+	
 	<mx:Canvas horizontalScrollPolicy="off" verticalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
 		<mx:Canvas id="windowTitleBar" backgroundColor = "#EEEEEE" styleName="titleBar" doubleClickEnabled="true" mouseDown="nativeWindow.startMove()" height="24" top="2" left="2" right="2">			
 			<mx:Image source="{titleBarIcon}" height="16" width="16" top="3" left="4"/>

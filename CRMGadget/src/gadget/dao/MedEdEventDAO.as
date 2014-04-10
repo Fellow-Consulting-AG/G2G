@@ -24,6 +24,9 @@ package gadget.dao
 		private var textColumns:Array = [
 			"Budget",
 			"CampaignId",
+			"CampaignName",
+			"CampaignStatus",
+			"CampaignType",
 			"CMECredit",
 			"Confirmdate",
 			"CreatedBy",

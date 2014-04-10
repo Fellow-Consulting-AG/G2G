@@ -500,6 +500,7 @@ package gadget.sync.outgoing
 				|| faultString.indexOf("(SBL-ODS-50751)")>=0
 				|| faultString.indexOf("(SBL-DAT-56810)")>=0
 				|| faultString.indexOf("(SBL-EAI-04376)")>=0
+				|| faultString.indexOf("(SBL-EAI-04397)")>=0
 			) {
 				oops ="cannot {4} {1} with Id {2}: data error in '{3}': {6}";
 				short = "Invalid";

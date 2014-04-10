@@ -19,7 +19,7 @@
 			[Bindable] public var titleBarLabel:String;
 			[Bindable] public var item:Object;
 			[Bindable] private var showSpinner:Boolean;
-			
+			public var reload:Function;
 			private function init():void {
 				if(location != null) {
 					htmlLink.location = location;
@@ -63,9 +63,9 @@
 			{
 				// TODO Auto-generated method stub
 				if(facebook) {
-					Detail.openFacebookWindow(item, true, this);
+					Detail.openFacebookWindow(item, true, this,reload);
 				}else {
-					Detail.openFacebookWindow(item, false, this);
+					Detail.openFacebookWindow(item, false, this,reload);
 				}				
 			}
 

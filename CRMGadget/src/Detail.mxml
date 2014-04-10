@@ -2147,20 +2147,21 @@
 				var linkButton:LinkButton = event.currentTarget as LinkButton;
 				if(linkButton.id == "facebookBtn") {
 					if(!StringUtils.isEmpty(item.facebook)) {
-						openHTMLViewer(item);
+						openHTMLViewer(item,true,reload);
 					}else {
-						openFacebookWindow(item);
+						openFacebookWindow(item,true,null,reload);
 					}
 				}else if(linkButton.id == "linkedinBtn") {
 					if(!StringUtils.isEmpty(item.linkedin)) {
-						openHTMLViewer(item, false);
+						openHTMLViewer(item, false,reload);
 					}else {
-						openFacebookWindow(item, false);
+						openFacebookWindow(item, false,null,reload);
 					}
 				}
+				
 			}
 			
-			public static function openFacebookWindow(item:Object, facebook:Boolean=true, htmlViewer:HTMLViewer=null):void {
+			public static function openFacebookWindow(item:Object, facebook:Boolean=true, htmlViewer:HTMLViewer=null,reload:Function=null):void {
 				// default is facebook otherwise is linkedin
 				var facebookWindow:FacebookWindow = new FacebookWindow();
 				facebookWindow.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
@@ -2168,10 +2169,11 @@
 				facebookWindow.htmlViewer = htmlViewer;
 				facebookWindow.facebook = facebook;
 				facebookWindow.item = item;
+				facebookWindow.reload = reload;
 				WindowManager.openModal(facebookWindow);
 			}
 			
-			private function openHTMLViewer(item:Object, facebook:Boolean=true):void {
+			private function openHTMLViewer(item:Object, facebook:Boolean=true,reload:Function=null):void {
 				// default is facebook otherwise is linkedin
 				var htmlViewer:HTMLViewer = new HTMLViewer();
 				htmlViewer.facebook = facebook;
@@ -2179,6 +2181,7 @@
 				htmlViewer.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
 				htmlViewer.titleBarLabel = facebook ? "Facebook" : "Linkedin";
 				htmlViewer.item = item;
+				htmlViewer.reload = reload;
 				WindowManager.openModal(htmlViewer);
 			}
 			

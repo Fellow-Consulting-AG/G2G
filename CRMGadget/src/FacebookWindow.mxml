@@ -22,7 +22,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			
+		    public var reload:Function;
 			[Bindable] private var profileProvider:ArrayCollection;
 			[Bindable] private var showSpinner:Boolean;
 			[Bindable] public var facebook:Boolean = true;
@@ -79,16 +79,30 @@
 				// TODO Auto-generated method stub
 				var object:Object = rdg.selectedValue;
 				if(object != null) {
-					if(object.facebook) {
-						item.facebook = object.link;
-						Database.contactDao.updateFacebook(item);
-					}else {
-						item.linkedin = object.link
-						Database.contactDao.updateLinkedin(item);
-					}
+					var loader:URLLoader = new URLLoader(new URLRequest(object.source));
+					loader.dataFormat = URLLoaderDataFormat.BINARY;
+					loader.addEventListener(Event.COMPLETE, function(e:Event):void {
+						var data:ByteArray = e.currentTarget.data as ByteArray;
+						Database.contactDao.updateImage(data as ByteArray, item);
+						
+						if(facebook) {
+							item.facebook = object.link;
+							item.linkedin = "";
+							Database.contactDao.updateFacebook(item);
+						
+						}else {
+							item.linkedin = object.link;
+							item.facebook = "";
+							Database.contactDao.updateLinkedin(item);
+						}
+						
+						if(htmlViewer != null) htmlViewer.close();
+						close();
+					    if(reload != null) reload();
+					});
+					
 				}
-				if(htmlViewer != null) htmlViewer.close();
-				close();
+			
 			}
 			
 			private function search(firstName:String,lastName:String):void {

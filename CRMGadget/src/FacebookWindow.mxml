@@ -30,8 +30,8 @@
 			[Bindable] public var item:Object;
 			[Bindable] public var titleBarIcon:Class;
 			[Bindable] public var titleBarLabel:String;
-			protected static const APP_ID:String = "521592177860864"; //Place your application id here
-			private static var token:String="";
+			protected static const APP_ID:String = "1403539456590947"; //Place your application id here
+			private static var token:String="";     
 			private function init():void {
 				if(facebook){
 					FacebookDesktop.manageSession = false;

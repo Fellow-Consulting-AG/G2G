@@ -31,7 +31,7 @@
 			[Bindable] public var titleBarIcon:Class;
 			[Bindable] public var titleBarLabel:String;
 			protected static const APP_ID:String = "1403539456590947"; //Place your application id here
-			private static var token:String="";     
+			private static var token:String="";      
 			private function init():void {
 				if(facebook){
 					FacebookDesktop.manageSession = false;
@@ -49,7 +49,10 @@
 			}
 			
 			protected function handleLogin(response:Object, fail:Object):void {
-				
+				var isCloseAction:String = fail as String;
+				if(!StringUtils.isEmpty(isCloseAction) && isCloseAction == "user-canceled"){
+					this.close();
+				}
 				if (!response) { return; }
 				token = FacebookDesktop.getSession().accessToken.toString();
 				this.visible =true;

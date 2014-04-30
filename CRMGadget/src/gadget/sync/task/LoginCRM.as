@@ -79,7 +79,7 @@ package gadget.sync.task
 				}
 			});
 			request.idleTimeout =10000;
-			request.url=_preferences.sodhost + strForwardSlash + "Services/Integration?command=login";
+			request.url=_preferences.sodhost + strForwardSlash + "Services/Integration?command=login&isEncoded=Y";
 			if(Database.preferencesDao.getBooleanValue("use_sso")){
 				request.manageCookies=false;
 			}
@@ -93,7 +93,7 @@ package gadget.sync.task
 				password = _preferences.tech_password;
 			}
 			request.requestHeaders.push(new URLRequestHeader("Username", username));
-			request.requestHeaders.push(new URLRequestHeader("Password", password));
+			request.requestHeaders.push(new URLRequestHeader("Password",encodeURI(password)));
 			sessionId = null;
 			uri	= _preferences.sodhost;
 			startTime = now();				

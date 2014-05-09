@@ -91,12 +91,14 @@ package gadget.dao {
 			stmtInsert.parameters[":type"] = filter.type;
 			//			stmtInsert.parameters[":bookmarked"] = filter.bookmarked;
 			exec(stmtInsert);
+			var id:Number = stmtInsert.getResult().lastInsertRowID;
 			var dicOBject:Object = cache.get(LIST_CACHE_FILTER);
 			if(dicOBject!=null){
 				var key:String = filter.entity + "_" + filter.type;
+				filter.id=id;
 				dicOBject[key]=filter;
 			}
-			return stmtInsert.getResult().lastInsertRowID;
+			return id;
 		}
 		
 		public function update(filter:Object):void {

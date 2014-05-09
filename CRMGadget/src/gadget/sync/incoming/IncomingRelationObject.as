@@ -141,7 +141,7 @@ package gadget.sync.incoming
 				}
 				
 				
-				var superCriteria:String = super.generateSearchSpec(false);
+				var superCriteria:String = super.generateSearchSpec(startTime!=-1);
 				if(StringUtils.isEmpty(superCriteria)){
 					superCriteria=searchProductSpec;
 				}else{

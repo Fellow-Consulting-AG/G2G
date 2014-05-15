@@ -17,6 +17,7 @@
 			import gadget.util.StringUtils;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 
 			[Bindable] public var item:Object;
 			[Bindable] public var relation:Object; 
@@ -55,8 +56,14 @@
 	
 			
 			private function doSearch():void {
+				Alert.show("test");
 				var currentFilter:String = filter;
-				if ((StringUtils.replaceAll_(searchInput.text,"*","").length >= 2) || currentFilter != null) {
+				var langCode:String = Database.allUsersDao.ownerUser()['LanguageCode'];
+				var minLenght:int = 2;
+				if(langCode == 'CHS'){
+					minLenght=1;
+				}
+				if (StringUtils.replaceAll_(searchInput.text,"*","").length >= minLenght || currentFilter != null) {
 					if(relation.entityDest==Database.productDao.entity){//bug#5069--orderable
 						if(chkOrderable.selected){
 							currentFilter = "Orderable='true'";	

@@ -55,8 +55,7 @@
 			}
 	
 			
-			private function doSearch():void {
-				Alert.show("test");
+			private function doSearch():void {				
 				var currentFilter:String = filter;
 				var langCode:String = Database.allUsersDao.ownerUser()['LanguageCode'];
 				var minLenght:int = 2;

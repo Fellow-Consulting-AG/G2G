@@ -82,6 +82,8 @@ package gadget.sync.incoming
 				parentLastSynch = ServerTime.toSodIsoDate(ServerTime.parseSodDate(lastSyncObject.sync_date));
 				
 			}
+			//TODO
+			startTime		= Utils.calculateStartTime(Database.subSyncDao.getAdvancedFilterType(ID,subId)); 
 			
 		}
 
@@ -221,6 +223,16 @@ package gadget.sync.incoming
 			}
 			parentcriteria+=("("+generateSearchByParentId()+")");
 			
+			if(startTime!=-1){
+			//parent ids cannot empty
+			if(parentcriteria!=''){
+				parentcriteria+=' AND ';
+				
+			}
+			//calculatime	
+			parentcriteria+= "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(new Date(startTime))+"'";
+				
+			}
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";
 //			}

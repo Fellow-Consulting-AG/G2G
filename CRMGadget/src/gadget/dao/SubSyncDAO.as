@@ -26,7 +26,7 @@ package gadget.dao
 			super(sqlConnection, workerFunction, {
 				table:"subsync",
 				index: [ 'entity', 'sub' ],
-				columns: { 'TEXT' : textColumns ,'BOOLEAN' : ['enabled','syncable'],'INTEGER' : ["order_num"]}
+				columns: { 'TEXT' : textColumns ,'BOOLEAN' : ['enabled','syncable'],'INTEGER' : ["order_num","advanced_filter"]}
 			});
 			stmtSelectAll = new SQLStatement();
 			stmtSelectAll.sqlConnection = sqlConnection;
@@ -54,7 +54,7 @@ package gadget.dao
 			
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
-			stmtUpdate.text = "UPDATE subsync SET enabled = :enabled" + 
+			stmtUpdate.text = "UPDATE subsync SET enabled = :enabled, advanced_filter =:advanced_filter" + 
 							" WHERE entity = :entity AND sub = :sub";
 			
 			stmtUpdateAllByEnity = new SQLStatement();
@@ -116,6 +116,7 @@ package gadget.dao
 			stmtUpdate.parameters[":entity"] = obj.entity;
 			stmtUpdate.parameters[":sub"] = obj.sub;
 			stmtUpdate.parameters[":enabled"] = obj.enabled;
+			stmtUpdate.parameters[":advanced_filter"] = obj.advanced_filter;
 			exec(stmtUpdate);
 		}
 		
@@ -157,12 +158,19 @@ package gadget.dao
 			return false;
 		}
 	
+		public function getAdvancedFilterType(entity:String,subEntity:String):Number{
+			var transaction:Object = find(entity,subEntity);
+			if (transaction!=null) {
+				return transaction.advanced_filter;
+			}
+			return -99;
+			
+		}
 		private var textColumns:Array = [
 			"entity",
 			"sub",
 			"sodname",
-			"entity_name"
-			
+			"entity_name"			
 		];
 		
 	}

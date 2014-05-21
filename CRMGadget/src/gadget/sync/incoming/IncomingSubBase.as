@@ -22,6 +22,7 @@ package gadget.sync.incoming
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
+	import mx.charts.chartClasses.DataTip;
 	import mx.collections.ArrayCollection;
 
 	public class IncomingSubBase extends WebServiceIncoming
@@ -33,7 +34,7 @@ package gadget.sync.incoming
 		protected var subIDns:String;
 		protected var subList:String;
 		protected var subIDId:String;
-		protected var parentLastSynch:String = null;
+		protected var parentLastSynch:Date = null;
 		protected var pid:String = null;
 		protected var isUsedLastModified:Boolean = true;
 		protected const SUBROW_PLACEHOLDER:String = "___HERE__THE__SUBROW__NUMBER___";
@@ -79,7 +80,7 @@ package gadget.sync.incoming
 			//parentSearchSpec = ServerTime.toSodIsoDate(Utils.getStartDateByType(TransactionDAO.ONE_MONTH_TYPE));
 			if(lastSyncObject!=null && lastSubSync!=null){
 				ServerTime.setSodTZ(DateUtils.getCurrentTimeZone(new Date())*3600,lastSyncObject.sync_date,Database.allUsersDao.ownerUser().TimeZoneName);
-				parentLastSynch = ServerTime.toSodIsoDate(ServerTime.parseSodDate(lastSyncObject.sync_date));
+				parentLastSynch = ServerTime.parseSodDate(lastSyncObject.sync_date);
 				
 			}
 			//TODO
@@ -199,15 +200,23 @@ package gadget.sync.incoming
 				return;
 			}
 			
-			
-			if( !param.full){				
-				if(parentLastSynch!=null && isUsedLastModified ){
-					dateSpec = "["+MODIFIED_DATE+"] &gt;= '"+parentLastSynch+"'";
+			var startDate:Date = null;
+			if(startTime!=-1){
+				if(parentLastSynch!=null && parentLastSynch.getTime()>=startTime){
+					startDate = parentLastSynch;
+				}else{
+					startDate = new Date(startTime);
 				}
-				//no need compare date
-//				if(!StringUtils.isEmpty(parentSearchSpec)){
-//					parentcriteria = "["+MODIFIED_DATE+"] &gt;= '"+parentSearchSpec+"'"
-//				}
+			}else{
+				if(isUsedLastModified){
+					startDate = parentLastSynch;
+				}
+			}
+			
+			if( !param.full || startTime!=-1){			
+				if(startDate!=null){
+					dateSpec = "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(startDate)+"'"
+				}
 				
 			}
 			
@@ -221,18 +230,8 @@ package gadget.sync.incoming
 			if(parentcriteria!=''){
 				parentcriteria+=' AND ';
 			}
-			parentcriteria+=("("+generateSearchByParentId()+")");
+			parentcriteria+=("("+generateSearchByParentId()+")");			
 			
-			if(startTime!=-1){
-			//parent ids cannot empty
-			if(parentcriteria!=''){
-				parentcriteria+=' AND ';
-				
-			}
-			//calculatime	
-			parentcriteria+= "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(new Date(startTime))+"'";
-				
-			}
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";
 //			}

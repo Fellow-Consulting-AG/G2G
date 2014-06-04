@@ -367,6 +367,14 @@ package gadget.sync.incoming {
 				}
 				
 			}
+			//#7656
+			if(entityIDour=="User"){
+				if(! StringUtils.isEmpty(searchSpec)){
+					searchSpec += " AND ";
+				}
+				
+				searchSpec += "[Status]= \'Active\'";
+			}
 			var searchFilter:String = getSearchFilterCriteria();
 			if(!StringUtils.isEmpty(searchFilter)){
 			

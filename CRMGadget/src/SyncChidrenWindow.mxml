@@ -27,11 +27,13 @@
 			import mx.controls.ComboBox;
 			import mx.controls.Label;
 			private const DEFAULT_HEIGHT:int=150;
+			public var mapParentFilter:Object;
 			
 			//CRO 05.01.2011
 			private const SUPPORTWINDOW_TITLEBAR_SUPPORT:String = "GLOBAL_SYNC_CHIDREN";
 			public var entity:String;
 			private function init():void {
+				var  lst:ArrayCollection = Database.transactionDao.listEnabledTransaction();
 				enableTransaction.addChild(Preferences.createLabel('PREFERENCES_LABEL_TEXT_TRANSACTIONS'));	
 				advancedFilter.addChild(Preferences.createLabel('PREFERENCES_LABEL_TEXT_SYNC_CHILDREN'));
 				if(entity){
@@ -45,7 +47,7 @@
 						check.addEventListener(MouseEvent.CLICK, onClickCheckBox);
 						enableTransaction.addChild(check);
 						h = h+25;
-						advanceFilters(child,check);
+						advanceFilters(child,check,lst, child.sub);
 					}
 					if(h<DEFAULT_HEIGHT){
 						h = DEFAULT_HEIGHT;
@@ -71,6 +73,7 @@
 					
 				}
 			}
+			
 			private function onClickCheckBox(e:MouseEvent):void{
 				
 				var checkbox:CheckBox = e.currentTarget as CheckBox;
@@ -79,15 +82,21 @@
 				cboAdvancedFilter.enabled = checkbox.selected;
 				
 			}
-			private function advanceFilters(transaction:Object,checkBox:CheckBox):void{
+			private function advanceFilters(transaction:Object,checkBox:CheckBox,lstParentTrans:ArrayCollection,subEntity:String):void{
 				var cboAdvancedFilter:ComboBox = new ComboBox();				
 				cboAdvancedFilter.dataProvider = Database.transactionDao.advancedfilter;
 				cboAdvancedFilter.labelField = "name";
 				//cboAdvancedFilter.width = 100;				
 				cboAdvancedFilter.height = 25;
 				// #311: hange request - Diversey sales - Prefernces 
-				cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;				
-				cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);;
+				cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;
+				
+				if(mapParentFilter[subEntity] != null)	{
+					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, mapParentFilter[subEntity]);
+				}else{
+					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);
+				}
+				
 				
 				advancedFilter.addChild(cboAdvancedFilter);
 			}

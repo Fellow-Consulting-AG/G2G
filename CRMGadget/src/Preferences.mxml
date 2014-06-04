@@ -84,6 +84,8 @@
 			public static var LIGHT_GREEN:String = "Light Green";
 			public static var RED:String = "Red";
 			public static var WHITE:String = "White";
+			
+			public var mapSelectedfilter:Object = new Object();
 			[Bindable] public static var imagesComboPDF:ArrayCollection = new ArrayCollection(
 				[   {icon:ImageUtils.black,label:" ",data:BLACK},
 					{icon:ImageUtils.darkBlue,label:" ",data:DARK_BLUE},
@@ -560,7 +562,7 @@
 			
 			private function enabledTransactions():void{
 				var listTransaction:ArrayCollection = Database.transactionDao.listTransaction();
-				var mapTransaction:Dictionary = createMapTransaction(listTransaction);
+				var mapTransactions:Dictionary = createMapTransaction(listTransaction);
 				//var listDisableTransaction:ArrayCollection = Database.transactionDao.listDisabledTransaction();
 				var row:int = 1;
 				//var lenght:int = listTransaction.length;
@@ -641,9 +643,11 @@
 					
 					// #311: hange request - Diversey sales - Prefernces 
 					cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;				
-					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);;
+					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);
 					cboAdvancedFilter.height = 25;
-					
+					cboAdvancedFilter.addEventListener(Event.CHANGE,advanceFilterChanged);
+					cboAdvancedFilter.name = transaction.entity;
+					mapSelectedfilter[transaction.entity] = transaction.advanced_filter;
 					
 					var bntSynChild:Button = new Button();	
 					bntSynChild.label = i18n._("GLOBAL_EDIT");
@@ -655,6 +659,7 @@
 						//Popup windown for sync children
 						var bnt:Button = event.currentTarget as Button;
 						var syncChildreeWin:SyncChidrenWindow = new SyncChidrenWindow();
+						syncChildreeWin.mapParentFilter = mapSelectedfilter;
 						syncChildreeWin.entity = bnt.data as String;
 						WindowManager.openModal(syncChildreeWin);
 					});
@@ -707,7 +712,7 @@
 					//parent entity layout
 					
 					var cboParentEntity:DisabledComboBox = new DisabledComboBox();			
-					var relation:ArrayCollection = getListParentEntity(transaction.entity,mapTransaction);
+					var relation:ArrayCollection = getListParentEntity(transaction.entity,mapTransactions);
 					cboParentEntity.dataProvider = relation;
 					cboParentEntity.labelField = "labelDest";
 					cboParentEntity.width = 170;
@@ -2357,7 +2362,11 @@
 				chkReadonly.enabled = trans.read_only_disable ? false : status;
 				endableItemListComboParentEntity(checkbox.data.toString(),status);
 			}
-			
+			private function advanceFilterChanged(e:Event):void{
+				var cbo:ComboBox = e.target as ComboBox;
+				
+				mapSelectedfilter[cbo.name] =cbo.selectedItem.type;
+			}
 			private function updateCustomLayoutDefaultIcons(bDefault:Boolean = true):void {
 				for each( var customLayout:Object in Database.customLayoutDao.readAll() ){
 					if(customLayout.entity == "Activity"){

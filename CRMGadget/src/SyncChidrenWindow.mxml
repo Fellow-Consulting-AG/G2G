@@ -91,7 +91,7 @@
 				// #311: hange request - Diversey sales - Prefernces 
 				cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;
 				
-				if(mapParentFilter[subEntity] != null)	{
+				if(mapParentFilter[subEntity] != null && parseInt(mapParentFilter[subEntity]) != 0)	{
 					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, mapParentFilter[subEntity]);
 				}else{
 					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);

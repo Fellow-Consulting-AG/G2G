@@ -264,9 +264,10 @@
 				//	columnHeaderLabelFunction(current,cal.mode);
 				var obj:Object;
 				for each(var activity:Object in CalendarUtils.getActivities(dateChooser,selectBy)){	
-					
+					//Change Request #7700
+					var primaryContact:String = StringUtils.isEmpty(activity.PrimaryContact) ?  "\n" : "\n" +activity.PrimaryContact; 
 					var accountData:Array = ["","","",""];
-					if(cal.mode=="day"){
+					//if(cal.mode=="day"){
 						if(!StringUtils.isEmpty(activity.AccountId)){
 							var columns:ArrayCollection = new ArrayCollection([
 								{element_name:"AccountName"},
@@ -279,14 +280,14 @@
 								account = resultAcc[0];
 							}
 							if(account!=null){
-								accountData[0]  = StringUtils.isEmpty(account.AccountName)?"":account.AccountName;
-								accountData[1]  = StringUtils.isEmpty(account.IndexedShortText1)?"":account.IndexedShortText1;
-								accountData[2]  = StringUtils.isEmpty(account.PrimaryBillToStreetAddress)?"":account.PrimaryBillToStreetAddress;
-								accountData[3]  = StringUtils.isEmpty(account.PrimaryBillToCity)?"":account.PrimaryBillToCity;
+								accountData[0]  = StringUtils.isEmpty(account.AccountName)?"":"\n"+account.AccountName;
+								accountData[1]  = StringUtils.isEmpty(account.IndexedShortText1)?"":"\n"+account.IndexedShortText1;
+								accountData[2]  = StringUtils.isEmpty(account.PrimaryBillToStreetAddress)?"":"\n"+account.PrimaryBillToStreetAddress;
+								accountData[3]  = StringUtils.isEmpty(account.PrimaryBillToCity)?"":"\n"+account.PrimaryBillToCity;
 							}
 						}
 						
-					}
+					//}
 					var startDate:Date = null;
 					var endDate:Date = null;
 					var startTime:Date = null;
@@ -296,7 +297,7 @@
 						endTime = getActualDate(DateUtils.guessAndParse(activity.EndTime));
 						obj ={
 							summary:activity.Subject,
-								tooltip:activity.Subject + "\n " + accountData[0] + "\n " + accountData[1] + "\n " + accountData[2]+ "\n " +accountData[3],
+								tooltip:activity.Subject  + accountData[0]  + accountData[1] + accountData[2]+  +accountData[3] + primaryContact,
 								entity: activity.CallType == 'Account Call' ? 'Call' : 'Appointment',
 								color: activity.CallType == 'Account Call' ? CalendarUtils.ACTIVITY_CALL_COLOR : CalendarUtils.ACTIVITY_APPOINTMENT_COLOR,
 								data: activity,
@@ -317,7 +318,7 @@
 						endTime.setHours(24);
 						obj ={
 							summary:activity.Subject ,
-								tooltip:activity.Subject + "\n " + accountData[0] + "\n " + accountData[1] + "\n " + accountData[2]+ "\n " +accountData[3],
+								tooltip:activity.Subject + accountData[0] + accountData[1]  + accountData[2] +accountData[3]+ primaryContact,
 								entity: 'Task',
 								color: CalendarUtils.ACTIVITY_TASK_COLOR,
 								data: activity,

@@ -48,7 +48,8 @@ package gadget.util
 								{element_name:"GUID"},
 				{element_name:'AccountId'},{element_name:"CallType"},
 				//{element_name:"*"},
-				{element_name:"substr(Priority,1,1) PriorityIndex"}
+				{element_name:"substr(Priority,1,1) PriorityIndex"},
+				{element_name:"PrimaryContact"}
 			]);
 			
 			var startDate:Date;

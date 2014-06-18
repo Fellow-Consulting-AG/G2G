@@ -82,33 +82,38 @@ package gadget.dao
 			var listCols:Array = new Array();
 			if(result!=null){
 				for each(var obj:Object in result){
-					var selectedids:String = obj.SelectedAssessments as String;
-					var dto:DtoColumn = new DtoColumn();
-					dto.recordId = obj.gadget_id;
-					dto.title = obj.Title;
-					dto.colProperty = obj.ColProperty;
-					dto.order = obj.OrderNum;
-					dto.isDefault = obj.IsDefault;
-					dto.description = obj.description;
-					var dataType:String = obj.dataType;
-					if(dataType==null){
-						if(obj.IsCheckbox){
-							dataType=DtoColumn.CHECK_BOX_TYPE;//old value
-						}else{
-							dataType = DtoColumn.TEXT_TYPE;
-						}
-					}
-					dto.dataType = dataType;
-					dto.visible = obj.Visible;
-					dto.isHasSumField = obj.IsHasSumField;
-					dto.modelId = obj.ModelId;
-					listCols.push(dto);
+					
+					listCols.push(convertToDtoColumn(obj));
 				}
 			}
 			return listCols;
 		}
 		
-		public function getColumnByModelId(modelId:String):Array{
+		public function convertToDtoColumn(obj:Object):DtoColumn{
+			var selectedids:String = obj.SelectedAssessments as String;
+			var dto:DtoColumn = new DtoColumn();
+			dto.recordId = obj.gadget_id;
+			dto.title = obj.Title;
+			dto.colProperty = obj.ColProperty;
+			dto.order = obj.OrderNum;
+			dto.isDefault = obj.IsDefault;
+			dto.description = obj.description;
+			var dataType:String = obj.dataType;
+			if(dataType==null){
+				if(obj.IsCheckbox){
+					dataType=DtoColumn.CHECK_BOX_TYPE;//old value
+				}else{
+					dataType = DtoColumn.TEXT_TYPE;
+				}
+			}
+			dto.dataType = dataType;
+			dto.visible = obj.Visible;
+			dto.isHasSumField = obj.IsHasSumField;
+			dto.modelId = obj.ModelId;
+			return dto;
+		}
+		
+		public function getColumnByModelId(modelId:String,convert:Boolean = true):Array{
 			stmtSelectColumenByModelId.parameters[":ModelId"] = modelId;			
 			
 			//var result:Array =  select_order("*", "IsHasSumField", stmtSelectBySumField, "OrderNum",null);
@@ -124,8 +129,11 @@ package gadget.dao
 				//re-selected
 				return getColumnByModelId(modelId);
 			}else{
-			
-				return convertResult(result);
+				if(convert){
+					return convertResult(result);
+				}else{
+					return result;
+				}
 			}
 		}
 		public function readAll():Array{

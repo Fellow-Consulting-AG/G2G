@@ -294,7 +294,7 @@ package
 				sectionTotal.listQuestion =new ArrayCollection(lstQues);
 				if(sectionTotal.listQuestion.length > 1){ // don't show total percent equal one question
 					var totalRow:XML = <row/>;
-					xmlQuestion.@odd =  odd ? false : true;
+					totalRow.@odd =  odd ? false : true;
 					totalRow.@title=i18n._("Total@Total");
 					xmlSection.appendChild(totalRow);
 					for each(var obj:Object in lstColumn){
@@ -447,16 +447,17 @@ package
 						if(description.length>0){
 							description+=', ';
 						}
-						description+=(mappingObject.Title+":"+mappingObject.description);
+						description+=(mappingObject.Title+":"+(mappingObject.description?"":mappingObject.description));
 					}
 				}
-				if(isModelTotal && description.length>0){
-					description+='.';
-					var colDesc:XML = <col/>;
-					colDesc.@value=description;
-					row.appendChild(colDesc);
+				if(model.assessmentModel=="KiB Miljö"||model.assessmentModel=="KiB Tryggmat"){
+					if(isModelTotal && description.length>0){
+						description+='.';
+						var colDesc:XML = <col/>;
+						colDesc.@value=description;
+						row.appendChild(colDesc);
+					}
 				}
-				
 				row = <row/>;
 				xml.appendChild(row);
 				

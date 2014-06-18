@@ -1311,6 +1311,14 @@ package gadget.util {
 					return Database.preferencesDao.isEanableImportant();
 				}
 				
+				if(item.type == Database.CUSTOMERS){
+					return Database.preferencesDao.isEnableCustomers();
+				}
+				
+				if(item.type == Database.COMPETITORS){
+					return Database.preferencesDao.isEnableCompetitors();
+				}
+				
 				if(item.predefined == true){
 					var bPredefinedFilters:Boolean = Database.preferencesDao.getValue('predefined_filters') == 1 ? true : false; 
 					return (bPredefinedFilters && !WSProps.isWS20filter(item.type)); //show predefined filter depend on the value in the prefs table

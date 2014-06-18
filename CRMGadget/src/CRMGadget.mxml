@@ -379,7 +379,7 @@
 				});
 				doWork(function display():void{	
 					addWork("Initializing GUI...", function(params:Object):void {
-						initKitchenReportPath();
+						//initKitchenReportPath();
 						mainWindow = new MainWindow();
 						mainWindow.crmGadget = that;
 						mainWindow.open();

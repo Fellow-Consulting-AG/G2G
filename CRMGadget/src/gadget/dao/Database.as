@@ -70,6 +70,8 @@ package gadget.dao {
 		public static const FAVORITE:int = -8;
 		public static const IMPORTANT:int = -9;
 		public static const MISSING_PDF:int =-4;
+		public static const CUSTOMERS = -3;
+		public static const COMPETITORS =-4;
 		private var _image:ImageDAO;
 		private var _tempFolder:File;
 		private var _sqlConnection:SQLConnection;

@@ -64,7 +64,7 @@
 			private var timeFormatString:String;
 			private var startInspection:StartInspection;
 			private var currentDate:Date;
-			
+			private var  mapObj:Object = new Object();
 			private function init():void{
 				startInspection = new StartInspection();
 				// Request #5581 Daily Agenda PDF export
@@ -281,6 +281,15 @@
 					}
 					columnValueActivity.text = values;
 					columnValueActivity.setStyle("color", "blue");
+					columnValueActivity.id = realItem.gadget_type+realItem.gadget_id;
+					mapObj[realItem.gadget_type+realItem.gadget_id] = realItem;
+					if(activityField.element_name == "Subject"){
+						columnValueActivity.setStyle("textDecoration","underline");
+						columnValueActivity.addEventListener(MouseEvent.CLICK,function(e1:MouseEvent):void{
+							var currentLabel:Label = e1.currentTarget as Label;
+							openDetail(currentLabel.id);
+						});
+					}
 					formItemActivity.addChild(columnValueActivity);
 					formActivity.addChild(formItemActivity);
 				}
@@ -427,11 +436,31 @@
 					var columnValue:Label = new Label();
 					columnValue.setStyle("color", "blue");
 					columnValue.text = object[file.element_name];
+					columnValue.id = object.gadget_type + object.gadget_id;
+					mapObj[object.gadget_type + object.gadget_id] = object;
+					if(file.element_name == "AccountName"){
+						columnValue.setStyle("textDecoration","underline");
+						columnValue.addEventListener(MouseEvent.CLICK,function(e1:MouseEvent):void{
+							var currentLabel:Label = e1.currentTarget as Label;
+							openDetail(currentLabel.id);
+							
+						});
+					}
 					formItem.addChild(columnValue);
 					form.addChild(formItem);
 				}
 				return form;
 				
+			}
+			private function openDetail(id:String):void{
+				var screenDetail:Detail = new Detail();
+				var item:Object = mapObj[id];
+				if (item == null) {
+					return;
+				}
+				var mainWindow:MainWindow = this.parentApplication as MainWindow;
+				selectedIndex = dateSetPanel.tileList.selectedIndex;
+				GUIUtils.openDetailScreen(false,mainWindow,item.gadget_type,refreshFunction,item);
 			}
 			private function clearData():void{
 				

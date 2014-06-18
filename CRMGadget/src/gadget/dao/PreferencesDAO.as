@@ -18,7 +18,8 @@ package gadget.dao
 		private var stmtRead:SQLStatement;
 		private var stmtUpdate:SQLStatement;
 		private var stmtGetAll:SQLStatement;
-		public static const BACK_GROUND_COLOR_PDF = "back_ground_color_pdf";
+		public static const ENABLE_CALL_COPY_SUBJECT = "enable_call_copy_subject";
+		public static const BACK_GROUND_COLOR_PDF:String = "back_ground_color_pdf";
 		public static const HEADER_COLOR_PDF:String = "header_color_pdf";
 		public static const HIDE_ACTIVITY_TYPE:String = "hide_activity_type";
 		public static const BEGIN_OF_WEEK:String = "begin_of_week";
@@ -63,6 +64,8 @@ package gadget.dao
 		//public static const OPPORTUNITY_DELETE:String = "opportunity_delete";
 		//public static const DISABLE_AUTORIZE_DELETION:String = "disable_authorize_deletion";
 	
+		public static const ENABLE_COMPETITORS = "enable_competitors";
+		public static const ENABLE_CUSTOMERS="enable_customers";
 		public static const COMPANY_NAME:String = "company_name";
 		public static const PDF_SIZE:String ="pdf_size";
 		public static const ENABLE_BUTTON_ACTIVITY_CREATE_CALL:String = "enable_button_activity_create_call";
@@ -253,9 +256,21 @@ package gadget.dao
 			SYNC_ROLE,
 			SYNC_CASCADINGPICKLIST,
 			SYNC_PICKLISTSERVICE,
-			COMPANY_NAME
+			COMPANY_NAME,
+			ENABLE_COMPETITORS,
+			ENABLE_CUSTOMERS,
+			ENABLE_CALL_COPY_SUBJECT
 		];
 		
+		public function isEnableCallCopySubject():Boolean{
+			return getBooleanValue(ENABLE_CALL_COPY_SUBJECT);
+		}
+		public function isEnableCompetitors():Boolean{
+			return getBooleanValue(ENABLE_COMPETITORS);
+		}
+		public function isEnableCustomers():Boolean{
+			return getBooleanValue(ENABLE_CUSTOMERS);
+		}
 		public function isSync_cascadingpicklist():Boolean{
 			
 			return getBooleanValue(SYNC_CASCADINGPICKLIST);			

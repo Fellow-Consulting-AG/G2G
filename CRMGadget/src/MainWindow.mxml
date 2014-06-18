@@ -986,6 +986,7 @@
 				return button;
 			}
 			private function navButtonDoubleClick(event:MouseEvent):void{
+				
 				if(StringUtils.startsWith(event.target.data, "IF ")){
 					var combinedInputForm:CombinedInputForm = new CombinedInputForm();
 					WindowManager.openModal(combinedInputForm);
@@ -1006,7 +1007,16 @@
 					switch(subtype){
 						case 0: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE); break;
 						case 1: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE); break;
-						case 2: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE); break;
+						case 2: {
+							newObj =ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE); 
+							var obj:Object = getListByEntity("Account").list.selectedItem;
+							if(Database.preferencesDao.isEnableCallCopySubject() && obj != null && obj.AccountId != null){
+								newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
+								newObj.AccountId = obj.AccountId ;
+								newObj.AccountName = obj.AccountName;
+							}
+							break;
+						}
 					}	
 				}
 				
@@ -1190,13 +1200,14 @@
 				for(var i:int = 0; i < viewMenuData.length; i++){
 					viewMenuData[i].toggled = "false";
 				}
-				if(mapCustomTab[currentEntity] != null){
-					filterList.visible = false;
-					filterList.includeInLayout = false;
-				}else{
-					filterList.visible = true;
-					filterList.includeInLayout = true;
-				}
+				//Change Request #7701 CRO
+//				if(mapCustomTab[currentEntity] != null){  
+//					filterList.visible = false;
+//					filterList.includeInLayout = false;
+//				}else{
+//					filterList.visible = true;
+//					filterList.includeInLayout = true;
+//				}
 				viewMenuData[stack.selectedIndex].toggled = "true";
 			}
 			
@@ -1378,6 +1389,7 @@
 					var tabname:String = entity;
 					if(entity=="Activity Calendar"){
 						tabname = "Activity";
+						
 					}
 					if(navigator.getChildByName(tabname)==null){
 						entity=null;
@@ -1392,7 +1404,7 @@
 				if (entity == null)
 					entity = "Account";
 				
-				if(mapCustomTab[entity] != null ){
+				if(mapCustomTab[entity] != null ||entity=="Activity Calendar"){
 					filterList.visible = false;
 					filterList.includeInLayout = false;
 				}else{

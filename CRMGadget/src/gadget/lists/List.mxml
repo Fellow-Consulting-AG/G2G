@@ -489,7 +489,7 @@
 			public function openScreenCreate(model:Object = null, subtype:int = 0, 
 											 item:Object=null,refreshFunction:Function=null,  preEntity:String=null,refreshList:Boolean=true):void {
 				var screenCreate:Detail = new Detail();
-				
+				var obj = list.selectedItem;
 				if(viewStack.selectedIndex==1){//refresh only calendar view
 					screenCreate.calendar = calendar;
 					screenCreate.calendarIlog = calendarIlog;

@@ -39,7 +39,7 @@ package gadget.util{
 		[Embed(source='/assets/Formula.png')] [Bindable] public static var formulaIcon:Class;
 		[Embed(source='/assets/custom_field.png')] [Bindable] public static var customFieldIcon:Class;
 		[Embed(source='/assets/field.png')] [Bindable] public static var fieldIcon:Class;
-		
+		[Embed(source='/assets/excel.gif')] [Bindable] public static var excelIcon:Class;
 		[Embed(source='/assets/pdficon.gif')] [Bindable] public static var pdfIcon:Class;
 		[Embed(source='/assets/warning.png')] [Bindable] public static var warningIcon:Class;
 		[Embed(source='/assets/tick.png')] [Bindable] public static var tickIcon:Class;

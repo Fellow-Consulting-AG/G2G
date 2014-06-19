@@ -2,12 +2,18 @@ package
 {
 	
 	
+	import com.adobe.coreUI.util.StringUtils;
 	import com.assessment.DtoAssessmentPDFHeader;
 	import com.assessment.DtoColumn;
 	import com.assessment.DtoConfiguration;
 	import com.assessment.DtoPage;
 	
+	import flash.desktop.NativeProcess;
+	import flash.desktop.NativeProcessStartupInfo;
+	import flash.events.Event;
+	import flash.events.ProgressEvent;
 	import flash.filesystem.File;
+	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
 	import gadget.assessment.AssessmentModelTotal;
@@ -16,29 +22,21 @@ package
 	import gadget.assessment.IAssessmentTotal;
 	import gadget.control.CustomPurePDF;
 	import gadget.dao.ActivityDAO;
-	import gadget.dao.AssessmentPDFColorThemeDAO;
 	import gadget.dao.Database;
 	import gadget.i18n.i18n;
 	import gadget.service.PicklistService;
 	import gadget.util.DateUtils;
 	import gadget.util.FieldUtils;
-	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.formatters.DateFormatter;
+	import mx.utils.StringUtil;
 	
-	import org.purepdf.Font;
 	import org.purepdf.colors.RGBColor;
-	import org.purepdf.elements.Chunk;
-	import org.purepdf.elements.Element;
-	import org.purepdf.elements.IElement;
-	import org.purepdf.elements.Paragraph;
 	import org.purepdf.elements.images.ImageElement;
 	import org.purepdf.pdf.PdfDocument;
-	import org.purepdf.pdf.PdfPCell;
-	import org.purepdf.pdf.PdfPTable;
-	import org.purepdf.pdf.PdfTextArray;
 	
 	public class AssessementPDF 
 	{
@@ -168,10 +166,15 @@ package
 			xmlModel.appendChild(xmlModelTotal);
 			createTotalTable(i18n._("MODEL_TOTAL@Model Total"),modelTotal,xmlModelTotal);
 			HeaderDataTable();
-			trace(xmlModel.toString());
+			var xmlByte:ByteArray = new ByteArray();
+			xmlByte.writeUTFBytes(xmlModel.toString());
 			
 			
-//			
+			
+//			//call java
+			exportToExcel(xmlByte);
+			
+			
 //			newLine();
 //			
 //			
@@ -204,8 +207,83 @@ package
 //			attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".pdf");
 			return lstTask.length;
 		}
+		protected function exportToExcel(xmlByte:ByteArray):void{
+			try{			
+				
+				var xmlFile:File =Utils.writeFile( model.assessmentModel + "_" + accName + DateUtils.getCurrentDateAsSerial() +".xml",xmlByte); // generate pdf
+				
+				
+				// java jdk
+				var file:File = new File("C:/Program Files (x86)/Java/jre7/bin/javaw.exe");
+//				file = file.resolvePath("bin/javaw.exe");
+				
+				//
+				var jarFile:File =File.applicationDirectory.resolvePath("export_excel.jar");
+				var arg:Vector.<String> = new Vector.<String>;
+				arg.push("-Djava.library.path="+jarFile.parent.nativePath);
+				arg.push("-jar");
+				arg.push(File.applicationDirectory.resolvePath("export_excel.jar").nativePath);
+				arg.push(xmlFile.nativePath);
+				var npInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+				npInfo.executable = file;
+				npInfo.arguments = arg;
+				nativeProcess = new NativeProcess();
+				
+				
+				
+				nativeProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA, onStandardOutputData);
+				nativeProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA, exportErrorHandler);
+				nativeProcess.start(npInfo);
+			
+			}catch(e:Error){
+			
+				Alert.show(e.message);
+			}
+			
+		}
 		
-	
+		private function exportErrorHandler(e:ProgressEvent):void
+		{
+			Alert.show("Error while saving Excel file!");
+		}
+		private var nativeProcess:NativeProcess = null;
+		private function exportFileSelectedHandler(event:Event):void
+		{
+			
+			
+			/*
+			//refreshRandomValues(null);
+			var exp:MecExporter = new MecExporter();
+			
+			// add MecGrid with sheetname
+			exp.AddDataGrid(mgridTotal.mgrid, "");
+			//mgrid.setStyle("fontFamily","Myriad");
+			// exporting to binary data
+			var ebt:ByteArray = exp.Export2BiffExcel();
+			
+			// save file
+			var f:File = event.target as File;
+			var fs:FileStream = new FileStream();
+			fs.open(f, FileMode.WRITE);
+			fs.writeBytes(ebt);
+			fs.close();
+			
+			Alert.show("Excel file is saved successfully");
+			
+			*/
+			
+			
+		}
+		private function onStandardOutputData(e:ProgressEvent):void{
+			var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
+			//trace(content);
+			var file:File = new File(fileName);
+		//	var file:File =new File(content); // generate pdf
+			file.openWithDefaultApplication();
+			attachPDFToAppointment(file,fileName);
+
+			
+		}
 		
 	
 		private function getModel(task:Object):DtoConfiguration{

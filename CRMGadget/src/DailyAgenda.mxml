@@ -565,7 +565,7 @@
 					<mx:LinkButton id="pdfExportLayoutBtn" icon="{ImageUtils.customIcon}" toolTip="{i18n._(DAILYAGENDA_TOOLTIP_PDF_EXPORT_LAYOUT)}" click="editExportLayout();" />
 				</mx:HBox>
 				<mx:LinkButton id="startInspectionBtn" toolTip="{i18n._('GLOBAL_START_INSPECTION')}" click="openSurvey();" visible="{visibleSurvey}" label="{i18n._('GLOBAL_START_INSPECTION')}"/>
-				<mx:LinkButton id="pdfSurveyExportBtn"  toolTip="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}" click="Utils.showLoadingProgressWindow(exportSurvey, i18n._(StringUtils.LOADING_STR), i18n._(StringUtils.ATTACHMENTS_STR));" icon="{ImageUtils.pdfIcon}" visible="{visibleSurvey}" label="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}"/>	
+				<mx:LinkButton id="pdfSurveyExportBtn"  toolTip="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}" click="Utils.showLoadingProgressWindow(exportSurvey, i18n._(StringUtils.LOADING_STR), i18n._(StringUtils.ATTACHMENTS_STR));" icon="{ImageUtils.excelIcon}" visible="{visibleSurvey}" label="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}"/>	
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:Canvas>

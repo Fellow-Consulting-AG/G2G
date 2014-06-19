@@ -260,7 +260,7 @@ package
 				var file:File = new File(fileName);
 				//	var file:File =new File(content); // generate pdf
 				file.openWithDefaultApplication();
-				attachPDFToAppointment(file,fileName);	
+				attachPDFToAppointment(file,file.name);	
 			} 
 			catch(error:Error) 
 			{

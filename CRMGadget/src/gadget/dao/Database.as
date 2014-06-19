@@ -2316,7 +2316,9 @@ package gadget.dao {
 				stmt.sqlConnection = sqlConnection;	
 				stmt.text = "DELETE FROM last_sync WHERE task_name NOT LIKE 'successsync' AND task_name NOT LIKE 'gadget.sync.incoming%'" +
 				" AND task_name NOT LIKE 'gadget.sync.outgoing%'" +
-				" AND task_name NOT LIKE 'gadget.sync.tests%'";
+				" AND task_name NOT LIKE 'gadget.sync.tests%'" +
+				" AND task_name NOT LIKE '"+MainWindow.AUTO_NEXT_SYNC+"%'"
+				;
 				exec(stmt);
 			});
 		}

@@ -28,6 +28,8 @@
 			import com.assessment.AssessmentConfLayout;
 			import com.assessment.AssessmentConfiguration;
 			
+			import flashx.textLayout.formats.Float;
+			
 			import gadget.control.CloseableToolTip;
 			import gadget.dao.Database;
 			import gadget.dao.PreferencesDAO;
@@ -42,6 +44,7 @@
 			import gadget.sync.task.TaskParameterObject;
 			import gadget.util.ActivityDataUtils;
 			import gadget.util.CacheUtils;
+			import gadget.util.DateUtils;
 			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.ImportFileOODUtils;
@@ -67,7 +70,7 @@
 			import mx.events.MenuEvent;
 			import mx.managers.DragManager;
 			import mx.utils.Base64Decoder;
-			
+			public static const AUTO_NEXT_SYNC = "Auto Next Sync";
 			public static const LABEL_DAILY_AGENDA:String = i18n._("GLOBAL_DAILY_AGENDA");
 			public static const LABEL_DASHBORD:String = i18n._("GLOBAL_DASHBOARD");
 			public static const LABEL_CHAT:String = i18n._("GLOBAL_CHAT");
@@ -262,12 +265,19 @@
 			
 			//#934 show warning message when close main form for TCS JD user CRO
 			public function closeMain():void{
+				var isCleanDB:Boolean ;
 				var lst:ArrayCollection = Utils.checkWarningServiceRequest();
+				var autoSyncDate:Object = Database.lastsyncDao.find(AUTO_NEXT_SYNC);
+				var nowTime:Number = new Date().getTime();
 				if( lst != null && lst.length >0){
 					Alert.show(i18n._("SERVICE_JD_REQUIRE_PDF_ATT"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onClosingEvent, null, Alert.OK);	
+				}else if(autoSyncDate != null && parseFloat(autoSyncDate.sync_date)<nowTime){
+					Alert.show(i18n._(""),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onSyncEvent, null, Alert.OK);
 				}else{
+						
 					cleanDatabaseAndExit();
 				}
+				
 				
 			}
 			
@@ -297,6 +307,15 @@
 			public function onClosingEvent(eventObj:CloseEvent):void{
 				if (eventObj.detail==Alert.OK) {
 					cleanDatabaseAndExit();
+				}
+				
+			}
+			
+			public function onSyncEvent(eventObj:CloseEvent):void{
+				if (eventObj.detail==Alert.OK) {
+					openSyncWindowAuto();
+				}else if(eventObj.detail==Alert.CANCEL){
+					close();
 				}
 				
 			}
@@ -408,8 +427,27 @@
 				}
 				return null;
 			}
+			private function createLastSync():void {
+				var tomorrow:Date = new Date();
+				tomorrow.setTime(tomorrow.getTime() + (1000 * 60 * 60 * 24 ));
+				
+				var task_name:String = AUTO_NEXT_SYNC;
+				var syncObject:Object = Database.lastsyncDao.find(task_name); 
+				if(syncObject == null){
+					syncObject = new Object();
+					syncObject.task_name = task_name;
+					syncObject.sync_date = tomorrow.getTime(); //next sync date
+					syncObject.start_row = 0;
+					syncObject.start_id = '';
+					Database.lastsyncDao.insert(syncObject);
+				}else{
+					syncObject.sync_date = tomorrow.getTime(); //next sync date
+					Database.lastsyncDao.update(syncObject);
+				}
+			}
 			
 			public function syncEnd(isUpdateTrans:Boolean=true):void {
+				createLastSync();
 				syncBtn1.visible = false;
 				syncBtn1.includeInLayout = false;
 				syncBtn2.visible = true;
@@ -1540,6 +1578,14 @@
 				isUpdateTransaction=!isSRSycnow;
 				synchronize.records=records;
 				synchronize.mainWindow = this;
+				WindowManager.openModal(synchronize);
+			}
+			
+			public function openSyncWindowAuto():void {
+				var synchronize:Synchronize = new Synchronize();
+				isUpdateTransaction=true;
+				synchronize.mainWindow = this;
+				synchronize.syncData();
 				WindowManager.openModal(synchronize);
 			}
 			

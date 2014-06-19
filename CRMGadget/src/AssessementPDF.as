@@ -511,7 +511,7 @@ package
 						if(description.length>0){
 							description+=', ';
 						}
-						description+=(mappingObject.Title+":"+(mappingObject.description?"":mappingObject.description));
+						description+=(mappingObject.Title+":"+(mappingObject.description==null?"":mappingObject.description));
 					}
 				}
 				if(model.assessmentModel=="KiB Miljö"||model.assessmentModel=="KiB Tryggmat"){

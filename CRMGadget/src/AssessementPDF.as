@@ -36,6 +36,7 @@ package
 	
 	import org.purepdf.colors.RGBColor;
 	import org.purepdf.elements.images.ImageElement;
+	import org.purepdf.errors.RuntimeError;
 	import org.purepdf.pdf.PdfDocument;
 	
 	public class AssessementPDF 
@@ -214,7 +215,7 @@ package
 				
 				
 				// java jdk
-				var file:File = new File("C:/Program Files (x86)/Java/jre7/bin/javaw.exe");
+				var file:File = new File("c:/windows/system32/javaw.exe");
 //				file = file.resolvePath("bin/javaw.exe");
 				
 				//
@@ -236,51 +237,36 @@ package
 				nativeProcess.start(npInfo);
 			
 			}catch(e:Error){
-			
-				Alert.show(e.message);
+				//Alert.show(e.message, "", Alert.OK);
+				throw new RuntimeError(e.message);
 			}
 			
 		}
 		
 		private function exportErrorHandler(e:ProgressEvent):void
 		{
-			Alert.show("Error while saving Excel file!");
+			//Alert.show("Error while saving Excel file!", "", Alert.OK, this);
+			throw new RuntimeError("Error while saving Excel file!");
+			
+			
 		}
 		private var nativeProcess:NativeProcess = null;
-		private function exportFileSelectedHandler(event:Event):void
-		{
-			
-			
-			/*
-			//refreshRandomValues(null);
-			var exp:MecExporter = new MecExporter();
-			
-			// add MecGrid with sheetname
-			exp.AddDataGrid(mgridTotal.mgrid, "");
-			//mgrid.setStyle("fontFamily","Myriad");
-			// exporting to binary data
-			var ebt:ByteArray = exp.Export2BiffExcel();
-			
-			// save file
-			var f:File = event.target as File;
-			var fs:FileStream = new FileStream();
-			fs.open(f, FileMode.WRITE);
-			fs.writeBytes(ebt);
-			fs.close();
-			
-			Alert.show("Excel file is saved successfully");
-			
-			*/
-			
-			
-		}
+		
 		private function onStandardOutputData(e:ProgressEvent):void{
-			var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
-			//trace(content);
-			var file:File = new File(fileName);
-		//	var file:File =new File(content); // generate pdf
-			file.openWithDefaultApplication();
-			attachPDFToAppointment(file,fileName);
+			try
+			{
+				var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
+				//trace(content);
+				var file:File = new File(fileName);
+				//	var file:File =new File(content); // generate pdf
+				file.openWithDefaultApplication();
+				attachPDFToAppointment(file,fileName);	
+			} 
+			catch(error:Error) 
+			{
+				throw new RuntimeError(error.message);
+			}
+			
 
 			
 		}

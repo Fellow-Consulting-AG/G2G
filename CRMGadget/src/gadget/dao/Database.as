@@ -70,8 +70,9 @@ package gadget.dao {
 		public static const FAVORITE:int = -8;
 		public static const IMPORTANT:int = -9;
 		public static const MISSING_PDF:int =-4;
-		public static const CUSTOMERS = -3;
-		public static const COMPETITORS =-4;
+		public static const CUSTOMERS:int = -3;
+		public static const COMPETITORS:int =-4;
+		private var _relatedButtonDAO:RelatedButtonDAO;
 		private var _image:ImageDAO;
 		private var _tempFolder:File;
 		private var _sqlConnection:SQLConnection;
@@ -1273,6 +1274,10 @@ package gadget.dao {
 			return database._timeZoneDao;
 		}
 		
+		public static function get relatedButtonDao():RelatedButtonDAO {
+			return database._relatedButtonDAO;
+		}
+		
 		public static function cleanDb():void{
 			database._sqlConnection.compact(); // cleans up the database and reduces its size
 		}
@@ -1589,7 +1594,7 @@ package gadget.dao {
 			// create temporary directory
 			_tempFolder = File.createTempDirectory();
 			
-			
+			_relatedButtonDAO = new RelatedButtonDAO(_sqlConnection);
 			
 		}
 		
@@ -2158,7 +2163,7 @@ package gadget.dao {
 				
 				stmt.text = "CREATE TABLE salesstage (id TEXT, sales_proc_id TEXT, sales_stage_order int, name TEXT)";
 				exec(stmt);
-				
+					
 				//				stmt.text = "CREATE TABLE process_opportunity(process_id TEXT, opportunity_type_id TEXT, opportunity_type_name TEXT, PRIMARY KEY(process_id, opportunity_type_id))";
 				//				exec(stmt);
 				
@@ -2178,7 +2183,22 @@ package gadget.dao {
 					exec(stmt);
 				}
 			});
-		}		
+		}	
+		
+		private function XcheckRelatedButtonTable(sqlConnection:SQLConnection):void {
+			_work("Checking related button table...", function(params:Object):void {
+				
+				var stmt:SQLStatement = new SQLStatement();
+				stmt.sqlConnection = sqlConnection;
+				stmt.text = 'SELECT * FROM related_button LIMIT 0';
+				try {
+					exec(stmt);
+				} catch (e:SQLError){
+					stmt.text = "CREATE TABLE related_button(parent_entity TEXT,entity TEXT, disable BOOLEAN, primary key(parent_entity, entity))";
+					exec(stmt);
+				}
+			});
+		}	
 		
 		private function XcheckFinderMapTable(sqlConnection:SQLConnection):void {
 			_work("Checking finder map table...", function(params:Object):void {
@@ -2397,6 +2417,8 @@ package gadget.dao {
 			
 			XcheckFieldFinderTable(sqlConnection);
 			XcheckFinderMapTable(sqlConnection);
+			
+			XcheckRelatedButtonTable(sqlConnection);
 			
 			// new column in salestage
 			XcheckColumn(sqlConnection, 'salesstage','sales_stage_order','int');

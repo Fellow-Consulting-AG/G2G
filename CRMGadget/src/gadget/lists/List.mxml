@@ -1934,7 +1934,7 @@
 												 defaultLeafIcon="{null}" displayItemsExpanded="true"
 												 width="100%" height="100%"/>
 							<mx:LinkButton id="switchLinks" width="12" height="24" icon="{ImageUtils.rightIcon}" click="switchLinkList()"/>
-							<list:LinkList id="linkList" list="{this}" width="{LINK_LIST_WIDTH}" height="100%" horizontalScrollPolicy="off"/>
+							<list:LinkList id="linkList" list="{this}" width="{LINK_LIST_WIDTH}" height="100%" horizontalScrollPolicy="off" parentEntity="{entity}"/>
 						</mx:HBox>					
 					</mx:VBox>
 				</control:ButtonPanel>

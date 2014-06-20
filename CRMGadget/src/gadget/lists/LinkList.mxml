@@ -14,7 +14,7 @@
 			import mx.controls.Alert;
 			import mx.controls.Button;
 			import mx.events.ListEvent;
-
+			[Bindable] public var parentEntity:String;
 			[Bindable] public var links:ArrayCollection;
 			public var source:Object = null;
 			public var list:List;
@@ -182,7 +182,8 @@
 				for each (var transaction:Object in transactions) {
 					for each (var btn:Button in linklistBtns.getChildren()) {
 						if (transaction.entity == btn.data) {
-							if (!transaction.enabled || !transaction.display) {
+							
+							if (!transaction.enabled || !transaction.display || Database.relatedButtonDao.getDisable(parentEntity,transaction.entity)) {
 								btn.visible = false;
 								btn.includeInLayout = false;
 								btn.selected = true;

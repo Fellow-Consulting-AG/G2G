@@ -1552,7 +1552,14 @@ package gadget.util {
 				Database.preferencesDao.setValue(pref.@key, prefValue=="true"? 1: prefValue=="false"? 0 : prefValue,false);
 			}
 			
-			
+			var relatedBtns:XMLList = xml.elements(Preferences.RELATED_BUTTONS_DISABLE);
+			for each(var trans:XML in relatedBtns.related_button_disable){
+				var relatedBtn:Object = new Object();
+				relatedBtn.parent_entity = trans.parent_entity.children()[0].toString();
+				relatedBtn.entity = trans.entity.children()[0].toString();
+				relatedBtn.disable = trans.disable.children()[0].toString();
+				Database.relatedButtonDao.upsert(relatedBtn);
+			}
 			
 			var transactions:XMLList = xml.elements("transactions");
 			var isDelete:Boolean=true;

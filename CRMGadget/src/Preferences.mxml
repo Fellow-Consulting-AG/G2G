@@ -60,7 +60,7 @@
 			private var defaultSelected:ArrayCollection = new ArrayCollection();
 			private static const TASK_NAME:String = "gadget.sync.task::Incoming";
 			private static const TASK_NAME_INCOMMING:String = "gadget.sync.incoming::";
-			
+			public static const RELATED_BUTTONS_DISABLE = "related_buttons_disable";
 			private var timerChanged:Boolean = false;
 			private var editStatus:Boolean = false;
 			private var addRemoveEntityTransaction:Boolean = false;
@@ -1300,6 +1300,7 @@
 						<application-name>{appName}</application-name>
 						<application-version>{applicationObject.version}</application-version>
 						<prefs />	
+						<related_buttons_disable/>
 						<transactions />
 						<custom_layouts />
 						<list-layouts />
@@ -1392,11 +1393,27 @@
 				}
 				
 				
+				
 				var vBoxChildList:Array = enabledTrans.getChildren();
 				//var vBoxChildListDisplayName:Array = displayNameTrans.getChildren();
 				var listTransaction:ArrayCollection = Database.transactionDao.listTransaction();
 				var vBoxChildListFilterTrans:Array = filterTrans.getChildren();
 				var childAdvanFilter:Array = advancedFilter.getChildren();
+				
+				for(var k:int = 0 ; k< listTransaction.length; k++){
+					var lstRelated:ArrayCollection = Database.relatedButtonDao.findByParent(listTransaction.getItemAt(k).entity);
+					for(var j:int = 0 ; j < lstRelated.length; j++){
+						var relatedObj:Object = lstRelated.getItemAt(j);
+						var relatedButtonXml:XML = <related_button_disable>
+														<parent_entity>{relatedObj.parent_entity}</parent_entity>
+														<entity>{relatedObj.entity}</entity>
+														<disable>{relatedObj.disable?"true":"false"}</disable>
+												   </related_button_disable>;
+						configXml.elements(RELATED_BUTTONS_DISABLE)[0].appendChild(relatedButtonXml);
+					}
+					
+				}
+				
 				for(var i:int = 0; i < listTransaction.length; i++){
 					// Preferences
 					var index:int = i + 1;

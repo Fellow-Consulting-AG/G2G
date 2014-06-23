@@ -377,6 +377,7 @@ package gadget.util
 				'var request = {' +
 					'origin:"' + addr.Start.replace("'","\'") + '",' + 
 					'destination:"' + addr.End.replace("'","\'") + '",' +
+					'durationInTraffic: true,'+
 					'waypoints:' + addr.Waypoints.replace('"','\"\g') + ',' +
 					'optimizeWaypoints: true,' +
 					'travelMode: google.maps.DirectionsTravelMode.DRIVING' +

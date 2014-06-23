@@ -2887,7 +2887,7 @@
 											<mx:CheckBox id="chkFuzzy" label="{i18n._('GLOBAL_ENABLE_FUZZY')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FUZZY)==1 ? true:false}" change="{editStatus = true;}" />
 											<mx:CheckBox id="chkConvertLead" label="{i18n._('GLOBAL_ENABLE_CONVERT_LEAD')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CONVERT_LAED)==1 ? true:false}" change="{editStatus = true;}" />
 											<mx:CheckBox id="chkDashboard" label="{i18n._('GLOBAL_ENABLE_DASHBOARD')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DASHBOARD)==1 ? true:false}" change="{editStatus = true;}" />
-											<mx:CheckBox id="chkDailyAgenda" label="{i18n._('GLOBAL_ENABLE_DAILY_AGENDA')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DAILY_AGENDA)==1 ? true:false}" change="{editStatus = true;}" />
+											<mx:CheckBox id="chkDailyAgenda" label="{StringUtils.isEmpty(Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME)) ? i18n._('GLOBAL_ENABLE_DAILY_AGENDA') : Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME)}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DAILY_AGENDA)==1 ? true:false}" change="{editStatus = true;}" />
 											
 											<mx:CheckBox id="chkEnableAssessmentScript" label="{i18n._('GLOBAL_ENABLE_ASSESSMENT_SCRIPT')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_ASSESSMENT_SCRIPT)==1? true:false}" change="{editStatus=true}"/>
 											<mx:CheckBox id="chkEnablePDFSignature" label="{i18n._('ENABLE_PDF_SIGNATURE')}" selected="{Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_PDF_SIGNATURE)==1 ? true:false}" change="{editStatus = true;}" />

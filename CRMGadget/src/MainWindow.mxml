@@ -71,7 +71,7 @@
 			import mx.managers.DragManager;
 			import mx.utils.Base64Decoder;
 			import mx.utils.StringUtil;
-			public static const AUTO_NEXT_SYNC = "Auto Next Sync";
+			public static const AUTO_NEXT_SYNC:String = "Auto Next Sync";
 			public static const LABEL_DAILY_AGENDA:String = i18n._("GLOBAL_DAILY_AGENDA");
 			public static const LABEL_DASHBORD:String = i18n._("GLOBAL_DASHBOARD");
 			public static const LABEL_CHAT:String = i18n._("GLOBAL_CHAT");
@@ -273,7 +273,7 @@
 				if( lst != null && lst.length >0){
 					Alert.show(i18n._("SERVICE_JD_REQUIRE_PDF_ATT"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onClosingEvent, null, Alert.OK);	
 				}else if(autoSyncDate != null && parseFloat(autoSyncDate.sync_date)<nowTime){
-					Alert.show(i18n._(""),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onSyncEvent, null, Alert.OK);
+					Alert.show(i18n._("START_SYNC_BEFORE_CLOSING_G2G"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onSyncEvent, null, Alert.OK);
 				}else{
 						
 					cleanDatabaseAndExit();

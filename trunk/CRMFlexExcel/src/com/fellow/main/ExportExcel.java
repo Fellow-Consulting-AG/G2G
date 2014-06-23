@@ -52,7 +52,7 @@ public class ExportExcel {
 	
 	private String template_name = "";
 	public void exportExcel(String fpath){
-		fpath ="C:/Users/ASUS/Desktop/test.xml";
+//		fpath ="C:/Users/ASUS/Desktop/test.xml";
 		//fpath = "C:\Users\ASUS\AppData\Local\Temp\flaA67E.tmp\KiB Tryggmat_ICA_Nära_Duvbo_2014.06.19.11.38.27.xml";
 //		fpath = fpath.replaceAll("\\", "/");
 		File f = new File(fpath);
@@ -460,7 +460,7 @@ public class ExportExcel {
 		//cell.setCellType(type);
 		if(style == null){
 			style = cell.getCellStyle();
-			styleNomal.setAlignment(HorizontalAlignment.LEFT);
+			style.setAlignment(HorizontalAlignment.LEFT);
 			setCellBorder(style);
 		}
 		

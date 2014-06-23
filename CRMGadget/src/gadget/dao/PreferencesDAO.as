@@ -18,7 +18,8 @@ package gadget.dao
 		private var stmtRead:SQLStatement;
 		private var stmtUpdate:SQLStatement;
 		private var stmtGetAll:SQLStatement;
-		public static const ENABLE_CALL_COPY_SUBJECT = "enable_call_copy_subject";
+		public static const DAILY_AGENDA_NAME = "daily_agenda_name";
+		public static const ENABLE_CALL_COPY_SUBJECT:String = "enable_call_copy_subject";
 		public static const BACK_GROUND_COLOR_PDF:String = "back_ground_color_pdf";
 		public static const HEADER_COLOR_PDF:String = "header_color_pdf";
 		public static const HIDE_ACTIVITY_TYPE:String = "hide_activity_type";
@@ -259,7 +260,8 @@ package gadget.dao
 			COMPANY_NAME,
 			ENABLE_COMPETITORS,
 			ENABLE_CUSTOMERS,
-			ENABLE_CALL_COPY_SUBJECT
+			ENABLE_CALL_COPY_SUBJECT,
+			DAILY_AGENDA_NAME
 		];
 		
 		public function isEnableCallCopySubject():Boolean{

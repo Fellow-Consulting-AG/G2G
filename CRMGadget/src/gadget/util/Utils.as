@@ -1553,7 +1553,7 @@ package gadget.util {
 			}
 			
 			var relatedBtns:XMLList = xml.elements(Preferences.RELATED_BUTTONS_DISABLE);
-			for each(var trans:XML in relatedBtns.related_button_disable){
+			for each(var trans:XML in relatedBtns.related_disable_button){
 				var relatedBtn:Object = new Object();
 				relatedBtn.parent_entity = trans.parent_entity.children()[0].toString();
 				relatedBtn.entity = trans.entity.children()[0].toString();

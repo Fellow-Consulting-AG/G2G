@@ -70,6 +70,7 @@
 			import mx.events.MenuEvent;
 			import mx.managers.DragManager;
 			import mx.utils.Base64Decoder;
+			import mx.utils.StringUtil;
 			public static const AUTO_NEXT_SYNC = "Auto Next Sync";
 			public static const LABEL_DAILY_AGENDA:String = i18n._("GLOBAL_DAILY_AGENDA");
 			public static const LABEL_DASHBORD:String = i18n._("GLOBAL_DASHBOARD");
@@ -818,7 +819,9 @@
 				}
 				//#1728 CRO
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DAILY_AGENDA)){
-					createTabCustom(DAILY_AGENDA,navTabsData,LABEL_DAILY_AGENDA);
+					var name:String = Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME);
+					name = StringUtils.isEmpty(name) ? LABEL_DAILY_AGENDA : name;
+					createTabCustom(DAILY_AGENDA,navTabsData,name);
 				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_VISITIT_CUSTOMER)){
 					//ColopLast

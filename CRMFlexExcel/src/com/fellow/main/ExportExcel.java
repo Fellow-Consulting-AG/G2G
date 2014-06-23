@@ -52,7 +52,7 @@ public class ExportExcel {
 	
 	private String template_name = "";
 	public void exportExcel(String fpath){
-//		fpath ="C:/Users/ASUS/Desktop/test.xml";
+		fpath ="C:/Users/ASUS/Desktop/test.xml";
 		//fpath = "C:\Users\ASUS\AppData\Local\Temp\flaA67E.tmp\KiB Tryggmat_ICA_Nära_Duvbo_2014.06.19.11.38.27.xml";
 //		fpath = fpath.replaceAll("\\", "/");
 		File f = new File(fpath);
@@ -276,7 +276,7 @@ public class ExportExcel {
 								}else if(!r.isOdd()){
 									style = (XSSFCellStyle)styleGrey.clone();
 								}else{
-									style = styleNomal;
+									style = null;
 								}
 								int c = 1;
 								if(r.getColspan()>0){
@@ -460,12 +460,13 @@ public class ExportExcel {
 		//cell.setCellType(type);
 		if(style == null){
 			style = cell.getCellStyle();
+			styleNomal.setAlignment(HorizontalAlignment.LEFT);
 			setCellBorder(style);
 		}
 		
-		
 		style.setWrapText(true);
 		style.setLocked(isLock);
+		cell.setCellStyle(style);
 		
 		
 		if(type==XSSFCell.CELL_TYPE_BOOLEAN){
@@ -485,7 +486,7 @@ public class ExportExcel {
 		}else if(type==XSSFCell.CELL_TYPE_STRING){
 			cell.setCellValue(content);
 		}	
-		cell.setCellStyle(style);
+	
 		return cell;
 	}
 	protected Object loadData(Class<?> responseCls, String fileName) throws Exception {

@@ -39,8 +39,8 @@ package gadget.dao
 		public function upsert(relatedButton:Object):void{
 			if(find(relatedButton.parent_entity,relatedButton.entity) != null ){
 				stmtUpdate.parameters[":parent_entity"]=relatedButton.parent_entity;
-				stmtUpdate.parameters[":entity"]=relatedButton.parent_entity;
-				stmtUpdate.parameters[":disable"]=relatedButton.parent_entity;
+				stmtUpdate.parameters[":entity"]=relatedButton.entity;
+				stmtUpdate.parameters[":disable"]=relatedButton.disable;
 				exec(stmtUpdate);
 			}else{
 				insert(relatedButton);

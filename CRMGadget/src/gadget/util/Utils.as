@@ -1555,9 +1555,9 @@ package gadget.util {
 			var relatedBtns:XMLList = xml.elements(Preferences.RELATED_BUTTONS_DISABLE);
 			for each(var trans:XML in relatedBtns.related_disable_button){
 				var relatedBtn:Object = new Object();
-				relatedBtn.parent_entity = trans.parent_entity.children()[0].toString();
-				relatedBtn.entity = trans.entity.children()[0].toString();
-				relatedBtn.disable = trans.disable.children()[0].toString();
+				relatedBtn.parent_entity = checkNullValue(trans.parent_entity.children()[0].toString(),"");
+				relatedBtn.entity = checkNullValue(trans.entity.children()[0].toString(),"");
+				relatedBtn.disable = "true" == checkNullValue(trans.disable.children()[0].toString(),"") ? 1 : 0;
 				Database.relatedButtonDao.upsert(relatedBtn);
 			}
 			

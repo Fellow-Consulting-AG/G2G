@@ -45,9 +45,12 @@ public class ExportExcel {
 	private XSSFSheet sheet = null;
 	private XSSFCellStyle styleGrey =null;
 	private XSSFCellStyle styleBlack = null;
+	private XSSFCellStyle styleBlackBoldCenter = null;
 	private XSSFCellStyle styleGreen = null;
+	private XSSFCellStyle styleGreenLeft = null;
 	private XSSFCellStyle styleNomal =null;
-	
+	private XSSFCellStyle styleUnlock =null;
+	private XSSFCellStyle defualtStyle;
 	private boolean isFoersaeljningsledare = false;
 	
 	private String template_name = "";
@@ -79,7 +82,7 @@ public class ExportExcel {
 			if(workBook != null){
 			
 				sheet = getSheet(workBook);
-				//XSSFCellStyle style=workBook.createCellStyle();
+				defualtStyle=workBook.createCellStyle();
 				//style.setAlignment(XSSFCellStyle.ALIGN_LEFT);
 				int startRow = 2;
 				
@@ -96,16 +99,38 @@ public class ExportExcel {
 			    styleGreen.setAlignment(HorizontalAlignment.RIGHT);
 			    styleGreen.setVerticalAlignment(VerticalAlignment.CENTER);
 			    
+			    styleGreenLeft = createFillBackGroundColor(workBook, new XSSFColor(color), null);
+			    styleGreenLeft.setFont(font);
+			    styleGreenLeft.setAlignment(HorizontalAlignment.LEFT);
+			    styleGreenLeft.setVerticalAlignment(VerticalAlignment.CENTER);
+			    
 				styleGrey = createFillBackGroundColor(workBook, new XSSFColor(new Color(192,192,192)), null);
 				styleBlack = createFillBackGroundColor(workBook, new XSSFColor(new Color(0,0,0)), null);
+			    styleBlack.setFont(font);
+				
+			    styleBlackBoldCenter = createFillBackGroundColor(workBook, new XSSFColor(new Color(0,0,0)), null);
+			    XSSFFont fontBold = workBook.createFont();
+				font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
+				fontBold.setColor(IndexedColors.WHITE.getIndex());
+				fontBold.setBold(true);
+			    styleBlackBoldCenter.setFont(font);
+			    styleBlackBoldCenter.setAlignment(HorizontalAlignment.CENTER);
+			    
+			    
 				styleNomal = (XSSFCellStyle)workBook.createCellStyle();
 				styleNomal.setAlignment(HorizontalAlignment.LEFT);
+				
+				styleUnlock = (XSSFCellStyle)workBook.createCellStyle();
+				styleUnlock.setAlignment(HorizontalAlignment.LEFT);
+				
 				styleGrey.setAlignment(HorizontalAlignment.LEFT);
 				setCellBorder(styleGreen);
 				setCellBorder(styleGrey);
 				setCellBorder(styleNomal);
 				setCellBorder(styleBlack);
-				    
+				setCellBorder(styleGreenLeft);
+				setCellBorder(styleUnlock);
+				
 				startRow = createTableHeader(dtoModel,startRow);
 				
 				// sum field
@@ -185,38 +210,44 @@ public class ExportExcel {
 				if(qRow == null){
 					qRow=sheet.createRow(startRow);
 				}
+				if(isFoersaeljningsledare){
+					mergeCell(startRow, startCol, endCol, qRow);
+				}
 				if(indRow == 0){
 					if(!isFoersaeljningsledare){
 						qRow.setHeight((short)(qRow.getHeight()*3));
 					}
 					
 					
-					style = (XSSFCellStyle)styleGreen.clone();
+					style = styleGreenLeft;
 					
 					fillCell(qRow, 0,"", XSSFCell.CELL_TYPE_STRING, true,styleGreen);
-					style.setAlignment(HorizontalAlignment.LEFT);
+//					style.setAlignment(HorizontalAlignment.LEFT);
 					
 					
 					
 				}else if(indRow == 1){
-					style = (XSSFCellStyle)styleGrey.clone();
+					style = styleGrey;
 //					style.setAlignment(HorizontalAlignment.LEFT);
 					fillCell(qRow, 0,row.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
 				}
 				if(indRow == 2){
 					
-					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
+//					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
+					mergeCell(startRow, 1, 9, qRow);
 					fillCell(qRow, 0,row.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
 					//style.setAlignment(HorizontalAlignment.LEFT);
 					style = null;
 				}else{
 					if(!isFoersaeljningsledare){
-						sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 6, 9));
+//						sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 6, 9));
+						mergeCell(startRow, 6, 9, qRow);
+						fillCell(qRow, 7,"", XSSFCell.CELL_TYPE_STRING, true,styleGreen);
 					}
 					
 				}
 				
-				sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, startCol, endCol));
+//				sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, startCol, endCol));
 				List<DtoColumn> cols = row.getColumns();
 				int c = endCol+1;
 				if(cols != null && cols.size()>0){
@@ -233,6 +264,12 @@ public class ExportExcel {
 		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));
 		return startRow;
 	}
+	private void mergeCell(int startRow,int startCol,int endCol,XSSFRow row){
+		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, startCol, endCol));
+		for(int i=startCol;i<=endCol;i++){
+			fillCell(row, i,"", XSSFCell.CELL_TYPE_STRING, true,null);
+		}
+	}
 	private int createPageSection(DtoModel dtoModel,int startRow){
 		List<DtoPages> pages = dtoModel.getPages();
 		if(pages != null && pages.size()>0){
@@ -246,7 +283,7 @@ public class ExportExcel {
 					row=sheet.createRow(startRow);
 				}
 				sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));
-				fillCell(row, 0, page.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleNomal);
+				fillCell(row, 0, page.getTitle(), XSSFCell.CELL_TYPE_STRING, true,defualtStyle);
 				
 				startRow++;
 				
@@ -265,26 +302,22 @@ public class ExportExcel {
 									qRow=sheet.createRow(startRow);
 								}
 								if(r.isHeader()){
-									
-									style = (XSSFCellStyle)styleBlack.clone();
-									XSSFFont font = workBook.createFont();
-									font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
-								    //font.setFontHeightInPoints((short)10);
-								    font.setColor(IndexedColors.WHITE.getIndex());
-									
-								     style.setFont(font);
+									style = styleBlack;
 								}else if(!r.isOdd()){
-									style = (XSSFCellStyle)styleGrey.clone();
+									style = styleGrey;
 								}else{
 									style = null;
 								}
 								int c = 1;
 								if(r.getColspan()>0){
-									style = (XSSFCellStyle)styleGrey.clone();
-									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,r.getColspan()));
+									style = styleGrey;
+//									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,r.getColspan()));
+									mergeCell(startRow, 0, r.getColspan(), qRow);
 								}else if(isFoersaeljningsledare){
-									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,6));
-									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,8,9));
+//									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,6));
+//									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,8,9));
+									mergeCell(startRow, 0, 6, qRow);
+									mergeCell(startRow, 8, 9, qRow);
 									c=7;
 								}
 								fillCell(qRow, 0, r.getTitle(), XSSFCell.CELL_TYPE_STRING, true, style);
@@ -300,7 +333,7 @@ public class ExportExcel {
 											if(!isFoersaeljningsledare && c > 6 && r.isHeader()==false){
 												
 												lock = false;
-												style = styleNomal;
+												style = styleUnlock;
 												
 											}
 											
@@ -335,25 +368,26 @@ public class ExportExcel {
 			
 			for(DtoRow row : pageTotal.getRows()){
 				int c=5;
-				if(isFoersaeljningsledare){
-					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 8));
-					c = 9;
-				}else{
-					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 4));
-				}
+				
 
 				XSSFRow qRow=sheet.getRow(startRow);
 				if(qRow == null){
 					qRow=sheet.createRow(startRow);
 				}
+				if(isFoersaeljningsledare){
+//					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 8));
+					mergeCell(startRow, 0, 8, qRow);
+					c = 9;
+				}else{
+//					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 4));
+					mergeCell(startRow, 0, 4, qRow);
+					fillCell(qRow, 1, "", XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 2, "", XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 3, "", XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 4, "", XSSFCell.CELL_TYPE_STRING, true, style);
+				}
 				if(StringUtils.isNotBlank(row.getTitle())){
-					style = (XSSFCellStyle)styleBlack.clone();
-					XSSFFont font = workBook.createFont();
-					font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
-				    //font.setFontHeightInPoints((short)10);
-				    font.setColor(IndexedColors.WHITE.getIndex());
-					
-				    style.setFont(font);
+					style = styleBlack;
 					fillCell(qRow, 0, row.getTitle(), XSSFCell.CELL_TYPE_STRING, true, style);
 				}else{
 					style = styleGrey;
@@ -383,14 +417,8 @@ public class ExportExcel {
 			if(row == null){
 				row=sheet.createRow(2);
 			}
-			XSSFCellStyle style =  (XSSFCellStyle)styleBlack.clone();
-			XSSFFont font = workBook.createFont();
-			font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
-			font.setBold(true);
-		    //font.setFontHeightInPoints((short)10);
-		    font.setColor(IndexedColors.WHITE.getIndex());
-		    style.setFont(font);
-		    style.setAlignment(HorizontalAlignment.CENTER);
+			XSSFCellStyle style =  styleBlackBoldCenter;
+			
 		    
 			fillCell(row, 0, header.getTitle(), XSSFCell.CELL_TYPE_STRING, true,style);
 			startRow = 4;
@@ -402,13 +430,13 @@ public class ExportExcel {
 			if(row == null){
 				row=sheet.createRow(startRow);
 			}
-//			XSSFCellStyle style =  (XSSFCellStyle)styleGreen.clone();
 			//sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 2));
-			sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
+//			sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
+			mergeCell(startRow, 1, 9, row);
 			DtoRow rowHeader = header.getRows().get(i);
 			
 			fillCell(row, 0, rowHeader.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
-			fillCell(row, 1, rowHeader.getValue(), XSSFCell.CELL_TYPE_STRING, true,null);
+			fillCell(row, 1, rowHeader.getValue(), XSSFCell.CELL_TYPE_STRING, true,styleNomal);
 			startRow++;
 		}		
 		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));

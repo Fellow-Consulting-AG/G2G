@@ -439,6 +439,7 @@ public class ExportExcel {
 			fillCell(row, 1, rowHeader.getValue(), XSSFCell.CELL_TYPE_STRING, true,styleNomal);
 			startRow++;
 		}		
+		sheet.createRow(startRow);
 		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));
 		return startRow;
 	}

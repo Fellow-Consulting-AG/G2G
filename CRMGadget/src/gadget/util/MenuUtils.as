@@ -165,6 +165,8 @@ package gadget.util {
 					var d:String = ch.@data[0];
 				}
 				switch(e.item.@data[0].toString()){
+					
+				
 					//case "Edit":
 					case i18n._('GLOBAL_EDIT'):
 						editDetail(obj); //openDetail(obj.data);
@@ -495,6 +497,7 @@ package gadget.util {
 							if(selectedItem.data != null){ //display the edite menu item when it has data
 								var editMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_EDIT')+'" icon = "@Embed(\'/assets/edit.png\')" />');
 								var deleteMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_DELETE')+'" icon = "@Embed(\'/assets/delete.png\')" />');
+
 								rootMenu.appendChild(editMenu);
 								rootMenu.appendChild(deleteMenu);
 							}
@@ -572,7 +575,9 @@ package gadget.util {
 					if(selectedItem != null){
 						var editMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_EDIT')+'" icon = "editIcon"'+' enabled="'+RightService.canUpdate(Database.activityDao.entity)+'" />');
 						var deleteMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_DELETE')+'" icon = "deleteIcon"'+' enabled="'+RightService.canDelete(Database.activityDao.entity)+'" />');
+						var copyMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_COPY')+'" icon = "copyIcon"' +'  enabled="true" />');
 						rootMenu.appendChild(editMenu);
+						rootMenu.appendChild(copyMenu);
 						rootMenu.appendChild(deleteMenu);
 						//should be used enable property
 //						if(RightService.canDelete(Database.activityDao.entity)){ // CRO #5064
@@ -601,6 +606,10 @@ package gadget.util {
 							//case "Edit":
 							case i18n._('GLOBAL_EDIT'):
 								openDetail(selectedItem.data.data);
+								break;
+							//case "Copy":
+							case i18n._('GLOBAL_COPY'):
+								openDetail(selectedItem.data.data,true);
 								break;
 							//case "Delete":
 							case i18n._('GLOBAL_DELETE'):

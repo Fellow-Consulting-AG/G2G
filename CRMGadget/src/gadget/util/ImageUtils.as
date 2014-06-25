@@ -371,6 +371,7 @@ package gadget.util{
 		[Embed("/assets/cancel.png")] public static const cancelIcon:Class;
 		[Embed("/assets/edit.png")] public static const editIcon:Class;			
 		[Embed("/assets/delete.png")] public static const deleteIcon:Class;
+		[Embed("/assets/copy.png")] public static const copyIcon:Class;
 		
 		[Embed("/assets/add.png")] public static const addIcon:Class;
 		[Embed("/assets/addBW.png")] public static const addBWIcon:Class;

@@ -204,8 +204,8 @@
 				openDetail(data);
 			}
 			
-			private function openDetail(data:Object):void {
-				(parentApplication as MainWindow).getSelectedList().editScreenDetail(data);
+			private function openDetail(data:Object,isCopy:Boolean = false):void {
+				(parentApplication as MainWindow).getSelectedList().editScreenDetail(data,null,null,true,isCopy);
 				if(data == null) return;
 				Utils.addRecentlyViewed(data);
 			} 

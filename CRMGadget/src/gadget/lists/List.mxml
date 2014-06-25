@@ -437,7 +437,7 @@
 				
 			}
 			
-			public function editScreenDetail(item:Object,seletedEntity:String =null,refreshFunction:Function=null,isRefreshList:Boolean=true):void {
+			public function editScreenDetail(item:Object,seletedEntity:String =null,refreshFunction:Function=null,isRefreshList:Boolean=true,isCopy:Boolean=false):void {
 				if (item != null) {
 					if(seletedEntity==null){
 						seletedEntity = entity;
@@ -460,6 +460,11 @@
 					screenDetail.mainWindow = parentApplication as MainWindow;
 					screenDetail.refreshFunction = refreshFunction;
 					// screenDetail.closeRecordTypePopup = closeRecordType;
+					if(isCopy){
+						screenDetail.create = true;
+						screenDetail.item.gadget_id = null;
+						screenDetail.subtype = screenDetail.item.Activity == "Appointment" ? 1 : 0;
+					}
 					WindowManager.openModal(screenDetail);
 				}else{
 					Alert.show(i18n._(LIST_ALERT_MSG_PLEASE_SELECT_THE) + " " + displayName + " " + i18n._(LIST_ALERT_MSG_TO_EDIT),"" , Alert.OK ,this.parentApplication as MainWindow);

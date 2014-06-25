@@ -1734,7 +1734,7 @@ package gadget.util
 					// #336: New Appointment
 					var SET_CURRENT_TIME_ON_FIELDS:Array = ["StartTime", "EndTime"];
 					// set default current StartTime, EndTime
-					var tmpDateTime:Object = (!create || (item[fieldInfo.element_name] is Date)) ? item[fieldInfo.element_name] : SET_CURRENT_TIME_ON_FIELDS.indexOf(fieldInfo.element_name) != -1 ? DateUtils.format(new Date(), DateUtils.DATABASE_DATETIME_FORMAT) : null;
+					var tmpDateTime:Object = item[fieldInfo.element_name] != null ? item[fieldInfo.element_name] : SET_CURRENT_TIME_ON_FIELDS.indexOf(fieldInfo.element_name) != -1 ? DateUtils.format(new Date(), DateUtils.DATABASE_DATETIME_FORMAT) : null;
 					
 					if(tmpDateTime==null && item[fieldInfo.element_name]!=null){
 						if(DateUtils.isDate( item[fieldInfo.element_name])){
@@ -1750,11 +1750,11 @@ package gadget.util
 						dateTimeObject = DateUtils.guessAndParse(tmpDateTime as String);	
 					}
 					// convert to correct timezone
-					if(dateTimeObject!=null && !create){
+					if(dateTimeObject!=null && (!create || item[fieldInfo.element_name] != null)){
 						dateTimeObject=new Date(dateTimeObject.getTime()+(DateUtils.getCurrentTimeZone(dateTimeObject)*millisecondsPerHour));
 					}
 					//Bug #5859 CRO
-					if(create && entity == Database.activityDao.entity && fieldInfo.element_name == "EndTime"){
+					if(item[fieldInfo.element_name] == null && create && entity == Database.activityDao.entity && fieldInfo.element_name == "EndTime"){
 						dateTimeObject=new Date(dateTimeObject.getTime() + ( 3600 *1000 ));
 					}else if(create && dateTimeObject == null){
 						//dateTimeObject = DateUtils.guessAndParse(DateUtils.format(new Date(), DateUtils.DATABASE_DATETIME_FORMAT) as String) ;

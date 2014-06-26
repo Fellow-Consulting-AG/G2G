@@ -1,3 +1,7 @@
+.iconBack {
+	skin: Embed("/assets/back.png");
+	over-skin: Embed("/assets/back.png");
+}
 
 
 

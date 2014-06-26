@@ -575,7 +575,7 @@ package gadget.util {
 					if(selectedItem != null){
 						var editMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_EDIT')+'" icon = "editIcon"'+' enabled="'+RightService.canUpdate(Database.activityDao.entity)+'" />');
 						var deleteMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_DELETE')+'" icon = "deleteIcon"'+' enabled="'+RightService.canDelete(Database.activityDao.entity)+'" />');
-						var copyMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_COPY')+'" icon = "copyIcon"' +'  enabled="true" />');
+						var copyMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_COPY')+'" icon = "copyIcon" />');
 						rootMenu.appendChild(editMenu);
 						rootMenu.appendChild(copyMenu);
 						rootMenu.appendChild(deleteMenu);

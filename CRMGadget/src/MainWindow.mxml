@@ -182,6 +182,7 @@
 			
 			public static const MAINWINDOW_SUBMENU_ASSESSMENT_CONFIGURATION:String = 'ASSESSMENT_CONFIGURATION';
 			
+			private var navigateHistory:ArrayCollection= new ArrayCollection();
 			public var syncProcess:SyncProcess = null;
 			
 			private var appUpdater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
@@ -1238,6 +1239,8 @@
 			
 			private function tabChangeListener(event:Event):void{
 				var stack:ViewStack = event.target as ViewStack;
+				
+				
 				for(var i:int = 0; i < viewMenuData.length; i++){
 					viewMenuData[i].toggled = "false";
 				}
@@ -1423,6 +1426,7 @@
 			}		
 			
 			public function selectList(entity:String=null):List {
+				var index:int =0;
 				if(StringUtils.isEmpty(entity)){
 					entity = selectedEntity;
 				}
@@ -1484,6 +1488,7 @@
 					if (viewMenuData[j].entity == currentEntity) {
 						viewMenuData[j].toggled = "true";
 						selectedIndex = j;
+						
 					} else {
 						viewMenuData[j].toggled = "false";
 					}
@@ -1505,7 +1510,7 @@
 									isActivityCalendar = true;
 								} 
 								tabBar.selectedIndex = k;
-								
+								index = k;
 								
 								
 								break;
@@ -1566,6 +1571,15 @@
 				//				listSelected.detail.loadData();	
 				//				listSelected.computeColumnList();
 				listSelected.loadData();
+				
+				if(navigateHistory.length>0 ){
+					var curIndex:int = parseInt(navigateHistory.getItemAt(navigateHistory.length-1).toString());
+					if(index != curIndex){
+						navigateHistory.addItem(index);
+					}
+				}else{
+					navigateHistory.addItem(index);
+				}
 				return  listSelected;
 			}
 			
@@ -2141,6 +2155,20 @@
 			WindowManager.openModal(dashboardChart);
 			}*/
 			
+			private function addHistoryAction():void{
+				if(navigateHistory.length>0){
+					var i:int =0;
+					if(navigateHistory.length > 1){
+						navigateHistory.removeItemAt(navigateHistory.length-1);
+					}
+					
+					if(navigateHistory.length>=1){
+						i = 1;
+					}
+					var data:String = tabBar.dataProvider.source[parseInt(navigateHistory.getItemAt(navigateHistory.length-i).toString())].data;
+					selectList(data);
+				}
+			}
 		]]>
 	</mx:Script>
 	
@@ -2153,7 +2181,8 @@
 	
 	<mx:Canvas styleName="main" left="0" top="0" right="0" bottom="0" id="hiddenCanvas" width="100%" height="100%">
 		<mx:Canvas id="windowTitleBar" backgroundColor = "#EEEEEE" styleName="titleBar" doubleClickEnabled="true" doubleClick="viewRestoreMaxWindow()" mouseDown="nativeWindow.startMove()" height="24" top="2" left="2" right="2">			
-			<mx:Label id="titleLabel" text="CRM Gadget" top="0" left="4" />
+			<mx:Label id="titleLabel" text="CRM Gadget" top="0" left="24" />
+			<mx:Button styleName="iconBack" height="16" width="16" top="3" left="4" click="addHistoryAction()"/>
 			<mx:Button styleName="iconMinimize" height="16" width="16" top="2" right="36" click="minimize()"/>
 			<mx:Button styleName="iconMaximize" height="16" width="16" top="2" right="20" click="viewRestoreMaxWindow()"/>
 			<mx:Button styleName="iconClose" height="16" width="16" top="2" right="4" click="closeMain();"/>

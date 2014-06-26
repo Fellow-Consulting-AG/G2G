@@ -59,6 +59,7 @@
 			//				@Embed('assets/delete.png');
 			[Bindable] public var editIcon:Class = ImageUtils.editIcon;
 			[Bindable] public var deleteIcon:Class = ImageUtils.deleteIcon; 
+			[Bindable] public var copyIcon:Class = ImageUtils.copyIcon;
 			[Bindable] public var languageCode:String;
 			public function init():void {
 				var currentUser:Object = Database.allUsersDao.ownerUser()

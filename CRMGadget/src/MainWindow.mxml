@@ -1571,15 +1571,21 @@
 				//				listSelected.detail.loadData();	
 				//				listSelected.computeColumnList();
 				listSelected.loadData();
-				
+				var obj:Object = new Object();
+				obj.entity = currentEntity;
+				obj.gadget_id = "";
 				if(navigateHistory.length>0 ){
-					var curIndex:int = parseInt(navigateHistory.getItemAt(navigateHistory.length-1).toString());
+					var previousObj:Object = navigateHistory.getItemAt(navigateHistory.length-1);
+					var curIndex:int = parseInt(previousObj.tabIndex);
 					if(index != curIndex){
-						navigateHistory.addItem(index);
+						obj.tabIndex = index;
+						navigateHistory.addItem(obj);
 					}
 				}else{
-					navigateHistory.addItem(index);
+					obj.tabIndex = index;
+					navigateHistory.addItem(obj);
 				}
+				listSelected.backHistory = obj;
 				return  listSelected;
 			}
 			
@@ -2165,8 +2171,12 @@
 					if(navigateHistory.length>=1){
 						i = 1;
 					}
-					var data:String = tabBar.dataProvider.source[parseInt(navigateHistory.getItemAt(navigateHistory.length-i).toString())].data;
+					var obj:Object = navigateHistory.getItemAt(navigateHistory.length-i);
+					var data:String = tabBar.dataProvider.source[parseInt(obj.tabIndex)].data;
 					selectList(data);
+					if(obj.gadget_id != ""){
+						Utils.openDetail(Database.getDao(obj.entity).findByGadgetId(obj.gadget_id),this);
+					}
 				}
 			}
 		]]>

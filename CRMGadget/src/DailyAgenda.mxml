@@ -445,6 +445,13 @@
 							openDetail(currentLabel.id);
 							
 						});
+					}else if(file.element_name == "ContactFirstName"){
+						columnValue.setStyle("textDecoration","underline");
+						columnValue.addEventListener(MouseEvent.CLICK,function(e1:MouseEvent):void{
+							var currentLabel:Label = e1.currentTarget as Label;
+							openDetail(currentLabel.id);
+							
+						});
 					}
 					formItem.addChild(columnValue);
 					form.addChild(formItem);

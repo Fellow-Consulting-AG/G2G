@@ -145,6 +145,7 @@
 			private static const MS_EXCHANGE:String = 'MS Exchange';
 			public static  var sortedColumn:String;
 			public var visibleHomeTask:Boolean = false;
+			[Bindable] public var backHistory:Object;
 			[Bindable]private var isLstVisibleHomeTask:Boolean;
 			//Bug #1728 CRO
 			public function showListTasks():void{
@@ -1506,6 +1507,11 @@
 				detail.validateNow();
 				//list.validateNow();
 			}
+//			public function selList(var i:String):void{
+//				list.validateNow();
+//				list.selectedIndex = 0;
+//				list.scrollToIndex(0);
+//			}
 			
 			private function keyboardDeleteHandler(event:KeyboardEvent):void {
 				switch (event.keyCode) {
@@ -1851,6 +1857,9 @@
 				if(linkList.visible) {
 					linkList.listLinks();
 				}
+				backHistory.listIndex = list.selectedIndex;
+				backHistory.gadget_id = list.selectedItem.gadget_id;
+					
 			}
 			private function filterDataGridResult(item:Object):Boolean {
 				var key:Array = Utils.replaceGermanCharacter(entityFilterInput.text, Utils.charUpperGermanAccents, Utils.charGerman).toUpperCase().split(/\sOR\s/);

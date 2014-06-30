@@ -18,7 +18,8 @@ package gadget.dao
 		private var stmtRead:SQLStatement;
 		private var stmtUpdate:SQLStatement;
 		private var stmtGetAll:SQLStatement;
-		public static const DAILY_AGENDA_NAME = "daily_agenda_name";
+		public static const ENABLE_AUTO_SYNC:String = "enable_auto_sync";
+		public static const DAILY_AGENDA_NAME:String = "daily_agenda_name";
 		public static const ENABLE_CALL_COPY_SUBJECT:String = "enable_call_copy_subject";
 		public static const BACK_GROUND_COLOR_PDF:String = "back_ground_color_pdf";
 		public static const HEADER_COLOR_PDF:String = "header_color_pdf";
@@ -65,8 +66,8 @@ package gadget.dao
 		//public static const OPPORTUNITY_DELETE:String = "opportunity_delete";
 		//public static const DISABLE_AUTORIZE_DELETION:String = "disable_authorize_deletion";
 	
-		public static const ENABLE_COMPETITORS = "enable_competitors";
-		public static const ENABLE_CUSTOMERS="enable_customers";
+		public static const ENABLE_COMPETITORS:String = "enable_competitors";
+		public static const ENABLE_CUSTOMERS:String="enable_customers";
 		public static const COMPANY_NAME:String = "company_name";
 		public static const PDF_SIZE:String ="pdf_size";
 		public static const ENABLE_BUTTON_ACTIVITY_CREATE_CALL:String = "enable_button_activity_create_call";
@@ -261,8 +262,13 @@ package gadget.dao
 			ENABLE_COMPETITORS,
 			ENABLE_CUSTOMERS,
 			ENABLE_CALL_COPY_SUBJECT,
-			DAILY_AGENDA_NAME
+			DAILY_AGENDA_NAME,
+			ENABLE_AUTO_SYNC
 		];
+		
+		public function isEnableAUTO_SYNC():Boolean{
+			return getBooleanValue(ENABLE_AUTO_SYNC);
+		}
 		
 		public function isEnableCallCopySubject():Boolean{
 			return getBooleanValue(ENABLE_CALL_COPY_SUBJECT);

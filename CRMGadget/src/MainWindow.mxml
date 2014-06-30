@@ -273,7 +273,7 @@
 				var nowTime:Number = new Date().getTime();
 				if( lst != null && lst.length >0){
 					Alert.show(i18n._("SERVICE_JD_REQUIRE_PDF_ATT"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onClosingEvent, null, Alert.OK);	
-				}else if(autoSyncDate != null && parseFloat(autoSyncDate.sync_date)<nowTime){
+				}else if(Database.preferencesDao.isEnableAUTO_SYNC() && autoSyncDate != null && parseFloat(autoSyncDate.sync_date)<nowTime){
 					Alert.show(i18n._("START_SYNC_BEFORE_CLOSING_G2G"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onSyncEvent, null, Alert.OK);
 				}else{
 						
@@ -1579,13 +1579,16 @@
 					var curIndex:int = parseInt(previousObj.tabIndex);
 					if(index != curIndex){
 						obj.tabIndex = index;
+						listSelected.backHistory = obj;
 						navigateHistory.addItem(obj);
 					}
 				}else{
 					obj.tabIndex = index;
+					listSelected.backHistory = obj;
 					navigateHistory.addItem(obj);
+					
 				}
-				listSelected.backHistory = obj;
+				
 				return  listSelected;
 			}
 			

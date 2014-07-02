@@ -181,8 +181,11 @@
 					item["DueDate"] = dateSelection;
 				}else{
 					if(timeRangeSelection != null){
-						item["StartTime"] = timeRangeSelection[0];
-						item["EndTime"] = timeRangeSelection[1];
+//						item["StartTime"] = timeRangeSelection[0];
+//						item["EndTime"] = timeRangeSelection[1];
+						// VM convert to timezone 0, whend init field it convert to current timezone back
+						item["StartTime"] = new Date(timeRangeSelection[0].getTime()-DateUtils.getCurrentTimeZone(timeRangeSelection[0])*GUIUtils.millisecondsPerHour);
+						item["EndTime"]=new Date(timeRangeSelection[1].getTime()-DateUtils.getCurrentTimeZone(timeRangeSelection[1])*GUIUtils.millisecondsPerHour);
 					}else{
 						item["StartTime"] = dateSelection;
 						item["EndTime"] = dateSelection;

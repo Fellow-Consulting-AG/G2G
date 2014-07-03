@@ -11,9 +11,15 @@ package gadget.dao
 				id:     [ 'ContactId', 'AccountId' ],
 				columns: TEXTCOLUMNS
 			},{
-				record_type:"Account Contact",
-				name_column:["ContactFullName"],
-				search_columns:["ContactFullName"]});
+//				record_type:"Account Contact",
+				unique:['ContactId,AccountId'],
+				name_column:["AccountName"],
+				search_columns:["AccountName"],
+				oracle_id:"Id",		//VAHI's not so evil kludge
+				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
+			});
+			_isSyncWithParent = false;
+			_isGetField = true;
 		}
 
 		private const TEXTCOLUMNS:Array = [
@@ -38,7 +44,6 @@ package gadget.dao
 
 			"AccountId",
 			"ContactId",
-
 			"CreatedBy",
 			"CreatedByAlias",
 			"CreatedByEMailAddr",

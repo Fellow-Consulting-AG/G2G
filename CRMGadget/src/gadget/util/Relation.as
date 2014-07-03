@@ -54,6 +54,8 @@ package gadget.util
 			{entitySrc:"Contact.Note", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactId"], labelDest:["ContactId"], entityDest:"Contact"},
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"ContactId", keyDest:"Id", labelSrc:["ContactFullName"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Contact.Note"},
 			
+			// contact_account
+			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelSupport:["AccountName"], labelDest:["AccountName"], entityDest:"Account", supportTable:"Contact.Account"},
 			
 			{entitySrc:"Campaign", keySrc:"CampaignId", keySupport:"CampaignId", keyDest:"Id", labelSrc:["CampaignName"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Campaign.Note"},
 			{entitySrc:"Campaign.Note", keySrc:"CampaignId", keyDest:"CampaignId", labelSrc:["CampaignId"], labelDest:["CampaignId"], entityDest:"Campaign"},
@@ -100,7 +102,10 @@ package gadget.util
 			{entitySrc:"Account", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name"], labelDest:["Name"], entityDest:"CustomObject14"},
 			{entitySrc:"Account", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
-			//			{entitySrc:"Account", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Asset"},
+			// account_contact
+			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Account.Contact"},
+			
+//			{entitySrc:"Account", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Asset"},
 			/* fix #2018
 			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["AccountName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
 			*/

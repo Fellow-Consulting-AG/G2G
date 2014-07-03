@@ -16,6 +16,14 @@ package gadget.sync.tasklists {
 		var subSync:Array = new Array();
 		var list:ArrayCollection = Database.transactionDao.listEnabledTransaction();
 		for each(var o:Object in list){
+			if(o.entity == Database.accountDao.entity){
+				// hard code #7698
+				subSync.push(new IncomingSubobjects(o.entity,"Contact"));
+			}else if(o.entity == Database.contactDao.entity){
+				// hard code #7698
+				subSync.push(new IncomingSubobjects(o.entity,"Account"));
+			}
+			
 			//sub
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
 			for each(var subObj:Object in subList){

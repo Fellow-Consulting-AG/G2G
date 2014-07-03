@@ -18,9 +18,17 @@ package gadget.sync.tasklists {
 		
 		var enablesTrans:ArrayCollection=Database.transactionDao.listEnabledTransaction();
 		var outs:Array =new Array();
+		
 		for each(var obj:Object in enablesTrans){
 			
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(obj.entity);
+			if(obj.entity == Database.accountDao.entity){
+				// hard code #7698
+				outs.push(new OutgoingSubObject(obj.entity,"Contact"));
+			}else if(obj.entity == Database.contactDao.entity){
+				// hard code #7698
+				outs.push(new OutgoingSubObject(obj.entity,"Account"));
+			}
 			for each(var subObj:Object in subList){
 				var sodname:String = subObj.sodname;
 				if(StringUtils.isEmpty(sodname)){
@@ -40,7 +48,7 @@ package gadget.sync.tasklists {
 					case "Objectives":
 					case "Lead":
 					//case "Product":
-					//case "Contact":
+					case "Contact":
 					case "Address":
 					case "Service Request":
 					case "Asset":

@@ -27,7 +27,7 @@ package gadget.dao
 			
 			});
 			stmtDeleteByRelatedContactId = new SQLStatement();
-			stmtDeleteByRelatedContactId.text = "DELETE FROM  contact_related WHERE RelatedContactId = :RelatedContactId";
+			stmtDeleteByRelatedContactId.text = "DELETE FROM  contact_related WHERE ContactId = :ContactId";
 			stmtDeleteByRelatedContactId.sqlConnection = sqlConnection;
 			_isSyncWithParent = false;
 			_isSelectAll = false;
@@ -36,7 +36,7 @@ package gadget.dao
 		
 		
 		public function deleteByRelatedContactId(relatedContactId:String):void{
-			stmtDeleteByRelatedContactId.parameters[":RelatedContactId"] = relatedContactId;
+			stmtDeleteByRelatedContactId.parameters[":ContactId"] = relatedContactId;
 			exec(stmtDeleteByRelatedContactId);
 		}
 		

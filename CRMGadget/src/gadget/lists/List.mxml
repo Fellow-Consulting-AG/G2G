@@ -1498,9 +1498,11 @@
 						list.scrollToIndex(i);
 						linkList.source = selectedItem;
 						linkList.listLinks();
-						backHistory.gadget_id = selectedItem.gadget_id;
-						backHistory.listIndex = i;
-						
+						if(backHistory != null){
+							backHistory.gadget_id = selectedItem.gadget_id;
+							backHistory.listIndex = i;
+						}
+
 						break; 
 					}
 					i++;

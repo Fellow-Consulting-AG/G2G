@@ -19,15 +19,13 @@ package gadget.sync.tasklists {
 		var enablesTrans:ArrayCollection=Database.transactionDao.listEnabledTransaction();
 		var outs:Array =new Array();
 		
+		var isAddSub:Boolean = true;
 		for each(var obj:Object in enablesTrans){
 			
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(obj.entity);
-			if(obj.entity == Database.accountDao.entity){
-				// hard code #7698
-				outs.push(new OutgoingSubObject(obj.entity,"Contact"));
-			}else if(obj.entity == Database.contactDao.entity){
-				// hard code #7698
-				outs.push(new OutgoingSubObject(obj.entity,"Account"));
+			if(isAddSub && (obj.entity == "Contact" || obj.entity == "Account")){
+				outs.push(new OutgoingSubObject("Contact","Account"));
+				isAddSub = false;
 			}
 			for each(var subObj:Object in subList){
 				var sodname:String = subObj.sodname;

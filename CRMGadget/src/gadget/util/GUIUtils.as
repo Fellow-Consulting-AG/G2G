@@ -506,7 +506,22 @@ package gadget.util
 				relation.keySrc + " = '" + item[relation.keySrc] + "'"
 			);
 			*/
-			return Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
+			var result:ArrayCollection = null;
+			if(relation.supportTable == Database.contactAccountDao.entity){
+				if("Account" ==relation.entitySrc){
+					
+					// query contact
+					result = Database.contactDao.findAll(new ArrayCollection([{element_name:"*"}]),"ContactId in (select ContactId from Contact_Account where AccountId='"+item[relation.keySrc]+"')");
+					//result = Database.contactDao.findDataByRelation(relation,item[relation.keySrc]);
+				}else{
+					//query account
+					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
+				}
+			}else{
+				result = Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
+			}
+			
+			return result;
 			
 		}
 		
@@ -675,13 +690,23 @@ package gadget.util
 			var grid:DataGrid = new DataGrid();
 			// updateRelationGrid(grid, relation, item);
 //			grid.dataProvider =  subDao.findRelatedData(item.gadget_type,item[relation.keySrc]);
+			var cfields:ArrayCollection = null;
+			if(relation.supportTable == Database.contactAccountDao.entity){
+				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.entityDest);
+			}else{
+				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
+			}
 			grid.dataProvider = getRelationList(relation, item);
 			var columns:Array = new Array();
 			var contextMenuFunction:Function;
 			var isCreate:Boolean = detail.create;
 			
-	
-			var cfields:ArrayCollection = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
+			
+			/*
+			if(relation.supportTable != Database.contactAccountDao.entity){
+				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
+			}
+			*/
 			if(cfields == null || cfields.length < 1){
 				// default object layout
 				//Mony hack 
@@ -852,7 +877,7 @@ package gadget.util
 				
 				grid.selectedItem=null;
 				var deleteBtn:Button = new Button();
-				deleteBtn.label = i18n._('GLOBAL_DELETE');
+				deleteBtn.label = i18n._('GLOBAL_REMOVE');
 				deleteBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{	
 					relationGridHandler(detail, grid, deleteBtn.label, grid.selectedItem);
 				});
@@ -1044,6 +1069,7 @@ package gadget.util
 							}
 							
 							var dao:BaseDAO =Database.getDao(object.relation.supportTable); 
+							
 							dao.insert(newObj);
 							newObj = Database.getDao(dao.entity).selectLastRecord()[0];
 							var oraIdField:String = DAOUtils.getOracleId(dao.entity);
@@ -1069,7 +1095,7 @@ package gadget.util
 					
 				};
 				WindowManager.openModal(entityFinder);
-			}else if(status==i18n._('GLOBAL_DELETE')){
+			}else if(status==i18n._('GLOBAL_REMOVE')){
 				if (selectedItem == null || selectedItem.gadget_id==null ||selectedItem.gadget_id=='' ) return;
 				var dao:BaseDAO=Database.getDao(object.relation.supportTable);
 				var obj:Object=dao.findByGadgetId(selectedItem.gadget_id);

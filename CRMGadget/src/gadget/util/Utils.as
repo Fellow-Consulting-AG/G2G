@@ -665,6 +665,7 @@ package gadget.util {
 			for each (var sub:String in SupportRegistry.getSubObjects(entity)) {						
 				
 				var subDao:SupportDAO = SupportRegistry.getSupportDao(entity,sub);
+				
 				if(!subDao.isSyncWithParent){					
 					var criteria:Object = {};
 					criteria[oracleId] = dest[oracleId];
@@ -674,7 +675,9 @@ package gadget.util {
 			}
 			
 			if(entity == Database.accountDao.entity){
-				
+				var criteria:Object = {};
+				criteria[oracleId] = dest[oracleId];
+				Database.contactAccountDao.deleteByParentId(criteria);
 				Database.accountCompetitorDao.deleteByCompetitorId(dest[oracleId]);
 				Database.accountPartnerDao.deleteByPartnerId(dest[oracleId]);
 				

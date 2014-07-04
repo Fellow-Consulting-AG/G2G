@@ -103,7 +103,7 @@ package gadget.util
 			{entitySrc:"Account", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
 			// account_contact
-			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Account.Contact"},
+			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
 			
 //			{entitySrc:"Account", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Asset"},
 			/* fix #2018

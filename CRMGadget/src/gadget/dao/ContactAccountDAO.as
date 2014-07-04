@@ -18,6 +18,7 @@ package gadget.dao
 				oracle_id:"Id",		//VAHI's not so evil kludge
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 			});
+			SupportRegistry.init_registry('Account.Contact' , this);
 			_isSyncWithParent = false;
 			_isGetField = true;
 		}

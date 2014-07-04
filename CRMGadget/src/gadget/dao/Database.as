@@ -130,7 +130,6 @@ package gadget.dao {
 		private var _accountCustomObject3Dao:AccountCustomObject3DAO;
 		private var _accountCustomObject4Dao:AccountCustomObject4DAO;
 		private var _accountCustomObject10Dao:AccountCustomObject10DAO;
-		private var _accountContactDao:AccountContactDAO;
 		private var _accountObjectiveDao:AccountObjectiveDAO;
 		private var _accountServiceRequestDao:AccountServiceRequestDAO;
 		private var _contactOpportunityDao:ContactOpportunityDAO;
@@ -232,10 +231,7 @@ package gadget.dao {
 		{
 			return database._accountAccountDao;
 		}
-		public static function get accountContactDao():AccountContactDAO
-		{
-			return database._accountContactDao;
-		}
+		
 		public static function get accountCustomObject2Dao():AccountCustomObject2DAO
 		{
 			return database._accountCustomObject2Dao;
@@ -1512,7 +1508,6 @@ package gadget.dao {
 			_accountCustomObject4Dao = new AccountCustomObject4DAO(_sqlConnection,_work);
 			_accountCustomObject10Dao = new AccountCustomObject10DAO(_sqlConnection,_work);
 			_accountAccountDao = new AccountAccountDAO(_sqlConnection,_work);
-			_accountContactDao = new AccountContactDAO(_sqlConnection,_work);
 			_contactOpportunityDao = new ContactOpportunityDAO(_sqlConnection,_work);
 			_accountServiceRequestDao = new AccountServiceRequestDAO(_sqlConnection,_work);
 			//VAHI END refactored
@@ -1837,6 +1832,7 @@ package gadget.dao {
 				
 				YcheckCustomLayout("Activity.Product", "productDefault", "Product Detailed", "Product Detailed");
 				YcheckCustomLayout("Contact.Account", "contactDefault", "Contact", "Contacts");
+				YcheckCustomLayout("Account.Contact", "accountDefault", "Account", "Accounts");
 				YcheckCustomLayout("Asset", "assetDefault", "Asset", "Assets");
 				YcheckCustomLayout("Territory", "territoryDefault", "Territory", "Territories");
 				YcheckCustomLayout("Note", "noteDefault", "Note", "Notes");
@@ -3014,7 +3010,7 @@ package gadget.dao {
 				{name:"AccountTeam",sodname:"Team",enabled:0,entity_name:"Account.Team",syncable:true},
 				{name:"Partner",sodname:"Partner",enabled:0,entity_name:"Account.Partner",syncable:true},
 				{name:"Competitor",sodname:"Competitor",enabled:0,entity_name:"Account.Competitor",syncable:true},
-//				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Account.Contact",syncable:false},
+				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:false},
 				{name:"Account",sodname:"Account",enabled:0,entity_name:"Account",syncable:false},
 				{name:"Account Relationships",sodname:"Related",enabled:0,entity_name:"Account.Related",syncable:true},
 				{name:"Opportunity",sodname:"Opportunity",enabled:0,entity_name:"Opportunity",syncable:true},

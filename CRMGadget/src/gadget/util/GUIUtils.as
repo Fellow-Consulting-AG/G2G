@@ -884,7 +884,7 @@ package gadget.util
 				
 				
 				addBtn.enabled = !isCreate && RightService.canCreate(relation.supportTable);
-				deleteBtn.enabled = !isCreate && RightService.canDelete(relation.supportTable);
+//				deleteBtn.enabled = !isCreate && RightService.canDelete(relation.supportTable);
 				
 				
 				hbox.addChild(deleteBtn);

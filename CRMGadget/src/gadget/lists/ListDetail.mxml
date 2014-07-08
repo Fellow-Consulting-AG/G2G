@@ -865,6 +865,8 @@
 						
 						if("Contact" == entity && "Account" == entityDao.entity){
 							lstPro.dataProvider = Database.contactDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
+						}else if("Contact" == entityDao.entity && "Account" == entity){
+							lstPro.dataProvider = Database.accountDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
 						}else if("Contact" == entity && "Opportunity" == entityDao.entity){
 							lstPro.dataProvider = Database.contactDao.getContactOpportnity(item[DAOUtils.getOracleId(entity)], item["gadget_id"]);
 						}else{

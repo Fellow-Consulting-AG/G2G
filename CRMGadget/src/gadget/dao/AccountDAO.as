@@ -30,7 +30,7 @@ package gadget.dao
 		timeZone           // time zone must be consistent with location
 		presenceIndicator  // constant: don't translate  
 		picture            // constant: don't translate*/
-		
+		private var stmtContactAccount:SQLStatement;
 		public function AccountDAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'account',
@@ -58,6 +58,9 @@ package gadget.dao
 			stmtSelectAll.text = "SELECT * FROM account WHERE (error IS NULL OR error = 0) AND "+
 				"PrimaryBillToCountry IS NOT NULL AND PrimaryBillToCountry !='' AND "+
 				"PrimaryBillToCity IS NOT NULL AND PrimaryBillToCity !='' AND AnnualRevenues IS NOT NULL";
+			stmtContactAccount = new SQLStatement();
+			stmtContactAccount.sqlConnection = sqlConnection;
+			stmtContactAccount.text = "SELECT 'Contact' gadget_type, * FROM contact WHERE ContactId in (SELECT ContactId FROM contact_account WHERE ( deleted = 0 OR deleted IS null ) AND accountId = :accountId);";
 			
 		}
 		
@@ -67,7 +70,12 @@ package gadget.dao
 			
 			return indexes;
 		}
-		
+		public function getContactAccount(accountId:String):ArrayCollection{
+			stmtContactAccount.parameters[":accountId"] = accountId;
+			exec(stmtContactAccount);
+			var result:SQLResult = stmtContactAccount.getResult();
+			return new ArrayCollection(result.data);
+		}
 		public function selectAll():ArrayCollection{
 			exec(stmtSelectAll);
 			return new ArrayCollection(stmtSelectAll.getResult().data);

@@ -1565,7 +1565,7 @@
 				}
 			}
 			
-			private const DETAIL_HEIGHT:int = 192;
+			private const DETAIL_HEIGHT:int = 214;
 			private var showHide:Boolean = false;
 			private function switchDetailTab():void {
 				// detail.height = DETAIL_HEIGHT - detail.height;
@@ -1972,7 +1972,7 @@
 			</mx:ViewStack>
 			<mx:LinkButton id="switchDetail" width="24" height="12" icon="{ImageUtils.downIcon}" click="switchDetailTab()"/>
 			<list:ListDetail id="detail" dataProvider="{getButtons()}" titleIcon="{ImageUtils.getImage(entity)}"  filter="{filter}" list="{this}"
-							 entity="{entity}" itemClick="{lowerBarHandler}" item="{MainWindow.mapCustomTab[entity] != null  ? null : Database.getDao(entity).findByGadgetId(list.selectedItem.gadget_id)}" height="{DETAIL_HEIGHT}" width="100%"/>	
+							 entity="{entity}" itemClick="{lowerBarHandler}" item="{MainWindow.mapCustomTab[entity] != null  ? null : Database.getDao(entity).findByGadgetId(list.selectedItem.gadget_id)}" height="{DETAIL_HEIGHT}" width="100%" paddingBottom="-10"/>	
 		</mx:VBox>	
 	</mx:HBox>
 	

@@ -3038,10 +3038,14 @@ package gadget.dao {
 				{name:"Lead",sodname:"Lead",enabled:0,entity_name:"Lead",syncable:false},
 				{name:"Service Request",sodname:"Service Request",enabled:0,entity_name:"Service Request",syncable:false},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Contact.Note",syncable:true},
-				{name:"Contact Relationships",sodname:"Related",enabled:0,entity_name:"Contact.Related",syncable:true}]},
-			{entity:"Custom Object 1",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]},
+				{name:"Contact Relationships",sodname:"Related",enabled:0,entity_name:"Contact.Related",syncable:true},
+				{name:"Custom Object 2",sodname:"Custom Object 2",enabled:0,entity_name:"Custom Object 2",syncable:true}
+			]},
+			{entity:"Custom Object 1",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
+			},
 			{entity:"Lead",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
-				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]},
+				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
+			},
 			{entity:"Opportunity",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
 				{name:"Opportunity Team",sodname:"Team",enabled:0,entity_name:"Opportunity.Team",syncable:true},
@@ -3049,14 +3053,19 @@ package gadget.dao {
 				{name:"Contact",sodname:"ContactRole",enabled:0,entity_name:"Opportunity.ContactRole",syncable:true},
 				{name:"Competitor",sodname:"Competitor",enabled:0,entity_name:"Opportunity.Competitor",syncable:true},
 				{name:"Opportunity Product Revenue",sodname:"Product",enabled:0,entity_name:"Opportunity.Product",syncable:true},				
-				{name:"Note",sodname:"Note",enabled:0,entity_name:"Opportunity.Note",syncable:true}]},
+				{name:"Note",sodname:"Note",enabled:0,entity_name:"Opportunity.Note",syncable:true}]
+			},
 			//{entity:"Product",sub:[{name:"Activity",enabled:0},{name:"Attachment",enabled:0}]},
 			{entity:"Service Request",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Service Request.Note",syncable:true}]},
 			{entity:"Custom Object 2",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
-				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]},
-			{entity:"Custom Object 3",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]},
-			{entity:"CustomObject14",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:true},
+				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
+			},
+			{entity:"Custom Object 3",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
+			},
+			{entity:"CustomObject14",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]
+			},
 			{entity:"CustomObject7",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject4",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject5",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},

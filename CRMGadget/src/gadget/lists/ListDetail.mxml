@@ -567,7 +567,8 @@
 					}
 				}
 				this.title = "";
-				
+				subDetailForm.percentHeight = 100 ;
+				statusProgress.percentHeight = 0;
 				switch(entity){
 					case "Account":
 					case "Contact":
@@ -597,7 +598,7 @@
 							//leadDataGrid.dataProvider = null;
 						}else if(entity=="Opportunity"){
 							((viewstack.getChildAt(0) as VBox).getChildAt(1) as HBox).setVisible(false);
-							
+							subDetailForm.height = 85;
 						}
 						break;
 					//case "Product":
@@ -720,6 +721,8 @@
 						var statusRed:Boolean = true;
 						statusProgress.visible = true;
 						statusProgress.removeAllChildren();
+						statusProgress.height = 60;
+						 
 						var mainWidth:int = 0;
 						var previous:String = null;
 						for (var i:int=0; i<records.length; i++) {
@@ -1011,14 +1014,14 @@
 			
 			<mx:ViewStack paddingTop="10" backgroundColor="#FFFFFFF" id="viewstack" width="100%" height="100%" creationPolicy="all"  change="tabChangeListener(event)">
 				<mx:VBox width="100%" height="100%" id="tabDetail" label="{i18n._(LISTDETAIL_TAB_DETAIL)}" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-					<mx:HBox width="100%" verticalScrollPolicy="auto" height="85" horizontalScrollPolicy="auto">
+					<mx:HBox width="100%" verticalScrollPolicy="auto" height="100%" horizontalScrollPolicy="auto" id="subDetailForm">
 						<mx:Canvas id="canvasPicture" top="0" />
 						<mx:Form id="form" width="100%" horizontalGap="0" verticalGap="0" paddingBottom="0" paddingTop="0" paddingRight="-0" />
 						<mx:Form id="formMiddle" width="100%" horizontalGap="0" verticalGap="0" paddingBottom="0" paddingTop="0" paddingRight="-10" />						
 						<mx:Form id="formRight" width="100%" horizontalGap="0" verticalGap="0" paddingBottom="0" paddingTop="0" paddingRight="-40" />
 						
 					</mx:HBox>
-					<mx:HBox width="100%" height="60" paddingLeft="20" id="statusProgress" visible="false" verticalAlign="middle" />
+					<mx:HBox width="100%" height="0" paddingLeft="20" id="statusProgress" visible="false" verticalAlign="middle" />
 				</mx:VBox>
 				<!--
 				<mx:Canvas label="{i18n._(LISTDETAIL_TAB_TASK)}" width="100%" height="100%" styleName="myStyle" id="taskCanvas" name="taskCanvas">

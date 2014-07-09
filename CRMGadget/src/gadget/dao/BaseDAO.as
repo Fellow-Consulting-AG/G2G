@@ -32,6 +32,7 @@ package gadget.dao
 		private var stmtDelete:SQLStatement;
 		private var stmtDeleteOracle:SQLStatement;
 		private var stmtFindById:SQLStatement;
+		private var stmtFindContactAccount:SQLStatement;
 		private var stmtSelectLastRecord:SQLStatement;
 		private var stmtFindCreated:SQLStatement;
 		private var stmtFindUpdated:SQLStatement;
@@ -164,6 +165,11 @@ package gadget.dao
 			stmtFindById = new SQLStatement();
 			stmtFindById.sqlConnection = sqlConnection;
 			stmtFindById.text = "SELECT '" + entity + "' gadget_type, * FROM " + tableName + " WHERE gadget_id = :gadget_id";
+			
+			// find account contact
+			stmtFindContactAccount = new SQLStatement();
+			stmtFindContactAccount.sqlConnection = sqlConnection;
+			stmtFindContactAccount.text = "SELECT '" + entity + "' gadget_type, * FROM " + tableName + " WHERE contactId = :contactId AND accountId=:accountId";
 			
 			// Find an item by MS Exchange Id
 			stmtFindMSId = new SQLStatement();
@@ -555,6 +561,16 @@ package gadget.dao
 			stmtFindById.parameters[":gadget_id"] = gadgetId;
 			exec(stmtFindById);
 			var result:SQLResult = stmtFindById.getResult();
+			if (result.data == null || result.data.length == 0) {
+				return null;
+			}
+			return result.data[0];
+		}
+		public function findContactAccount(accountId:String,contactId:String):Object {
+			stmtFindContactAccount.parameters[":accountId"] = accountId;
+			stmtFindContactAccount.parameters[":contactId"] = contactId;
+			exec(stmtFindContactAccount);
+			var result:SQLResult = stmtFindContactAccount.getResult();
 			if (result.data == null || result.data.length == 0) {
 				return null;
 			}

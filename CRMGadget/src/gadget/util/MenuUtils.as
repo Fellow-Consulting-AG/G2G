@@ -628,7 +628,7 @@ package gadget.util {
 			
 			var rootMenu:XML = <root />;
 			var addMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_ADD')+'" icon="addIcon" enabled="'+canCreate+'" />');
-			var deleteMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_DELETE')+'" icon="deleteIcon" enabled="'+canDelete+'" />');
+			var deleteMenu:XML = new XML('<menuitem label="'+i18n._('GLOBAL_REMOVE')+'" icon="deleteIcon" />');
 			rootMenu.appendChild(addMenu);
 			rootMenu.appendChild(deleteMenu);
 			var myMenu:Menu = Menu.createMenu(detail, rootMenu, false);

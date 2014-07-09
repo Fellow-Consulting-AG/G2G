@@ -511,11 +511,13 @@ package gadget.util
 				if("Account" ==relation.entitySrc){
 					
 					// query contact
-					result = Database.contactDao.findAll(new ArrayCollection([{element_name:"*"}]),"ContactId in (select ContactId from Contact_Account where AccountId='"+item[relation.keySrc]+"')");
+					//result = Database.contactDao.findAll(new ArrayCollection([{element_name:"*"}]),"ContactId in (select ContactId from Contact_Account where AccountId='"+item[relation.keySrc]+"')");
+					result = Database.accountDao.getContactAccount(item[relation.keySrc]);
 					//result = Database.contactDao.findDataByRelation(relation,item[relation.keySrc]);
 				}else{
 					//query account
-					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
+					result = Database.contactDao.getContactAccount(item[relation.keySrc]);
+//					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
 				}
 			}else{
 				result = Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
@@ -700,7 +702,10 @@ package gadget.util
 			var columns:Array = new Array();
 			var contextMenuFunction:Function;
 			var isCreate:Boolean = detail.create;
-			
+			if(cfields == null || cfields.length < 1){
+				// default layout
+				cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest, null);
+			}
 			
 			/*
 			if(relation.supportTable != Database.contactAccountDao.entity){
@@ -1098,13 +1103,31 @@ package gadget.util
 			}else if(status==i18n._('GLOBAL_REMOVE')){
 				if (selectedItem == null || selectedItem.gadget_id==null ||selectedItem.gadget_id=='' ) return;
 				var dao:BaseDAO=Database.getDao(object.relation.supportTable);
-				var obj:Object=dao.findByGadgetId(selectedItem.gadget_id);
+				var obj:Object=null;
+				var gadId:String="";
+				if(dao.entity == Database.contactAccountDao.entity){
+					var accountId:String ="";
+					var contactId:String = "";
+					if(object.relation.entitySrc=="Account"){
+						contactId = selectedItem["ContactId"];
+						accountId = object.item["AccountId"];
+					}else{
+						 accountId = selectedItem["AccountId"];
+						 contactId = object.item["ContactId"];
+					}
+					obj = dao.findContactAccount(accountId,contactId);
+					gadId = obj.gadget_id;
+				}else{
+					gadId = selectedItem.gadget_id;
+					obj = dao.findByGadgetId(gadId);
+				}
+				
 				var oraIdField:String = DAOUtils.getOracleId(dao.entity);
 				var oraId:String = obj[oraIdField];
 				if(oraId.indexOf("#")!=-1){
 					dao.deleteByOracleId(oraId);
 				}else{
-					dao.deleteTemporary({gadget_id:selectedItem.gadget_id});
+					dao.deleteTemporary({gadget_id:gadId});
 				}
 				// updateRelationGrid(grid, object.relation, object.item);
 				grid.dataProvider = getRelationList(object.relation, object.item);

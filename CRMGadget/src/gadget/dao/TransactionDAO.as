@@ -42,9 +42,9 @@ package gadget.dao
 			// #311: hange request - Diversey sales - Prefernces
 			stmtInsert.text = "INSERT INTO transactions (entity, enabled, display_name,display, filter_id, default_filter, sync_ws20, sync_activities, sync_attachments, rank, read_only, "+
 				" filter_disable, read_only_disable, sync_activities_disable, sync_attachments_disable, entity_disable, sync_order, authorize_deletion, authorize_deletion_disable" +
-				", advanced_filter, hide_relation ,parent_entity) VALUES (:entity, :enabled, :display_name,:display, :filter_id, :default_filter, :sync_ws20, :sync_activities, :sync_attachments, :rank, :read_only, " +
+				", advanced_filter, hide_relation ,parent_entity,column_order,order_type) VALUES (:entity, :enabled, :display_name,:display, :filter_id, :default_filter, :sync_ws20, :sync_activities, :sync_attachments, :rank, :read_only, " +
 				" :filter_disable, :read_only_disable, :sync_activities_disable, :sync_attachments_disable, :entity_disable,:sync_order,:authorize_deletion" +
-				",:authorize_deletion_disable,:advanced_filter,:hide_relation,:parent_entity)";
+				",:authorize_deletion_disable,:advanced_filter,:hide_relation,:parent_entity,:column_order,:order_type)";
 			
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;

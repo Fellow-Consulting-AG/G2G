@@ -29,6 +29,7 @@
 			import ilog.utils.CLDRDateFormatter;
 			
 			import mx.collections.ArrayCollection;
+			import mx.core.UITextField;
 			import mx.effects.Fade;
 			import mx.events.ItemClickEvent;
 			import mx.formatters.DateFormatter;
@@ -411,7 +412,15 @@
 				return tooltip
 			}
 				
-		
+		    private function createCall(e:MouseEvent):void{
+				var selectedDate:Date =  (e.currentTarget as Calendar).getTime(e.stageX,e.stageY,true);
+				var rang:Array = (e.currentTarget as Calendar).timeRangeSelection;
+				var isEnable:Boolean = Database.preferencesDao.isEnableDoubleClickNewCall();
+				if(StringUtils.endsWith(e.target.toString(),("sheetEventManager")) && isEnable && !(e.target is UITextField) && selectedDate != null && rang != null && rang.length > 0){
+					addActivity(selectedDate,rang,2);
+				}
+				
+			}
 			
 		]]>
 	</fx:Script>
@@ -451,7 +460,7 @@
 		<s:Group width="100%" height="100%">
 			<s:VGroup width="100%" height="100%">
 				<s:Group width="100%" height="100%">
-					<ilog:Calendar timeRangeTipFunction="{timeRangeFunction}" startDisplayedTime="[8,0]" endDisplayedTime="[16,0]" dataTipFunction="{toolTipShownHandler}" itemColorFunction="{itemColorFunction}" width="100%" showItemIndicators="true" height="100%" id="cal" mode="workweek" firstDayOfWeek="{Database.preferencesDao.getBeginOfWeek()}">
+					<ilog:Calendar doubleClickEnabled="true" doubleClick="createCall(event)" timeRangeTipFunction="{timeRangeFunction}" startDisplayedTime="[8,0]" endDisplayedTime="[16,0]" dataTipFunction="{toolTipShownHandler}" itemColorFunction="{itemColorFunction}" width="100%" showItemIndicators="true" height="100%" id="cal" mode="workweek" firstDayOfWeek="{Database.preferencesDao.getBeginOfWeek()}">
 						<ilog:itemVerticalRenderer>
 							<fx:Component>
 								<!--<ilog:CalendarItemVerticalRenderer borderSkin="GradientVerticalBorderRenderer"/>-->

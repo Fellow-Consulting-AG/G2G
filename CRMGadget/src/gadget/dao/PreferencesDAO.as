@@ -18,6 +18,7 @@ package gadget.dao
 		private var stmtRead:SQLStatement;
 		private var stmtUpdate:SQLStatement;
 		private var stmtGetAll:SQLStatement;
+		public static const ENABLE_DOUBLE_CLICK_NEW_CALL:String = "enable_double_click_new_call";
 		public static const ENABLE_AUTO_SYNC:String = "enable_auto_sync";
 		public static const DAILY_AGENDA_NAME:String = "daily_agenda_name";
 		public static const ENABLE_CALL_COPY_SUBJECT:String = "enable_call_copy_subject";
@@ -263,8 +264,13 @@ package gadget.dao
 			ENABLE_CUSTOMERS,
 			ENABLE_CALL_COPY_SUBJECT,
 			DAILY_AGENDA_NAME,
-			ENABLE_AUTO_SYNC
+			ENABLE_AUTO_SYNC,
+			ENABLE_DOUBLE_CLICK_NEW_CALL
 		];
+		
+		public function isEnableDoubleClickNewCall():Boolean{
+			return getBooleanValue(ENABLE_DOUBLE_CLICK_NEW_CALL);
+		}
 		
 		public function isEnableAUTO_SYNC():Boolean{
 			return getBooleanValue(ENABLE_AUTO_SYNC);

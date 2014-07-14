@@ -350,8 +350,9 @@ package gadget.dao {
 				{field:PreferencesDAO.ADMIN_PASSWORD, value: ""},
 				{field:PreferencesDAO.ENABLE_PDF_SIGNATURE, value: false},
 				{field:PreferencesDAO.VISIT_CUSTOMER_GREATER_DAYS, value: 60},
-				{field:PreferencesDAO.VISIT_CUSTOMER_LOWER_DAYS, value: 30}
-				
+				{field:PreferencesDAO.VISIT_CUSTOMER_LOWER_DAYS, value: 30},
+				{field:PreferencesDAO.ENABLE_COMPETITORS, value: "1"},
+				{field:PreferencesDAO.ENABLE_CUSTOMERS, value: "1"}
 				
 			]);
 		
@@ -2462,6 +2463,8 @@ package gadget.dao {
 			// CH check filter_id column in transactions table
 			XcheckColumn(sqlConnection, 'transactions','filter_id','TEXT');
 			XcheckColumn(sqlConnection, 'transactions','parent_entity','TEXT');
+			XcheckColumn(sqlConnection, 'transactions','column_order','TEXT');
+			XcheckColumn(sqlConnection, 'transactions','order_type','TEXT');
 			
 			XcheckColumn(sqlConnection, 'activity', 'IsPrivateEvent', 'BOOLEAN', "0");
 			XcheckColumn(sqlConnection, 'activity', 'GUID', 'TEXT');
@@ -3136,7 +3139,10 @@ package gadget.dao {
 					entity_disable: false,
 					advanced_filter: 0,
 					hide_relation: false,
-					display: ("enabled" in transaction) ? transaction.enabled : false
+					display: ("enabled" in transaction) ? transaction.enabled : false,
+					column_order: null,
+					order_type:null
+					
 				});
 			}
 		}

@@ -5,6 +5,7 @@ package gadget.util
 	
 	
 	import com.crmgadget.eval.Evaluator;
+	import com.google.analytics.debug._Style;
 	
 	import flash.display.DisplayObject;
 	import flash.errors.SQLError;
@@ -17,6 +18,7 @@ package gadget.util
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
+	import flash.text.TextField;
 	
 	import gadget.control.AutoComplete;
 	import gadget.control.EntityTypeComboBox;
@@ -45,6 +47,7 @@ package gadget.util
 	import mx.collections.Sort;
 	import mx.collections.SortField;
 	import mx.containers.Canvas;
+	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
 	import mx.containers.VBox;
@@ -66,6 +69,7 @@ package gadget.util
 	import mx.controls.dataGridClasses.DataGridItemRenderer;
 	import mx.core.UIComponent;
 	import mx.core.Window;
+	import mx.events.CalendarLayoutChangeEvent;
 	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
 	import mx.formatters.DateFormatter;
@@ -1771,6 +1775,7 @@ package gadget.util
 					break;
 				case "Date/Time":
 					childObj = new HBox();
+					childObj.name = fieldInfo.element_name;
 					var df:DateField = new DateField();
 					var datePattern:Object = DateUtils.getCurrentUserDatePattern();
 					var localeFormat:String = datePattern.dateFormat;
@@ -1780,6 +1785,17 @@ package gadget.util
 						var dformater:DateFormatter = new DateFormatter();
 						dformater.formatString = localeFormat;
 						return dformater.format(item);
+					}
+					if(fieldInfo.element_name == "StartTime"){
+						df.addEventListener(CalendarLayoutChangeEvent.CHANGE,function(e:Event):void{
+							if(fieldInfo.element_name == "StartTime"){
+								var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
+								var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
+								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+								setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
+							}
+							
+						});
 					}
 					//CRO Bug #1567
 					df.firstDayOfWeek = MONDAY;
@@ -1823,16 +1839,36 @@ package gadget.util
 					
 						
 					var hr:NumericStepper = new NumericStepper();
+					hr.name = "H"+fieldInfo.element_name;
 					hr.width = 40;
 					hr.minimum = 0;
 					hr.maximum = 23;
 					hr.value = intHr;
+					hr.addEventListener(Event.CHANGE,function(e:Event):void{
+						if(fieldInfo.element_name == "StartTime"){
+							var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
+							var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
+							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+							setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
+						}
+						
+					});
 					
 					var mm:NumericStepper = new NumericStepper();
+					mm.name = "M"+fieldInfo.element_name;
 					mm.width = 40;
 					mm.minimum = 0;
 					mm.maximum = 59;
 					mm.value = intMM;
+					mm.addEventListener(Event.CHANGE,function(e:Event):void{
+						if(fieldInfo.element_name == "StartTime"){
+							var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
+							var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
+							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+							setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
+						}
+						
+					});
 					//df.text = "";
 					df.enabled = !readonly;
 					hr.enabled = !readonly;

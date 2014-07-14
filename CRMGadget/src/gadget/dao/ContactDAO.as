@@ -22,6 +22,7 @@ package gadget.dao
 		
 		private var stmtContactAccount:SQLStatement;
 		private var stmtContactOpportunity:SQLStatement;
+		private var stmtContactCO2:SQLStatement;
 		
 		public function ContactDAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection,
@@ -58,6 +59,10 @@ package gadget.dao
 			stmtContactAccount.sqlConnection = sqlConnection;
 			stmtContactAccount.text = "SELECT 'Account' gadget_type, * FROM account WHERE AccountId in (SELECT AccountId FROM contact_account WHERE ( deleted = 0 OR deleted IS null ) AND ContactId = :contactId);";
 			
+			stmtContactCO2 = new SQLStatement();
+			stmtContactCO2.sqlConnection = sqlConnection;
+			stmtContactCO2.text = "SELECT 'custom_object_2' gadget_type, * FROM custom_object_2 WHERE Id in (SELECT Id FROM contact_customobject2 WHERE ( deleted = 0 OR deleted IS null ) AND ContactId = :contactId);";
+			
 			stmtContactOpportunity = new SQLStatement();
 			stmtContactOpportunity.sqlConnection = sqlConnection;
 			stmtContactOpportunity.text = "SELECT 'Opportunity' gadget_type, dest.* FROM opportunity dest  WHERE dest.KeyContactId = :contactId AND (dest.deleted = 0 OR dest.deleted IS null) UNION SELECT 'Opportunity' gadget_type, src.* FROM opportunity src, Opportunity_ContactRole supp, contact dest  WHERE dest.ContactId = supp.ContactId AND src.OpportunityId = supp.OpportunityId AND dest.gadget_id = :gadget_id AND (supp.deleted = 0 OR supp.deleted IS null) AND (src.deleted = 0 OR src.deleted IS null) ORDER BY OpportunityName";
@@ -76,6 +81,12 @@ package gadget.dao
 		}
 		
 		public function getContactAccount(contactId:String):ArrayCollection{
+			stmtContactAccount.parameters[":contactId"] = contactId;
+			exec(stmtContactAccount);
+			var result:SQLResult = stmtContactAccount.getResult();
+			return new ArrayCollection(result.data);
+		}
+		public function getContactCustomObject2(contactId:String):ArrayCollection{
 			stmtContactAccount.parameters[":contactId"] = contactId;
 			exec(stmtContactAccount);
 			var result:SQLResult = stmtContactAccount.getResult();

@@ -23,7 +23,9 @@ package gadget.sync.tasklists {
 				subSync.push(new IncomingSubobjects("Contact","Account"));
 				isAddSub = false;
 			}
-			
+			if(o.entity == "Contact"){
+				subSync.push(new IncomingSubobjects("Contact","Custom Object 2"));
+			}
 			//sub
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
 			for each(var subObj:Object in subList){
@@ -34,6 +36,7 @@ package gadget.sync.tasklists {
 					case "Opportunity":
 					case "CustomObject10":
 					case "Custom Object 2":
+					case "CustomObject2":
 					case "Custom Object 3":
 					case "CustomObject4":
 					case "Account":

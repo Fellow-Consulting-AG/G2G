@@ -288,6 +288,9 @@ package gadget.util
 			{entitySrc:"Custom Object 2", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name"], labelDest:["Name"], entityDest:"CustomObject14"},
 			{entitySrc:"Custom Object 2", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
+			// contact_custom_object2
+			{entitySrc:"Custom Object 2", keySrc:"Id", keyDest:"ContactId",keySupport:"ContactId", labelSrc:["ContactFullName"],labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.CustomObject2"},
+			
 			//{entitySrc:"Custom Object 2", keySrc:"CustomObject3Id", keyDest:"Id", labelSrc:["CustomObject3Name"], labelDest:["Name"], entityDest:"Custom Object 3"},
 			
 			//			{entitySrc:"Custom Object 3", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},

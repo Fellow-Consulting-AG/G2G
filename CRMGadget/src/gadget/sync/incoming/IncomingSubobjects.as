@@ -27,7 +27,9 @@ package gadget.sync.incoming
 			if(sodDao!=null && this is IncomingSubActivity){
 				daoName = sodDao.dao;
 			}else{
-				subDao = SupportRegistry.getSupportDao(ID, _subID);		
+					
+				subDao = SupportRegistry.getSupportDao(ID, _subID);	
+				
 				if(subDao==null){
 					subDao = Database[sodDao.dao] as SupportDAO;
 				}
@@ -114,8 +116,16 @@ package gadget.sync.incoming
 			
 			rec.deleted = false;
 			rec.local_update = null;
-			
-			if (StringUtils.isEmpty(rec[subId])) {
+			if(subDao.entity == Database.customObject2ContactDao.entity){
+				var allOk:Boolean = Database.customObject2ContactDao.fix_sync_incoming(rec,null);
+				if (StringUtils.isEmpty(rec[subId]) || subDao.findByOracleId(rec[subId])==null) {
+					trace('ADD', subDao.entity, rec[subId]);
+					subDao.insert(rec);
+					
+					if (rec[subId]==null)
+						subDao.fix_sync_add(rec, null);
+				}
+			}else if (StringUtils.isEmpty(rec[subId])) {
 				
 				return 0;
 				

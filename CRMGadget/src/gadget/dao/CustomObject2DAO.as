@@ -1,10 +1,14 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	import flash.data.SQLResult;
+	import flash.data.SQLStatement;
 	import flash.utils.Dictionary;
+	
+	import mx.collections.ArrayCollection;
 
 	public class CustomObject2DAO extends CustomeObjectBaseDao {
-
+		protected var stmtContactC02:SQLStatement;
 		public function CustomObject2DAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'custom_object_2',
@@ -15,6 +19,10 @@ package gadget.dao
 				index: ["Id" ],
 				columns: { 'TEXT' : textColumns }
 			});
+			stmtContactC02 = new SQLStatement();
+			stmtContactC02.sqlConnection = sqlConnection;
+			stmtContactC02.text = "SELECT 'Contact' gadget_type, * FROM Contact WHERE ContactId in (SELECT ContactId FROM contact_customobject2 WHERE ( deleted = 0 OR deleted IS null ) AND Id = :id);";
+			
 		}
 
 		override public function get entity():String {
@@ -44,7 +52,12 @@ package gadget.dao
 			return fields;
 			
 		}
-		
+		public function getContactCustomObject2(c2id:String):ArrayCollection{
+			stmtContactC02.parameters[":id"] = c2id;
+			exec(stmtContactC02);
+			var result:SQLResult = stmtContactC02.getResult();
+			return new ArrayCollection(result.data);
+		}
 		private var textColumns:Array = [
 			"AccountExternalSystemId",
 			"AccountId",

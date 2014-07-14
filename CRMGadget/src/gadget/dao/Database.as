@@ -181,12 +181,16 @@ package gadget.dao {
 		private var _reportAdminChildDao:ReportAdminChildDAO;
 		private var _subColumnLayoutDao:SubColumnLayoutDAO;
 		private var _timeZoneDao:TimeZoneDAO;
+		private var _customObject2ContactDao:CustomObject2ContactDAO;
 		
+		public static function get customObject2ContactDao():CustomObject2ContactDAO
+		{
+			return database._customObject2ContactDao;
+		}
 		public static function get opportunityContactDao():OpportunityContactDAO
 		{
 			return database._opportunityContactDao;
 		}
-
 		public static function get accountRelatedDao():AccountRelationshipDAO
 		{
 			return database._accountRelatedDao;
@@ -1510,6 +1514,7 @@ package gadget.dao {
 			_accountAccountDao = new AccountAccountDAO(_sqlConnection,_work);
 			_contactOpportunityDao = new ContactOpportunityDAO(_sqlConnection,_work);
 			_accountServiceRequestDao = new AccountServiceRequestDAO(_sqlConnection,_work);
+			_customObject2ContactDao = new CustomObject2ContactDAO(_sqlConnection,_work);
 			//VAHI END refactored
 			
 			_relationManagementDao = new RelationManagementDAO(_sqlConnection,_work);
@@ -3039,7 +3044,7 @@ package gadget.dao {
 				{name:"Service Request",sodname:"Service Request",enabled:0,entity_name:"Service Request",syncable:false},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Contact.Note",syncable:true},
 				{name:"Contact Relationships",sodname:"Related",enabled:0,entity_name:"Contact.Related",syncable:true},
-				{name:"Custom Object 2",sodname:"Custom Object 2",enabled:0,entity_name:"Custom Object 2",syncable:true}
+				{name:"Custom Object 2",sodname:"CustomObject2",enabled:0,entity_name:"Custom Object 2",syncable:false}
 			]},
 			{entity:"Custom Object 1",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
 			},
@@ -3059,7 +3064,7 @@ package gadget.dao {
 			{entity:"Service Request",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Service Request.Note",syncable:true}]},
 			{entity:"Custom Object 2",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
-				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:true},
+				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:false},
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
 			},
 			{entity:"Custom Object 3",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]

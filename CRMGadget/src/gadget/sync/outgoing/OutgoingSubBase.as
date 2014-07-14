@@ -40,13 +40,15 @@ package gadget.sync.outgoing
 				
 			}else if((ID == Database.contactDao.entity||ID==Database.accountDao.entity)  && subId == "Related"){
 				subIDsod = subIDsod + ID;
+			}else if(ID == Database.contactDao.entity && "Custom Object 2" == subIDsod){
+				subIDsod = "CustomObject2";
 			}
 			subIDns		= subIDsod.replace(/ /g,"");
 			
 			subList		= "ListOf"+subIDns;
 			
-			
 			subDao= SupportRegistry.getSupportDao(entity, subId);
+			
 			if(subDao==null){
 				subDao = Database[SodUtils.transactionProperty(subId).dao];
 			}
@@ -115,7 +117,9 @@ package gadget.sync.outgoing
 					xml.appendChild(
 						<{pf}>{StringUtils.unNull(records[i][SodID])}</{pf}>
 					);
-					
+					if("DummySiebelRowId" == subIDId &&  subDao.entity == Database.customObject2ContactDao.entity){
+						subIDId = "Id";
+					}
 					tmp.appendChild(<{subIDId}>{StringUtils.unNull(records[i][subIDId])}</{subIDId}>);
 					
 				}else{

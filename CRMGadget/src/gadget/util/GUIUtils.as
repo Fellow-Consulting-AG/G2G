@@ -519,6 +519,8 @@ package gadget.util
 					result = Database.contactDao.getContactAccount(item[relation.keySrc]);
 //					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
 				}
+			}else if(relation.supportTable ==  "Contact.CustomObject2"){
+				result = Database.customObject2Dao.getContactCustomObject2(item[relation.keySrc]);
 			}else{
 				result = Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
 			}
@@ -1116,6 +1118,9 @@ package gadget.util
 						 contactId = object.item["ContactId"];
 					}
 					obj = dao.findContactAccount(accountId,contactId);
+					gadId = obj.gadget_id;
+				}else if(dao.entity == Database.customObject2ContactDao.entity){
+					obj = dao.findContactC02(object.item["Id"],selectedItem["ContactId"]);
 					gadId = obj.gadget_id;
 				}else{
 					gadId = selectedItem.gadget_id;

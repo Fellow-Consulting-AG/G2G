@@ -54,6 +54,8 @@ package gadget.sync.incoming
 				
 			}else if((ID == Database.contactDao.entity||ID == Database.accountDao.entity  )&& subId == "Related"){
 				subIDsod = subIDsod + ID;
+			}else if(ID == Database.contactDao.entity && "Custom Object 2" == subIDsod){
+				subIDsod = "CustomObject2";
 			}
 			
 			
@@ -235,6 +237,9 @@ package gadget.sync.incoming
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";
 //			}
+			if(subIDsod == "CustomObject2"){
+				dateSpec = "";
+			}
 			trace("::::::: SUBREQUEST20 ::::::::",getEntityName(),param.force,_page,_subpage,pagenow,subpagenow,isLastPage,haveLastPage,dateSpec);
 //			Database.errorLoggingDao.add(null,{trace:[getEntityName(),param.force,_page,_subpage,pagenow,subpagenow,isLastPage,haveLastPage,dateSpec]});
 

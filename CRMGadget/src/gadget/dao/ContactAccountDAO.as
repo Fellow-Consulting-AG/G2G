@@ -13,7 +13,7 @@ package gadget.dao
 			},{
 //				record_type:"Account Contact",
 				unique:['ContactId,AccountId'],
-				name_column:["AccountName"],
+				name_column:["ContactFullName"],
 				search_columns:["AccountName"],
 				oracle_id:"Id",		//VAHI's not so evil kludge
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }

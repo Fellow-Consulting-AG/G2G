@@ -87,9 +87,9 @@ package gadget.dao
 			return new ArrayCollection(result.data);
 		}
 		public function getContactCustomObject2(contactId:String):ArrayCollection{
-			stmtContactAccount.parameters[":contactId"] = contactId;
-			exec(stmtContactAccount);
-			var result:SQLResult = stmtContactAccount.getResult();
+			stmtContactCO2.parameters[":contactId"] = contactId;
+			exec(stmtContactCO2);
+			var result:SQLResult = stmtContactCO2.getResult();
 			return new ArrayCollection(result.data);
 		}
 		override public function get entity():String {

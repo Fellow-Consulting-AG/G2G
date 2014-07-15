@@ -75,7 +75,7 @@ package gadget.dao
 			// #311: hange request - Diversey sales - Prefernces
 			stmtUpdateAllField.text = "UPDATE transactions SET enabled = :enabled, display_name = :display_name, display = :display, filter_id = :filter_id, default_filter = :default_filter, rank = :rank,"+ 
 				" sync_ws20 = :sync_ws20, sync_activities = :sync_activities, sync_attachments = :sync_attachments, read_only =:read_only, sync_order= :sync_order, authorize_deletion= :authorize_deletion,authorize_deletion_disable= :authorize_deletion_disable," +
-				" filter_disable = :filter_disable, read_only_disable = :read_only_disable, sync_activities_disable = :sync_activities_disable, sync_attachments_disable = :sync_attachments_disable, entity_disable = :entity_disable, advanced_filter =:advanced_filter, hide_relation =:hide_relation, parent_entity = :parent_entity  " + 
+				" filter_disable = :filter_disable, read_only_disable = :read_only_disable, sync_activities_disable = :sync_activities_disable, sync_attachments_disable = :sync_attachments_disable, entity_disable = :entity_disable, advanced_filter =:advanced_filter, hide_relation =:hide_relation, parent_entity = :parent_entity,  " + 
 				" column_order = :column_order, order_type =:order_type WHERE entity = :entity";
 			
 			stmtUpdateSyncOrder=new SQLStatement();

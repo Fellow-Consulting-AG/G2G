@@ -710,7 +710,7 @@ package gadget.util
 			var isCreate:Boolean = detail.create;
 			if(cfields == null || cfields.length < 1){
 				// default layout
-				cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest, null);
+				cfields = Database.columnsLayoutDao.fetchColumnLayout(relation.entityDest);
 			}
 			
 			/*

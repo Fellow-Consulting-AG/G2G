@@ -699,7 +699,7 @@ package gadget.util
 			// updateRelationGrid(grid, relation, item);
 //			grid.dataProvider =  subDao.findRelatedData(item.gadget_type,item[relation.keySrc]);
 			var cfields:ArrayCollection = null;
-			if(relation.supportTable == Database.contactAccountDao.entity){
+			if(relation.supportTable == Database.contactAccountDao.entity || relation.supportTable == "Contact.CustomObject2"){
 				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.entityDest);
 			}else{
 				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);

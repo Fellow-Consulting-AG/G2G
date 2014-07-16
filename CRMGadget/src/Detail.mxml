@@ -123,6 +123,8 @@
 			//public var closeRecordTypePopup:Function ;
 			public var mainWindow:MainWindow;
 			//public var recordTypeSelected:Object;
+			
+			private var _list:List;
 
 			public var showMessageSynchronize:Function;
 			public var refreshFunction:Function;
@@ -208,6 +210,18 @@
 				
 
 			}
+			
+			public function get list():List{
+				if(this._list!=null){
+					return this._list;
+				}
+				return mainWindow.getSelectedList();
+			}
+			
+			public function set list(lst:List):void{
+				this._list =lst;
+			}
+			
 			private function printServiceRequest(isPreview:Boolean):void{
 				var groupingWindow:GroupingPDF = new GroupingPDF();
 				groupingWindow.isPreview = isPreview;

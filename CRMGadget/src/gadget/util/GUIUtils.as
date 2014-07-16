@@ -710,7 +710,15 @@ package gadget.util
 			var isCreate:Boolean = detail.create;
 			if(cfields == null || cfields.length < 1){
 				// default layout
-				cfields = Database.columnsLayoutDao.fetchColumnLayout(relation.entityDest);
+				var obj:Object = detail.list.filter;
+				var type:String = "Default";
+				if(obj!=null){
+					type = obj.type;
+				}
+				cfields = Database.columnsLayoutDao.getColumnLayout(relation.supportTable,type);
+				if(cfields == null || cfields.length < 1){
+					cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,type);
+				}
 			}
 			
 			/*

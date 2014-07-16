@@ -447,6 +447,7 @@
 					
 					var baseDOA:BaseDAO = Database.getDao(seletedEntity);
 					var screenDetail:Detail = new Detail();
+					screenDetail.list = this;
 					if(refreshFunction==null){
 						refreshFunction = selectItem;
 						isRefreshList = false;
@@ -496,7 +497,8 @@
 			public function openScreenCreate(model:Object = null, subtype:int = 0, 
 											 item:Object=null,refreshFunction:Function=null,  preEntity:String=null,refreshList:Boolean=true):void {
 				var screenCreate:Detail = new Detail();
-				var obj = list.selectedItem;
+				screenCreate.list = this;
+				var obj:Object = list.selectedItem;
 				if(viewStack.selectedIndex==1){//refresh only calendar view
 					screenCreate.calendar = calendar;
 					screenCreate.calendarIlog = calendarIlog;
@@ -516,8 +518,8 @@
 				}
 				
 				if(dao!=null){
-					for each(var obj:Object in dao.getOwnerFields()){						
-						screenCreate.item [obj.entityField] = Database.allUsersDao.ownerUser()[obj.userField];
+					for each(var temp:Object in dao.getOwnerFields()){						
+						screenCreate.item [temp.entityField] = Database.allUsersDao.ownerUser()[temp.userField];
 					}
 				}
 				// for #4981 Data are not linked

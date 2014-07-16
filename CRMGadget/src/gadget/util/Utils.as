@@ -368,6 +368,9 @@ package gadget.util {
 					if(fieldManagement!=null){
 						if(!StringUtils.isEmpty( fieldManagement.DefaultValue )){
 							var defaultValue:String = fieldManagement.DefaultValue;
+							if(fieldManagement.PostDefault=='true' && !afterSave){
+								continue;
+							}
 							
 							if(afterSave && (fieldManagement.PostDefault=='false'||StringUtils.isEmpty(fieldManagement.PostDefault))){
 								continue;

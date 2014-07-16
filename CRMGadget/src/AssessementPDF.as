@@ -217,12 +217,22 @@ package
 				// java jdk
 				var file:File = new File("c:/windows/system32/javaw.exe");
 //				file = file.resolvePath("bin/javaw.exe");
+				var os:String = flash.system.Capabilities.os.substr(0, 3);
+				var touchscreenType:String = flash.system.Capabilities.touchscreenType;
+				flash.system.Capabilities.touchscreenType.length;
 				
 				//
-				var jarFile:File =File.applicationDirectory.resolvePath("export_excel.jar");
+				var jarFile:File =null;
 				var arg:Vector.<String> = new Vector.<String>;
-				arg.push("-Djava.library.path="+jarFile.parent.nativePath);
-				arg.push("-jar");
+				if (!(os == "Win")) {
+					jarFile =File.applicationDirectory.resolvePath("export_excel.jar");
+					arg.push("-Djava.library.path="+jarFile.parent.nativePath);
+					arg.push("-jar");
+				} else {
+					jarFile = File.applicationDirectory.resolvePath("exportexcel.sh");
+				}
+				
+				
 				arg.push(File.applicationDirectory.resolvePath("export_excel.jar").nativePath);
 				arg.push(xmlFile.nativePath);
 				var npInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();

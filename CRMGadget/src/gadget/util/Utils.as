@@ -364,6 +364,7 @@ package gadget.util {
 					var fieldInfo:Object = FieldUtils.getField(entity, tmpField.column_name);
 					if(!fieldInfo) continue;
 					var fieldName:String = Utils.convertFldAccTypeToType(entity,fieldInfo.element_name);
+					
 					var fieldManagement:Object = fieldsManagement[fieldName];
 					if(fieldManagement!=null){
 						if(!StringUtils.isEmpty( fieldManagement.DefaultValue )){
@@ -388,6 +389,15 @@ package gadget.util {
 								if (fieldInfo.data_type == "Picklist") {
 									var v:String = PicklistService.getId(entity,fieldInfo.element_name,val,userData==null?"":userData.LanguageCode);
 									val = v == null ? val : v;									
+								}else if (fieldInfo.data_type == "Date/Time") {
+									if(!StringUtils.isEmpty(val)){
+										var dateTimeObject:Date = DateUtils.guessAndParse(val);	
+										if(dateTimeObject!=null){
+											dateTimeObject=new Date(dateTimeObject.getTime()-(DateUtils.getCurrentTimeZone(dateTimeObject)*GUIUtils.millisecondsPerHour));
+											val = DateUtils.format(dateTimeObject, DateUtils.DATABASE_DATETIME_FORMAT);
+										}
+									}
+									
 								}
 								if(val=='-1' && entity==Database.customObject1Dao.entity && fieldInfo.element_name=='CustomInteger0'){
 									val="";
@@ -403,12 +413,15 @@ package gadget.util {
 									if(tempVal=="No Match Row Id"){
 										tempVal ="";//
 									}									
-									if(StringUtils.isEmpty(tempVal)){
-										if(StringUtils.isEmpty(String(enityObject[fieldInfo.element_name]))){
-											enityObject[fieldInfo.element_name] = val;
-										}
+									if(StringUtils.isEmpty(tempVal)){										
+										enityObject[fieldInfo.element_name] = "";										
 									}else{
-										enityObject[fieldInfo.element_name] = tempVal;
+										var oldVal:String = enityObject[fieldInfo.element_name];
+										if(StringUtils.isEmpty(oldVal)){
+											enityObject[fieldInfo.element_name] = tempVal;
+										}
+										
+										
 									}
 								}else{
 									enityObject[fieldInfo.element_name] = val;

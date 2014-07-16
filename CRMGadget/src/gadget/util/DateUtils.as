@@ -189,7 +189,7 @@ package gadget.util {
 		 * @return Parsed date.
 		 */		
 		public static function parse(s:String, format:String):Date {
-			if (s == null) return null;
+			if (StringUtils.isEmpty(s)) return null;
 			format = format.toLowerCase();
 			s = s.toLowerCase();
 			// we keep only the delimiters and get rid of the format code letters

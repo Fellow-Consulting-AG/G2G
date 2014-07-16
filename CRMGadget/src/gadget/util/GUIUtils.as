@@ -735,8 +735,12 @@ package gadget.util
 						var dgCol:DataGridColumn = new DataGridColumn();
 						//var obj:Object = null;
 						
-						var obj:Object = FieldUtils.getField(relation.supportTable, colname);
-						
+						var obj:Object = null;
+						if(relation.supportTable == "Contact.CustomObject2"){
+							obj = FieldUtils.getField(relation.entityDest, colname);
+						}else{
+							obj = FieldUtils.getField(relation.supportTable, colname);
+						}
 //						if(subDao!=null){
 //							obj = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),colname);
 //						}else{
@@ -774,7 +778,12 @@ package gadget.util
 					for each (var field:Object in cfields ){				
 						var dgCol2:DataGridColumn = new DataGridColumn();
 						//var obj2:Object = null;
-						var obj2:Object = FieldUtils.getField(relation.supportTable, field.element_name);
+						var obj2:Object = null;
+						if(relation.supportTable == "Contact.CustomObject2"){
+							obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
+						}else{
+							obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
+						}
 //						if(subDao!=null){
 //							obj2 = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),field.element_name);
 //						}else{

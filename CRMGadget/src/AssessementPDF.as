@@ -13,6 +13,7 @@ package
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 	import flash.filesystem.File;
+	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
@@ -215,21 +216,21 @@ package
 				
 				
 				// java jdk
-				var file:File = new File("c:/windows/system32/javaw.exe");
+				var file:File = null;
 //				file = file.resolvePath("bin/javaw.exe");
 				var os:String = flash.system.Capabilities.os.substr(0, 3);
-				var touchscreenType:String = flash.system.Capabilities.touchscreenType;
-				flash.system.Capabilities.touchscreenType.length;
+				
 				
 				//
 				var jarFile:File =null;
 				var arg:Vector.<String> = new Vector.<String>;
-				if (!(os == "Win")) {
+				if (os == "Win") {
+					file = new File("c:/windows/system32/javaw.exe");
 					jarFile =File.applicationDirectory.resolvePath("export_excel.jar");
 					arg.push("-Djava.library.path="+jarFile.parent.nativePath);
 					arg.push("-jar");
 				} else {
-					jarFile = File.applicationDirectory.resolvePath("exportexcel.sh");
+					file = File.applicationDirectory.resolvePath("exportexcel.sh");
 				}
 				
 				
@@ -255,8 +256,9 @@ package
 		
 		private function exportErrorHandler(e:ProgressEvent):void
 		{
+			var error:String = StringUtil.trim(nativeProcess.standardError.readUTFBytes(nativeProcess.standardError.bytesAvailable));
 			//Alert.show("Error while saving Excel file!", "", Alert.OK, this);
-			throw new RuntimeError("Error while saving Excel file!");
+			throw new RuntimeError(error);
 			
 			
 		}

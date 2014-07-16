@@ -319,8 +319,8 @@
 						//						startTime = getActualDate(new Date(startDate.fullYear, startDate.month, startDate.date, 8));
 						//						endTime =getActualDate( new Date(startDate.fullYear, startDate.month, startDate.date, 17));
 						startTime = new Date(startDate.fullYear, startDate.month, startDate.date, 0);
-						endTime = new Date(startDate.fullYear, startDate.month, startDate.date, 24);
-						endTime.setHours(24);
+						endTime = new Date(startDate.fullYear, startDate.month, startDate.date, 24,0,0,0);
+						//endTime.setHours(24);
 						obj ={
 							summary:activity.Subject ,
 								tooltip:activity.Subject + accountData[0] + accountData[1]  + accountData[2] +accountData[3]+ primaryContact,

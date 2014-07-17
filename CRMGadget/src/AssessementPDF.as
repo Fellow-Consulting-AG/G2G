@@ -209,11 +209,15 @@ package
 //			attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".pdf");
 			return lstTask.length;
 		}
+		private var xlsName:String="";
 		protected function exportToExcel(xmlByte:ByteArray):void{
 			try{			
-				
-				var xmlFile:File =Utils.writeFile( model.assessmentModel + "_" + accName + DateUtils.getCurrentDateAsSerial() +".xml",xmlByte); // generate pdf
-				
+				var name:String = model.assessmentModel + "_" + accName + DateUtils.getCurrentDateAsSerial();
+
+				//var xmlFile:File =Utils.writeFile( model.assessmentModel + "_" + accName + DateUtils.getCurrentDateAsSerial() +".xml",xmlByte); // generate pdf
+				var xmlFile:File =Utils.writeFile( name +".xml",xmlByte); // generate pdf
+				xlsName = xmlFile.nativePath.replace(".xml" , ".xlsx");
+
 				
 				// java jdk
 				var file:File = null;
@@ -267,9 +271,10 @@ package
 		private function onStandardOutputData(e:ProgressEvent):void{
 			try
 			{
-				var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
+				//var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
 				//trace(content);
-				var file:File = new File(fileName);
+				//var file:File = new File(fileName);
+				var file:File = new File(xlsName);
 				//	var file:File =new File(content); // generate pdf
 				file.openWithDefaultApplication();
 				attachPDFToAppointment(file,file.name);	

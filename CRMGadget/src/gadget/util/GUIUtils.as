@@ -709,15 +709,11 @@ package gadget.util
 			var contextMenuFunction:Function;
 			var isCreate:Boolean = detail.create;
 			if(cfields == null || cfields.length < 1){
-				// default layout
-				var obj:Object = detail.list.filter;
-				var type:String = "Default";
-				if(obj!=null){
-					type = obj.type;
-				}
-				cfields = Database.columnsLayoutDao.getColumnLayout(relation.supportTable,type);
+				
+				cfields = Database.columnsLayoutDao.getColumnLayout(relation.supportTable,'0');
+				
 				if(cfields == null || cfields.length < 1){
-					cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,type);
+					cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,'0');
 				}
 			}
 			

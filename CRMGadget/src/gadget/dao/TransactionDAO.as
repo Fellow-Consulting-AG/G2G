@@ -35,6 +35,7 @@ package gadget.dao
 		private var stmtSetDefaultFilter:SQLStatement;
 		private var stmtUpdateAllField:SQLStatement;
 		private var stmtUpdateSyncOrder:SQLStatement;
+		private var stmtUpdSortCol:SQLStatement;
 		public function TransactionDAO(sqlConnection:SQLConnection) {
 			//super(sqlConnection);
 			stmtInsert = new SQLStatement();
@@ -45,6 +46,11 @@ package gadget.dao
 				", advanced_filter, hide_relation ,parent_entity,column_order,order_type) VALUES (:entity, :enabled, :display_name,:display, :filter_id, :default_filter, :sync_ws20, :sync_activities, :sync_attachments, :rank, :read_only, " +
 				" :filter_disable, :read_only_disable, :sync_activities_disable, :sync_attachments_disable, :entity_disable,:sync_order,:authorize_deletion" +
 				",:authorize_deletion_disable,:advanced_filter,:hide_relation,:parent_entity,:column_order,:order_type)";
+			
+			stmtUpdSortCol = new SQLStatement();
+			stmtUpdSortCol.sqlConnection = sqlConnection;
+			stmtUpdSortCol.text = "UPDATE transactions SET column_order = :column_order, order_type = :order_type WHERE entity = :entity";
+
 			
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
@@ -97,6 +103,12 @@ package gadget.dao
 			exec(stmtUpdateSyncOrder);
 		}
 		
+		public function updateSortCol(transaction:Object):void{
+			stmtUpdSortCol.parameters[":column_order"]=transaction.column_order;
+			stmtUpdSortCol.parameters[":order_type"]=transaction.order_type;
+			stmtUpdSortCol.parameters[":entity"]=transaction.entity;
+			exec(stmtUpdSortCol);
+		}
 		
 		
 		// why is there updateAllField and update ????

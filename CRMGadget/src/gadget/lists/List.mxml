@@ -41,6 +41,8 @@
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
 			import mx.containers.Canvas;
 			import mx.controls.Alert;
 			import mx.controls.Button;
@@ -147,6 +149,8 @@
 			public var visibleHomeTask:Boolean = false;
 			[Bindable] public var backHistory:Object;
 			[Bindable]private var isLstVisibleHomeTask:Boolean;
+			private var mapSortColHeader:Object = new Object();
+			
 			//Bug #1728 CRO
 			public function showListTasks():void{
 				homeTask.visible = false;
@@ -185,7 +189,32 @@
 				return ObjectUtil.numericCompare(parseFloat(obj1[sortedColumn]),parseFloat(obj2[sortedColumn]));
 			}
 			public function eventSortClick(event:AdvancedDataGridEvent):void{
+		
 				sortedColumn = event.dataField;
+				//#7694 CRO
+				var sortValue:String = mapSortColHeader[sortedColumn];
+				var obj:Object = Database.transactionDao.find(entity);
+				var col:AdvancedDataGridColumn = list.columns[event.columnIndex] as AdvancedDataGridColumn;
+				if(obj != null && !StringUtils.isEmpty(obj.column_order) && obj.column_order == sortedColumn && sortValue == null){
+					mapSortColHeader[sortedColumn]=  obj.order_type;
+				}
+				if(mapSortColHeader[sortedColumn] == null){
+					mapSortColHeader[sortedColumn]= "ASC";
+				}else if( mapSortColHeader[sortedColumn] != null && obj != null && sortedColumn == obj.column_order){
+					if(mapSortColHeader[sortedColumn] == "ASC"){
+						mapSortColHeader[sortedColumn]= "DESC";
+					}else{
+						mapSortColHeader[sortedColumn]= "ASC";
+					}
+				}
+				if(obj == null){
+					obj = new Object();
+				}
+				obj.order_type = mapSortColHeader[sortedColumn];
+				obj.column_order = sortedColumn;
+				obj.entity = entity;
+				Database.transactionDao.updateSortCol(obj);
+				
 			}
 			private function sortDateTime(obj1:Object, obj2:Object):int
 			{
@@ -385,6 +414,10 @@
 						}
 					}
 					
+				}
+				var obj:Object = Database.transactionDao.find(entity);
+				if(obj.column_order !=null){
+					order_by = " " + obj.column_order + " " + obj.order_type;
 				}
 				
 				// SC20110613
@@ -1303,6 +1336,7 @@
 			}
 			
 			public function initGridColumns():void{
+				var sort:Sort = new Sort();
 				//bug #1679 CRO add new tab
 				if(MainWindow.mapCustomTab[entity] != null) return ;
 				//VAHI emergency bugfix
@@ -1361,7 +1395,15 @@
 					}
 					if (field.element_name == 'CustomText31' || field.element_name == 'ParentActivityId') {
 						ParentActivityIdFound = true;
-					}		
+					}	
+					//#7694 CRO
+					var obj:Object = Database.transactionDao.find(entity);
+					if(obj.column_order !=null && obj.column_order == field.element_name ){
+						var sortField:SortField = new SortField(obj.column_order, true, obj.order_type == "ASC" ? false : true);
+						sort.fields =[sortField];
+						list.dataProvider.sort = sort;
+					}
+					
 					columns.push(child);
 				}
 				
@@ -1385,6 +1427,7 @@
 				list.columns = columns;
 				list.validateNow();
 				computeColumnList();
+				
 			}
 			
 			private function editableGrid(editable:Boolean):void{
@@ -1955,9 +1998,10 @@
 							<mx:Button icon="@Embed('/assets/search.png')" id="btnAdvanceSearch" toolTip="{i18n._('GLOBAL_ADVANCE_SEARCH')}" click="advanceSearch();" paddingLeft="0" paddingRight="0"/>
 						</mx:HBox>
 						<mx:HBox width="100%" height="100%" horizontalGap="0" verticalAlign="middle">
-							<mx:AdvancedDataGrid headerShift="headerShiftHandler(event)" columnStretch="columnStretchHandler(event)" id="list" 
+							<mx:AdvancedDataGrid sort="eventSortClick(event)" headerShift="headerShiftHandler(event)" columnStretch="columnStretchHandler(event)" id="list" 
 												 change="onGridChange()"
-												 sortExpertMode="true" doubleClickEnabled="true" doubleClick="editScreenDetail(list.selectedItem)" 
+												 sortExpertMode="true"
+												 doubleClickEnabled="true" doubleClick="editScreenDetail(list.selectedItem)" 
 												 dataProvider="{records}" variableRowHeight="true"
 												 defaultLeafIcon="{null}" displayItemsExpanded="true"
 												 width="100%" height="100%"/>

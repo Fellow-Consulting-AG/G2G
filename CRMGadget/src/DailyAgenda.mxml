@@ -241,7 +241,15 @@
 				var min:int=n%3600;
 				var hour:int=(n-min)/3600;
 				var realMin:int = min/60;
-				return hour+"h "+realMin+" min";
+				if(hour>0){
+					if(realMin>0){
+						return hour+"h "+realMin+" min";
+					}else{
+						return hour+"h";
+					}
+				}
+				
+				return realMin+" min";
 				
 				
 			}

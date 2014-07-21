@@ -117,6 +117,7 @@
 									<mx:Label text="{i18n._(DATESETPANEL_LABEL_TEXT_START_TIME)}" />
 									<mx:Label text="" />
 									<mx:Label text="{i18n._(DATESETPANEL_LABEL_TEXT_SUBJECT)}" width="100%" />
+									<mx:Label text="Km/Time" />
 									<mx:Label text="{i18n._(DATESETPANEL_LABEL_TEXT_MARKER)}" />
 								</mx:HBox>
 							</mx:Component>
@@ -140,6 +141,7 @@
 									<mx:Label text="{getLabelTime(data.StartTime)}" />
 									<mx:Image source="{data.icon}" />
 									<mx:Label text="{StringUtils.reduceTextLength(data.Subject,25)}" width="100%" />
+									<mx:Label id="duration" text="{data.duration}" />
 									<mx:Label id="markLabel" text="{data.mark}" />
 								</mx:HBox>
 							</mx:Component>

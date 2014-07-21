@@ -26,6 +26,8 @@ package gadget.util
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.events.ResizeEvent;
+	import mx.rpc.events.ResultEvent;
+	import mx.rpc.http.HTTPService;
 	
 	public class MapUtils
 	{
@@ -281,7 +283,15 @@ package gadget.util
 			return strHTML;
 		}
 		
-		
+		public static function getDuration(original:String, destination:String,callBack:Function):void{
+			var url:String = "http://maps.googleapis.com/maps/api/distancematrix/json?origins="+encodeURI(original)+"&destinations="+encodeURI(destination)+"&mode=driving&sensor=false";
+			trace("url request driving mode:" + url);
+			var service:HTTPService = new HTTPService();
+			service.url = url;
+			service.addEventListener(ResultEvent.RESULT, callBack);
+			service.send();
+			
+		}
 		/**
 		 * Generate String HTML to Build Map
 		 * 

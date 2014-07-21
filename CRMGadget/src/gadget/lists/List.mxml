@@ -1399,7 +1399,7 @@
 					//#7694 CRO
 					var obj:Object = Database.transactionDao.find(entity);
 					if(obj.column_order !=null && obj.column_order == field.element_name ){
-						var sortField:SortField = new SortField(obj.column_order, true, obj.order_type == "ASC" ? false : true);
+						var sortField:SortField = new SortField(obj.column_order, false, obj.order_type == "ASC" ? false : true);
 						sort.fields =[sortField];
 						list.dataProvider.sort = sort;
 					}

@@ -227,10 +227,25 @@
 			}
 			private function setDefaultDataGrid():void {
 				if(dateSetPanel.dataProvider.length > 0) {
-					dateSetPanel.tileList.selectedIndex = 0;
+					if(selectedIndex!=-1 && selectedIndex<dateSetPanel.dataProvider.length){
+						dateSetPanel.tileList.selectedIndex = selectedIndex;
+					}else{
+						dateSetPanel.tileList.selectedIndex = 0;	
+					}
+					
 					itemClickHandler(null);
 				}
 			}
+			
+			protected function getDuration(n:Number):String{
+				var min:int=n%3600;
+				var hour:int=(n-min)/3600;
+				var realMin:int = min/60;
+				return hour+"h "+realMin+" min";
+				
+				
+			}
+			
 			private function onDirLoad(event:ResultEvent,startAddress:String,dataSource:ArrayCollection,count:int):void{
 				try {
 					
@@ -245,8 +260,8 @@
 							
 							if(elements != null){
 								var distance:Object = elements.distance;
-								var duration:Object = elements.duration;
-								activity.duration = distance.text +"/" + duration.text;
+								var duration:Object = elements.duration;								
+								activity.duration = distance.text +"/" + getDuration(duration.value);
 							}
 							
 						}
@@ -314,6 +329,10 @@
 				return field == null ? "" : field.display_name;
 			}
 			private function refreshLayout(item:Object):void{
+				
+				if(item.gadget_type!=Database.activityDao.entity){
+					return;
+				}
 				clearData();
 				detailPanel.title = item.Subject;
 				detailPanel.toolTip = item.Subject
@@ -327,6 +346,7 @@
 				if(column0s.length == 0 ){
 					column0s = FieldUtils.ACTIVITY_DEFAULT_DAILY_AGENDA;
 				}
+				
 				for each(var activityField:Object in column0s){
 					var formItemActivity:FormItem = new FormItem();
 					formItemActivity.label = activityField.display_name == null ? getDisplayName(activityField,Database.activityDao.entity) : activityField.display_name;
@@ -438,7 +458,15 @@
 			
 			private function itemClickHandler(event:ListEvent):void{
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_ASSESSMENT_SCRIPT))visibleSurvey = true;
-				var item:Object = event != null ? event.itemRenderer.data : dateSetPanel.dataProvider.getItemAt(0);
+				var item:Object =null;
+				if(event!=null){
+					item=event.itemRenderer.data;
+				}else{
+					item = dateSetPanel.tileList.selectedItem;
+					if(item==null && dateSetPanel.dataProvider.length>0){
+						item = dateSetPanel.dataProvider.getItemAt(0);
+					}
+				}				
 				selectedItem = item;
 				refreshLayout(item);
 			}
@@ -479,9 +507,11 @@
 				var date:Date = dateSetPanel.getDataLabel() as Date;
 				date.setDate(date.getDate() + 0);
 				reloadData(date);
-				dateSetPanel.tileList.selectedIndex = selectedIndex;
-				selectedItem = item;
-				refreshLayout(item);
+//				dateSetPanel.tileList.selectedIndex = selectedIndex;
+//				if(item.gadget_type==Database.activityDao.entity){
+//					selectedItem = item;
+//				}
+				//refreshLayout(selectedItem);
 				
 			}
 			

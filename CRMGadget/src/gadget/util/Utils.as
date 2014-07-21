@@ -2137,7 +2137,9 @@ package gadget.util {
 			dao.delete_all();
 			commitObjects(dao,xml.elements("conditions").children());
 			
-			
+			dao = Database.dailyAgendaColumnLayoutDao;
+			dao.delete_all();
+			commitObjects(dao,xml.elements("dailyAgendaLayouts").children());
 				
 			if(reload!=null) reload();
 			

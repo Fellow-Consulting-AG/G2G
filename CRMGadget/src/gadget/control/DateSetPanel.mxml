@@ -103,7 +103,7 @@
 					<mx:DataGridColumn>
 						<mx:headerRenderer>
 							<mx:Component>
-								<mx:HBox paddingLeft="8" horizontalGap="20">
+								<mx:HBox paddingLeft="8" horizontalGap="20" horizontalScrollPolicy="off">
 									<mx:Script>
 										<![CDATA[
 											import gadget.i18n.i18n;
@@ -124,7 +124,7 @@
 						</mx:headerRenderer>
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:HBox paddingLeft="8" horizontalGap="20">
+								<mx:HBox paddingLeft="8" horizontalGap="20" horizontalScrollPolicy="off">
 									<mx:Script>
 										<![CDATA[
 											import gadget.util.DateUtils;
@@ -140,7 +140,7 @@
 									</mx:Script>
 									<mx:Label text="{getLabelTime(data.StartTime)}" />
 									<mx:Image source="{data.icon}" />
-									<mx:Label text="{StringUtils.reduceTextLength(data.Subject,25)}" width="100%" />
+									<mx:Label text="{StringUtils.reduceTextLength(data.Subject,11)}" width="100%" toolTip="{data.Subject}" />
 									<mx:Label id="duration" text="{data.duration}" />
 									<mx:Label id="markLabel" text="{data.mark}" />
 								</mx:HBox>

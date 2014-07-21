@@ -1343,6 +1343,7 @@
 						<custom_field_trans/>
 						<sql_filter_criterias/>
 						<conditions/>
+						<dailyAgendaLayouts/>
 					</configuration>;
 				
 				for each(var obj:Object in Database.industryDAO.getDifferenceLanguage()) {
@@ -1804,6 +1805,7 @@
 					generateXML(configXml.elements("custom_field_trans"),"custom_field_tran",Database.customFieldTranslatorDao.fetch());
 					generateXML(configXml.elements("sql_filter_criterias"),"sql_filter_criteria",Database.sqlListDAO.fetch());
 					generateXML(configXml.elements("conditions"),"condition",Database.customLayoutConditionDAO.fetch());
+					generateXML(configXml.elements("dailyAgendaLayouts"),"dailyAgendaLayout",	Database.dailyAgendaColumnLayoutDao.fetch());				
 					
 					
 				}

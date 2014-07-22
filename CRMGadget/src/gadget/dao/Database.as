@@ -182,6 +182,12 @@ package gadget.dao {
 		private var _subColumnLayoutDao:SubColumnLayoutDAO;
 		private var _timeZoneDao:TimeZoneDAO;
 		private var _customObject2ContactDao:CustomObject2ContactDAO;
+		private  var _sortColumnDao:SortColumnDAO;
+		
+		public static function get sortColumnDao():SortColumnDAO
+		{
+			return database._sortColumnDao;
+		}
 		
 		public static function get customObject2ContactDao():CustomObject2ContactDAO
 		{
@@ -1602,6 +1608,7 @@ package gadget.dao {
 			
 			_relatedButtonDAO = new RelatedButtonDAO(_sqlConnection);
 			
+			_sortColumnDao = new SortColumnDAO(_sqlConnection, _work);
 		}
 		
 		

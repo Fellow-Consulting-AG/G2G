@@ -195,7 +195,7 @@
 				sortedColumn = event.dataField;
 				//#7694 CRO
 				var sortValue:String = mapSortColHeader[sortedColumn];
-				var obj:Object = Database.transactionDao.find(entity);
+				var obj:Object = Database.sortColumnDao.find(entity);
 				var col:AdvancedDataGridColumn = list.columns[event.columnIndex] as AdvancedDataGridColumn;
 				if(obj != null && !StringUtils.isEmpty(obj.column_order) && obj.column_order == sortedColumn && sortValue == null){
 					mapSortColHeader[sortedColumn]=  obj.order_type;
@@ -215,7 +215,7 @@
 				obj.order_type = mapSortColHeader[sortedColumn];
 				obj.column_order = sortedColumn;
 				obj.entity = entity;
-				Database.transactionDao.updateSortCol(obj);
+				Database.sortColumnDao.replace(obj);
 				
 			}
 			private function sortDateTime(obj1:Object, obj2:Object):int
@@ -417,8 +417,8 @@
 					}
 					
 				}
-				var obj:Object = Database.transactionDao.find(entity);
-				if(obj.column_order !=null){
+				var obj:Object = Database.sortColumnDao.find(entity);
+				if(obj != null && !StringUtils.isEmpty(obj.column_order)){
 					order_by = " " + obj.column_order + " " + obj.order_type;
 				}
 				
@@ -1399,8 +1399,10 @@
 					if (field.element_name == 'CustomText31' || field.element_name == 'ParentActivityId') {
 						ParentActivityIdFound = true;
 					}	
-					
-					if(obj.column_order !=null && obj.column_order == field.element_name ){
+
+					//#7694 CRO
+					var obj:Object = Database.sortColumnDao.find(entity);
+					if(obj != null && !StringUtils.isEmpty(obj.column_order) && obj.column_order == field.element_name ){
 						var sortField:SortField = new SortField(obj.column_order, true, obj.order_type == "ASC" ? false : true);
 						sort.fields =[sortField];
 //						list.dataProvider.sort = sort;

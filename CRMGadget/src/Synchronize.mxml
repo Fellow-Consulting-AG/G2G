@@ -178,12 +178,13 @@
 			private function dosync():void{
 					
 				if(mainWindow.syncProcess!=null && mainWindow.syncProcess.finished && !mainWindow.syncProcess.isStopped){
-					mainWindow.syncProcess = new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected,false,null,checkObjects);	
+					
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CHECK_CONFLICTS,0)){
+						mainWindow.syncProcess = new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected,false,null,checkObjects);	
 						syncProgressBar.value=0;
 						mainWindow.syncProcess.bindFunctions(logInfo, null, logCount, syncEvent, [checkConflicts,initButtons], mainWindow.fieldComplete);											
 					}else{
-						
+						mainWindow.syncProcess = new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected,false);	
 						mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent, [mainWindow.syncEnd, initButtons], mainWindow.fieldComplete);
 						
 					}

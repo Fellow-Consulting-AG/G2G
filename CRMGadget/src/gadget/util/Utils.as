@@ -1623,6 +1623,9 @@ package gadget.util {
 							subObj.entity_name = 'Activity.Contact';
 						}
 						subObj.syncable=Database.getSubSyncable(subObj.entity,subObj.entity_name);
+						if(StringUtils.isEmpty(subObj.entity_name)){
+							subObj.entity_name = Database.getSubEntityName(subObj.entity,subObj.sub,subObj.sodname);
+						}
 						
 					});
 					

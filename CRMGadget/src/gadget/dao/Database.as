@@ -3012,6 +3012,21 @@ package gadget.dao {
 			return false;
 		}
 		
+		public static function getSubEntityName(parentEntity:String,name:String,sodName:String):String{
+			for each(var obj:Object in SUB_TRANSACTIONS){
+				if(obj.entity==parentEntity){
+					for each(var sub:Object in obj.sub){
+						if(sub.name==name && sub.sodname==sodName){
+							return sub.entity_name;
+						}
+					}
+					
+				}
+			}
+			//default entity name is sodName
+			return sodName;
+		}
+		
 		private static const SUB_TRANSACTIONS:Array = [
 			{entity:"Account",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},

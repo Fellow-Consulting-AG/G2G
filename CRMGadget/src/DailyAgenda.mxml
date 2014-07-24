@@ -212,7 +212,7 @@
 					//A->B, if have more thant 2 point of map
 					var orignal:Object = dataSource.getItemAt(0);
 					var activity:Object = dataSource.getItemAt(1);
-					MapUtils.getDuration(orignal.address,activity.address,function (event:ResultEvent):void{ onDirLoad(event,activity.address,dataSource,1)});
+					MapUtils.getDuration(orignal.address,activity.address,function (event:Event):void{ onDirLoad(event,activity.address,dataSource,1)});
 				}else{
 					loadDataGrid(dataSource);
 				}
@@ -222,7 +222,7 @@
 			private function loadDataGrid(dataSource:ArrayCollection):void {
 				dateSetPanel.vs.selectedIndex = dataSource.length > 0 ? 0 : 1; // 0 = DataGrid to display data, 1 = HBox 'No appointment'
 				dateSetPanel.dataProvider = dataSource;
-				
+				dateSetPanel.refreshTotal();
 				setDefaultDataGrid();
 			}
 			private function setDefaultDataGrid():void {
@@ -237,46 +237,35 @@
 				}
 			}
 			
-			protected function getDuration(n:Number):String{
-				var min:int=n%3600;
-				var hour:int=(n-min)/3600;
-				var realMin:int = min/60;
-				if(hour>0){
-					if(realMin>0){
-						return hour+"h "+realMin+" min";
-					}else{
-						return hour+"h";
-					}
-				}
-				
-				return realMin+" min";
-				
-				
-			}
+		
 			
-			private function onDirLoad(event:ResultEvent,startAddress:String,dataSource:ArrayCollection,count:int):void{
+			private function onDirLoad(event:Event,startAddress:String,dataSource:ArrayCollection,count:int):void{
 				try {
-					
-					var activity:Object = dataSource.getItemAt(count);
-					var json:Object = JSON.decode(event.result as String);
-					//trace("url request driving status:" + json.status);
-					//trace(json.toString());
-					if(json.status == "OK"){
-						var rows:Object = json.rows;
-						if(rows != null){
-							var elements:Object = rows[0].elements[0];
-							
-							if(elements != null){
-								var distance:Object = elements.distance;
-								var duration:Object = elements.duration;								
-								activity.duration = distance.text +"/" + getDuration(duration.value);
+					if(event is ResultEvent){
+						var rsEvent:ResultEvent = event as ResultEvent;
+						var activity:Object = dataSource.getItemAt(count);
+						var json:Object = JSON.decode(rsEvent.result as String);
+						//trace("url request driving status:" + json.status);
+						//trace(json.toString());
+						if(json.status == "OK"){
+							var rows:Object = json.rows;
+							if(rows != null){
+								var elements:Object = rows[0].elements[0];
+								
+								if(elements != null){
+//									var distance:Object = elements.distance;
+//									var duration:Object = elements.duration;								
+									//activity.duration = distance.text +"/" + getDuration(duration.value);
+									activity.mapDistance=elements;
+								}
+								
+								
 							}
 							
+							
+							//						var region:String = json.results[0].address_components[0].short_name;
+							
 						}
-						
-						
-						//						var region:String = json.results[0].address_components[0].short_name;
-						
 					}
 					count++;
 					if(count == dataSource.length){

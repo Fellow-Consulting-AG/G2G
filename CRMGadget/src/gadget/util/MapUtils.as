@@ -22,10 +22,13 @@ package gadget.util
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
+	import gadget.dao.Database;
+	
 	import mx.controls.HTML;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.events.ResizeEvent;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 	
@@ -284,11 +287,12 @@ package gadget.util
 		}
 		
 		public static function getDuration(original:String, destination:String,callBack:Function):void{
-			var url:String = "http://maps.googleapis.com/maps/api/distancematrix/json?origins="+encodeURI(original)+"&destinations="+encodeURI(destination)+"&mode=driving&sensor=false";
+			var url:String = "http://maps.googleapis.com/maps/api/distancematrix/json?origins="+encodeURI(original)+"&destinations="+encodeURI(destination)+"&mode=driving&sensor=false&language=en";
 			trace("url request driving mode:" + url);
 			var service:HTTPService = new HTTPService();
 			service.url = url;
 			service.addEventListener(ResultEvent.RESULT, callBack);
+			service.addEventListener(FaultEvent.FAULT,callBack);
 			service.send();
 			
 		}

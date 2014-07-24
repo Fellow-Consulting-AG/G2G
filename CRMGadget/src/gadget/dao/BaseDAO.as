@@ -326,6 +326,27 @@ package gadget.dao
 		}
 		
 		
+		public function deleteOnlyRecordeNotErrorByParent(criteria:Object):void{
+			var where:String="";			
+			
+			var col:String="";			
+			var query:String = "DELETE FROM "+tableName ;
+			stmtDeletedByParentId = new SQLStatement();
+			stmtDeletedByParentId.sqlConnection = sqlConnection;
+			
+			for(col in criteria){
+				where+=" AND " + col +"= :"+col;
+				stmtDeletedByParentId.parameters[':'+col] = criteria[col];
+			}
+			where+=" AND (error = 0 OR error IS null) "
+			
+			where=where!="" ? " WHERE "+where.substr(5) : "";
+			
+			query = query + where;
+			stmtDeletedByParentId.text=query;
+			exec(stmtDeletedByParentId);
+		}
+		
 		
 		public function deleteByParentId(criteria:Object):void{
 			var where:String="";			

@@ -412,17 +412,32 @@ package gadget.util {
 									}
 									if(tempVal=="No Match Row Id"){
 										tempVal ="";//
-									}									
-									if(StringUtils.isEmpty(tempVal)){										
-										enityObject[fieldInfo.element_name] = "";										
-									}else{
-										var oldVal:String = enityObject[fieldInfo.element_name];
-										if(StringUtils.isEmpty(oldVal)){
-											enityObject[fieldInfo.element_name] = tempVal;
+									}	
+									if(entity==Database.activityDao.entity && fieldInfo.element_name=='CompletedDatetime'){
+										
+										if(StringUtils.isEmpty(tempVal)){										
+											enityObject[fieldInfo.element_name] = "";										
+										}else{
+											var oldVal:String = enityObject[fieldInfo.element_name];
+											if(StringUtils.isEmpty(oldVal)){
+												enityObject[fieldInfo.element_name] = tempVal;
+											}
+											
+											
 										}
 										
-										
+									}else{
+										if(fieldManagement.ReadOnly=='true'){
+											enityObject[fieldInfo.element_name] = tempVal;
+										}else{
+											var oldVal:String = enityObject[fieldInfo.element_name];
+											if(StringUtils.isEmpty(oldVal)){
+												enityObject[fieldInfo.element_name] = tempVal;
+											}
+										}
 									}
+									
+									
 								}else{
 									enityObject[fieldInfo.element_name] = val;
 								}

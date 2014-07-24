@@ -53,6 +53,7 @@
 			import mx.controls.TextInput;
 			import mx.controls.ToggleButtonBar;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.AdvancedDataGridEvent;
 			import mx.events.CloseEvent;
 			import mx.events.IndexChangedEvent;
@@ -336,6 +337,8 @@
 				if(entity == MainWindow.DAILY_AGENDA){
 					var adc:DisplayObject = boxList.getChildAt(0);
 					if(adc!=null && adc is DailyAgenda){
+						var colTitle:DataGridColumn =DailyAgenda(adc).dateSetPanel.tileList.columns[0] as DataGridColumn;
+						colTitle.headerRenderer = colTitle.headerRenderer;
 						DailyAgenda(adc).loadDataOfSelectedDate();
 					}
 				}else{
@@ -1390,7 +1393,7 @@
 				child.editable = false;
 				columns.push(child);
 				//#7694 CRO
-				var obj:Object = Database.transactionDao.find(entity);
+				var obj:Object = Database.sortColumnDao.find(entity);
 				for each (var field:Object in fieldsDB){
 					child = createColumn(field,displayDataTime,displayPicklistValue,editable);
 					if (field.element_name == 'Subject') {
@@ -1399,9 +1402,7 @@
 					if (field.element_name == 'CustomText31' || field.element_name == 'ParentActivityId') {
 						ParentActivityIdFound = true;
 					}	
-
-					//#7694 CRO
-					var obj:Object = Database.sortColumnDao.find(entity);
+					
 					if(obj != null && !StringUtils.isEmpty(obj.column_order) && obj.column_order == field.element_name ){
 						var sortField:SortField = new SortField(obj.column_order, true, obj.order_type == "ASC" ? false : true);
 						sort.fields =[sortField];

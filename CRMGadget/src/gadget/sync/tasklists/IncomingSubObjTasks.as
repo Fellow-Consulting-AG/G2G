@@ -3,6 +3,7 @@ package gadget.sync.tasklists {
 	import gadget.sync.WSProps;
 	import gadget.sync.incoming.IncomingAttachment;
 	import gadget.sync.incoming.IncomingSubActivity;
+	import gadget.sync.incoming.IncomingSubContact;
 	import gadget.sync.incoming.IncomingSubobjects;
 	import gadget.sync.incoming.ScoopObjectActivity;
 	import gadget.sync.incoming.WebServiceIncoming;
@@ -16,15 +17,18 @@ package gadget.sync.tasklists {
 		var subSync:Array = new Array();
 		var list:ArrayCollection = Database.transactionDao.listEnabledTransaction();
 		
-		var isAddSub:Boolean = true;
+		var syncContactAccount:Boolean = false;
+		var syncContactC02:Boolean = false;
+		
 		for each(var o:Object in list){
 			
-			if(isAddSub && (o.entity == "Contact" || o.entity == "Account")){
-				subSync.push(new IncomingSubobjects("Contact","Account"));
-				isAddSub = false;
+			if(o.entity == "Account"){				
+				syncContactAccount=true;	
 			}
 			if(o.entity == "Contact"){
-				subSync.push(new IncomingSubobjects("Contact","Custom Object 2"));
+				syncContactAccount=true;
+				syncContactC02=true;
+				
 			}
 			//sub
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
@@ -58,7 +62,16 @@ package gadget.sync.tasklists {
 						subSync.push(new IncomingSubobjects(subObj.entity,subObj.sodname));
 				}
 			}
+			
 		}		
+		
+		if(syncContactAccount){
+			subSync.push(new IncomingSubContact("Account","Contact"));
+		}
+		if(syncContactC02){
+			subSync.push(new IncomingSubContact("Contact","Custom Object 2"));
+		}
+		
 		return subSync;
 		
 		

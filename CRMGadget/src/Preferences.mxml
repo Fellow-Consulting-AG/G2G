@@ -129,11 +129,13 @@
 				//----------------------------
 				var separator:String = preferences.cvs_separator;
 				var googleMapAddress:String = preferences.google_map_address;
+				var googleMapDistance:String = Database.preferencesDao.getGoolgeMapDistance();
 				if(separator== null || separator == ''){
 					separator = ',';
 				}
 				cboSeparator.selectedIndex = CalculatedField.getComboSelectedIndex(cboSeparator, separator);
 				cboGoogleMapAddress.selectedIndex = CalculatedField.getComboSelectedIndex(cboGoogleMapAddress, googleMapAddress==null? MapUtils.SHIPPING_ADDRESS:googleMapAddress);
+				cboGoogleMapDistance.selectedIndex = CalculatedField.getComboSelectedIndex(cboGoogleMapDistance, googleMapDistance);
 				
 				important_length.selectedIndex = CalculatedField.getComboSelectedIndex(important_length,preferences.important_length);
 				recent_filter.selectedIndex = CalculatedField.getComboSelectedIndex(recent_filter,preferences.recent_filter);
@@ -925,6 +927,7 @@
 				preferences.ms_password = ms_pwd.text;
 				preferences.cvs_separator = cboSeparator.selectedItem==null?',':cboSeparator.selectedItem.data;
 				preferences.google_map_address = cboGoogleMapAddress.selectedItem==null?'':cboGoogleMapAddress.selectedItem.data;
+				preferences[PreferencesDAO.GOOGLE_MAP_DISTANCE] = cboGoogleMapDistance.selectedItem==null?'metric':cboGoogleMapDistance.selectedItem.data;
 				preferences.tech_username = tech_username.text;
 				preferences.tech_password = tech_password.text;
 				preferences.important_length = important_length.selectedItem==null?'10':important_length.selectedItem.data;
@@ -2472,6 +2475,10 @@
 				{label:i18n._('SHIPPING_ADDRESS'),data:MapUtils.SHIPPING_ADDRESS},
 				{label:i18n._('BILLING_ADDRESS'),data:MapUtils.BILLING_ADDRESS}
 			]);
+			[Bindable] public static var dataGoogleMapDistance:ArrayCollection = new ArrayCollection([
+				{label:i18n._('KILOMETER@km'),data:"metric"},
+				{label:i18n._('MILES@miles'),data:"imperial"}
+			]);
 			
 			[Bindable] public static var dataSeparator:ArrayCollection = new ArrayCollection([
 				{label:",",data:","},
@@ -2880,7 +2887,10 @@
 												<mx:Label  text="{i18n._('GOOGLE_MAP_ADDRESS')}"/>
 												<mx:ComboBox id="cboGoogleMapAddress" dataProvider="{dataGoogleMapAddress}" width="150"/>
 											</mx:HBox>
-											
+											<mx:HBox width="100%">
+												<mx:Label  text="{i18n._('GOOGLE_MAP_DISTANCE@Google Map Distance')}"/>
+												<mx:ComboBox id="cboGoogleMapDistance" dataProvider="{dataGoogleMapDistance}" width="150"/>
+											</mx:HBox>
 											
 											<mx:HBox width="100%">
 												<mx:Label  text="{i18n._('RECENT_FILTER_IN_DAYS')}"/>

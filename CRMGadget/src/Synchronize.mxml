@@ -239,6 +239,7 @@
 			
 			var credential:Credential = new Credential(preference.sodhost, preference.sodlogin, "CRM Gadget");
 			license = new LicenseManager(credential);
+			var window:Synchronize = this;
 			license.isValid(function(valid:Boolean):void {
 				if(valid) {
 					new CacheUtils("right").clear();
@@ -283,7 +284,7 @@
 					//CR #5610 CRO
 				    var errorEmail:String = Database.preferencesDao.getStrValue(PreferencesDAO.ERROR_EMAIL,"");
 					if(StringUtils.isEmpty(errorEmail)){
-						Alert.show(i18n._('NO_EMAIL_ADDRESS_FOR_SENDING_PLEASE_CONTACT_YOUR_ADMINISTRATOR'), "", Alert.OK, this);
+						Alert.show(i18n._('NO_EMAIL_ADDRESS_FOR_SENDING_PLEASE_CONTACT_YOUR_ADMINISTRATOR'), "", Alert.OK, window);
 					}else{
 						var dtoMail:DtoMail = new DtoMail(errorEmail, i18n._("LICENSE_ACTIVATION"), body);
 						var mail:SendMail = new SendMail(dtoMail);

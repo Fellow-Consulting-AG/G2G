@@ -31,6 +31,8 @@ package gadget.util {
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
+	import flashx.textLayout.formats.Float;
+	
 	import gadget.control.AutoComplete;
 	import gadget.control.LoadingIndicator;
 	import gadget.dao.AllUsersDAO;
@@ -1523,6 +1525,15 @@ package gadget.util {
 		}
 		
 		public static function importConfig(xml:XML,prefsXMLList:Function=null,mapValueWithControls:Function=null,reload:Function=null,dialog:Window=null):void{
+			var strV:String = checkNullValue(xml.elements("application-version"),"0");
+			strV = strV.replace(".","");
+			var vN:int = parseInt(strV);
+			if(vN<=1322){//old xml if version less than 1.322
+				importOldConfig(xml,prefsXMLList,mapValueWithControls,reload,dialog);
+				return;
+			}
+			
+			
 			if(dialog != null)dialog.close();
 			Database.begin();
 			//xml.toString()
@@ -2426,5 +2437,584 @@ package gadget.util {
 		}
 
 		
+	
+	
+	private static function importOldConfig(xml:XML,prefsXMLList:Function=null,mapValueWithControls:Function=null,reload:Function=null,dialog:Window=null):void{
+		if(dialog != null)dialog.close();
+		Database.begin();
+		//xml.toString()
+		// Industry
+		Database.industryDAO.delete_all(); // delete all industry
+		// insert new industry
+		var industriesList:XMLList = xml.elements("industries");
+		for each(var industries:XML in industriesList) {
+			var language_code:String = industries.@language;
+			for each(var industry:XML in industries.industry) {
+				var industryObject:Object = new Object();
+				industryObject.enable = checkNullValue(industry.elements("enable"), "");
+				industryObject.display_name = checkNullValue(industry.elements("display_name"), "");
+				industryObject.sic_code = checkNullValue(industry.elements("sic_code"), "");
+				industryObject.language_code = checkNullValue(language_code, "");
+				Database.industryDAO.insert(industryObject);
+			}
+		}
+		
+		//---------------------- TCS Report Admin ----------------------------------------
+		if(UserService.getCustomerId() == UserService.DIVERSEY) {				
+			var reportAdminList:XMLList = xml.elements("report_admins");
+			Database.reportAdminChildDao.delete_all();
+			for each(var reportXML:XML in reportAdminList) {
+				var report:Object = new Object();
+				report.report_path = checkNullValue(reportXML.elements("report_path"), "");
+				report.type = checkNullValue(reportXML.elements("type"), "");
+				Database.reportAdminDao.insert(report);
+				for each(var childReportXML:XML in reportXML.report) {
+					var childReport:Object = new Object();
+					childReport.report_name = checkNullValue(childReportXML.elements("report_name"), "");
+					childReport.report_code = checkNullValue(childReportXML.elements("report_code"), "");
+					Database.reportAdminChildDao.insert(childReport);
+				}
+			}
+		}
+		
+		var app_name:String ="";
+		for each(var app:XML in xml.children()){
+			if(app.localName() != null && "application-name"==app.localName().toString()){
+				app_name = checkNullValue(app.children()[0],"");
+				Database.preferencesDao.setValue("application_name",app_name,false);
+				break;
+			}
+			
+		}
+		// Preference
+		var prefs:XMLList = xml.elements("prefs");
+		for each(var pref:XML in prefs.pref){
+			// bug # 183 
+			//var prefValue:String = checkNullValue(pref.children()[0], "");
+			// Change Request #184
+			var prefValue:String = checkNullValue(pref.children()[0], pref.@key!="update_url" ? "" : "http://desktop.crm-gadget.com/update.xml");
+			if(pref.@key == "start_at_login") Utils.setStartAtLogin(prefValue == "true" ? true : false);
+			Database.preferencesDao.setValue(pref.@key, prefValue=="true"? 1: prefValue=="false"? 0 : prefValue,false);
+		}
+		
+		
+		
+		var transactions:XMLList = xml.elements("transactions");
+		var isDelete:Boolean=true;
+		for each(var transaction:XML in transactions.transaction){
+			var transactionObject:Object = new Object();
+			transactionObject.entity = transaction.id.children()[0].toString();
+			transactionObject.enabled = transaction.enabled.children()[0].toString()=="true"?1:0;
+			transactionObject.display_name = "";
+			transactionObject.filter_id = checkNullValue(transaction.filter.children()[0],"");
+			transactionObject.parent_entity = checkNullValue(transaction.elements("parent_entity").children()[0],"");
+			transactionObject.default_filter = checkNullValue(transaction.elements("default-filter").children()[0],"-1"); //CRO 1588
+			// transactionObject.sync_ws20 = transaction.elements("sync-ws20").children()[0].toString()=="true"? 1 : 0;
+			if(transaction.hasOwnProperty("sync-activities") || transaction.hasOwnProperty("sync-attachments") ){
+				transactionObject.sync_activities = checkNullValue(transaction.elements("sync-activities").children()[0],"")=="true"? 1 : 0;
+				transactionObject.sync_attachments = checkNullValue(transaction.elements("sync-attachments").children()[0],"")=="true"? 1 : 0;
+				Database.subSyncDao.updateEnabledAll( transactionObject.entity,0);
+				var objChildAct:Object = new Object();
+				var enabled:int = transactionObject.sync_activities;
+				objChildAct["entity"] = transactionObject.entity;
+				objChildAct["sub"] = "Activity";
+				objChildAct["sodname"] = "Activity";
+				objChildAct["enabled"] = enabled;
+				Database.subSyncDao.updateEnabled(objChildAct);
+				
+				var objChild:Object = new Object();
+				objChild["entity"] = transactionObject.entity;
+				objChild["sub"] = "Attachment";
+				objChild["sodname"] = "Attachment";
+				objChild["enabled"] = transactionObject.sync_attachments;
+				Database.subSyncDao.updateEnabled(objChild);
+			}
+			if(transaction.hasOwnProperty("sync-children")){
+				if(isDelete){
+					Database.subSyncDao.delete_all();
+					isDelete = false;
+				}
+				var listSyncChildren:XMLList = transaction.elements("sync-children");
+				commitObjects(Database.subSyncDao,listSyncChildren.children(),false,function(subObj:Object):void{
+					if(subObj.entity_name=='Account.Objectives'){//may be use old xml 
+						subObj.entity_name = 'Objectives';
+					}else if(subObj.entity_name=='Contact'){
+						subObj.entity_name = 'Activity.Contact';
+					}
+					subObj.syncable=Database.getSubSyncable(subObj.entity,subObj.entity_name);
+					if(StringUtils.isEmpty(subObj.entity_name)){
+						subObj.entity_name = Database.getSubEntityName(subObj.entity,subObj.sub,subObj.sodname);
+					}
+					
+				});
+				
+				
+				//commitObjects(Database.subSyncDao,listSyncChildren.children(),false);
+				
+				//					Database.subSyncDao.updateEnabledAll( transactionObject.entity,0);
+				//					for each(var childSync:XML in listSyncChildren.children()){
+				//						var objSyncChld:Object = new Object();
+				//						objSyncChld["entity"] = transactionObject.entity;
+				//						objSyncChld["sub"] = childSync.toString();
+				//						objSyncChld["enabled"] = 1;
+				//						Database.subSyncDao.updateEnabled(objSyncChld);
+				//					}					
+			}
+			transactionObject.hide_relation = checkNullValue(transaction.elements("hide-relation").children()[0],"")=="true"? 1 : 0;
+			transactionObject.read_only = checkNullValue(transaction.elements("read-only").children()[0],"")=="true"? 1 : 0;
+			transactionObject.display = checkNullValue(transaction.elements("display").children()[0],"true")=="true"? 1 : 0;
+			transactionObject.authorize_deletion = checkNullValue(transaction.elements("authorize-deletion").children()[0],"")=="true"? 1 : 0;
+			
+			// #311: hange request - Diversey sales - Prefernces -> #41: Cannot load VETO.XML
+			transactionObject.filter_disable = checkNullValue(transaction.elements("filter-disable").children()[0], "")=="true"? 1 : 0;
+			transactionObject.read_only_disable = checkNullValue(transaction.elements("read-only-disable").children()[0], "")=="true"? 1 : 0;
+			
+			//transactionObject.sync_activities_disable = checkNullValue(transaction.elements("sync-activities-disable").children()[0], "")=="true"? 1 : 0;
+			//transactionObject.sync_attachments_disable = checkNullValue(transaction.elements("sync-attachments-disable").children()[0], "")=="true"? 1 : 0;
+			
+			transactionObject.authorize_deletion_disable = checkNullValue(transaction.elements("authorize-deletion-disable").children()[0], "")=="true"? 1 : 0;
+			transactionObject.entity_disable = checkNullValue(transaction.elements("entity-disable").children()[0], "")=="true"? 1 : 0;				
+			transactionObject.sync_order=checkNullValue(transaction.elements("sync_order").children()[0], getDefaultSyncOrder(transactionObject.entity));
+			transactionObject.rank=checkNullValue(transaction.elements("rank").children()[0], Database.getDefatultRank(transactionObject.entity));
+			transactionObject.advanced_filter = checkNullValue(transaction.elements("advanced_filter").children()[0],'1');
+			Database.transactionDao.updateAllFields(transactionObject);
+			if(mapValueWithControls!=null)
+				mapValueWithControls(transactionObject);
+		}
+		
+		var tagCustomName:String = "custom-layout";
+		if(xml.toString().indexOf("detail-layout")>0) tagCustomName = "detail-layout";
+		var customLayoutXMLList:XMLList = xml.elements(tagCustomName +  "s");
+		// var customLayoutXMLList:XMLList = xml.elements("custom-layouts");
+		// delete all entity on custom layout
+		for each(var obj:Object in Database.customLayoutDao.readAll()){
+			if(obj.deletable){
+				Database.layoutDao.deleteLayout(obj.entity,obj.subtype);
+				Database.customLayoutDao.delete_one(obj.entity,obj.subtype);
+				Database.customLayoutConditionDAO.deleted(obj.entity,obj.subtype);
+			}
+		}
+		for each(var customLayoutXML:XML in customLayoutXMLList.elements(tagCustomName)){
+			var customLayout:Object = new Object();
+			var customLayoutEntity:String = customLayoutXML.elements("entity").children()[0];
+			var subtype:int = int(customLayoutXML.elements("subtype").children()[0]);
+			// Delete records detail layout by entity
+			Database.layoutDao.deleteLayout(customLayoutEntity, subtype);
+			Database.customLayoutDao.delete_one(customLayoutEntity, subtype);
+			Database.customLayoutConditionDAO.deleted(customLayoutEntity, String(subtype));
+			
+			customLayout.entity = customLayoutEntity;
+			customLayout.subtype = subtype;
+			
+			customLayout.background_color = customLayoutXML.elements("color").children()[0]==null? 0xEEEEEE :customLayoutXML.elements("color").children()[0];
+			customLayout.custom_layout_icon = customLayoutXML.elements("icon").children()[0];
+			customLayout.layout_name = checkNullValue(customLayoutXML.elements("layout-name").children()[0],customLayoutEntity);
+			customLayout.display_name = checkNullValue(customLayoutXML.elements("display-name").children()[0], ""); // Bug #73
+			customLayout.display_name_plural = checkNullValue(customLayoutXML.elements("display-name-plural").children()[0], "");
+			customLayout.deletable = customLayoutXML.elements("deletable").children()[0].toString() == 'true' ? 1 : 0;
+			customLayout.field = customLayoutXML.elements("field").children()[0];
+			customLayout.operator = checkNullValue(customLayoutXML.elements("operator").children()[0], "");
+			customLayout.value = checkNullValue(customLayoutXML.elements("value").children()[0],"");
+			customLayout.layout_depend_on = checkNullValue(customLayoutXML.elements("layout_depend_on").children()[0],"");
+			customLayout.custom_layout_title = checkNullValue(customLayoutXML.elements("custom-layout-title").children()[0], ""); // Change Request #747
+			
+			var objectCondition:Object;
+			// specific code to handle v1.080 condition format
+			if (customLayout.field != null && customLayout.deletable == true) {
+				objectCondition = new Object();
+				objectCondition.entity = customLayoutEntity;
+				objectCondition.subtype = String(subtype);
+				objectCondition.num = "1";
+				objectCondition.column_name = customLayout.field;
+				objectCondition.operator = customLayout.operator;
+				objectCondition.params = customLayout.value;
+				
+				Database.customLayoutConditionDAO.insert(objectCondition);
+			}
+			
+			Database.customLayoutDao.insert(customLayout);
+			
+			// layout fields
+			for each(var fieldDetail:XML in customLayoutXML.fields.children()){
+				var detailLayout:Object = new Object();
+				
+				detailLayout.entity = customLayoutEntity;
+				detailLayout.subtype = subtype;
+				detailLayout.col = int(fieldDetail.col.children()[0].toString());
+				detailLayout.row = int(fieldDetail.row.children()[0].toString());
+				detailLayout.column_name = fieldDetail.elements("column-name")[0].children()[0].toString();
+				detailLayout.custom = fieldDetail.custom.children()[0];
+				detailLayout.readonly = fieldDetail.readonly.children()[0]==null?0:fieldDetail.readonly.children()[0].toString()=="true"?1:0;
+				detailLayout.mandatory = fieldDetail.mandatory.children()[0]==null?0:fieldDetail.mandatory.children()[0].toString()=="true"?1:0;
+				var val:String=checkNullValue(fieldDetail.elements("max_chars").children()[0]);
+				detailLayout.max_chars =  val;
+				Database.layoutDao.insert(detailLayout);
+				
+				/*var customFieldXML:XML = fieldDetail.elements("custom-field")[0];
+				if(customFieldXML && (detailLayout.column_name.indexOf(CustomLayout.CALCULATED_CODE)>-1)){
+				var customField:Object = new Object();
+				customField["entity"] = customLayoutEntity;
+				customField["column_name"] = detailLayout.column_name;
+				customField["subtype"] = detailLayout.subtype;
+				customField["fieldName"] = checkNullValue(customFieldXML.fieldName.children()[0],"");
+				customField["displayName"] = checkNullValue(customFieldXML.displayName.children()[0],"");
+				customField["fieldType"] = checkNullValue(customFieldXML.fieldType.children()[0],"");
+				customField["value"] = checkNullValue(customFieldXML.value.children()[0],"");
+				Database.customFieldDao.insert(customField);								
+				}*/
+			}
+			
+			// custom fields
+			// var customFieldXMLList:XML = customLayoutXML.elements("custom-fields").children();
+			var _cache_cascading_crm:CacheUtils = new CacheUtils("cascading_crm");
+			var _cache_customField:CacheUtils = new CacheUtils("customField");
+			_cache_customField.del(customLayoutEntity);
+			_cache_cascading_crm.del(customLayoutEntity);
+			for each(var customFieldXML:XML in customLayoutXML.elements("custom-fields").children()){
+				var columnName:String = checkNullValue(customFieldXML.elements("column-name")[0],"");					
+				var objCustomField:Object = new Object();
+				var currentEntity:String = customLayoutEntity;
+				if(customFieldXML.entity!=null && customFieldXML.entity.children()!=null){
+					var et:String = 	checkNullValue(customFieldXML.entity.children()[0]);
+					if(!StringUtils.isEmpty(et)){
+						currentEntity = et;
+					}
+				}
+				objCustomField["entity"] = currentEntity;
+				objCustomField["column_name"] = columnName;
+				objCustomField["subtype"] = checkNullValue(customFieldXML.subtype.children()[0]);
+				objCustomField["fieldName"] = checkNullValue(customFieldXML.fieldName.children()[0]);
+				objCustomField["displayName"] = checkNullValue(customFieldXML.displayName.children()[0]);
+				objCustomField["fieldType"] = checkNullValue(customFieldXML.fieldType.children()[0]);
+				objCustomField["value"] = checkNullValue(customFieldXML.value.children()[0]);
+				objCustomField["defaultValue"] = checkNullValue(customFieldXML.defaultValue.children()[0])=="true"?1:0;
+				objCustomField["bindField"] = checkNullValue(customFieldXML.bindField.children()[0]);
+				objCustomField["bindValue"] = checkNullValue(customFieldXML.bindValue.children()[0]);
+				objCustomField["parentPicklist"] = checkNullValue(customFieldXML.parentPicklist.children()[0]);
+				
+				objCustomField["field_copy"] = checkNullValue(customFieldXML.fieldCopy.children()[0]);
+				objCustomField["sum_field_name"] = checkNullValue(customFieldXML.sumFieldName.children()[0]);
+				objCustomField["sum_entity_name"] = checkNullValue(customFieldXML.sumEntityName.children()[0]);
+				objCustomField["relation_id"] = checkNullValue(customFieldXML.relationId.children()[0]);
+				
+				Database.customFieldDao.deleteCustomField(objCustomField);
+				Database.customFieldDao.insert(objCustomField);
+				// create new column on table entity
+				if(objCustomField.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
+					Database.customFieldDao.addTableColumn(objCustomField.entity,objCustomField.fieldName,"TEXT");
+				}
+				
+				
+				// var translatorXML:XML = customFieldXML.elements("translators")[0];
+				Database.customFieldTranslatorDao.deleteFieldByColumnName(customLayoutEntity,columnName);
+				for each(var translator:XML in customFieldXML.translators.children()){
+					var objTranslator:Object = new Object();
+					objTranslator.entity = customLayoutEntity;
+					objTranslator.column_name = objCustomField.column_name;
+					objTranslator.fieldName = objCustomField.fieldName;
+					objTranslator.displayName = checkNullValue(translator.displayName.children()[0],"");
+					objTranslator.languageCode = checkNullValue(translator.languageCode.children()[0],"");
+					objTranslator.value = checkNullValue(translator.value.children()[0],"");
+					objTranslator.bindValue = checkNullValue(translator.bindValue.children()[0],"");
+					
+					Database.customFieldTranslatorDao.insert(objTranslator);
+				}
+				
+				if(objCustomField.column_name.indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
+					PicklistService.getPicklist(objCustomField.entity,objCustomField.fieldName,true,true,true);
+					PicklistService.getBindPicklist(objCustomField.entity,objCustomField.fieldName,true,true);			
+				}
+			}
+			
+			// import table sql_filter_criteria
+			// {entity_src: "", list_name: "", entity_dest: "", column_name: "", operator: "", param: "", conjunction: "", columns: "", num: ""}
+			Database.sqlListDAO.delete_({entity_src: customLayoutEntity});
+			for each(var iCriteriaXML:XML in customLayoutXML.elements("sql-filter-criterias").children()){			
+				var iCriteria:Object = new Object();
+				iCriteria.entity_src = checkNullValue(iCriteriaXML.entity_src.children()[0]);
+				iCriteria.list_name = checkNullValue(iCriteriaXML.list_name.children()[0]);
+				iCriteria.entity_dest = checkNullValue(iCriteriaXML.entity_dest.children()[0]);
+				iCriteria.column_name = checkNullValue(iCriteriaXML.column_name.children()[0]);
+				iCriteria.operator = checkNullValue(iCriteriaXML.operator.children()[0]);
+				iCriteria.param = checkNullValue(iCriteriaXML.param.children()[0]);
+				iCriteria.conjunction = checkNullValue(iCriteriaXML.conjunction.children()[0]);
+				iCriteria.columns = checkNullValue(iCriteriaXML.columns.children()[0]);
+				iCriteria.num = checkNullValue(iCriteriaXML.num.children()[0]);
+				Database.sqlListDAO.insert(iCriteria);
+			}				
+			
+			// layout conditions
+			for each(var condition:XML in customLayoutXML.conditions.children()){
+				objectCondition = new Object();
+				objectCondition.entity = customLayoutEntity;
+				objectCondition.subtype = String(subtype);
+				objectCondition.num = int(condition.num.children()[0].toString());
+				objectCondition.column_name = checkNullValue(condition.elements("column-name")[0].children()[0],"");
+				objectCondition.operator = checkNullValue(condition.operator.children()[0],"");
+				objectCondition.params = checkNullValue(condition.param.children()[0],"");
+				
+				Database.customLayoutConditionDAO.insert(objectCondition);
+			}
+		}
+		
+		// List Layout
+		// entity, num, element_name
+		var listLayouts:XMLList = xml.elements("list-layouts");
+		for each(var listLayout:XML in listLayouts.elements("list-layout")){
+			var entityListLayout:String = listLayout.children()[0];
+			// Delete records list layout by entity
+			//VAHI: done
+			Database.columnsLayoutDao.deleteEntity(entityListLayout);
+			for each(var fieldList:XML in listLayout.fields.children()){
+				var objectList:Object = new Object();
+				objectList.entity = entityListLayout;
+				objectList.num = int(fieldList.num.children()[0].toString());
+				objectList.element_name = checkNullValue(fieldList.elements("element-name")[0].children()[0],"");
+				objectList.filter_type = "Default";
+				if (fieldList.elements("filter-type").length()>0) {
+					objectList.filter_type = checkNullValue(fieldList.elements("filter-type")[0].children()[0],"");	
+				}
+				Database.columnsLayoutDao.insert(objectList);
+			}
+		}
+		
+		// View Layout
+		// entity, num, element_name
+		var viewLayouts:XMLList = xml.elements("view-layouts");
+		for each(var viewLayout:XML in viewLayouts.elements("view-layout")){
+			var entityViewLayout:String = viewLayout.children()[0];
+			// Delete records view layout by entity
+			Database.viewLayoutDAO.deleteEntity(entityViewLayout);
+			for each(var fieldView:XML in viewLayout.fields.children()){
+				var objectView:Object = new Object();
+				objectView.entity = entityViewLayout;
+				objectView.num = int(fieldView.num.children()[0].toString());
+				objectView.element_name = checkNullValue(fieldView.elements("element-name")[0].children()[0],"");
+				Database.viewLayoutDAO.insert(objectView);
+			}
+		}
+		
+		// Validation Rule
+		// entity, num, rule_name, field, operator, value, message
+		var validationRules:XMLList = xml.elements("validationRules");
+		for each(var validationRule:XML in validationRules.elements("validationRule")){
+			var entityValidationRule:String = validationRule.children()[0];
+			Database.validationDao.deleteAll(entityValidationRule);
+			for each(var fieldValidation:XML in validationRule.fields.children()){
+				var objectValidation:Object = new Object();
+				objectValidation.entity = entityValidationRule;
+				objectValidation.num = int(fieldValidation.num.children()[0].toString());
+				objectValidation.rule_name = checkNullValue(fieldValidation.elements("rule-name")[0].children()[0],"");
+				objectValidation.field = fieldValidation.field.children()[0].toString();
+				objectValidation.operator = checkNullValue(fieldValidation.operator.children()[0],"");
+				objectValidation.value = checkNullValue(fieldValidation.value.children()[0],"");
+				objectValidation.message = fieldValidation.message.children()[0];
+				Database.validationDao.insertValidation(objectValidation);
+			}
+		}
+		
+		// Validation Rule_ 2
+		var validationRules_2:XMLList = xml.elements("validation-rules_2");
+		for each(var valRule2:XML in validationRules_2.elements("validation-rule")){
+			var entityValRule2:String = valRule2.children()[0];
+			for each(var rule:XML in valRule2.rules.children()){
+				var objValRule2:Object = new Object();
+				objValRule2.entity = entityValRule2;
+				objValRule2.ruleName = checkNullValue(rule.ruleName.children()[0],"");
+				objValRule2.active = checkNullValue(rule.active.children()[0],"")=="true"?1:0;
+				objValRule2.value = checkNullValue(rule.value.children()[0],"");
+				objValRule2.message = checkNullValue(rule.message.children()[0]);
+				objValRule2.errorMessage = checkNullValue(rule.errorMessage.children()[0]);
+				objValRule2.orderNo = parseInt(checkNullValue(rule.orderNo.children()[0]));
+				
+				Database.validationRuleDAO.upSert(objValRule2);
+			}
+		}
+		// Validation rule translator //
+		var validationTranslator:XMLList = xml.elements('validation-rules_translator');
+		for each(var tranXML:XML in validationTranslator.elements('validation-translator')){
+			var entityTran:String = tranXML.children()[0];
+			for each(var valTran:XML in tranXML.translators.children()){
+				var objTrans:Object = new Object();
+				objTrans.entity = entityTran;
+				objTrans.ruleName = checkNullValue(valTran.ruleName.children()[0],"");
+				objTrans.errorMessage = checkNullValue(valTran.errorMessage.children()[0]);
+				objTrans.languageCode = checkNullValue(valTran.languageCode.children()[0]);
+				Database.validationRuleTranslotorDAO.updateField(objTrans);
+			}
+		}
+		
+		// Filter and Filter Criteria
+		// id, name, entity
+		//id, num, column_name, operator, param, conjunction
+		var filters:XMLList = xml.elements("filters");
+		var first:Boolean = true;
+		for each(var filter:XML in filters.elements("filter")){
+			var entityFilter:String = filter.children()[0];
+			//restrict delete no object filter in transactions
+			Database.filterDao.deleteByEntity(entityFilter);
+			if (first) {
+				//VAHI moved this here to be able to import incomplete XML
+				//restrict delete no object filter in transactions
+				//Database.filterDao.deleteAll();
+				Database.criteriaDao.deleteAll();
+				first	= false;
+			}
+			
+			for each(var fieldFilter:XML in filter.elements("field")){
+				var objectFilter:Object = new Object();
+				objectFilter.entity = entityFilter;
+				objectFilter.name = fieldFilter.children()[0].toString();
+				objectFilter.predefined = fieldFilter.predefined.children()[0].toString()=="true"? 1 : 0;
+				objectFilter.type = fieldFilter.type.children()[0];
+				var filterId:Number = Database.filterDao.insert(objectFilter);
+				
+				for each(var criteria:XML in fieldFilter.elements("criteria-field")){
+					var objectCriteria:Object = new Object();
+					objectCriteria.id = filterId;
+					objectCriteria.num = int(criteria.num.children()[0].toString());
+					objectCriteria.column_name = checkNullValue(criteria.elements("column-name")[0],"");
+					// if(criteria.operator.children()[0]!=null)
+					// objectCriteria.operator = criteria.operator.children()[0].toString()=="&gt;"?">":criteria.operator.children()[0].toString()=="&lt;"? "<":criteria.operator.children()[0].toString();
+					objectCriteria.operator = checkNullValue(criteria.operator.children()[0],"");
+					objectCriteria.param = checkNullValue(criteria.param.children()[0],"");
+					objectCriteria.conjunction = checkNullValue(criteria.conjunction.children()[0],"");
+					//objectCriteria.param_display = checkNullValue(criteria.elements("param-display")[0],"");
+					
+					Database.criteriaDao.insert(objectCriteria);
+				}
+			}
+		}
+		//refreshMainWindow = true;
+		Database.commit();
+		if(prefsXMLList!=null)
+			prefsXMLList(prefs);
+		//import role and access profile
+		var dao:SimpleTable=Database.accessProfileServiceDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("access_profiles").children());			
+		
+		
+		dao=Database.accessProfileServiceEntryDao;
+		dao.delete_all();
+		var root:XMLList=xml.elements("access_profiles_entrys").children();
+		for each(var child:XML in root){
+			commitObjects(dao,child.children());
+		}
+		dao=Database.accessProfileServiceTransDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("access_profiles_trans").children());
+		
+		dao=Database.subColumnLayoutDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("sublist-layouts").children());
+		
+		dao = Database.roleServiceDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services").children());			
+		
+		dao = Database.roleServiceAvailableTabDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_avail_tab").children());
+		
+		
+		dao = Database.roleServiceLayoutDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_layout").children());
+		
+		dao = Database.roleServicePageLayoutDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_page").children());			
+		
+		dao = Database.roleServicePrivilegeDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_priv").children());
+		
+		dao = Database.roleServiceSelectedTabDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_sel_tab").children());
+		
+		dao = Database.roleServiceTransDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_trans").children());
+		
+		
+		dao = Database.roleServiceRecordTypeAccessDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("role_services_type").children());
+		
+		dao=Database.customRecordTypeTranslationsDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("custom_records_type_trans").children());
+		
+		dao=Database.fieldManagementServiceDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("field_managements").children());
+		
+		dao=Database.fieldTranslationDataDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("field_translations").children());
+		
+		//---------------------- Territory Tree ---------------------------------------
+		dao=Database.territoryTreeDAO;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("territorytree").children());
+		
+		//---------------------- Depthstructure Tree ----------------------------------------
+		dao=Database.depthStructureTreeDAO;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("depthstructuretree").children());
+		//Filter Translation
+		//---------------------- Depthstructure Tree ----------------------------------------
+		dao=Database.customFilterTranslatorDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("filter_translations").children());
+		
+		dao=Database.assessmentDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessments").children());
+		
+		
+		dao=Database.answerDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("answers").children());
+		dao=Database.assessmentConfigDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessment_configs").children());
+		
+		dao = Database.assessmentPageDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessmentPages").children());
+		
+		dao = Database.mappingTableSettingDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessmentMappingColumns").children());
+		
+		
+		dao = Database.assessmentMappingDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessmentMappings").children());
+		
+		//------------ assessment script
+		dao=Database.questionDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("questions").children());
+		
+		dao = Database.sumFieldDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessmentsumfields").children());
+		
+		
+		dao = Database.assessmentSplitterDao;
+		dao.delete_all();
+		commitObjects(dao,xml.elements("assessmentspliters").children());
+		
+		dao = Database.assessmentPDFHeaderDao;
+		dao.delete_all();
+		Utils.commitObjects(dao,xml.elements("assessmentpdfheaders").children(),false)
+		
+		if(reload!=null) reload();
+		
+	}
 	}
 }

@@ -10,6 +10,7 @@
 			import flash.globalization.DateTimeStyle;
 			
 			import gadget.dao.Database;
+			import gadget.dao.PreferencesDAO;
 			import gadget.i18n.i18n;
 			import gadget.lists.List;
 			import gadget.lists.ListDetail;
@@ -302,7 +303,7 @@
 						endTime = getActualDate(DateUtils.guessAndParse(activity.EndTime));
 						obj ={
 							summary:activity.Subject,
-								tooltip:activity.Subject  + accountData[0]  + accountData[1] + accountData[2]+  +accountData[3] + primaryContact,
+								tooltip:activity.Subject  + accountData[0]  + accountData[1] + accountData[2]+ accountData[3] + primaryContact,
 								entity: activity.CallType == 'Account Call' ? 'Call' : 'Appointment',
 								color: activity.CallType == 'Account Call' ? CalendarUtils.ACTIVITY_CALL_COLOR : CalendarUtils.ACTIVITY_APPOINTMENT_COLOR,
 								data: activity,
@@ -415,7 +416,7 @@
 		    private function createCall(e:MouseEvent):void{
 				var selectedDate:Date =  (e.currentTarget as Calendar).getTime(e.stageX,e.stageY,true);
 				var rang:Array = (e.currentTarget as Calendar).timeRangeSelection;
-				var isEnable:Boolean = Database.preferencesDao.isEnableDoubleClickNewCall();
+				var isEnable:Boolean = Database.preferencesDao.isEnableDoubleClickNewCall()&& Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_BUTTON_ACTIVITY_CREATE_CALL);
 				if(StringUtils.endsWith(e.target.toString(),("sheetEventManager")) && isEnable && !(e.target is UITextField) && selectedDate != null && rang != null && rang.length > 0){
 					addActivity(selectedDate,rang,2);
 				}

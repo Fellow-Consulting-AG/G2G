@@ -63,17 +63,15 @@ package gadget.sync.tests
 			if (mess.indexOf("SBL-EAI-04289")!=-1 || mess.indexOf("SBL-EAI-04289")!=-1 || mess.indexOf("SBL-DAT-00510")!=-1 || mess.indexOf("SBL-EAI-04376")!=-1 ) {
 				//cancreate
 				Database.roleServiceRecordTypeAccessDao.upsert({CanCreate:"true"},entity);
-				updateCanCreateInCatch(true,entity);
-				successHandler(null);
-				return true;
-			}else if (mess.indexOf("SBL-EAI-04421")!=-1) {
+				updateCanCreateInCatch(true,entity);				
+			}else if (mess.indexOf("SBL-EAI-04421")!=-1|| mess.indexOf("SBL-DAT-00279")!=-1) {
 				//cannotcreate
 				Database.roleServiceRecordTypeAccessDao.upsert({CanCreate:"false"},entity);
 				updateCanCreateInCatch(false,entity);
-				successHandler(null);
-				return true;
+				
 			}			
-			return false;
+			successHandler(null);
+			return true;
 		}
 		//Mony bug-#112
 		private function updateCanCreateInCatch(create:Boolean,entity:String):void{

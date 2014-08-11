@@ -53,10 +53,10 @@ package gadget.sync.tests {
 			mess = mess.replace(/[[:space:]][[:space:]]*/g," ");
 			if (mess.indexOf("SBL-DAT-00553")!=-1 && mess.indexOf("SBL-EAI-04376") != -1) {
 				Database.preferencesDao.setValue("pharma.disabled", 1);
-				successHandler(null);
-				return true;
+				
 			}
-			return false;
+			successHandler(null);
+			return true;
 		}
 		
 		override protected function handleResponse(request:XML, result:XML):int {

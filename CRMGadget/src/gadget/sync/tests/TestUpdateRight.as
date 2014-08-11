@@ -62,17 +62,15 @@ package gadget.sync.tests
 			if (mess.indexOf("SBL-EAI-04403")!=-1 || mess.indexOf("SBL-DAT-00510")!=-1 || mess.indexOf("SBL-EAI-04376")!=-1) {
 //				If you see the error SBL-EAI-04403 : set HasAccess to True in the table role_service_type for the current user and for the entity Account
 				Database.roleServiceRecordTypeAccessDao.upsert({HasAccess:"true"},entity);
-				updateHassAccessInCatch(true,entity);
-				successHandler(null);
-				return true;
+				updateHassAccessInCatch(true,entity);				
 			}else if (mess.indexOf("SBL-EAI-04376")!=-1) {
 //				if you see the error SBL-EAI-04376 : set HasAccess to False in the table role_service_type for the current user and for the entity Account
 				Database.roleServiceRecordTypeAccessDao.upsert({HasAccess:"false"},entity);
 				updateHassAccessInCatch(false,entity);
-				successHandler(null);
-				return true;
+				
 			}			
-			return false;
+			successHandler(null);
+			return true;
 		}		
 		//Mony bug-#112
 		private function updateHassAccessInCatch(hassAccess:Boolean,entity:String):void{

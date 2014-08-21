@@ -72,7 +72,7 @@ package gadget.sync.incoming {
 			}
 			else if(entity==Database.objectivesDao.entity){
 				entity = "CRMODLS_OBJECTIVE";
-			}else if(sodTao.our_name==Database.opportunityContactDao.entity){
+			}else if(tao.our_name==Database.opportunityContactDao.entity){
 				entity = "Opportunity Contact Role";
 			}
 			var request:XML =

@@ -17,8 +17,7 @@ package gadget.sync
 			this._groups.addItem(new TaskGroupBase(
 				this,
 				[new IncomingUser(),
-					new IncomingCurrentUserData(),
-					new GetConfigXml()],false,false));		
+					new IncomingCurrentUserData()],false,false));		
 		}
 		
 		

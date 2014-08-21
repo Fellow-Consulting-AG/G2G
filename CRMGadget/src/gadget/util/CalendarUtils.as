@@ -35,6 +35,9 @@ package gadget.util
 				" AND DueDate <= '" + paramEndDate + "'" + 
 				" AND Activity = 'Task'" +
 				")";
+			
+			//bug#8044--show only owner calender
+			filter ="("+filter+ ") AND OwnerId='" +Database.allUsersDao.ownerUser().Id+"'";
 			return filter;
 		} 
 		
@@ -77,6 +80,7 @@ package gadget.util
 					break;
 			}
 			var filter:String = CalendarUtils.generateFilter(DateUtils.format(startDate,DateUtils.DATABASE_DATE_FORMAT),DateUtils.format(endDate,DateUtils.DATABASE_DATE_FORMAT));
+			
 			
 			return Database.activityDao.findAll(columns, "(" + filter + ")", null, 1001, "PriorityIndex");			   
 		}	

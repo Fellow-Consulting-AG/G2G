@@ -39,7 +39,7 @@ package gadget.sync.incoming
 		protected var isUsedLastModified:Boolean = true;
 		protected const SUBROW_PLACEHOLDER:String = "___HERE__THE__SUBROW__NUMBER___";
 		protected const PARENT_SEARCH_SPEC:String="parent_search_spec";
-		protected var SUB_PAGE_SIZE:int;	
+		protected var SUB_PAGE_SIZE:int=25;	
 	//	protected var parentSearchSpec:String;
 		private var _currentMinIndex:int =0;
 		private var _currentMaxIndex:int = 50;

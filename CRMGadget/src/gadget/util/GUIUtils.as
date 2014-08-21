@@ -775,10 +775,15 @@ package gadget.util
 						var dgCol2:DataGridColumn = new DataGridColumn();
 						//var obj2:Object = null;
 						var obj2:Object = null;
-						if(relation.supportTable == "Contact.CustomObject2"){
-							obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
-						}else{
-							obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
+						if(field.entity!=null){
+							obj2 = FieldUtils.getField(field.entity, field.element_name);
+						}
+						if(obj2==null){
+							if(relation.supportTable == "Contact.CustomObject2"){
+								obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
+							}else{
+								obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
+							}
 						}
 //						if(subDao!=null){
 //							obj2 = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),field.element_name);

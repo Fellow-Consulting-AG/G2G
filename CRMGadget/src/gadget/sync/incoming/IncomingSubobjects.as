@@ -87,7 +87,7 @@ package gadget.sync.incoming
 		
 		protected function deleteOracleRecordByParentId(parentId:String):void{
 			var criteria:Object = {};
-			criteria[entityIDour+"Id"] = this.pid;
+			criteria[entityIDour+"Id"] = parentId;
 			subDao.deleteOnlyRecordeNotErrorByParent(criteria);
 		}
 		

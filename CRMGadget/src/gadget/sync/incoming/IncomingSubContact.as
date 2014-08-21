@@ -26,9 +26,9 @@ package gadget.sync.incoming
 	override	protected function deleteOracleRecordByParentId(parentId:String):void{
 			var criteria:Object = new Object();
 			if(subDao is ContactAccountDAO){
-				criteria['AccountId'] = this.pid;
+				criteria['AccountId'] = parentId;
 			}else{
-				criteria['ContactId'] = this.pid;	
+				criteria['ContactId'] = parentId;	
 			}
 			
 			subDao.deleteOnlyRecordeNotErrorByParent(criteria);

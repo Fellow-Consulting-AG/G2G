@@ -72,6 +72,8 @@ package gadget.sync.incoming {
 			}
 			else if(entity==Database.objectivesDao.entity){
 				entity = "CRMODLS_OBJECTIVE";
+			}else if(sodTao.our_name==Database.opportunityContactDao.entity){
+				entity = "Opportunity Contact Role";
 			}
 			var request:XML =
 					<MappingWS_GetMapping_Input xmlns='urn:crmondemand/ws/mapping/'>
@@ -98,6 +100,8 @@ package gadget.sync.incoming {
 				entity = Database.businessPlanDao.entity;
 			}else if(entity == "CRMODLS_OBJECTIVE"){
 				entity = Database.objectivesDao.entity;
+			}else if(entity=="Opportunity Contact Role"){
+				entity = Database.opportunityContactDao.entity;
 			}
 
 			trace("WS response for",entity,"as",tao.our_name);

@@ -166,6 +166,18 @@
 				filterGrid.contextMenu = MenuUtils.getContextMenuFilter(bookmarkFilter, editFilter, deleteFilter, makeDefaultFilter);
 			}
 			
+			public static function getHeaderText(lst:List):String{
+				
+				if(lst.entity==Database.activityDao.entity){
+					var languageCode:String =  Database.allUsersDao.ownerUser().LanguageCode;
+					if(languageCode=='CHS'){//bug#8074
+						return "活动 筛选";
+					}
+				}
+				
+				return GUIUtils.getListName(lst.displayName ,' ' + i18n._('FILTERLIST_DATAGRID_COLUMN_HEADER_TEXT_FILTERS'));
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%" height="100%" verticalGap="0">
@@ -173,7 +185,7 @@
 					 click="list.filter = filterGrid.selectedItem; list.initGridColumns(); list.doFilter(filterGrid.selectedItem); filterSelectedIndices[list.entity] = filterGrid.selectedIndex; list.computeColumnList();"
 					 doubleClickEnabled="true" doubleClick="editFilter()" >
 			<mx:columns><!-- GUIUtils.getListName method use to add change PTG translation-->
-				<mx:DataGridColumn headerText="{GUIUtils.getListName(list.displayName ,' ' + i18n._('FILTERLIST_DATAGRID_COLUMN_HEADER_TEXT_FILTERS'))}">
+				<mx:DataGridColumn headerText="{getHeaderText(list)}">
 					<mx:itemRenderer>
 						<mx:Component>
 							<mx:HBox width="100%" horizontalScrollPolicy="off">

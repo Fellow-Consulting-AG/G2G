@@ -9,6 +9,7 @@ package gadget.sync.outgoing
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import gadget.dao.ActivityContactDAO;
 	import gadget.dao.ActivityDAO;
 	import gadget.dao.AttachmentDAO;
 	import gadget.dao.BaseDAO;
@@ -204,6 +205,7 @@ package gadget.sync.outgoing
 				var xml:XML = <{EntityTag} xmlns={ns1} operation={oper}/>;
 				var hasActivityParent:Boolean = false;
 				var outgoingIgnoreFields:Dictionary = dao.outgoingIgnoreFields;
+				var hasOracleId:Boolean = false;
 				for each (var field:Object in field_list) {
 					//if(ignoreFields.indexOf(field.element_name)>=0) continue;
 					if (field.element_name == SodID
@@ -239,6 +241,7 @@ package gadget.sync.outgoing
 							var ws20field:String = WSProps.ws10to20(entity,field.element_name);
 							var fieldData:String = records[i][field.element_name];
 							if (field.element_name == SodID) {
+								hasOracleId = true;
 								if (!updated) {
 									fieldData="";
 								} else if (fieldData=="") {
@@ -251,6 +254,11 @@ package gadget.sync.outgoing
 						}
 					}
 				}
+				if(!hasOracleId && updated){
+					var realId:String = WSProps.ws10to20(entity,SodID);
+					var dataId:String = records[i][SodID];
+					xml.appendChild(<{realId}>{dataId}</{realId}>);
+				}
 				if(!hasActivityParent && records[i][ActivityDAO.PARENTSURVEYID] != null){
 					xml.appendChild(
 						<{ActivityDAO.PARENTSURVEYID}>{records[i][ActivityDAO.PARENTSURVEYID]}</{ActivityDAO.PARENTSURVEYID}>
@@ -259,7 +267,7 @@ package gadget.sync.outgoing
 
 				
 				// Map Attachment
-				if (do_attachments) {
+//				if (do_attachments) {
 //					var have:Boolean = false;
 //					tmp = <ListOfAttachment xmlns={ns1}/>;
 //
@@ -282,7 +290,7 @@ package gadget.sync.outgoing
 //					if (have)
 //						xml.appendChild(tmp);
 					
-				}
+//				}
 				
 				// Map subobjects like User, Product, Contact, etc.
 				for each (var sub:String in SupportRegistry.getSubObjects(entity)) {
@@ -305,7 +313,10 @@ package gadget.sync.outgoing
 
 					for each (var obj:Object in subList) {
 						
+					
+						
 						var have:Boolean = true;
+						
 
 						//VAHI this is bullshit.  We should not sync unchanged objects
 						//VAHI this is bullshit.  We should delete deleted objects
@@ -316,6 +327,18 @@ package gadget.sync.outgoing
 						}else if(obj.deleted){
 							oper= 'delete';
 						}
+						
+						var contId:String = records[i].PrimaryContactId;
+						if(oper =='insert'&&entity==Database.activityDao.entity && subDao is ActivityContactDAO){
+							
+							if(obj.Id==contId){					
+							
+								
+								//primary contact auto create activitycontact on ood
+								continue;
+							}
+						}
+						
 
 						var tmp2:XML = <{subName} operation={oper}/>;
 
@@ -344,7 +367,7 @@ package gadget.sync.outgoing
 		}
 		
 		override protected function handleResponse(request:XML, result:XML):int {
-			var i:int = 0;
+			var i:int = 0;			
 			for each (var data:XML in result.child(Q2ListOf)[0].child(Q2Entity)) {
 
 				notify(ObjectUtils.joinFields(records[i], NameCols),
@@ -384,7 +407,18 @@ package gadget.sync.outgoing
 				records[i].deleted = false;
 				records[i].local_update = null;
 				records[i].error = false;
-				dao.update(records[i]);
+				dao.update(records[i]);				
+				if(entity==Database.activityDao.entity){
+					var contId:String = records[i].PrimaryContactId;
+					var actCont:Object = Database.activityContactDao.getByParentId({'ActivityId':records[i][SodID], 'Id':contId});
+					if(actCont!=null){
+						Database.activityContactDao.fix_sync_incoming(actCont,records[i]);
+						actCont.deleted = false;
+						actCont.local_update = null;
+						actCont.error = false;
+						Database.activityContactDao.update(actCont);
+					}
+				}
 
 				// Send Attachment
 				if (do_attachments){

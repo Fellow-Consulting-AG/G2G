@@ -2,6 +2,8 @@ package gadget.sync.outgoing
 {
 	
 	
+	
+	
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
@@ -98,6 +100,19 @@ package gadget.sync.outgoing
 				faulted = 0;
 				doRequest();
 				return;
+			}
+			
+			
+			if(oper=='insert'){
+				//right now we send only one record per request
+				var parentId:String = records[0][SodID];
+				//ignore sub if the parent recode cannot sync.
+				if(parentId.indexOf('')!=-1){
+					faulted++;
+					doRequest();
+					return;
+				}
+				
 			}
 			
 			var WSTag:String = WSTagExe;

@@ -1239,9 +1239,16 @@
 					var date:Date = DateUtils.guessAndParse(fieldValue);
 					if(date!=null){
 						var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();
-						date = new Date(date.getTime()+DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
-						var format:String = currentUserDatePattern.dateFormat + ( isDateTime ? ' ' + currentUserDatePattern.timeFormat : '' );
-						return DateUtils.format(date, format);
+						
+						if(!isDateTime){
+							return DateUtils.format(date, currentUserDatePattern.dateFormat);
+						}else{
+							date = new Date(date.getTime()+DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
+							var format:String = currentUserDatePattern.dateFormat + ' ' + currentUserDatePattern.timeFormat ;
+							return DateUtils.format(date, format);
+						}
+						
+						
 						
 					}
 				}

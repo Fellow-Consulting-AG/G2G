@@ -1645,8 +1645,8 @@ package gadget.util {
 					commitObjects(Database.subSyncDao,listSyncChildren.children(),false,function(subObj:Object):void{
 						if(subObj.entity_name=='Account.Objectives'){//may be use old xml 
 							subObj.entity_name = 'Objectives';
-						}else if(subObj.entity_name=='Contact'){
-							subObj.entity_name = 'Activity.Contact';
+						}else {
+							subObj.entity_name = Database.getSubEntityName(subObj.entity,subObj.sub,subObj.sodname);
 						}
 						subObj.syncable=Database.getSubSyncable(subObj.entity,subObj.entity_name);
 						if(StringUtils.isEmpty(subObj.entity_name)){

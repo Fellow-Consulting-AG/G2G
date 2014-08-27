@@ -285,6 +285,50 @@
 				}
 			}
 			
+			private function createSubObject():void{
+				//bug8043---no relation set in sublist (while i see the contact in rel.item setcion on the right)
+				if(entity==Database.activityDao.entity){
+					var conId:String = item["PrimaryContactId"];
+					if(!StringUtils.isEmpty(conId)){
+						var filter:String= "(ActivityId='"+ item[DAOUtils.getOracleId(entity)]+"' AND Id='"+conId+"')" ;
+						var result:ArrayCollection = Database.activityContactDao.findAll(new ArrayCollection([{element_name:"Id"}]),filter);
+						if(result==null || result.length<1){
+							var newObj:Object = new Object();
+							newObj["ActivityId"] = item[DAOUtils.getOracleId(entity)];
+							newObj["Id"] = conId;
+							newObj["ContactFirstName"] = item["PrimaryContactFirstName"];
+							newObj["ContactLastName"] = item["PrimaryContactLastName"];									
+							Database.activityContactDao.insert(newObj);
+							newObj = Database.activityContactDao.selectLastRecord()[0];
+							var oraIdField:String = DAOUtils.getOracleId(Database.activityContactDao.entity);
+							newObj[oraIdField]="#"+newObj.gadget_id;
+							Database.activityContactDao.update(newObj);
+						}
+					}
+				}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
+					var accoundId:String = item.AccountId;
+					var contactId:String = item.ContactId;
+					var contactFullName = item.ContactFullName;
+					if(StringUtils.isEmpty(contactId)){
+						contactId = item.PrimaryContactId;//entity=account
+						contactFullName = item.PrimaryContactFullName;
+					}
+					
+					if(!StringUtils.isEmpty(accoundId)&& !StringUtils.isEmpty(contactId)){
+						var newObj:Object = new Object();
+						newObj["AccountId"] = accoundId;
+						newObj["ContactId"] = contactId;
+						newObj["ContactFullName"] = item["PrimaryContactFirstName"];													
+						Database.contactAccountDao.insert(newObj);
+						newObj = Database.contactAccountDao.selectLastRecord()[0];
+						var oraIdField:String = DAOUtils.getOracleId(Database.contactAccountDao.entity);
+						newObj[oraIdField]="#"+newObj.gadget_id;
+						Database.contactAccountDao.update(newObj);
+					}
+				}
+				
+			}
+			
 			/**
 			 * Function that handles embedded entities that were created in the detail.
 			 */
@@ -611,23 +655,7 @@
 				}
 				
 				//bug8043---no relation set in sublist (while i see the contact in rel.item setcion on the right)
-				if(entity==Database.activityDao.entity){
-					var conId:String = item["PrimaryContactId"];
-					if(!StringUtils.isEmpty(conId)){
-						var filter:String= "(ActivityId='"+ item[DAOUtils.getOracleId(entity)]+"' AND Id='"+conId+"')" ;
-						var result:ArrayCollection = Database.activityContactDao.findAll(new ArrayCollection([{element_name:"Id"}]),filter);
-						if(result==null || result.length<1){
-							var newObj:Object = new Object();
-							newObj["ActivityId"] = item[DAOUtils.getOracleId(entity)];
-							newObj["Id"] = conId;
-							newObj["ContactFirstName"] = item["PrimaryContactFirstName"];
-							newObj["ContactLastName"] = item["PrimaryContactLastName"];						
-							
-							
-							Database.activityContactDao.insert(newObj);
-						}
-					}
-				}
+				createSubObject();
 				
 				
 				//if(refreshHomTask != null) refreshHomTask(); //1243 CRO

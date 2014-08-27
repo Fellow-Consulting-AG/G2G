@@ -107,7 +107,7 @@ package gadget.sync.outgoing
 				//right now we send only one record per request
 				var parentId:String = records[0][SodID];
 				//ignore sub if the parent recode cannot sync.
-				if(parentId.indexOf('')!=-1){
+				if(parentId.indexOf('#')!=-1){
 					faulted++;
 					doRequest();
 					return;

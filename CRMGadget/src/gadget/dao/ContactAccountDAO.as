@@ -1,9 +1,14 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	import flash.data.SQLStatement;
+	
+	import mx.collections.ArrayCollection;
 	
 	public class ContactAccountDAO extends SupportDAO {
 
+		
+		protected var stmtFindMissingContact:SQLStatement;
 		public function ContactAccountDAO(sqlConnection:SQLConnection, work:Function) {
 
 			super(work, sqlConnection, {
@@ -21,6 +26,27 @@ package gadget.dao
 			SupportRegistry.init_registry('Account.Contact' , this);
 			_isSyncWithParent = false;
 			_isGetField = true;
+			stmtFindMissingContact = new SQLStatement();
+			stmtFindMissingContact.sqlConnection = sqlConnection;
+			stmtFindMissingContact.text = "select ContactId from contact_account where ContactId not in(select contactid from contact)";
+		}
+		
+		
+		public function findMissingContact():ArrayCollection{
+			exec(stmtFindMissingContact);
+			var items:ArrayCollection = new ArrayCollection(stmtFindMissingContact.getResult().data);
+			var result:ArrayCollection = new ArrayCollection();
+			if(items.length>0){
+				for each(var o:Object in items){
+					var id:String = o['ContactId'];
+					if(id!=null && id.indexOf("#")==-1){
+						result.addItem(id);	
+					}
+					
+				}
+				
+			}
+			return result;
 		}
 
 		private const TEXTCOLUMNS:Array = [

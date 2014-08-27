@@ -11,6 +11,7 @@ package gadget.sync
 	import gadget.service.UserService;
 	import gadget.sync.group.IncomingParallelTaskGroup;
 	import gadget.sync.group.TaskGroupBase;
+	import gadget.sync.incoming.IncomingContactNotExistInAccCon;
 	import gadget.sync.incoming.IncomingObject;
 	import gadget.sync.incoming.JDIncomingObject;
 	import gadget.sync.incoming.JDIncomingPlant;
@@ -161,7 +162,14 @@ package gadget.sync
 //						}												
 						addParallelTask(IncomingPerIdTasks());
 						addParallelTask(IncomingSubObjTasks());					
-					}					
+					}
+					//retrieve missing contact
+					_groups.addItem(new TaskGroupBase(	
+						this,
+						[new IncomingContactNotExistInAccCon()],
+						_full
+						,_metaSyn
+					));
 					
 				}
 				

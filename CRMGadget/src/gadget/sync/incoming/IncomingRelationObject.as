@@ -110,10 +110,8 @@ package gadget.sync.incoming
 		}
 		
 		
-		protected override function generateSearchSpec(byModiDate:Boolean=true):String{			
-			if(entityIDour==Database.contactDao.entity){
-				trace("contact");
-			}
+		protected override function generateSearchSpec(byModiDate:Boolean=true):String{		
+			
 			this.isUnboundedTask = true;
 			if(!dependOnParent){
 				return super.generateSearchSpec();

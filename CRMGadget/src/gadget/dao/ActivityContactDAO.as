@@ -48,7 +48,7 @@ package gadget.dao
 			//Fiddle in the ActivityId which is missing
 			ob.ActivityId = assoc.ActivityId;
 			ob.Subject = assoc.Subject;		// It cannot hurt to do this.
-
+			
 			//try to find DummySiebelRowId for a matching record
 			ob.DummySiebelRowId = StringUtils.toString(b_value("DummySiebelRowId",{ActivityId:ob.ActivityId,Id:ob.Id}));
 			return true;

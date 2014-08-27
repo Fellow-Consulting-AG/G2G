@@ -416,7 +416,24 @@ package gadget.sync.outgoing
 						actCont.deleted = false;
 						actCont.local_update = null;
 						actCont.error = false;
+						Database.activityContactDao.fix_sync_outgoing(actCont);
 						Database.activityContactDao.update(actCont);
+					}
+				}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
+					var accoundId:String = records[i].AccountId;
+					var contactId:String = records[i].ContactId;					
+					if(StringUtils.isEmpty(contactId)){
+						contactId = records[i].PrimaryContactId;//entity=account						
+					}
+					if(!StringUtils.isEmpty(accoundId)&& !StringUtils.isEmpty(contactId)){
+						var accCont:Object = Database.contactAccountDao.getByParentId({'AccountId':accoundId, 'ContactId':contactId});
+						if(actCont!=null){							
+							accCont.deleted = false;
+							accCont.local_update = null;
+							accCont.error = false;
+							accCont.Id = accoundId;//no need sent it out to ood, cause it auto create on ood
+							Database.contactAccountDao.update(actCont);
+						}
 					}
 				}
 

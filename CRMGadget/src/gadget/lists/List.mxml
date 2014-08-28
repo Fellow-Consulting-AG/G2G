@@ -421,7 +421,7 @@
 					
 				}
 				var obj:Object = Database.sortColumnDao.find(entity);
-				if(obj != null && !StringUtils.isEmpty(obj.column_order)){
+				if(obj != null && !StringUtils.isEmpty(obj.column_order) && FieldUtils.getField(entity,obj.column_order)!=null){
 					order_by = " " + obj.column_order + " " + obj.order_type;
 				}
 				

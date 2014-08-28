@@ -286,6 +286,7 @@
 			}
 			
 			private function createSubObject():void{
+				try{
 				//bug8043---no relation set in sublist (while i see the contact in rel.item setcion on the right)
 				if(entity==Database.activityDao.entity){
 					var conId:String = item["PrimaryContactId"];
@@ -308,7 +309,7 @@
 				}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
 					var accoundId:String = item.AccountId;
 					var contactId:String = item.ContactId;
-					var contactFullName = item.ContactFullName;
+					var contactFullName:String = item.ContactFullName;
 					if(StringUtils.isEmpty(contactId)){
 						contactId = item.PrimaryContactId;//entity=account
 						contactFullName = item.PrimaryContactFullName;
@@ -325,6 +326,9 @@
 						newObj[oraIdField]="#"+newObj.gadget_id;
 						Database.contactAccountDao.update(newObj);
 					}
+				}
+				}catch(e:SQLError){
+					//nothing to do
 				}
 				
 			}

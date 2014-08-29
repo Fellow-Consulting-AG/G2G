@@ -565,11 +565,15 @@ package
 					var acc:Object = Database.accountDao.getAccountById(appItem.AccountId);
 					if(model.assessmentModel=="KiB Miljö"){
 						accTitle = FieldUtils.getField(Database.accountDao.entity,"IndexedPick5").display_name;
-						accValue = PicklistService.getValue(Database.accountDao.entity,'IndexedPick5', acc["IndexedPick5"]);
+						if(acc!=null){
+							accValue = PicklistService.getValue(Database.accountDao.entity,'IndexedPick5', acc["IndexedPick5"]);
+						}
 						isAddAccount = true;
 					}else if(model.assessmentModel=="KiB Tryggmat"){
 						accTitle = FieldUtils.getField(Database.accountDao.entity,"CustomPickList6").display_name;
-						accValue = PicklistService.getValue(Database.accountDao.entity,'CustomPickList6', acc["CustomPickList6"]);
+						if(acc!=null){
+							accValue = PicklistService.getValue(Database.accountDao.entity,'CustomPickList6', acc["CustomPickList6"]);
+						}
 						isAddAccount = true;				
 					}
 					if(isAddAccount){

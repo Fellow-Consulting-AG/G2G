@@ -457,13 +457,14 @@ package
 							item = appItem;
 						}
 						
-						if(field.data_type == "Picklist"){
-							var picklist:ArrayCollection = PicklistService.getPicklist(field.entity, field.element_name);
-							item[field.element_name] = getSelectedItem(item[field.element_name], picklist);
-						}
 						
 						
-						if(item != null){							
+						
+						if(item != null){	
+							if(field.data_type == "Picklist"){
+								var picklist:ArrayCollection = PicklistService.getPicklist(field.entity, field.element_name);
+								item[field.element_name] = getSelectedItem(item[field.element_name], picklist);
+							}
 							var headerRow:XML = <row/>;
 							modelHeader.appendChild(headerRow);
 							headerRow.@title=StringUtils.isEmpty(obj.display_name) ? field.display_name : obj.display_name;

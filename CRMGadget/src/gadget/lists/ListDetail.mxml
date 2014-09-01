@@ -159,10 +159,10 @@
 				var dao:BaseDAO = Database.getDao(entity,false);
 				var linkFields:Dictionary = dao.getLinkFields();
 				for each (var field:Object in fields ){		
-					var col:AdvancedDataGridColumn = list.createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
-						return list.displayDataTime(item,col,entity);
+					var col:AdvancedDataGridColumn = List.createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
+						return List.displayDataTime(item,col,entity);
 					},function(item:Object,col:AdvancedDataGridColumn):String{
-						return list.displayPicklistValue(item,col,entity);
+						return List.displayPicklistValue(item,col,entity);
 					});
 					if(dao!=null && linkFields.hasOwnProperty(col.dataField)){
 						var renderer:ClassFactory = new ClassFactory(LinkButtonColRenderer);

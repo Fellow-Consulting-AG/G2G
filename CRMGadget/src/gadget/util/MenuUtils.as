@@ -622,7 +622,7 @@ package gadget.util {
 			);
 		}		
 		
-		public static function getContextMenuMiniRelationGrid(detail:Detail, grid:DataGrid, handler:Function,entity:String):void{
+		public static function getContextMenuMiniRelationGrid(detail:Detail, grid:AdvancedDataGrid, handler:Function,entity:String):void{
 			var canCreate:Boolean = RightService.canCreate(entity);
 			var canDelete:Boolean = RightService.canDelete(entity);
 			
@@ -653,7 +653,7 @@ package gadget.util {
 			);
 		}
 		
-		public static function getContextMenuMiniDetail(detail:Detail, grid:DataGrid, openDetail:Function, objectSQLQuery:Object,refreshGrid:Function,entity:String):void {
+		public static function getContextMenuMiniDetail(detail:Detail, grid:AdvancedDataGrid, openDetail:Function, objectSQLQuery:Object,refreshGrid:Function,entity:String):void {
 			
 			// Feature #58 Diversey
 			//var enabled:Boolean = GUIUtils.isEnableSR(detail);

@@ -30,7 +30,7 @@ package gadget.dao
 			}
 			,{
 				unique:['ActivityId,Id'],
-				clean_table:true,
+//				clean_table:true,---no need to clear db 
 				name_column:["ContactFullName"],
 				search_columns:["ContactFullName"],
 				oracle_id:"DummySiebelRowId",		//VAHI's not so evil kludge

@@ -36,6 +36,7 @@ package gadget.util
 	import gadget.dao.PreferencesDAO;
 	import gadget.dao.SupportDAO;
 	import gadget.i18n.i18n;
+	import gadget.lists.List;
 	import gadget.service.LocaleService;
 	import gadget.service.PicklistService;
 	import gadget.service.RightService;
@@ -51,6 +52,7 @@ package gadget.util
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
 	import mx.containers.VBox;
+	import mx.controls.AdvancedDataGrid;
 	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.CheckBox;
@@ -65,6 +67,7 @@ package gadget.util
 	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.controls.TextInput;
+	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.controls.dataGridClasses.DataGridItemRenderer;
 	import mx.core.UIComponent;
@@ -128,7 +131,7 @@ package gadget.util
 			return displayObj;
 		}
 		//Bug fixing #466 CRO only show detail sqlGrid not editable
-		public static function openReadOnlySqlGridDetail(detail:Detail, grid:DataGrid,selectedEntity:String):void{
+		public static function openReadOnlySqlGridDetail(detail:Detail, grid:AdvancedDataGrid,selectedEntity:String):void{
 			var selectedItem:Object = grid.selectedItem;
 			if(selectedItem == null){
 				Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_ROW_TO_VIEW_DETAIL'), "" , Alert.OK , grid);
@@ -302,7 +305,7 @@ package gadget.util
 			}
 		}
 		
-		public static function openMassSqlGridDetail(detail:Detail, grid:DataGrid, objectSQLQuery:Object, status:String, subtype:int):void {
+		public static function openMassSqlGridDetail(detail:Detail, grid:AdvancedDataGrid, objectSQLQuery:Object, status:String, subtype:int):void {
 			//Apply only to Working Hours and Material Used in ServiceRequest with Add and Update command only 
 			if(detail.entity == "Service Request"){
 				detail.updateItemFields();
@@ -383,7 +386,7 @@ package gadget.util
 			}
 			
 		}
-		public static function openSqlGridDetail(detail:Detail, grid:DataGrid, objectSQLQuery:Object, status:String, refreshGrid:Function,newItem:Function=null):void {
+		public static function openSqlGridDetail(detail:Detail, grid:AdvancedDataGrid, objectSQLQuery:Object, status:String, refreshGrid:Function,newItem:Function=null):void {
 			
 
 			if(newItem ==null){
@@ -628,7 +631,7 @@ package gadget.util
 		}
 		
 		
-		private static function refreshRelationGrid(detail:Detail, grid:DataGrid,objectSQLQuery:Object):void{
+		private static function refreshRelationGrid(detail:Detail, grid:AdvancedDataGrid,objectSQLQuery:Object):void{
 			var object:Object = objectSQLQuery.relation;
 //			var newRec:Object = objectSQLQuery.newRecord ;
 //			if(newRec!=null){
@@ -695,7 +698,15 @@ package gadget.util
 			var displayObj:VBox = new VBox();
 			displayObj.percentWidth = 100;
 			var subDao:SupportDAO  = Database.getDao(relation.supportTable,false) as SupportDAO;
-			var grid:DataGrid = new DataGrid();
+			var grid:AdvancedDataGrid = new AdvancedDataGrid();
+			
+			grid.setStyle('top', 0);
+			grid.setStyle('left', 8);
+			grid.setStyle('right', 8);
+			grid.setStyle('bottom', 8);
+			grid.sortExpertMode= true;
+			grid.percentWidth = 100;
+			grid.percentHeight=100;
 			// updateRelationGrid(grid, relation, item);
 //			grid.dataProvider =  subDao.findRelatedData(item.gadget_type,item[relation.keySrc]);
 			var cfields:ArrayCollection = null;
@@ -728,7 +739,7 @@ package gadget.util
 				//var i:int=0; // SC-20110616
 				//if(relation.isColDynamic){
 					for each(var colname:String in relation.labelSupport) {
-						var dgCol:DataGridColumn = new DataGridColumn();
+						var dgCol:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 						//var obj:Object = null;
 						
 						var obj:Object = null;
@@ -772,34 +783,38 @@ package gadget.util
 			}else{
 				//if(cfields != null || cfields.length >0){
 					for each (var field:Object in cfields ){				
-						var dgCol2:DataGridColumn = new DataGridColumn();
-						//var obj2:Object = null;
-						var obj2:Object = null;
-						if(field.entity!=null){
-							obj2 = FieldUtils.getField(field.entity, field.element_name);
-						}
-						if(obj2==null){
-							if(relation.supportTable == "Contact.CustomObject2"){
-								obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
-							}else{
-								obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
-							}
-						}
-//						if(subDao!=null){
-//							obj2 = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),field.element_name);
-//						}else{
-//							obj2 = Database.fieldDao.findFieldByPrimaryKey(related, field.element_name);
+						var dgCol2:AdvancedDataGridColumn = List.createColumn(field,function(row:Object,col:AdvancedDataGridColumn):String{
+							return List.displayDataTime(row,col,related);
+						},function(row:Object,col:AdvancedDataGridColumn):String{
+							return List.displayPicklistValue(row,col,related);
+						});
+//						//var obj2:Object = null;
+//						var obj2:Object = null;
+//						if(field.entity!=null){
+//							obj2 = FieldUtils.getField(field.entity, field.element_name);
 //						}
-						if(obj2!=null){
-							dgCol2.headerText = obj2.display_name;
-						}else{
-							dgCol2.headerText=field.element_name;
-						}					
-						//dgCol.headerRenderer = new GridHeaderRendererFactory(dgCol.headerText,relation.entityDest);
-						//if(field.element_name == "Name" && "Activity.Product" == relation.supportTable){
-						//	field.element_name = "Product";
-						//}
-						dgCol2.dataField = field.element_name;
+//						if(obj2==null){
+//							if(relation.supportTable == "Contact.CustomObject2"){
+//								obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
+//							}else{
+//								obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
+//							}
+//						}
+////						if(subDao!=null){
+////							obj2 = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),field.element_name);
+////						}else{
+////							obj2 = Database.fieldDao.findFieldByPrimaryKey(related, field.element_name);
+////						}
+//						if(obj2!=null){
+//							dgCol2.headerText = obj2.display_name;
+//						}else{
+//							dgCol2.headerText=field.element_name;
+//						}					
+//						//dgCol.headerRenderer = new GridHeaderRendererFactory(dgCol.headerText,relation.entityDest);
+//						//if(field.element_name == "Name" && "Activity.Product" == relation.supportTable){
+//						//	field.element_name = "Product";
+//						//}
+//						dgCol2.dataField = field.element_name;
 						
 						columns.push(dgCol2);
 						
@@ -970,7 +985,7 @@ package gadget.util
 			}
 			return false
 		}
-		private static function addContactRoleHandler(detail:Detail, grid:DataGrid, status:String, selectedItem:Object = null):void{
+		private static function addContactRoleHandler(detail:Detail, grid:AdvancedDataGrid, status:String, selectedItem:Object = null):void{
 			var object:Object = grid.data;
 			detail.updateItemFields();
 			//var listField:ArrayCollection =		Database.fieldDao.listFields(DAOUtils.getRecordType(object.relation.supportTable));
@@ -1001,7 +1016,7 @@ package gadget.util
 			}
 			WindowManager.openModal(addContactRole);
 		}
-		private static function addTeamHandler(detail:Detail, grid:DataGrid, status:String, selectedItem:Object = null):void{
+		private static function addTeamHandler(detail:Detail, grid:AdvancedDataGrid, status:String, selectedItem:Object = null):void{
 			var object:Object = grid.data;
 			detail.updateItemFields();
 			//var listField:ArrayCollection =		Database.fieldDao.listFields(DAOUtils.getRecordType(object.relation.supportTable));
@@ -1064,7 +1079,7 @@ package gadget.util
 		}
 		
 		
-		private static function relationGridHandler(detail:Detail, grid:DataGrid, status:String, selectedItem:Object = null):void{
+		private static function relationGridHandler(detail:Detail, grid:AdvancedDataGrid, status:String, selectedItem:Object = null):void{
 			var object:Object = grid.data;
 			detail.updateItemFields();
 			if(status==i18n._('GLOBAL_ADD')){
@@ -1193,7 +1208,14 @@ package gadget.util
 		public static function getQueryGrid(objectSQLQuery:Object, detail:Detail, subtype:int, readonly:Boolean,showBarCodeReader:Function,isReadOnlyGrid:Boolean=false):DisplayObject{
 			var displayObj:VBox = new VBox();
 			displayObj.percentWidth = 100;
-			var grid:DataGrid = new DataGrid();
+			var grid:AdvancedDataGrid = new AdvancedDataGrid();
+			grid.setStyle('top', 0);
+			grid.setStyle('left', 8);
+			grid.setStyle('right', 8);
+			grid.setStyle('bottom', 8);
+			grid.sortExpertMode= true;
+			grid.percentWidth = 100;
+			grid.percentHeight=100;
 			var currentUser:Object = Database.allUsersDao.ownerUser();
 			try{
 				var lstData:ArrayCollection = Database.queryDao.executeQuery(objectSQLQuery.sqlString);
@@ -1206,7 +1228,7 @@ package gadget.util
 			var columns:Array = new Array();
 			for each(var objectField:Object in objectSQLQuery.fields){
 				if (objectField.hidden) continue;
-				var dgCol:DataGridColumn = new DataGridColumn();
+				var dgCol:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 				dgCol.dataField = objectField.element_name;
 				dgCol.headerText = objectField.display_name;
 				if(objectField.data_type=="Number" || objectField.data_type=="Currency" || objectField.data_type=="Integer"){
@@ -1360,7 +1382,7 @@ package gadget.util
 			return displayObj;
 		}
 		
-		private static function computeColumnGrid(objectSQLQuery:Object, grid:DataGrid):void {
+		private static function computeColumnGrid(objectSQLQuery:Object, grid:AdvancedDataGrid):void {
 			var criteria:Object = {"filter_id":objectSQLQuery.column_name, "entity":objectSQLQuery.entity};
 			var rsts:ArrayCollection = Database.customTableWidthConfigurationDao.select(criteria);
 			if(rsts == null || rsts.length == 0) return;

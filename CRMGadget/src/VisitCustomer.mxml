@@ -473,7 +473,11 @@
 						//	var child:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 						//	child.headerText = obj.display_name;
 						//	child.dataField = obj.element_name;
-						columns.addItem(list.createColumn(field,list.displayDataTime,list.displayPicklistValue));
+						columns.addItem(List.createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
+							return List.displayDataTime(item,col,list.entity);
+						},function(item:Object,col:AdvancedDataGridColumn):String{
+							return List.displayPicklistValue(item,col,list.entity);
+						}));
 					}
 					
 				}

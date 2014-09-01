@@ -185,7 +185,7 @@
 					hTask.loadDataOfSelectedUser();
 				}
 			}
-			private function sortNumberic(obj1:Object, obj2:Object):int
+			private static function sortNumberic(obj1:Object, obj2:Object,entity:String):int
 			{
 				//#1253 CRO
 				if(entity == Database.opportunityDao.entity && sortedColumn == "Revenue") sortedColumn= "Revenue_sorting";
@@ -219,7 +219,7 @@
 				Database.sortColumnDao.replace(obj);
 				
 			}
-			private function sortDateTime(obj1:Object, obj2:Object):int
+			private static function sortDateTime(obj1:Object, obj2:Object):int
 			{
 				var dateFormat:Object = DateUtils.getCurrentUserDatePattern();
 				var date1:Date = DateUtils.guessAndParse(obj1[sortedColumn]);
@@ -242,7 +242,7 @@
 				}
 				return 1;
 			}
-			private function sortDate(obj1:Object, obj2:Object):int
+			private static function sortDate(obj1:Object, obj2:Object):int
 			{
 				var dateFormat:Object = DateUtils.getCurrentUserDatePattern();
 				var date1:Date = DateUtils.guessAndParse(obj1[sortedColumn]);
@@ -1225,10 +1225,10 @@
 				WindowManager.openModal(leadWindow);
 			}			
 			
-			public function displayDataTime(item:Object,col:AdvancedDataGridColumn,entityName:String=null):String{
-				if(entityName==null){
-					entityName = entity;
-				}
+			public static function displayDataTime(item:Object,col:AdvancedDataGridColumn,entityName:String):String{
+//				if(entityName==null){
+//					entityName = entity;
+//				}
 				if(MainWindow.VISIT_CUSTOMER ==entityName){
 					entityName = "Activity";
 				}
@@ -1255,14 +1255,14 @@
 				return "";
 			}
 			
-			public function displayPicklistValue(item:Object,col:AdvancedDataGridColumn,entityName:String=null):String{
+			public static function displayPicklistValue(item:Object,col:AdvancedDataGridColumn,entityName:String):String{
 				var code:String = item[col.dataField];
 				if(StringUtils.isEmpty(code)){
 					return "";
 				}else{
-					if(entityName==null){
-						entityName = entity;
-					}
+//					if(entityName==null){
+//						entityName = entity;
+//					}
 					if(MainWindow.VISIT_CUSTOMER ==entityName){
 						entityName = "Activity";
 					}
@@ -1278,7 +1278,7 @@
 				}
 			}
 			
-			public function createColumn(field:Object,dispDateTime:Function,dispPickVal:Function,editable:Boolean = false):AdvancedDataGridColumn{
+			public static function createColumn(field:Object,dispDateTime:Function,dispPickVal:Function,editable:Boolean = false):AdvancedDataGridColumn{
 				var child:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 				child.editable = editable;
 				if (field.element_name == "AccountName" ){
@@ -1335,7 +1335,9 @@
 					
 					//#1124 CRO
 					if(obj.data_type == "Integer" || obj.data_type == "Number" || obj.data_type == "Currency") {
-						child.sortCompareFunction = sortNumberic;
+						child.sortCompareFunction = function(obj1:Object,obj2:Object):int{
+							return sortNumberic(obj1,obj2,this.entity);
+						}
 					}else if(obj.data_type == "Date/Time"){
 						child.sortCompareFunction = sortDateTime;	
 					}else if(obj.data_type == "Date"){
@@ -1402,7 +1404,11 @@
 				//#7694 CRO
 				var obj:Object = Database.sortColumnDao.find(entity);
 				for each (var field:Object in fieldsDB){
-					child = createColumn(field,displayDataTime,displayPicklistValue,editable);
+					child = createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
+						return List.displayDataTime(item,col,entity);
+					},function(item:Object,col:AdvancedDataGridColumn):String{
+						return List.displayPicklistValue(item,col,entity);
+					},editable);
 					if (field.element_name == 'Subject') {
 						treeColumn = child;
 					}

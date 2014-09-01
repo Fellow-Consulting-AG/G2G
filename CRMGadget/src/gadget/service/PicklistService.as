@@ -97,6 +97,12 @@ package gadget.service
 			}
 			
 			picklist = Database.picklistDao.select(field, crmodEntity);
+			
+			if(field=='ReverseRole' && entity==Database.accountRelatedDao.entity){
+				//bug#8137
+				picklist=getPicklist_crmod(Database.accountCompetitorDao.entity,"ReverseRelationshipRole",langCode);
+			}
+			
 			if(picklist==null || picklist.length<1){
 				var picklist2:ArrayCollection = Database.picklistServiceDao.getPicklists(field, crmodEntity, langCode);
 				// if there are some value missing, we add them from the ENU picklist (english-us)

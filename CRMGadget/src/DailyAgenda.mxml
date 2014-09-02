@@ -138,7 +138,9 @@
 				var markerLetter:Array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R","S", "T", "U", "V", "W", "X", "Y", "Z"];
 				imap.removeAllChildren();
 				//var dataSource:ArrayCollection = Database.activityDao.getCurrentAppointmentList(getStartTimeEndTime(date));
-				var dataSource:ArrayCollection = Database.activityDao.getCurrentAppointmentAccountList(getStartTimeEndTime(date));
+				var criteria:Object = getStartTimeEndTime(date);
+				criteria.OwnerId = Database.allUsersDao.ownerUser().Id;
+				var dataSource:ArrayCollection = Database.activityDao.getCurrentAppointmentAccountList(criteria);
 				var relationWithAccount:Object = Relation.getRelation("Activity", "Account");
 				var relationWithContact:Object = Relation.getRelation("Activity", "Contact");
 				var itemsAcount:Array = new Array();

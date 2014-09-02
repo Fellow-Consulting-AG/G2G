@@ -124,7 +124,7 @@ package gadget.dao
 			stmtGetAppointmentAccount = new SQLStatement();
 			stmtGetAppointmentAccount.sqlConnection = sqlConnection;
 			stmtGetAppointmentAccount.text = "SELECT '" + entity + "' gadget_type,CallType,Activity,Subject,StartTime,EndTime,PrimaryContactId,AccountId,gadget_id,ActivityId,important,favorite FROM Activity act" +
-					" WHERE (act.StartTime >= :startTime and act.StartTime <= :endTime and act.Activity = :activity) AND (deleted = 0 OR deleted IS null) ORDER BY act.StartTime";
+					" WHERE (act.StartTime >= :startTime and act.StartTime <= :endTime and act.Activity = :activity) AND (deleted = 0 OR deleted IS null) AND OwnerId=:ownerId ORDER BY act.StartTime";
 
 			stmtVisitCustomer = new SQLStatement();
 			stmtVisitCustomer.sqlConnection = sqlConnection;
@@ -226,6 +226,7 @@ package gadget.dao
 			stmtGetAppointmentAccount.parameters[":startTime"] = objectTime.StartTime;
 			stmtGetAppointmentAccount.parameters[":endTime"] = objectTime.EndTime;
 			stmtGetAppointmentAccount.parameters[":activity"] = "Appointment";
+			stmtGetAppointmentAccount.parameters[":ownerId"] = objectTime.OwnerId;
 			exec(stmtGetAppointmentAccount);
 			return new ArrayCollection((stmtGetAppointmentAccount.getResult() as SQLResult).data);
 		}	

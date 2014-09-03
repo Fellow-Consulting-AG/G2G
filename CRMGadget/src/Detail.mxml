@@ -2305,7 +2305,7 @@
 			private function exportSurvey():void{
 				try
 				{
-					if(Utils.exportSurveyPDF(item)==0) 
+					if(Utils.exportSurveyPDF(item,this)==0) 
 					{
 						Alert.show(i18n._('There is no survey. Please do survey first.'), "Export Survey PDF", Alert.OK, this);
 					}

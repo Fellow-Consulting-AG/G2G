@@ -14,6 +14,7 @@
 			public var actionFunction:Function;
 			public var progressLabel:String;
 			public var proWidth:int=200;
+			public var closeFunction:Function;
 			private function init():void {
 				this.width=proWidth+150;
 				progressBar.label = progressLabel;
@@ -23,9 +24,19 @@
 				loadTimer.addEventListener(TimerEvent.TIMER, incrementTime); 
 				loadTimer.start();
 			}
+			
+			
+			
 			private function incrementTime(event:TimerEvent):void {
-				if(actionFunction != null) actionFunction();
-				nativeWindow.close();
+				try{
+					if(actionFunction != null) actionFunction();
+				}finally{
+					if(closeFunction!=null){
+						closeFunction(this);
+					}else{
+						nativeWindow.close();
+					}
+				}
 			}
 		]]>
 	</mx:Script>			

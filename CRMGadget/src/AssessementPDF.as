@@ -2,7 +2,7 @@ package
 {
 	
 	
-	import com.adobe.coreUI.util.StringUtils;
+	
 	import com.assessment.DtoAssessmentPDFHeader;
 	import com.assessment.DtoColumn;
 	import com.assessment.DtoConfiguration;
@@ -28,6 +28,7 @@ package
 	import gadget.service.PicklistService;
 	import gadget.util.DateUtils;
 	import gadget.util.FieldUtils;
+	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
@@ -112,6 +113,10 @@ package
 				}
 			}
 			
+		}
+		
+		public function hasSurvey():Boolean{
+			return lstTask!=null && lstTask.length>0;
 		}
 		private function getAccountName(appItem:Object,replaceSpace:Boolean=true):String{
 			var name:String = "";
@@ -252,8 +257,10 @@ package
 				nativeProcess.start(npInfo);
 			
 			}catch(e:Error){
+				openned = true;
 				//Alert.show(e.message, "", Alert.OK);
 				throw new RuntimeError(e.message);
+				
 			}
 			
 		}
@@ -261,23 +268,27 @@ package
 		private function exportErrorHandler(e:ProgressEvent):void
 		{
 			var error:String = StringUtil.trim(nativeProcess.standardError.readUTFBytes(nativeProcess.standardError.bytesAvailable));
+			openned = true;
 			//Alert.show("Error while saving Excel file!", "", Alert.OK, this);
 			throw new RuntimeError(error);
 			
 			
 		}
 		private var nativeProcess:NativeProcess = null;
-		
+		public var openned:Boolean = false;
 		private function onStandardOutputData(e:ProgressEvent):void{
 			try
 			{
 				//var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
 				//trace(content);
 				//var file:File = new File(fileName);
-				var file:File = new File(xlsName);
-				//	var file:File =new File(content); // generate pdf
-				file.openWithDefaultApplication();
-				attachPDFToAppointment(file,file.name);	
+				if(!openned){
+					var file:File = new File(xlsName);
+					//	var file:File =new File(content); // generate pdf
+					file.openWithDefaultApplication();
+					attachPDFToAppointment(file,file.name);
+					openned = true;
+				}
 			} 
 			catch(error:Error) 
 			{
@@ -463,7 +474,10 @@ package
 						if(item != null){	
 							if(field.data_type == "Picklist"){
 								var picklist:ArrayCollection = PicklistService.getPicklist(field.entity, field.element_name);
-								item[field.element_name] = getSelectedItem(item[field.element_name], picklist);
+								var val:String = getSelectedItem(item[field.element_name], picklist);
+								if(!StringUtils.isEmpty(val)){
+									item[field.element_name] = val;
+								}
 							}
 							var headerRow:XML = <row/>;
 							modelHeader.appendChild(headerRow);
@@ -561,8 +575,8 @@ package
 				if(isModelTotal){
 					
 					var isAddAccount:Boolean = false;
-					var accTitle:String = null;
-					var accValue:String = null;
+					var accTitle:String = '';
+					var accValue:String = '';
 					var acc:Object = Database.accountDao.getAccountById(appItem.AccountId);
 					if(model.assessmentModel=="KiB Miljö"){
 						accTitle = FieldUtils.getField(Database.accountDao.entity,"IndexedPick5").display_name;

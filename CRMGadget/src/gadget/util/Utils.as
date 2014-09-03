@@ -20,6 +20,7 @@ package gadget.util {
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
+	import flash.events.TimerEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
@@ -30,6 +31,7 @@ package gadget.util {
 	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.Timer;
 	
 	import flashx.textLayout.formats.Float;
 	
@@ -56,10 +58,12 @@ package gadget.util {
 	import gadget.window.WindowManager;
 	
 	import mx.collections.ArrayCollection;
+	import mx.containers.utilityClasses.IConstraintLayout;
 	import mx.controls.Alert;
 	import mx.controls.ComboBox;
 	import mx.controls.TextInput;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+	import mx.core.UIComponent;
 	import mx.core.Window;
 	import mx.utils.ObjectProxy;
 	import mx.utils.StringUtil;
@@ -1173,12 +1177,13 @@ package gadget.util {
 		 * @param progressLabel
 		 * 
 		 */
-		public static function showLoadingProgressWindow(handlerFunction:Function, progressLabel:String="", title:String="",pwidth:int=200):void{
+		public static function showLoadingProgressWindow(handlerFunction:Function, progressLabel:String="", title:String="",pwidth:int=200,closeFunction:Function=null):void{
 			var loadingIndicator:LoadingIndicator = new LoadingIndicator();
 			loadingIndicator.actionFunction = handlerFunction;
 			loadingIndicator.title = title;
 			loadingIndicator.proWidth=pwidth;
 			loadingIndicator.progressLabel = progressLabel;
+			loadingIndicator.closeFunction = closeFunction;
 			WindowManager.openModal(loadingIndicator);
 		}
 		
@@ -2394,12 +2399,43 @@ package gadget.util {
 			}
 		}
 		
-		public static function exportSurveyPDF(item:Object):int{
+		public static function exportSurveyPDF(item:Object,window:UIComponent):int{
+			
+			
 			var acc:Object = Utils.getAccount(item);
-			if(acc != null){
-				var pdfSize:String = Database.preferencesDao.getValue(PreferencesDAO.PDF_SIZE)as String ;
-				var assPDF:AssessementPDF = new AssessementPDF(item,pdfSize);
-				return assPDF.generatePDF();
+			var assPDF:AssessementPDF =new AssessementPDF(item,pdfSize);
+			var error:String='';
+			if(acc != null && assPDF.hasSurvey()){
+				var pdfSize:String = Database.preferencesDao.getValue(PreferencesDAO.PDF_SIZE)as String ;				
+				showLoadingProgressWindow(function():void{
+					try{
+				  		assPDF.generatePDF();
+					}catch(e:Error){
+						error = e.message;
+					}
+				},i18n._("GLOBAL_EXPORTING@Exporting..."),i18n._("GLOBAL_EXPORTING@Exporting..."),200,function(dialog:LoadingIndicator):void{
+					var loadTimer:Timer = new Timer(10, 0); 
+					loadTimer.addEventListener(TimerEvent.TIMER, function():void{
+						var showError:Boolean = false;
+						if(assPDF==null){
+							dialog.close();
+							loadTimer.stop();
+							showError=true;						 
+						}else if(assPDF.openned){
+							dialog.close();
+							loadTimer.stop();
+							showError=true;
+						}
+						if(showError && !StringUtils.isEmpty(error)){
+							Alert.show(error, "", Alert.OK, window);
+						}
+					
+					}); 
+					loadTimer.start();
+				
+				});
+				
+				return 1;
 				
 			}
 			return 0;

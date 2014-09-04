@@ -792,6 +792,11 @@ package gadget.dao
 					allFields.addItem({element_name:ActivityDAO.ASS_PAGE_NAME});
 				}
 			}
+			
+			if(entity==Database.allUsersDao.entity){
+				allFields.addItem({element_name:"FullName"});
+			}
+			
 			return allFields;
 		}
 		

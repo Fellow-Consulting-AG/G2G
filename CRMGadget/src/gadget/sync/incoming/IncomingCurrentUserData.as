@@ -56,6 +56,7 @@ package gadget.sync.incoming
 					{element_name:'ExternalIdentifierForSingleSignOn'},
 					{element_name:'ExternalSystemId'},
 					{element_name:'FirstName'},
+					{element_name:'FullName'},
 					{element_name:'FundApprovalLimit'},
 					{element_name:'Id'},
 					{element_name:'IntegrationId'},

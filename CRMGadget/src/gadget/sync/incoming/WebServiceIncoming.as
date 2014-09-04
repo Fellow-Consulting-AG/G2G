@@ -236,6 +236,9 @@ package gadget.sync.incoming {
 					//applyFilters(xml, field.element_name, ws20name, criterials);
 				}
 			}
+			if(dao.entity==Database.allUsersDao.entity){
+				xml.appendChild(new XML("<FullName/>"));
+			}
 			if(!hasActivityParent){
 			    xml.appendChild(new XML("<" + ActivityDAO.PARENTSURVEYID + "/>"));
 			}

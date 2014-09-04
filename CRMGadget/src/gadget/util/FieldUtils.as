@@ -186,6 +186,7 @@ package gadget.util {
 					{element_name:'LastLoggedIn'},
 					{element_name:'LastName'},
 					{element_name:'LeadLimit'},
+					{element_name:'FullName'},
 					{element_name:'Locale'},
 					{element_name:'LocaleCode'},
 					{element_name:'ManagerFullName'},

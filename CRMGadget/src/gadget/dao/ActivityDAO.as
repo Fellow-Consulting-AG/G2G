@@ -291,7 +291,7 @@ package gadget.dao
 		
 		override public function getOwnerFields():Array{
 			var mapfields:Array = [
-				{entityField:"AssignedTo", userField:"FullName"},{entityField:"Owner", userField:"Alias"},{entityField:"OwnerId", userField:"Id"}
+				{entityField:"AssignedTo", userField:"FullName"},{entityField:"Alias", userField:"Alias"},{entityField:"Owner", userField:"Alias"},{entityField:"OwnerId", userField:"Id"}
 			];
 			return mapfields;
 			

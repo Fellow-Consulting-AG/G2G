@@ -297,7 +297,7 @@ package
 					
 					//	var file:File =new File(content); // generate pdf
 					file.openWithDefaultApplication();
-					attachPDFToAppointment(file,file.name);
+					attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".xlsx");
 					openned = true;
 				}
 			} 
@@ -628,10 +628,6 @@ package
 			}
 			return total.toFixed(2);
 		} 
-		
-		
-		
-		
 		
 		
 		

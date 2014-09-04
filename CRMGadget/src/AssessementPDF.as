@@ -13,6 +13,8 @@ package
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
@@ -232,22 +234,27 @@ package
 				
 				//
 				var jarFile:File =null;
+				var npInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 				var arg:Vector.<String> = new Vector.<String>;
-				if (os == "Win") {
-					file = new File("c:/windows/system32/javaw.exe");
-					jarFile =File.applicationDirectory.resolvePath("export_excel.jar");
-					arg.push("-Djava.library.path="+jarFile.parent.nativePath);
-					arg.push("-jar");
+				if (os == "Win") {					
+					//var batFile:File = File.applicationDirectory.resolvePath("exportexcel.bat");
+					file = new File("c:\\Windows\\System32\\cmd.exe");
+//					jarFile =File.applicationDirectory.resolvePath("export_excel.jar");
+//					arg.push("-Djava.library.path="+jarFile.parent.nativePath);
+					arg.push("/k");
+					arg.push("exportexcel.bat");	
+					npInfo.workingDirectory=File.applicationDirectory;
 				} else {
 					file = File.applicationDirectory.resolvePath("exportexcel.sh");
+					arg.push(File.applicationDirectory.resolvePath("export_excel.jar").nativePath);
+					
 				}
 				
-				
-				arg.push(File.applicationDirectory.resolvePath("export_excel.jar").nativePath);
 				arg.push(xmlFile.nativePath);
-				var npInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+				
+				
 				npInfo.executable = file;
-				npInfo.arguments = arg;
+				npInfo.arguments = arg;				
 				nativeProcess = new NativeProcess();
 				
 				
@@ -264,6 +271,9 @@ package
 			}
 			
 		}
+		
+		
+		
 		
 		private function exportErrorHandler(e:ProgressEvent):void
 		{
@@ -282,8 +292,9 @@ package
 				//var fileName:String = StringUtil.trim(nativeProcess.standardOutput.readUTFBytes(nativeProcess.standardOutput.bytesAvailable));
 				//trace(content);
 				//var file:File = new File(fileName);
-				if(!openned){
-					var file:File = new File(xlsName);
+				var file:File = new File(xlsName);
+				if(!openned && file.exists){
+					
 					//	var file:File =new File(content); // generate pdf
 					file.openWithDefaultApplication();
 					attachPDFToAppointment(file,file.name);

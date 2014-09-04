@@ -369,9 +369,12 @@ package gadget.util {
 				if (tmpField.custom == null) {
 					var fieldInfo:Object = FieldUtils.getField(entity, tmpField.column_name);
 					if(!fieldInfo) continue;
-					var fieldName:String = Utils.convertFldAccTypeToType(entity,fieldInfo.element_name);
-					
+					var fieldName:String = fieldInfo.element_name;
 					var fieldManagement:Object = fieldsManagement[fieldName];
+					if(fieldManagement==null){
+						fieldName = Utils.convertFldAccTypeToType(entity,fieldInfo.element_name);	
+						fieldManagement = fieldsManagement[fieldName];
+					}
 					if(fieldManagement!=null){
 						if(!StringUtils.isEmpty( fieldManagement.DefaultValue )){
 							var defaultValue:String = fieldManagement.DefaultValue;

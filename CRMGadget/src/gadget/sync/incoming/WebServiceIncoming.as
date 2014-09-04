@@ -532,6 +532,10 @@ package gadget.sync.incoming {
 				}
 			}
 			
+			if(entityIDour==Database.allUsersDao.entity){
+				tmpOb["FullName"] = getValue(entitySod,data,WSProps.ws10to20(entitySod,"FullName"));
+			}
+			
 			if(!hasActivityParent){
 				tmpOb[ActivityDAO.PARENTSURVEYID]=getValue(entitySod,data,ActivityDAO.PARENTSURVEYID);
 			}

@@ -2,6 +2,7 @@ package gadget.sync.incoming
 {
 	import flash.utils.Dictionary;
 	
+	import gadget.dao.ActivityDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -65,10 +66,18 @@ package gadget.sync.incoming
 			var qsublist:QName=new QName(ns1.uri,subList), qsub:QName=new QName(ns1.uri,subIDns);
 			qapp = qapp.child(qsublist)[0].child(qsub)[0];			
 			var ignoreFields:Dictionary = dao.incomingIgnoreFields;
+			var hasActivityParent:Boolean = false;
 			for each (var field:Object in Database.fieldDao.listFields(subIDsod)) {
 				if (!ignoreFields.hasOwnProperty(field.element_name) && ignoreQueryFields.indexOf(field.element_name)<0) {
+					if(field.element_name == ActivityDAO.PARENTSURVEYID){
+						hasActivityParent = true;
+					}
 					qapp.appendChild(new XML("<" + WSProps.ws10to20(subIDsod, field.element_name) + "/>"));
 				}
+			}
+			
+			if(subIDour==Database.activityDao.entity && !hasActivityParent){
+				qapp.appendChild(new XML("<" + WSProps.ws10to20(subIDsod, ActivityDAO.PARENTSURVEYID) + "/>"));
 			}
 		}
 	}

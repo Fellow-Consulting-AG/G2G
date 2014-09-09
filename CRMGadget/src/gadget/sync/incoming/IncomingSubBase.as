@@ -87,6 +87,7 @@ package gadget.sync.incoming
 			}
 			//TODO
 			startTime		= Utils.calculateStartTime(Database.subSyncDao.getAdvancedFilterType(ID,subId)); 
+			_currentMaxIndex = pageSize;
 			
 		}
 
@@ -97,8 +98,8 @@ package gadget.sync.incoming
 		override protected function tweak_vars():void {
 			
 			if(this is IncomingAttachment){
-				pageSize = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_page",10)));
-				SUB_PAGE_SIZE = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_subpage",10)));
+				pageSize = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_page",50)));
+				SUB_PAGE_SIZE = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_subpage",4)));
 			}else{
 				pageSize = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_page",50)));
 				SUB_PAGE_SIZE = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_subpage",50)));
@@ -152,7 +153,7 @@ package gadget.sync.incoming
 						super.nextPage(true);
 					}else{
 						_currentMinIndex = _currentMaxIndex;
-						_currentMaxIndex+=50;//incrase max
+						_currentMaxIndex+=pageSize;//incrase max
 						_subpage=0;
 						_page=0;
 						doRequest();
@@ -231,8 +232,11 @@ package gadget.sync.incoming
 			//parent ids cannot empty
 			if(parentcriteria!=''){
 				parentcriteria+=' AND ';
+				parentcriteria+=("("+generateSearchByParentId()+")");			
+			}else{
+				parentcriteria = generateSearchByParentId();
 			}
-			parentcriteria+=("("+generateSearchByParentId()+")");			
+			
 			
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";

@@ -343,8 +343,9 @@ package gadget.sync.outgoing
 						var tmp2:XML = <{subName} operation={oper}/>;
 
 						for each (var name:String in subDao.getColsOutgoing()) {
-							if (name=="DummySiebelRowId")
+							if (name=="DummySiebelRowId" || subDao.outgoingIgnoreFields.hasOwnProperty(name)){
 								continue;
+							}
 							//if (obj[name] == null) continue;
 							var val:String = StringUtils.unNull(obj[name]);
 

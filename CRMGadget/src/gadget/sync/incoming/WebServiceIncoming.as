@@ -536,7 +536,7 @@ package gadget.sync.incoming {
 				tmpOb["FullName"] = getValue(entitySod,data,WSProps.ws10to20(entitySod,"FullName"));
 			}
 			
-			if(!hasActivityParent){
+			if(!hasActivityParent||entitySod==Database.activityDao.entity){
 				tmpOb[ActivityDAO.PARENTSURVEYID]=getValue(entitySod,data,ActivityDAO.PARENTSURVEYID);
 			}
 			

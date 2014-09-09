@@ -228,7 +228,8 @@ package gadget.util {
 					{element_name:'UserSignInId'}]);	
 				
 				
-			}
+			}		
+			
 			if (entity == "Address" && ( fields==null ||fields.length==0 ) ) {
 				//if we can't sync address fields from ood we use static fiellds 
 				return allAddressFiel;

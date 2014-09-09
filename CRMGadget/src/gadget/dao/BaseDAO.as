@@ -421,7 +421,8 @@ package gadget.dao
 			for (var name:String in readOnlyFields){
 				dic[name] = name;
 			}
-			
+			//always ignore field =ModId
+			dic["ModId"]="ModId";
 			
 			return dic;
 			
@@ -760,6 +761,7 @@ package gadget.dao
 		private function fieldList(updateFF:Boolean=true):ArrayCollection {
 			var allFields:ArrayCollection = new ArrayCollection();
 			allFields.addAll(FieldUtils.allFields(entity));
+		
 			// check if the Oracle ID is in the list
 			var found:Boolean = false;
 			for each (var field:Object in allFields) {
@@ -783,6 +785,7 @@ package gadget.dao
 				for each (var field1:Object in allFields) {
 					if (field1.element_name == ActivityDAO.PARENTSURVEYID) {
 						found = true;
+						break;
 					}
 				}
 				if(!found){
@@ -791,10 +794,17 @@ package gadget.dao
 				if(updateFF){
 					allFields.addItem({element_name:ActivityDAO.ASS_PAGE_NAME});
 				}
-			}
-			
-			if(entity==Database.allUsersDao.entity){
-				allFields.addItem({element_name:"FullName"});
+			}else if(entity==Database.allUsersDao.entity){
+				found = false;
+				for each (var field2:Object in allFields) {
+					if (field2.element_name == "FullName") {
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					allFields.addItem({element_name:"FullName"});
+				}
 			}
 			
 			return allFields;

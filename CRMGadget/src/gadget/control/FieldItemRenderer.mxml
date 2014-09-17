@@ -104,7 +104,10 @@
 			private function initCalculatedField(event:MouseEvent):void {
 				var calculatedField:CalculatedField = new CalculatedField();
 				// quickSearch.mainWindow = this;
-				calculatedField.calculatedInputText = event.currentTarget as TextInput;
+				calculatedField.postSave =function(label:String):void{
+					TextInput(event.currentTarget).text=label;
+				};
+				calculatedField.tempHeaderVal = TextInput(event.currentTarget).text;
 				calculatedField.dataField = data;
 				WindowManager.openModal(calculatedField);
 			}

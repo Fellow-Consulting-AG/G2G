@@ -41,10 +41,9 @@ package gadget.sync.incoming
 		protected const PARENT_SEARCH_SPEC:String="parent_search_spec";
 		protected var SUB_PAGE_SIZE:int=25;	
 	//	protected var parentSearchSpec:String;
-		private var _currentMinIndex:int =0;
-		private var _currentMaxIndex:int = 50;
+		
 		private var _listParents:ArrayCollection;
-		private var _parentRecord:int=0;
+		private var _currentRequestIds:ArrayCollection;
 		
 		public function IncomingSubBase(ID:String, subId:String, _dao:String=null) {
 			subIDour	= subId;
@@ -86,8 +85,7 @@ package gadget.sync.incoming
 				
 			}
 			//TODO
-			startTime		= Utils.calculateStartTime(Database.subSyncDao.getAdvancedFilterType(ID,subId)); 
-			_currentMaxIndex = pageSize;
+			startTime		= Utils.calculateStartTime(Database.subSyncDao.getAdvancedFilterType(ID,subId)); 		
 			
 		}
 
@@ -132,11 +130,10 @@ package gadget.sync.incoming
 		}
 
 		protected function nextSubPage(lastPage:Boolean, lastSubPage:Boolean):void {
-			if(!lastPage || !lastSubPage){
-				_currentMinIndex=Math.max(0,(_currentMinIndex-_parentRecord));
-			}
+			
 			if (!lastSubPage) {
 				showCount();
+				_listParents.addAllAt(_currentRequestIds,0);
 				_subpage++;		//VAHI yes, this might overcount
 				doRequest();
 				return;
@@ -149,17 +146,15 @@ package gadget.sync.incoming
 		protected override function nextPage(lastPage:Boolean):void {			
 				showCount();
 				if(lastPage){
-					if(_currentMaxIndex>=_listParents.length){						
+					if(_listParents.length<=0){						
 						super.nextPage(true);
-					}else{
-						_currentMinIndex = _currentMaxIndex;
-						_currentMaxIndex+=pageSize;//incrase max
+					}else{						
 						_subpage=0;
 						_page=0;
 						doRequest();
 					}
 				}else{
-					_currentMinIndex=Math.max(0,(_currentMinIndex-_parentRecord));
+					_listParents.addAllAt(_currentRequestIds,0);
 					_subpage=0;
 					_page++;
 					doRequest();
@@ -198,7 +193,7 @@ package gadget.sync.incoming
 				_listParents = doGetParents();
 			}
 			
-			if(_currentMinIndex>=_listParents.length){
+			if(_listParents.length<=0){
 				super.nextPage(true);
 				return;
 			}
@@ -258,18 +253,20 @@ package gadget.sync.incoming
 		
 		
 		protected  function generateSearchByParentId():String{
-			if(_currentMinIndex<_listParents.length){
+			if(_listParents.length>0){
 				var criteria:String="";
-				var maxIndex:int = Math.min(_currentMaxIndex,_listParents.length);
+				var maxIndex:int = Math.min(pageSize,(_listParents.length-1));
 				var first:Boolean = true;
-				_parentRecord=0;
-				for(_currentMinIndex;_currentMinIndex<maxIndex;_currentMinIndex++){
-					_parentRecord++;
+				_currentRequestIds=new ArrayCollection();
+				for(var currentMinIndex:int=maxIndex;currentMinIndex>=0;currentMinIndex--){
+					
 					if(!first){
 						criteria+=" OR ";
 					}
+					var pid:String = _listParents.removeItemAt(currentMinIndex) as String;
+					_currentRequestIds.addItem(pid);
 					first = false;
-					criteria+=("[Id]=\'"+_listParents.getItemAt(_currentMinIndex)+"\'");
+					criteria+=("[Id]=\'"+pid+"\'");
 				}
 				return criteria;
 			}

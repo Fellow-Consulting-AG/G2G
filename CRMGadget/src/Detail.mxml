@@ -20,6 +20,7 @@
 			import gadget.control.ImageTextInput;
 			import gadget.control.ImageTreeFinder;
 			import gadget.dao.BaseDAO;
+			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.CustomRecordTypeServiceDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
@@ -1135,7 +1136,7 @@
 					hbox.addChild(rightForm);
 					innerCanvas.addChild(hbox);
 					//CRO 05.01.2011
-					innerCanvas.label = i18n._('GLOBAL_PAGE') + " " + (p+1);
+					//innerCanvas.label =getPageHeader(p);
 					viewstack.addChild(innerCanvas);
 					innerCanvas.setStyle('top', 0);
 					innerCanvas.setStyle('bottom', 0);
@@ -1342,6 +1343,12 @@
 					subtype = LayoutUtils.getSubtypeIndex(item);
 					subtypeActivity = subtype;
 				}
+				//set header label
+				for(var p:int=0;p<numOfPage;p++){
+					var page:Canvas = innerCanvasL[p];
+					page.label = getPageHeader(p);
+				}
+				
 				fields = Database.layoutDao.selectLayout(entity, subtype);
 				
 				//var objSubtype:Object = LayoutUtils.getObjectSubtype(entity,subtype+'');
@@ -1758,8 +1765,9 @@
 					height = heightMax>height?heightMax:height; 
 					
 				}
-				viewstack.setStyle("tabHeight",pageIndex==0?0:24);
-				if(pageIndex==0) height -=14;
+				//always show page header---bug#8266
+				//viewstack.setStyle("tabHeight",pageIndex==0?0:24);
+				//if(pageIndex==0) height -=14;
 				
 				PreferenceUtils.WindowScreenBounds(this);				
 				detailCanvas.height = height;
@@ -2315,6 +2323,23 @@
 					Alert.show(error.message, "", Alert.OK, this);
 				}
 				
+			}
+			
+			private function getPageHeader(idx:int):String{				
+				if(entity!=null){
+					
+					var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType(entity,"#header_"+entity+"_"+subtype+"_"+idx ,subtype,LocaleService.getLanguageInfo().LanguageCode);
+					if(objCustomField!=null){
+						var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+						
+						
+						if(!StringUtils.isEmpty(headerValue)){
+							return headerValue;
+						}		
+					}
+					
+				}
+				return i18n._('GLOBAL_PAGE') + " " + (idx+1);
 			}
 			
 			private function getModelName(lst:ArrayCollection):String{

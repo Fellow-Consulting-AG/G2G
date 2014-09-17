@@ -140,7 +140,7 @@
 			[Bindable] private var pickListDescription1:String = i18n._("CALCULATEDFIELD_DRAG_AND_DROP_ONE");
 			
 			[Bindable] private var entityFeildList:ArrayCollection = new ArrayCollection();
-			[Bindable] public var calculatedInputText:TextInput;
+			[Bindable] public var tempHeaderVal:String;
 			[Bindable] public var refreshGridEntity:Function;
 			[Bindable] public var dataField:Object;
 			[Bindable] public var isCustomField:Boolean = false;
@@ -154,6 +154,7 @@
 			private var objectEntity:Object = new Object;
 			private var xmlText:String = null;
 			private var headerFieldMap:Object = new Object;
+			public var postSave:Function;
 			
 			[Bindable] private var customPicklistList:ArrayCollection = new ArrayCollection();
 			[Bindable] private var entityPicklistList:ArrayCollection = new ArrayCollection();
@@ -352,7 +353,7 @@
 				var languageCode:String = getComboDataField(cbolanguageCodes);
 				headerFieldMap[currentLanguage] = txtHeaderValue.text;
 				if(StringUtils.isEmpty(StringUtil.trim(headerFieldMap[CustomFieldDAO.DEFAULT_LANGUAGE_CODE]))){
-					headerFieldMap[CustomFieldDAO.DEFAULT_LANGUAGE_CODE] = calculatedInputText.text;
+					headerFieldMap[CustomFieldDAO.DEFAULT_LANGUAGE_CODE] = tempHeaderVal;
 				}
 				var headerFieldValue:String = "";
 				var list:ArrayCollection = cbolanguageCodes.dataProvider as ArrayCollection;
@@ -629,14 +630,19 @@
 								if(checkHeaderFieldValue()) return;
 								var languageCode:String = LocaleService.getLanguageInfo().LanguageCode;								
 								if(Utils.checkNullValue(headerFieldMap[languageCode])!=""){
-									calculatedInputText.text = dataField["custom"] = headerFieldMap[languageCode];
+									dataField["custom"] = headerFieldMap[languageCode];
 								}else{
-									calculatedInputText.text = dataField["custom"] = headerFieldMap[CustomFieldDAO.DEFAULT_LANGUAGE_CODE];
+									dataField["custom"] = headerFieldMap[CustomFieldDAO.DEFAULT_LANGUAGE_CODE];
+								}
+								if(postSave!=null){
+									postSave(dataField["custom"]);
 								}
 							}else{ // create calculate field.
 								customField["column_name"] = dataField["column_name"];
 								customField["fieldType"] = dataField["custom"] = "Formula";
-								calculatedInputText.text = txtArFormula.text;	
+								if(postSave!=null){
+									postSave(txtArFormula.text);
+								}
 							}
 							if(txtEntity.text == Database.businessPlanDao.entity){
 								customField["column_name"] = txtFieldName.text;

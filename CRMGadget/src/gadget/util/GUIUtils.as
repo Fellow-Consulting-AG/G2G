@@ -4,6 +4,7 @@ package gadget.util
 	
 	
 	
+
 	import com.crmgadget.eval.Evaluator;
 	import com.google.analytics.debug._Style;
 	
@@ -20,6 +21,8 @@ package gadget.util
 	import flash.net.URLRequestMethod;
 	import flash.text.TextField;
 	
+	import flexunit.utils.ArrayList;
+	
 	import gadget.control.AutoComplete;
 	import gadget.control.EntityTypeComboBox;
 	import gadget.control.GoogleLocalSearchAddress;
@@ -28,6 +31,7 @@ package gadget.util
 	import gadget.control.ImageTextInput;
 	import gadget.control.ImageTreeFinder;
 	import gadget.control.MultiSelectList;
+	import gadget.control.StringStepper;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomFieldDAO;
 	import gadget.dao.CustomPicklistValueDAO;
@@ -63,7 +67,6 @@ package gadget.util
 	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.controls.LinkButton;
-	import mx.controls.NumericStepper;
 	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.controls.TextInput;
@@ -77,6 +80,8 @@ package gadget.util
 	import mx.events.DataGridEvent;
 	import mx.formatters.DateFormatter;
 	import mx.utils.StringUtil;
+	
+	import spark.components.NumericStepper;
 	
 	public class GUIUtils{
 		private static const SMALL_FIELDS:Array = ["CreatedBy", "ModifiedBy"];
@@ -1530,6 +1535,16 @@ package gadget.util
 				var hboxControl:HBox = (component as HBox);
 				var hours:int = (hboxControl.getChildAt(1) as NumericStepper).value;
 				var minutes:int = (hboxControl.getChildAt(2) as NumericStepper).value;
+				if(getMaxHour()==12){
+					
+					var ispm:Boolean = StringStepper(hboxControl.getChildAt(3)).value==1;
+					if(ispm){
+						hours = hours+12;
+						if(hours ==24){
+							hours =0;
+						}
+					}
+				}
 				value = null;
 				if ((hboxControl.getChildAt(0) as DateField).text != '') {
 					var selectedDate2:Date = (hboxControl.getChildAt(0) as DateField).selectedDate;
@@ -1602,12 +1617,38 @@ package gadget.util
 					var hboxControl:HBox = (component as HBox);
 					// Bug #42
 					var date:Date = value is Date ? value as Date : value.toString() ? DateUtils.guessAndParse(value.toString()) : null;
+					var maxHour:int = getMaxHour();					
+				
 					if(date!=null){
 						date=new Date(date.getTime()+DateUtils.getCurrentTimeZone(date)*millisecondsPerHour);
 					}
-					(hboxControl.getChildAt(1) as NumericStepper).value = date==null ? 0 : date.getHours();
-					(hboxControl.getChildAt(2) as NumericStepper).value = date==null ? 0 : date.getMinutes();
+					
+					if(date!=null && maxHour==12){
+						var intHr:int = date.getHours();
+						var intMM:int = date.getMinutes();						
+						if(intHr>maxHour){
+							intHr = intHr-maxHour;
+						}else if(intHr==0 && maxHour==12){
+							intHr = 12;
+						}
+						var dd:int = 0;
+						if(date.getHours()>=12){
+							dd = 1;
+						}	
+						(hboxControl.getChildAt(1) as NumericStepper).value = intHr;
+						(hboxControl.getChildAt(2) as NumericStepper).value = intMM;
+						StringStepper(hboxControl.getChildAt(3)).value=dd;
+						
+					}else{
+						(hboxControl.getChildAt(1) as NumericStepper).value = date==null ? 0 : date.getHours();
+						(hboxControl.getChildAt(2) as NumericStepper).value = date==null ? 0 : date.getMinutes();
+					}
+					
+					
 					(hboxControl.getChildAt(0) as DateField).selectedDate = date;
+					
+					
+					
 				} else if (component is HBox && (fieldInfo.element_name.indexOf("Email") > -1 || fieldInfo.element_name.indexOf("WebSite") > -1)) {
 					var childDis:HBox = (component as HBox);
 					(childDis.getChildAt(0) as TextInput).text = value.toString();
@@ -1715,6 +1756,20 @@ package gadget.util
 				
 			}
 			return childObj;
+		}
+		
+		
+		public static function getMaxHour():int{
+			var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();
+			
+			if(currentUserDatePattern!=null && currentUserDatePattern.timeFormat!=null){
+				var timeFormat:String = currentUserDatePattern.timeFormat;
+				if(timeFormat.charAt(timeFormat.length-1)=='A'){
+					return 12;
+				}
+			}
+			
+			return 24;
 		}
 		
 		/**
@@ -1873,16 +1928,21 @@ package gadget.util
 					
 					
 					df.selectedDate = dateTimeObject;					
-					df.width = 100;					
+					df.width = 90;					
 					var intHr:int = dateTimeObject==null ? 0 : dateTimeObject.getHours();
 					var intMM:int = dateTimeObject==null ? 0 : dateTimeObject.getMinutes();
-					
+					var maxHour:int = getMaxHour();
+					if(intHr>maxHour){
+						intHr = intHr-maxHour;
+					}else if(intHr==0 && maxHour==12){
+						intHr = 12;
+					}
 						
 					var hr:NumericStepper = new NumericStepper();
 					hr.name = "H"+fieldInfo.element_name;
 					hr.width = 40;
 					hr.minimum = 0;
-					hr.maximum = 23;
+					hr.maximum = getMaxHour();
 					hr.value = intHr;
 					hr.addEventListener(Event.CHANGE,function(e:Event):void{
 						if(fieldInfo.element_name == "StartTime"){
@@ -1909,6 +1969,8 @@ package gadget.util
 						}
 						
 					});
+					
+					
 					//df.text = "";
 					df.enabled = !readonly;
 					hr.enabled = !readonly;
@@ -1917,14 +1979,45 @@ package gadget.util
 					(childObj as HBox).addChild(hr);
 					(childObj as HBox).addChild(mm);
 					
-					
+					//am/pm
+					var cboDD:StringStepper =null;
+					if(maxHour==12){
+						cboDD = new StringStepper();
+						cboDD.width=40;
+						cboDD.name="DD"+fieldInfo.element_name;
+						cboDD.dataProvider=new ArrayCollection(["AM","PM"]);
+						cboDD.enabled=!readonly;
+						cboDD.maximum=1;
+						if(dateTimeObject!=null && dateTimeObject.getHours()>=12){
+							cboDD.value=1;
+						}else{
+							cboDD.value=0;
+						}
+						(childObj as HBox).addChild(cboDD);
+						
+						
+						cboDD.addEventListener(Event.CHANGE,function(e:Event):void{
+							if(fieldInfo.element_name == "StartTime"){
+								var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
+								var endDate:HBox = endDisplay.getChildByName("EndTime") as HBox;
+								var dd:StringStepper = endDate.getChildAt(3) as StringStepper;
+								dd.value = StringStepper(e.target).value;								
+							}
+							
+						});
+
+					}
 					var clearBtn:LinkButton = new LinkButton();
 					clearBtn.enabled= !readonly; //Bug #1710 CRO
 					clearBtn.setStyle("icon",ImageUtils.deleteIcon);
+					clearBtn.width=20;
 					clearBtn.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void {
 						df.text = "";
 						hr.value = 0;
 						mm.value = 0;
+						if(cboDD!=null){
+							cboDD.value=0;
+						}
 						item[fieldInfo.element_name] = "";
 					});
 					if(!small) (childObj as HBox).addChild(clearBtn);

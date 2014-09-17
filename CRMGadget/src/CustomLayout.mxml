@@ -9,8 +9,10 @@
 	
 	<mx:Script>
         <![CDATA[
+			import gadget.control.CalculatedField;
 			import gadget.control.FieldItemRenderer;
 			import gadget.dao.BookDAO;
+			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
@@ -23,6 +25,7 @@
 			import gadget.util.Relation;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
+			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
 			import mx.containers.Canvas;
@@ -69,11 +72,14 @@
 			public static const CALCULATED_CODE:String = "CALCULATEDFIELD";
 			public static const CUSTOMFIELD_CODE:String = "CUSTOMFIELD";
 			public static const BINDPICKLIST_CODE:String = "BINDPICKLISTFIELD";
+			public var PAGE_HEADER:Dictionary = new Dictionary();
+			
 			
 			private var numOfPage:int = 4;
 
 			private function init():void {
-				
+				if(item!=null && !StringUtils.isEmpty(item.subtype)) subtype = item.subtype;
+				else if (item != null) subtype = LayoutUtils.getSubtypeIndex(item);
 				
 				// create page layout.
 				for(var p:int=0;p<numOfPage;p++){
@@ -90,13 +96,12 @@
 					hbox.addChild(dropTargetLeft);
 					hbox.addChild(dropTargetRight);
 					mainPage.addChild(hbox);
-					
+					PAGE_HEADER[p]=getPageTitleTranslate(p);
 					MenuUtils.getContextMenuDetailLayout(dropTargetLeft, removeField, updateProperty);
 					MenuUtils.getContextMenuDetailLayout(dropTargetRight, removeField, updateProperty);
 				}
+				labelPage.text = getPageHeader(0);//select the first page
 				
-				if(item!=null && !StringUtils.isEmpty(item.subtype)) subtype = item.subtype;
-				else if (item != null) subtype = LayoutUtils.getSubtypeIndex(item);
 				
 				var fields:ArrayCollection = Database.layoutDao.selectLayout(entity, subtype);
 				var listOldHeaderField:ArrayCollection = new ArrayCollection();
@@ -218,8 +223,30 @@
 			}
 			
 			private function selectPage(idx:int):void{
-				labelPage.text = i18n._(CUSTOMLAYOUT_TEXT_PAGE) + " " + (idx+1);
+				labelPage.text = getPageHeader(idx);
 				mainPage.selectedIndex = idx;
+			}
+			
+			private function getPageHeader(idx:int):String{				
+				if(entity!=null){
+					
+					var objCustomField:Object = PAGE_HEADER[idx]?PAGE_HEADER[idx].customField:null; 
+						
+					if(objCustomField==null){
+						//try to get it from db
+						objCustomField  = Database.customFieldDao.selectCustomFieldWithSubType(entity,"#header_"+entity+"_"+subtype+"_"+idx ,subtype,LocaleService.getLanguageInfo().LanguageCode);
+					}
+					if(objCustomField!=null && objCustomField.value){
+						var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+					
+					
+						if(!StringUtils.isEmpty(headerValue)){
+							return headerValue;
+						}		
+					}
+					
+				}
+				return i18n._(CUSTOMLAYOUT_TEXT_PAGE) + " " + (idx+1);
 			}
 			
 			
@@ -336,6 +363,13 @@
             	Database.layoutDao.deleteLayout(entity, subtype);
 				
 				for (var p:int = 0; p < mainPage.getChildren().length; p++) {
+					//save page header
+					var pageField:Object = PAGE_HEADER[p].customField;
+					if(pageField!=null){
+						pageField.subtype= subtype;
+						Database.customFieldDao.delete_({entity:entity, subtype:subtype, column_name:pageField["column_name"]});
+						Database.customFieldDao.insert(pageField);
+					}
 					var leftPanel:ArrayCollection = leftPanelList[p];
 					var rightPanel:ArrayCollection = rightPanelList[p];
 					for (var j:int = 0; j <2; j++) {
@@ -592,6 +626,36 @@
 				}
 				fetchBtn.enabled = true;
 			}
+			
+			
+			protected function getPageTitleTranslate(idx:int):Object{
+				var colName:String= "#header_"+entity+"_"+subtype+"_"+idx;
+				var obj:Object = new Object();
+				obj.column_name = colName;
+				obj.entity=entity;
+				
+				obj.languageCode=LocaleService.getLanguageInfo().LanguageCode;
+				var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType(entity,colName ,subtype,obj.languageCode);			
+				obj["customField"] = objCustomField;
+				obj.custom=getPageHeader(idx);
+				return obj;
+			}
+
+			protected function labelPage_doubleClickHandler(event:MouseEvent):void
+			{
+				
+				
+				var calculatedField:CalculatedField = new CalculatedField();
+				// quickSearch.mainWindow = this;
+				calculatedField.postSave =function(newLbl:String):void{
+					labelPage.text=newLbl;
+				};
+				calculatedField.tempHeaderVal = labelPage.text;
+				calculatedField.dataField = PAGE_HEADER[mainPage.selectedIndex];
+				WindowManager.openModal(calculatedField);
+				
+			}
+
         ]]>
 	</mx:Script>
 	
@@ -602,7 +666,7 @@
 			<mx:HBox width="100%">
 				<mx:HBox width="20%" id="pageButton">
 					<mx:LinkButton doubleClickEnabled="true" id="btnPreviousClick" icon="{ImageUtils.previousDayIcon}" click="previousPageClick()"/>
-					<mx:Label id="labelPage" text="{i18n._(CUSTOMLAYOUT_TEXT_PAGE)} 1" fontSize="12" fontWeight="bold" textAlign="center"/>
+					<mx:Label id="labelPage"  doubleClickEnabled="true" doubleClick="labelPage_doubleClickHandler(event)" fontSize="12" fontWeight="bold" textAlign="center"/>
 					<mx:LinkButton doubleClickEnabled="true" id="btnNextClick" icon="{ImageUtils.nextDayIcon}" click="nextPageClick()"/>
 				</mx:HBox>
 				<mx:Label text= "{i18n._(CUSTOMLAYOUT_LABEL_TEXT_DRAG_AND_DROP_THE_FIELDS)}" paddingLeft="10"/>

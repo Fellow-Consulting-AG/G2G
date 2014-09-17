@@ -16,9 +16,8 @@ package gadget.sync.incoming
 		private var _parentTask:IncomingObject;
 		private var _parentRelationField:Object;
 		private var _dependOnParent:Boolean = false;
-		private var _currentMinIndex:int =0;
-		private var _currentMaxIndex:int = 50;
-		private var _parentRecord:int=0;
+		
+		private var _currentRequestIds:ArrayCollection;
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -101,7 +100,7 @@ package gadget.sync.incoming
 				}
 				
 			}
-			if( dependOnParent && (_currentMinIndex>=parentTask.listRetrieveId.length)){
+			if( dependOnParent && (parentTask.listRetrieveId.length<=0)){
 				super.nextPage(true);
 			}else{
 				
@@ -118,14 +117,15 @@ package gadget.sync.incoming
 			}else{				
 				var first:Boolean = true;
 				var searchProductSpec:String = "";
-				var maxIndex:int = Math.min(_currentMaxIndex,parentTask.listRetrieveId.length);
-				_parentRecord=1;
-				for(_currentMinIndex; _currentMinIndex<maxIndex;_currentMinIndex++){
-					_parentRecord++;
-					var parentObj:Object = parentTask.listRetrieveId.getItemAt(_currentMinIndex);
+				var maxIndex:int = Math.min(pageSize,(parentTask.listRetrieveId.length-1));
+				_currentRequestIds=new ArrayCollection();
+				for(var currentMinIndex:int=maxIndex; currentMinIndex>=0;currentMinIndex--){
+					
+					var parentObj:Object = parentTask.listRetrieveId.removeItemAt(currentMinIndex);
 					if(parentObj==null){
 						continue;
 					}
+					_currentRequestIds.addItem(parentObj);
 					if(!first){
 						searchProductSpec=searchProductSpec+" OR ";
 					}
@@ -133,6 +133,9 @@ package gadget.sync.incoming
 					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
 						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
 						if(!StringUtils.isEmpty(thisId)){
+							if(thisId=='AJTA-FSEQ0'){
+								trace("abc");
+							}
 							searchProductSpec=searchProductSpec+" OR ";
 							searchProductSpec=searchProductSpec+"[Id]=\'"+thisId+"\'";;
 						}
@@ -153,23 +156,30 @@ package gadget.sync.incoming
 			}
 		}
 		
+		override protected function handleErrorGeneric(soapAction:String, request:XML, response:XML, mess:String, errors:XMLList):Boolean {
+			var notRretry:Boolean = super.handleErrorGeneric(soapAction,request,response,mess,errors);
+			if(!notRretry){
+				parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);
+			}
+			return notRretry;
+		}
+		
 		protected override function nextPage(lastPage:Boolean):void {
 			if(!dependOnParent){
 				super.nextPage(lastPage);
 			}else{
 				showCount();
 				if(lastPage){
-					if(_currentMaxIndex>=parentTask.listRetrieveId.length){						
+					if(parentTask.listRetrieveId.length<=0){						
 						super.nextPage(true);
-					}else{
-						_currentMinIndex = _currentMaxIndex;
-						_currentMaxIndex+=50;//incrase max
+					}else{						
 						_page=0;
 						doRequest();
 					}
 				}else{
-					
-					_currentMinIndex=Math.max(0,(_currentMinIndex-_parentRecord));
+				
+					parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);				
+				
 					_page++;
 					doRequest();
 				}

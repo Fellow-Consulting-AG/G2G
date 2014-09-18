@@ -1063,12 +1063,15 @@
 								newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
 								newObj.AccountId = obj.AccountId ;
 								newObj.AccountName = obj.AccountName;
-								var con:Object = Database.contactDao.findByOracleId(obj["PrimaryContactId"]);
-								newObj["PrimaryContactId"] = obj["PrimaryContactId"];
-								newObj["PrimaryContact"] = obj["PrimaryContactFullName"];
-								if(con!=null){
-									newObj["PrimaryContactFirstName"] = con["ContactFirstName"];
-									newObj["PrimaryContactLastName"] = con["ContactLastName"];
+								//bug#8313
+								if(Database.preferencesDao.isAutoSetPrimaryContact()){
+									var con:Object = Database.contactDao.findByOracleId(obj["PrimaryContactId"]);
+									newObj["PrimaryContactId"] = obj["PrimaryContactId"];
+									newObj["PrimaryContact"] = obj["PrimaryContactFullName"];
+									if(con!=null){
+										newObj["PrimaryContactFirstName"] = con["ContactFirstName"];
+										newObj["PrimaryContactLastName"] = con["ContactLastName"];
+									}
 								}
 							}
 							break;

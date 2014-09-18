@@ -123,7 +123,8 @@ package gadget.dao
 		public static const SYNC_CASCADINGPICKLIST:String = "sync_cascadingpicklist";
 		public static const SYNC_PICKLISTSERVICE:String = "sync_picklistservice";
 		
-		public static const GOOGLE_MAP_DISTANCE = "google_map_distance";
+		public static const GOOGLE_MAP_DISTANCE:String = "google_map_distance";
+		public static const ENABLE_AUTO_SET_PRIMARY_CONTACT:String = "enable_set_primary_contact";
 		
 		public static const LOG_FILES:String = "log_files";
 		import gadget.util.TableFactory;
@@ -270,7 +271,8 @@ package gadget.dao
 			DAILY_AGENDA_NAME,
 			ENABLE_AUTO_SYNC,
 			ENABLE_DOUBLE_CLICK_NEW_CALL,
-			GOOGLE_MAP_DISTANCE
+			GOOGLE_MAP_DISTANCE,
+			ENABLE_AUTO_SET_PRIMARY_CONTACT
 		];
 		
 		public function getGoolgeMapDistance():String{
@@ -283,6 +285,12 @@ package gadget.dao
 		public function isEnableRevenueReport():Boolean{
 			return getBooleanValue(ENABLE_REVENUE_REPORT);
 		}
+		
+		public function isAutoSetPrimaryContact():Boolean{
+			
+			return getBooleanValue(ENABLE_AUTO_SET_PRIMARY_CONTACT,1);
+		}
+		
 		public function isEnableAUTO_SYNC():Boolean{
 			return getBooleanValue(ENABLE_AUTO_SYNC);
 		}

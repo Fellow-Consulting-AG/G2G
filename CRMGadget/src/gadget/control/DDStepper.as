@@ -1,17 +1,21 @@
 package gadget.control
 {
+	import flash.events.Event;
+	
 	import mx.collections.ArrayCollection;
 	import mx.events.CollectionEvent;
 	
 	import spark.components.NumericStepper;
 	
-	public class StringStepper extends NumericStepper
+	public class DDStepper extends NumericStepper
 	{
-		public function StringStepper()
+		public function DDStepper()
 		{
 			enabled = false;
 			valueFormatFunction = defaultValueFormatFunction;
 			valueParseFunction = defaultValueParseFunction;
+			dataProvider=new ArrayCollection(["AM","PM"]);
+			maximum=1;
 		}
 		
 		private var _dataProvider:ArrayCollection;
@@ -94,6 +98,43 @@ package gadget.control
 		{
 			commitDataProvider();
 		}
+		
+		/**
+		 *  @private
+		 */
+		override protected function partAdded(partName:String, instance:Object):void
+		{
+			super.partAdded(partName, instance);
+			
+			if (instance == textDisplay)
+			{
+				textDisplay.editable=false;
+			}
+		}
+		
+		/**
+		 *  @private
+		 *  Handle a click on the incrementButton. This should
+		 *  increment <code>value</code> by <code>stepSize</code>.
+		 */
+		override protected function incrementButton_buttonDownHandler(event:Event):void
+		{			
+			changeValueByStep(this.value==0);
+			dispatchEvent(new Event("change"));
+		
+		}
+		
+		
+		
+		/**
+		 *  @private
+		 *  Handle a click on the decrementButton. This should
+		 *  decrement <code>value</code> by <code>stepSize</code>.
+		 */
+		override protected function decrementButton_buttonDownHandler(event:Event):void
+		{
+			incrementButton_buttonDownHandler(event);
+		}   
 		
 	}
 }

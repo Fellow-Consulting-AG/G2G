@@ -24,6 +24,7 @@ package gadget.util
 	import flexunit.utils.ArrayList;
 	
 	import gadget.control.AutoComplete;
+	import gadget.control.DDStepper;
 	import gadget.control.EntityTypeComboBox;
 	import gadget.control.GoogleLocalSearchAddress;
 	import gadget.control.GoogleSearchImage;
@@ -31,7 +32,6 @@ package gadget.util
 	import gadget.control.ImageTextInput;
 	import gadget.control.ImageTreeFinder;
 	import gadget.control.MultiSelectList;
-	import gadget.control.StringStepper;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomFieldDAO;
 	import gadget.dao.CustomPicklistValueDAO;
@@ -1537,10 +1537,14 @@ package gadget.util
 				var minutes:int = (hboxControl.getChildAt(2) as NumericStepper).value;
 				if(getMaxHour()==12){
 					
-					var ispm:Boolean = StringStepper(hboxControl.getChildAt(3)).value==1;
+					var ispm:Boolean = DDStepper(hboxControl.getChildAt(3)).value==1;
 					if(ispm){
-						hours = hours+12;
-						if(hours ==24){
+						if(hours<12){
+							hours = hours+12;
+						}
+						
+					}else{
+						if(hours ==12){
 							hours =0;
 						}
 					}
@@ -1637,7 +1641,7 @@ package gadget.util
 						}	
 						(hboxControl.getChildAt(1) as NumericStepper).value = intHr;
 						(hboxControl.getChildAt(2) as NumericStepper).value = intMM;
-						StringStepper(hboxControl.getChildAt(3)).value=dd;
+						DDStepper(hboxControl.getChildAt(3)).value=dd;
 						
 					}else{
 						(hboxControl.getChildAt(1) as NumericStepper).value = date==null ? 0 : date.getHours();
@@ -1941,8 +1945,8 @@ package gadget.util
 					var hr:NumericStepper = new NumericStepper();
 					hr.name = "H"+fieldInfo.element_name;
 					hr.width = 40;
-					hr.minimum = 0;
-					hr.maximum = getMaxHour();
+					hr.minimum = maxHour==12?1:0;
+					hr.maximum = maxHour;
 					hr.value = intHr;
 					hr.addEventListener(Event.CHANGE,function(e:Event):void{
 						if(fieldInfo.element_name == "StartTime"){
@@ -1980,14 +1984,15 @@ package gadget.util
 					(childObj as HBox).addChild(mm);
 					
 					//am/pm
-					var cboDD:StringStepper =null;
+					var cboDD:DDStepper =null;
 					if(maxHour==12){
-						cboDD = new StringStepper();
+						var currentVal:int =0;
+						cboDD = new DDStepper();					
 						cboDD.width=40;
 						cboDD.name="DD"+fieldInfo.element_name;
-						cboDD.dataProvider=new ArrayCollection(["AM","PM"]);
+						//cboDD.dataProvider=new ArrayCollection(["AM","PM"]);
 						cboDD.enabled=!readonly;
-						cboDD.maximum=1;
+						
 						if(dateTimeObject!=null && dateTimeObject.getHours()>=12){
 							cboDD.value=1;
 						}else{
@@ -2000,8 +2005,12 @@ package gadget.util
 							if(fieldInfo.element_name == "StartTime"){
 								var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
 								var endDate:HBox = endDisplay.getChildByName("EndTime") as HBox;
-								var dd:StringStepper = endDate.getChildAt(3) as StringStepper;
-								dd.value = StringStepper(e.target).value;								
+								var dd:DDStepper = endDate.getChildAt(3) as DDStepper;
+								dd.value = DDStepper(e.target).value;			
+								var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);															
+								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000)), DateUtils.DATABASE_DATETIME_FORMAT);;
+								setInputFieldValue(endDate,fieldInfo,item.EndTime,null,null);
+								
 							}
 							
 						});

@@ -1050,12 +1050,14 @@
 					//bug#8104
 					if(data==Database.activityDao.entity){
 						if(entity==Database.accountDao.entity){
-							var con:Object = Database.contactDao.findByOracleId(item["PrimaryContactId"]);
-							other["PrimaryContactId"] = item["PrimaryContactId"];
-							other["PrimaryContact"] = item["PrimaryContactFullName"];
-							if(con!=null){
-								other["PrimaryContactFirstName"] = con["ContactFirstName"];
-								other["PrimaryContactLastName"] = con["ContactLastName"];
+							if(Database.preferencesDao.isAutoSetPrimaryContact()){
+								var con:Object = Database.contactDao.findByOracleId(item["PrimaryContactId"]);
+								other["PrimaryContactId"] = item["PrimaryContactId"];
+								other["PrimaryContact"] = item["PrimaryContactFullName"];
+								if(con!=null){
+									other["PrimaryContactFirstName"] = con["ContactFirstName"];
+									other["PrimaryContactLastName"] = con["ContactLastName"];
+								}
 							}
 						}else if(entity==Database.contactDao.entity){
 							other["AccountId"] = item["AccountId"];

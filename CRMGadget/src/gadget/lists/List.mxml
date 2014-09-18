@@ -276,6 +276,12 @@
 					boxList.removeAllChildren();
 					boxList.addChild(dashboard);
 					mainwindow.refreshDashboard = dashboard.reload;
+				}else if(entity == MainWindow.REVENUE_REPORT){
+					var dashboardRevenue:DashboardRevenue = new DashboardRevenue();
+					dashboardRevenue.list = this;
+					boxList.removeAllChildren();
+					boxList.addChild(dashboardRevenue);
+					mainwindow.refreshDashboard = dashboardRevenue.reload;
 				}else if(entity == MainWindow.CHAT){
 					boxList.removeAllChildren();
 					mainwindow.chatClientControl = new ChatClientControl(); 
@@ -497,6 +503,7 @@
 					}
 					screenDetail.item = baseDOA.findByGadgetId(item.gadget_id); 
 					screenDetail.entity = seletedEntity;
+					screenDetail.link_from_revenue = item["link_from_revenue"];
 					baseDOA.increaseImportant(screenDetail.item);
 					screenDetail.mainWindow = parentApplication as MainWindow;
 					screenDetail.refreshFunction = refreshFunction;

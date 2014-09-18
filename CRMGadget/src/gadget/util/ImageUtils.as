@@ -805,7 +805,7 @@ package gadget.util{
 			
 			
 			if( entity == MainWindow.VISIT_CUSTOMER ) return contactImg;
-			if( entity == MainWindow.DASHBOARD ) return chartBar;
+			if( entity == MainWindow.DASHBOARD || entity == MainWindow.REVENUE_REPORT) return chartBar;
 			
 			if( entity == MainWindow.CHAT ) return chat;
 			
@@ -933,6 +933,7 @@ package gadget.util{
 //			}
 			switch(entity){
 				case MainWindow.DASHBOARD : return chartBar;
+				case MainWindow.REVENUE_REPORT : return chartBar;
 				case MainWindow.CHAT : return chat;
 				case MainWindow.DAILY_AGENDA : return dailyAgenda;
 					

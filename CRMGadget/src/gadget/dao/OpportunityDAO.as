@@ -646,6 +646,13 @@ package gadget.dao
 			'IndexedShortText0',
 			'IndexedShortText1'
 		];
-
+		override public function getOwnerFields():Array{
+			var mapfields:Array = [
+				{entityField:"OwnerFullName", userField:"FullName"},{entityField:"Owner", userField:"Alias"},{entityField:"OwnerId", userField:"Id"}
+			];
+			return mapfields;
+			
+		}
 	}
+	
 }

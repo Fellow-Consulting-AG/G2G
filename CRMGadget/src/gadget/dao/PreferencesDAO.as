@@ -31,6 +31,7 @@ package gadget.dao
 		public static const ENABLE_ASSESSMENT_SCRIPT:String = "enable_assessment_script";
 		public static const ENABLE_APPLICATION_UPDATE:String = "enable_application_update";
 		public static const ENABLE_DASHBOARD:String = "enable_dashboard";
+		public static const ENABLE_REVENUE_REPORT:String = "enable_revenue_report";
 		public static const EXPORT_CUSTOM_LAYOUT:String = "export_custom_layout";
 		public static const EXPORT_LIST_LAYOUT:String = "export_list_layout";
 		public static const EXPORT_VIEW_LAYOUT:String = "export_view_layout";
@@ -231,6 +232,7 @@ package gadget.dao
 			ENABLE_LINKEDIN,
 			ENABLE_FEED,
 			ENABLE_DASHBOARD,
+			ENABLE_REVENUE_REPORT,
 			ENABLE_DAILY_AGENDA,
 			FEED_URL,
 			FEED_PORT,
@@ -278,7 +280,9 @@ package gadget.dao
 		public function isEnableDoubleClickNewCall():Boolean{
 			return getBooleanValue(ENABLE_DOUBLE_CLICK_NEW_CALL);
 		}
-		
+		public function isEnableRevenueReport():Boolean{
+			return getBooleanValue(ENABLE_REVENUE_REPORT);
+		}
 		public function isEnableAUTO_SYNC():Boolean{
 			return getBooleanValue(ENABLE_AUTO_SYNC);
 		}

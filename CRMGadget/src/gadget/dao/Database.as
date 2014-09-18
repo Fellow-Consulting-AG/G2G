@@ -183,12 +183,21 @@ package gadget.dao {
 		private var _timeZoneDao:TimeZoneDAO;
 		private var _customObject2ContactDao:CustomObject2ContactDAO;
 		private  var _sortColumnDao:SortColumnDAO;
+		private  var _revenueDao:RevenueDao;
+		private  var _revenueMappingProductFamilyDao:RevenueMappingProductFamilyDao;
 		
+		public static function get revenueMappingProductFamilyDao():RevenueMappingProductFamilyDao
+		{
+			return database._revenueMappingProductFamilyDao;
+		}
+		public static function get revenueDao():RevenueDao
+		{
+			return database._revenueDao;
+		}
 		public static function get sortColumnDao():SortColumnDAO
 		{
 			return database._sortColumnDao;
 		}
-		
 		public static function get customObject2ContactDao():CustomObject2ContactDAO
 		{
 			return database._customObject2ContactDao;
@@ -1523,7 +1532,6 @@ package gadget.dao {
 			_accountServiceRequestDao = new AccountServiceRequestDAO(_sqlConnection,_work);
 			_customObject2ContactDao = new CustomObject2ContactDAO(_sqlConnection,_work);
 			//VAHI END refactored
-			
 			_relationManagementDao = new RelationManagementDAO(_sqlConnection,_work);
 			
 			// VAHI BEGIN to be refactored
@@ -1609,6 +1617,8 @@ package gadget.dao {
 			_relatedButtonDAO = new RelatedButtonDAO(_sqlConnection);
 			
 			_sortColumnDao = new SortColumnDAO(_sqlConnection, _work);
+			_revenueDao = new RevenueDao(_sqlConnection, _work);
+			_revenueMappingProductFamilyDao = new RevenueMappingProductFamilyDao(_sqlConnection, _work);
 		}
 		
 		
@@ -2770,7 +2780,7 @@ package gadget.dao {
 			}, {table:table, columns:columns, keys:keys});
 		}
 		
-		private function ZcreateTable(sqlConnection:SQLConnection, table:String, columns:ArrayCollection, keys:Array=null):void {
+		private  function ZcreateTable(sqlConnection:SQLConnection, table:String, columns:ArrayCollection, keys:Array=null):void {
 			var stmt:SQLStatement = new SQLStatement();
 			stmt.sqlConnection = sqlConnection;
 			var strSQL:String = 'CREATE TABLE ' + table + ' (';

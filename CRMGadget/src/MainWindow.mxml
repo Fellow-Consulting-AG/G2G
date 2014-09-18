@@ -76,6 +76,8 @@
 			public static const LABEL_DASHBORD:String = i18n._("GLOBAL_DASHBOARD");
 			public static const LABEL_CHAT:String = i18n._("GLOBAL_CHAT");
 			public static const DASHBOARD:String = "Dashboard";
+			public static const REVENUE_REPORT:String = "RevenueReport";
+			public static const LABEL_REVENUE_REPORT:String = "Revenue Report";
 			// CH 24-July-2013
 			public static const DASHBOARD_REPORT:String = "DashboardReport";
 			public static const LABEL_DASHBORD_REPORT:String = "Dashboard Segment & Target";
@@ -85,7 +87,7 @@
 
 			public static const CHAT:String = "Chat";
 			public static const DAILY_AGENDA:String = "DailyAgenda";
-			public static const mapCustomTab:Object = {Dashboard:"Dashboard",Chat:"Chat",DailyAgenda:"DailyAgenda", DashboardReport: "DashboardReport",VisitCustomer:"VisitCustomer"}
+			public static const mapCustomTab:Object = {Dashboard:"Dashboard",RevenueReport:"RevenueReport",Chat:"Chat",DailyAgenda:"DailyAgenda", DashboardReport: "DashboardReport",VisitCustomer:"VisitCustomer"}
 			//CRO 05.01.2011
 			private const MAINWINDOW_MENU_VIEW:String = 'GLOBAL_VIEW' ;
 			private const GLOBAL_CREATE:String = 'GLOBAL_CREATE';
@@ -815,6 +817,10 @@
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DASHBOARD)){
 					createTabCustom(DASHBOARD,navTabsData,LABEL_DASHBORD);
 				}
+				if(Database.preferencesDao.isEnableRevenueReport()){
+					createTabCustom(REVENUE_REPORT,navTabsData,LABEL_REVENUE_REPORT);
+					
+				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					createTabCustom(CHAT,navTabsData,LABEL_CHAT);
 				}
@@ -1404,6 +1410,10 @@
 				
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DASHBOARD)){
 					navigator.addChild( createCustomList(DASHBOARD) );
+				}
+				if(Database.preferencesDao.isEnableRevenueReport()){
+					navigator.addChild( createCustomList(REVENUE_REPORT));
+					
 				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					navigator.addChild( createCustomList(CHAT) );

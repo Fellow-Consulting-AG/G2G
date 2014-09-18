@@ -14,7 +14,7 @@ package gadget.util
 		{
 		}
 		
-		public static function format(value:Object, currencyCode:String=null):String {
+		public static function format(value:Object, currencyCode:String=null,right:Boolean=false):String {
 			var languageInfo:Object = LocaleService.getLanguageInfo();
 			if(currencyCode) languageInfo.CurrencyCode = currencyCode;
 			var decimalSeparatorTo:String = "", thousandsSeparatorTo:String = "";
@@ -26,7 +26,12 @@ package gadget.util
 				thousandsSeparatorTo = ".";
 			}
 			var currency:CurrencyFormatter = new CurrencyFormatter();
-			currency.alignSymbol = "left";
+			if(right){
+				currency.alignSymbol = "right";
+			}else{
+				currency.alignSymbol = "left";
+			}
+			
 			currency.precision = 2;
 			currency.currencySymbol = languageInfo.CurrencyCode + " ";
 			currency.decimalSeparatorTo = decimalSeparatorTo;

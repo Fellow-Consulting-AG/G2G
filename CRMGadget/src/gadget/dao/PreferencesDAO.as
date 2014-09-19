@@ -271,8 +271,7 @@ package gadget.dao
 			DAILY_AGENDA_NAME,
 			ENABLE_AUTO_SYNC,
 			ENABLE_DOUBLE_CLICK_NEW_CALL,
-			GOOGLE_MAP_DISTANCE,
-			ENABLE_AUTO_SET_PRIMARY_CONTACT
+			GOOGLE_MAP_DISTANCE
 		];
 		
 		public function getGoolgeMapDistance():String{

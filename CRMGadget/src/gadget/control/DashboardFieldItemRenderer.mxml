@@ -47,10 +47,11 @@
 			
 			private function initCalculatedField(event:MouseEvent):void {
 				var calculatedField:CalculatedField = new CalculatedField();
+				var textBox:TextInput = event.currentTarget as TextInput;
 				calculatedField.postSave =function(label:String):void{
-					TextInput(event.currentTarget).text=label;
+					textBox.text=label;
 				};
-				calculatedField.tempHeaderVal = TextInput(event.currentTarget).text;
+				calculatedField.tempHeaderVal = textBox.text;
 				calculatedField.dataField = data;
 				WindowManager.openModal(calculatedField);
 			}

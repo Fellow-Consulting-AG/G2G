@@ -18,6 +18,7 @@ package gadget.sync.incoming
 		private var _dependOnParent:Boolean = false;
 		
 		private var _currentRequestIds:ArrayCollection;
+		protected var _readParentIds:Boolean = true;
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -75,6 +76,8 @@ package gadget.sync.incoming
 			}
 			if(issave){
 				listRetrieveId.addItem(incomingObject);
+			}else{
+				trace('abc');
 			}
 			
 			return issave;
@@ -82,9 +85,10 @@ package gadget.sync.incoming
 		
 		
 		override protected function doRequest():void {		
-			if(!dependOnParent){
+			//if(!dependOnParent){
 				var count:int = Database.getDao(entityIDour).count();					
-				if(count<=0){
+				if(_readParentIds &&(count<=0 ||dependOnParent)){
+					_readParentIds= false;
 					_dependOnParent = true;
 					var fields:ArrayCollection = new ArrayCollection([{"element_name":DAOUtils.getOracleId(parentTask.entityIDour)}]);
 					try{
@@ -99,7 +103,7 @@ package gadget.sync.incoming
 					}
 				}
 				
-			}
+			//}
 			if( dependOnParent && (parentTask.listRetrieveId.length<=0)){
 				super.nextPage(true);
 			}else{
@@ -117,11 +121,11 @@ package gadget.sync.incoming
 			}else{				
 				var first:Boolean = true;
 				var searchProductSpec:String = "";
-				var maxIndex:int = Math.min(pageSize,(parentTask.listRetrieveId.length-1));
+				var maxIndex:int = Math.min(pageSize,(parentTask.listRetrieveId.length));
 				_currentRequestIds=new ArrayCollection();
-				for(var currentMinIndex:int=maxIndex; currentMinIndex>=0;currentMinIndex--){
+				for(var i:int=1;i<=maxIndex;i++){
 					
-					var parentObj:Object = parentTask.listRetrieveId.removeItemAt(currentMinIndex);
+					var parentObj:Object = parentTask.listRetrieveId.removeItemAt(0);
 					if(parentObj==null){
 						continue;
 					}
@@ -132,18 +136,14 @@ package gadget.sync.incoming
 					searchProductSpec=searchProductSpec+"["+parentRelationField.ParentRelationId+"] = \'"+parentObj[DAOUtils.getOracleId(parentTask.entityIDour)]+'\'';
 					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
 						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
-						if(!StringUtils.isEmpty(thisId)){
-							if(thisId=='AJTA-FSEQ0'){
-								trace("abc");
-							}
+						if(!StringUtils.isEmpty(thisId)){							
 							searchProductSpec=searchProductSpec+" OR ";
 							searchProductSpec=searchProductSpec+"[Id]=\'"+thisId+"\'";;
 						}
 					}
 									
 					first = false;
-				}
-				
+				}			
 				
 				var superCriteria:String = super.generateSearchSpec(startTime!=-1);
 				if(StringUtils.isEmpty(superCriteria)){

@@ -255,15 +255,15 @@ package gadget.sync.incoming
 		protected  function generateSearchByParentId():String{
 			if(_listParents.length>0){
 				var criteria:String="";
-				var maxIndex:int = Math.min(pageSize,(_listParents.length-1));
+				var maxIndex:int = Math.min(pageSize,_listParents.length);
 				var first:Boolean = true;
 				_currentRequestIds=new ArrayCollection();
-				for(var currentMinIndex:int=maxIndex;currentMinIndex>=0;currentMinIndex--){
+				for(var currentMinIndex:int=maxIndex;currentMinIndex>=1;currentMinIndex--){
 					
 					if(!first){
 						criteria+=" OR ";
 					}
-					var pid:String = _listParents.removeItemAt(currentMinIndex) as String;
+					var pid:String = _listParents.removeItemAt(0) as String;
 					_currentRequestIds.addItem(pid);
 					first = false;
 					criteria+=("[Id]=\'"+pid+"\'");

@@ -1060,7 +1060,8 @@
 							var obj:Object = getListByEntity("Account").list.selectedItem;
 							if(Database.preferencesDao.isEnableCallCopySubject() && obj != null && obj.AccountId != null){
 								obj = Database.accountDao.findByOracleId(obj.AccountId);
-								newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
+								//bug#
+								//newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
 								newObj.AccountId = obj.AccountId ;
 								newObj.AccountName = obj.AccountName;
 								//bug#8313

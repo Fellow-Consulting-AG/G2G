@@ -570,13 +570,13 @@
 			
 			private function getListOpportunity():ArrayCollection{
 				var col:ArrayCollection = new ArrayCollection([{element_name:"OwnerFullName"},{element_name:"SalesStage"},{element_name:"CloseDate"},{element_name:"AccountName"},{element_name:"OpportunityName"},{element_name:"Description"},{element_name:"Revenue"},{element_name:"OpportunityId"},{element_name:"AccountId"}]);
-				var objOwnerFitler:Object = new Object();
-				objOwnerFitler["type"] = -1;
-				objOwnerFitler["entity"] = "Opportunity";
-				var filterQuery:String = FieldUtils.computeFilter(objOwnerFitler);
-				
-				
-				var ls:ArrayCollection = Database.opportunityDao.findAll(col,filterQuery +" AND OwnerFullName !=''");
+				var objectTransaction:Object = Database.transactionDao.find("Opportunity");
+				var defaultFitler:Object =  Database.filterDao.getObjectFilter("Opportunity",objectTransaction.default_filter);
+				var filterQuery:String = FieldUtils.computeFilter(defaultFitler);
+				if(filterQuery != null && filterQuery != ""){
+					filterQuery = filterQuery +" AND OwnerFullName !=''"
+				}
+				var ls:ArrayCollection = Database.opportunityDao.findAll(col,filterQuery);
 				return ls;
 			}
 			private function getListOpportunitySalesStage():String{
@@ -612,24 +612,25 @@
 				formatter.formatString = "YYYY-MM"; 
 				
 				
-				
+				var objectTransaction:Object = Database.transactionDao.find("Opportunity");
+				var defaultFitler:Object =  Database.filterDao.getObjectFilter("Opportunity",objectTransaction.default_filter);
 					
 				
 				
 				
 				
-				var obj12:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth12));
-				var obj11:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth11));
-				var obj10:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth10));
-				var obj9:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth9));
-				var obj8:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth8));
-				var obj7:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth7));
-				var obj6:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth6));
-				var obj5:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth5));
-				var obj4:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth4));
-				var obj3:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth3));
-				var obj2:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth2));
-				var obj1:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth1));
+				var obj12:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth12),defaultFitler);
+				var obj11:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth11),defaultFitler);
+				var obj10:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth10),defaultFitler);
+				var obj9:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth9),defaultFitler);
+				var obj8:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth8),defaultFitler);
+				var obj7:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth7),defaultFitler);
+				var obj6:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth6),defaultFitler);
+				var obj5:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth5),defaultFitler);
+				var obj4:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth4),defaultFitler);
+				var obj3:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth3),defaultFitler);
+				var obj2:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth2),defaultFitler);
+				var obj1:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth1),defaultFitler);
 				
 				formatter.formatString = "MMM YY"; 
 				
@@ -807,18 +808,17 @@
 				return html;
 				
 			}
-			private function getOpportunitySalesStageByMonth(month:String):Object{
+			private function getOpportunitySalesStageByMonth(month:String,defaultFitler:Object):Object{
 					var col:ArrayCollection = new ArrayCollection([{element_name:"SalesStage"},{element_name:"Revenue"}]);
 					var date:Date = new Date();	
 					//var filter:String = "substr(CloseDate,1,7) = " + date.fullYear+ "-" + month;
 					var filter:String = "substr(CloseDate,1,7) = '" + month +"'";
 					
-					var objOwnerFitler:Object = new Object();
-					objOwnerFitler["type"] = -1;
-					objOwnerFitler["entity"] = "Opportunity";
-					var filterQuery:String = FieldUtils.computeFilter(objOwnerFitler);
+					var filterQuery:String = FieldUtils.computeFilter(defaultFitler);
+					if(filterQuery != null && filterQuery !=""){
+						filter = filter + " AND " + filterQuery;
+					}
 					
-					filter = filter + " AND " + filterQuery;
 					var ls:ArrayCollection = Database.opportunityDao.findAll(col,filter);
 					var opportunity:Object = new Object();
 					var clWon:int = 0;
@@ -972,6 +972,8 @@
 				
 			}
 			private function refreshHandler():void {
+				
+				
 				var htmlString:String = getListOpportunitySalesStage();
 				var file:File = Utils.writeStringFile( 'googlemap_' + DateUtils.getCurrentDateAsSerial() + '.html', htmlString );
 				if(file!=null) html.location = file.url;

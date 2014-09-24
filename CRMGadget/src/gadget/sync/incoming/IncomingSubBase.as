@@ -219,7 +219,7 @@ package gadget.sync.incoming
 			}
 			
 			
-			var filterSearch:String = super.getSearchFilterCriteria();
+			var filterSearch:String = getSearchFilterCriteria(entityIDour);
 			if(!StringUtils.isEmpty(filterSearch)){			
 				parentcriteria+=filterSearch;
 			}

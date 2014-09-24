@@ -312,8 +312,8 @@ package gadget.sync.incoming {
 
 		
 
-		protected function getSearchFilterCriteria():String{
-			var criterials:ArrayCollection = getFilterCriterials(entityIDour);
+		protected function getSearchFilterCriteria(currentEntity:String):String{
+			var criterials:ArrayCollection = getFilterCriterials(currentEntity);
 			var searchSpec:String ="";
 			for each (var objCriterial:Object in criterials) {
 				//order by cannot send
@@ -321,7 +321,7 @@ package gadget.sync.incoming {
 					continue;
 				}
 				if (objCriterial.column_name!=null) {
-					var oodField:String = WSProps.ws10to20(entityIDour,objCriterial.column_name);
+					var oodField:String = WSProps.ws10to20(currentEntity,objCriterial.column_name);
 					var operator:String =Utils.getOODOperation(objCriterial.operator);			
 					if(objCriterial.operator=='is null'||objCriterial.operator=='is not null'){
 						if(searchSpec !=''){
@@ -329,7 +329,7 @@ package gadget.sync.incoming {
 						}
 						searchSpec+="["+oodField+"] "+ operator;
 					}else{
-						var val:String= Utils.doEvaluateForFilter(objCriterial,entityIDour);
+						var val:String= Utils.doEvaluateForFilter(objCriterial,currentEntity);
 						if(val != "<ERROR>"){
 							if(val=='') continue;
 							var childValue:String = "";
@@ -378,7 +378,7 @@ package gadget.sync.incoming {
 				
 				searchSpec += "[Status]= \'Active\'";
 			}
-			var searchFilter:String = getSearchFilterCriteria();
+			var searchFilter:String = getSearchFilterCriteria(entityIDour);
 			if(!StringUtils.isEmpty(searchFilter)){
 			
 				if(searchSpec!=''){

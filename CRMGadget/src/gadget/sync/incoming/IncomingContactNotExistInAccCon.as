@@ -11,9 +11,8 @@ package gadget.sync.incoming
 	public class IncomingContactNotExistInAccCon extends IncomingObject
 	{
 		
-		private var _currentMinIndex:int =0;
-		private var _currentMaxIndex:int = 50;
-		private var _parentRecord:int=0;
+		
+		private var _parentRecord:ArrayCollection;
 		private var _ListMissingIds:ArrayCollection;
 		public function IncomingContactNotExistInAccCon()
 		{
@@ -27,7 +26,7 @@ package gadget.sync.incoming
 			if(_ListMissingIds==null){
 				_ListMissingIds=Database.contactAccountDao.findMissingContact();
 			}
-			if(_ListMissingIds==null ||_currentMinIndex>=_ListMissingIds.length){
+			if(_ListMissingIds==null ||_ListMissingIds.length<1){
 				super.nextPage(true);
 			}else{
 				
@@ -43,17 +42,15 @@ package gadget.sync.incoming
 			
 				showCount();
 				if(lastPage){
-					if(_currentMaxIndex>=_ListMissingIds.length){						
+					if(_ListMissingIds.length<1){						
 						super.nextPage(true);
-					}else{
-						_currentMinIndex = _currentMaxIndex;
-						_currentMaxIndex+=50;//incrase max
+					}else{						
 						_page=0;
 						doRequest();
 					}
 				}else{
 					
-					_currentMinIndex=Math.max(0,(_currentMinIndex-_parentRecord));
+					_ListMissingIds.addAllAt(_parentRecord,0);
 					_page++;
 					doRequest();
 				}
@@ -63,24 +60,35 @@ package gadget.sync.incoming
 		
 		override protected function generateSearchSpec(byModiDate:Boolean=true):String{
 			var first:Boolean = true;
-			var searchProductSpec:String = "";
-			var maxIndex:int = Math.min(_currentMaxIndex,_ListMissingIds.length);
-			_parentRecord=1;
-			for(_currentMinIndex; _currentMinIndex<maxIndex;_currentMinIndex++){
-				_parentRecord++;
-				var id:String =_ListMissingIds.getItemAt(_currentMinIndex) as String;
+			var searchSpec:String = "";
+			var maxIndex:int = Math.min(pageSize,_ListMissingIds.length);
+			_parentRecord=new ArrayCollection();
+			for(var _currentMinIndex:int=0; _currentMinIndex<maxIndex;_currentMinIndex++){				
+				var id:String =_ListMissingIds.removeItemAt(0) as String;
 				if(StringUtils.isEmpty(id)){
 					continue;
 				}
+				_parentRecord.addItem(id);
 				if(!first){
-					searchProductSpec=searchProductSpec+" OR ";
+					searchSpec=searchSpec+" OR ";
 				}
-				searchProductSpec=searchProductSpec+"[Id] = \'"+id+'\'';
+				searchSpec=searchSpec+"[Id] = \'"+id+'\'';
 				
 				
 				first = false;
 			}
-			return searchProductSpec;
+			var searchFilter:String = getSearchFilterCriteria(entityIDour);
+			if(!StringUtils.isEmpty(searchFilter)){
+				
+				if(searchSpec!=''){
+					searchSpec = searchFilter+' AND ('+searchSpec+')';
+				}else{
+					searchSpec = searchFilter;
+				}
+				
+				
+			}		
+			return searchSpec;
 		}
 	}
 }

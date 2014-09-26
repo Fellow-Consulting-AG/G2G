@@ -32,6 +32,21 @@ package gadget.sync.incoming
 			
 		}
 		
+		override protected function getSubSerachSpec():String{
+			var criteria:String = super.getSubSerachSpec();
+			if(subIDour==Database.activityDao.entity){			
+				var searchFilter:String =getSearchFilterCriteria(subIDour);
+				if(!StringUtils.isEmpty(searchFilter)){
+					if(StringUtils.isEmpty(criteria)){
+						criteria = searchFilter;
+					}else{
+						criteria = searchFilter +" AND ("+criteria+")";
+					}
+				}
+			}
+			return criteria;
+		}
+		
 		override protected function canSave(incomingObject:Object):Boolean{
 			var obj:Object = Database.transactionDao.find(subIDour);
 			if(StringUtils.isEmpty(obj.parent_entity)){

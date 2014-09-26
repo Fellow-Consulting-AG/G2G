@@ -76,8 +76,6 @@ package gadget.sync.incoming
 			}
 			if(issave){
 				listRetrieveId.addItem(incomingObject);
-			}else{
-				trace('abc');
 			}
 			
 			return issave;

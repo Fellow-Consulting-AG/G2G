@@ -382,10 +382,11 @@ package gadget.sync.incoming {
 			if(!StringUtils.isEmpty(searchFilter)){
 			
 				if(searchSpec!=''){
-					searchSpec+=' AND '
-				}
+					searchSpec=searchFilter + ' AND (' + searchSpec+")";
+				}else{
 				
-				searchSpec +=searchFilter;
+					searchSpec =searchFilter;
+				}
 			}			
 			
 			return searchSpec;

@@ -179,25 +179,10 @@ package gadget.sync.incoming
 			
 			return new ArrayCollection();
 		}
-		override protected function doRequest():void {
-			
-			
-			
+		
+		
+		protected function getSubSerachSpec():String{
 			var dateSpec:String = "";
-			var pagenow:int = _page;
-			var subpagenow:int = _subpage;
-			var parentcriteria:String = "";
-			isLastPage = false;
-			
-			if(_listParents==null){
-				_listParents = doGetParents();
-			}
-			
-			if(_listParents.length<=0){
-				super.nextPage(true);
-				return;
-			}
-			
 			var startDate:Date = null;
 			if(startTime!=-1){
 				if(parentLastSynch!=null && parentLastSynch.getTime()>=startTime){
@@ -217,7 +202,27 @@ package gadget.sync.incoming
 				}
 				
 			}
+			return dateSpec;
+		}
+		
+		override protected function doRequest():void {
 			
+			
+			
+			
+			var pagenow:int = _page;
+			var subpagenow:int = _subpage;
+			var parentcriteria:String = "";
+			isLastPage = false;
+			
+			if(_listParents==null){
+				_listParents = doGetParents();
+			}
+			
+			if(_listParents.length<=0){
+				super.nextPage(true);
+				return;
+			}
 			
 			var filterSearch:String = getSearchFilterCriteria(entityIDour);
 			if(!StringUtils.isEmpty(filterSearch)){			
@@ -231,15 +236,12 @@ package gadget.sync.incoming
 			}else{
 				parentcriteria = generateSearchByParentId();
 			}
-			
+			var subCirteria:String = getSubSerachSpec();
 			
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";
-//			}
-			if(subIDsod == "CustomObject2"){
-				dateSpec = "";
-			}
-			trace("::::::: SUBREQUEST20 ::::::::",getEntityName(),param.force,_page,_subpage,pagenow,subpagenow,isLastPage,haveLastPage,dateSpec);
+//			}			
+			trace("::::::: SUBREQUEST20 ::::::::",getEntityName(),param.force,_page,_subpage,pagenow,subpagenow,isLastPage,haveLastPage,subCirteria);
 //			Database.errorLoggingDao.add(null,{trace:[getEntityName(),param.force,_page,_subpage,pagenow,subpagenow,isLastPage,haveLastPage,dateSpec]});
 
 			sendRequest("\""+getURN()+"\"", new XML(
@@ -247,7 +249,7 @@ package gadget.sync.incoming
 				.replace(ROW_PLACEHOLDER, pagenow*pageSize)
 				.replace(SUBROW_PLACEHOLDER, subpagenow*SUB_PAGE_SIZE)
 				.replace(PARENT_SEARCH_SPEC,parentcriteria)
-				.replace(SEARCHSPEC_PLACEHOLDER,dateSpec)
+				.replace(SEARCHSPEC_PLACEHOLDER,subCirteria)
 			));
 		}
 		

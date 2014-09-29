@@ -95,9 +95,9 @@
 				return item;
 			}
 			private function getAccountOpportunity():Object{
-				var extId:String = super.data["AccountId"];
+				var accId:String = super.data["AccountId"];
 				var columns:ArrayCollection = Utils.getColumn("Account");
-				var filterQuery:String ="AccountId='"+extId+"'";
+				var filterQuery:String ="AccountId='"+accId+"'";
 				var listItem:ArrayCollection =Database.accountDao.findAll(columns,filterQuery);
 				var item:Object = null;
 				if(listItem != null && listItem.length>0){
@@ -109,7 +109,7 @@
 			private function getItem():Object{
 				var extId:String = super.data["ShipToPrimary"];
 				var columns:ArrayCollection = Utils.getColumn("Account");
-				var filterQuery:String ="ExternalSystemId='"+extId+"'";
+				var filterQuery:String ="CustomText35='"+extId+"'";
 				var listItem:ArrayCollection =Database.accountDao.findAll(columns,filterQuery);
 				var item:Object = null;
 				if(listItem != null && listItem.length>0){

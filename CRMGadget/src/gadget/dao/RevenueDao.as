@@ -13,7 +13,7 @@ package gadget.dao
 		private var stmtDrop:SQLStatement =null;
 		private var stmtDelete:SQLStatement =null;
 		private var stmtSelectByShipName:SQLStatement =null;
-		
+		private var stmtUpdateAsOfDate:SQLStatement =null;
 		private var work:Function;
 		private var sqlConnection:SQLConnection;
 		public function RevenueDao(sqlConnection:SQLConnection, work:Function)
@@ -33,6 +33,9 @@ package gadget.dao
 			stmtDelete.sqlConnection = sqlConnection;
 			stmtDelete = new SQLStatement();
 			stmtDelete.sqlConnection = sqlConnection;
+			
+			stmtUpdateAsOfDate = new SQLStatement();
+			stmtUpdateAsOfDate.sqlConnection = sqlConnection;
 			
 		}
 		public function dropAndRecreateTable(columns:Array):void{
@@ -55,6 +58,11 @@ package gadget.dao
 			
 			
 		}
+		public function updateAsOfDate(asOfDate:String):void{
+			stmtUpdateAsOfDate.text = "update revenue set AsOfDate='" + asOfDate +"'";
+			exec(stmtUpdateAsOfDate);
+		}
+	
 		private  function createTable(sqlConnection:SQLConnection, columns:Array):void {
 			var stmt:SQLStatement = new SQLStatement();
 			stmt.sqlConnection = sqlConnection;

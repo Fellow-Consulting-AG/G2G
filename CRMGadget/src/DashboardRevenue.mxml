@@ -361,32 +361,23 @@
 				return col;
 			}
 			
-			public static function drawTitle(lableTitle1:Label,lableTitle2:Label):void{
-				var listTitle:ArrayCollection = Database.revenueDao.query("month !='' limit 1");
+			public static function drawTitle(lableTitle1:Label,dataType:String):void{
+				var listTitle:ArrayCollection = Database.revenueDao.query("Data_Type='"+dataType+"' AND month !='' limit 1");
 				
 				var objectTitle:Object = null;
 				
 				var month:String = "";
 				var importedDate:String = null;
+				var formatter:DateFormatter = new DateFormatter(); 
+				formatter.formatString = "MMM YY"; 
 				if(listTitle != null && listTitle.length>0){
 					objectTitle = listTitle[0];
-					
 					month = objectTitle["Month"];
 					importedDate = objectTitle["AsofDate"];
-					
-					var formatter:DateFormatter = new DateFormatter(); 
-					formatter.formatString = "MMM YY"; 
 					lableTitle1.setStyle("fontSize","12");
 					lableTitle1.setStyle("fontWeight","bold");
-					lableTitle2.setStyle("fontSize","12");
-					lableTitle2.setStyle("fontWeight","bold");
-					//var formatterImportDate:DateFormatter = new DateFormatter(); 
-					//formatterImportDate.formatString = "DD-MMM-YYYY"; 
-					
 					lableTitle1.text = formatter.format(month) + " - " +importedDate;
-					lableTitle2.text = formatter.format(month) + " - " + importedDate;
 				}
-				
 			}
 			
 			private function initTab():void {
@@ -889,7 +880,7 @@
 				var myGColl:GroupingCollection2 = new GroupingCollection2();
 				var myGrp:Grouping = new Grouping();
 				myGColl.source = records1;
-				myGrp.fields = [addGroupingFiel("Territory"),addGroupingFiel("BusinessArea"),addGroupingFiel("Brand"),addGroupingFiel("Group_")];
+				myGrp.fields = [addGroupingFiel("Territory"),addGroupingFiel("BusinessArea"),addGroupingFiel("Group_"),addGroupingFiel("Brand")];
 				myGColl.grouping = myGrp;
 				//myGColl.summaries = [adgSummaries()];
 			//	grid1.displayItemsExpanded = true;
@@ -914,7 +905,8 @@
 				}
 				lblLog1.text ="Count ("+count1 +")";
 				lblLog2.text ="Count ("+count2 +")";
-				drawTitle(labelTitle1,labelTitle2);
+				drawTitle(labelTitle1,Dashboard1);
+				drawTitle(labelTitle2,Dashboard2);
 			}
 			
 			private function loadDataGrid2(record:ArrayCollection):void{
@@ -1008,7 +1000,9 @@
 			
 			private  function uploadXMLFile(files:Array):void{
 				if(files != null && files.length>0){
-					
+					var asOfDate:String = "";
+					try{
+						
 					for each (var file:File in files){
 						if(file.isDirectory || file.extension == null || file.extension.toLowerCase() != "xml"){
 							continue;
@@ -1017,7 +1011,7 @@
 						stream.open(file, FileMode.READ);
 						var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 						//trace(fileData);
-						try{
+						
 							var xml:XML = new XML(fileData);
 							var chl:XMLList = xml.children();
 							var data:XML = chl[1];
@@ -1106,19 +1100,27 @@
 									}
 									*/
 									objRevenue[col] = value;
+									if("asofdate" == col.toLowerCase() && value != null && value != ""){
+										asOfDate = value;
+									}
 									i++;
 								}
+								
 								//objRevenue["ProductFamily"] = getProductFamily(objRevenue);;
 								// insert to db
 								Database.revenueDao.insert(objRevenue);
 							}
 							
-							
-							
-						}catch(e:Error){
-							//TODO
-						}
 						stream.close();
+					}
+						
+						if(asOfDate != ""){
+							Database.revenueDao.updateAsOfDate(asOfDate);
+						}
+						
+						
+					}catch(e:Error){
+						//TODO
 					}
 				}
 				

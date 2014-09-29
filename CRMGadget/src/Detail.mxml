@@ -353,7 +353,8 @@
 					ExportExcelUtils.export(lsAcc2, DashboardRevenue.colAccP2,exportError);
 				})
 				
-				DashboardRevenue.drawTitle(labelTitle1,labelTitle2);
+				DashboardRevenue.drawTitle(labelTitle1,DashboardRevenue.Account1);
+				DashboardRevenue.drawTitle(labelTitle2,DashboardRevenue.Account2);
 				var myGColl:GroupingCollection2 = new GroupingCollection2();
 				var myGrp:Grouping = new Grouping();
 				myGColl.source = lsAcc;

@@ -956,11 +956,18 @@
 			}
 
 			private function upperBarHandler():void {
-				var file:File = new File();
-				file.browseForOpenMultiple("Import XML File", [new FileFilter("*.XML", "*.xml")]);
-				
-				file.addEventListener(FileListEvent.SELECT_MULTIPLE,function (event:FileListEvent):void{uploadFile(event.files)});
-				file.addEventListener(Event.CANCEL, cancelledFile);
+				try
+				{
+					var file:File = new File();
+					file.browseForOpenMultiple("Import XML File", [new FileFilter("*.XML", "*.xml")]);
+					
+					file.addEventListener(FileListEvent.SELECT_MULTIPLE,function (event:FileListEvent):void{uploadFile(event.files)});
+					file.addEventListener(Event.CANCEL, cancelledFile);
+				} 
+				catch(error:Error) 
+				{
+					exportError(error.message);
+				}
 				
 			}
 			private function refreshHandler():void {

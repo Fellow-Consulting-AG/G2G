@@ -50,7 +50,7 @@ package gadget.util
 					}
 					
 					if(isCheckAccount){
-						listAccount = Database.accountDao.findAll(new ArrayCollection([{element_name:"ExternalSystemId"}]));
+						listAccount = Database.accountDao.findAll(new ArrayCollection([{element_name:"CustomText35"}]));
 						var n:String = "Account in CRM";
 						sheet.setCell(0,headers.length,n);
 					}
@@ -114,7 +114,7 @@ package gadget.util
 			var val:String = "No";
 			if(ls != null && ls.length>0){
 				for each(var obj:Object in ls){
-					if(extId == obj["ExternalSystemId"]){
+					if(extId == obj["CustomText35"]){
 						val = "Yes";
 						break;
 					}

@@ -118,12 +118,14 @@
 			//cr 4733 select primary contact when account was selected
 			private function selectPrimaryContact(itemSource:Object,oracleId:String,entity:String):void{
 				if(entity == Database.activityDao.entity && oracleId != null){
-					var con:Object = Database.contactDao.findByOracleId(oracleId);
-					if(con != null){
-						itemSource["PrimaryContactId"] = oracleId;
-						itemSource["PrimaryContact"] = con["ContactFullName"];
-						itemSource["PrimaryContactFirstName"] = con["ContactFirstName"];
-						itemSource["PrimaryContactLastName"] = con["ContactLastName"];
+					if(Database.preferencesDao.isAutoSetPrimaryContact()){
+						var con:Object = Database.contactDao.findByOracleId(oracleId);
+						if(con != null){
+							itemSource["PrimaryContactId"] = oracleId;
+							itemSource["PrimaryContact"] = con["ContactFullName"];
+							itemSource["PrimaryContactFirstName"] = con["ContactFirstName"];
+							itemSource["PrimaryContactLastName"] = con["ContactLastName"];
+						}
 					}
 				}
 			}

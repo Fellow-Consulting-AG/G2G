@@ -5,6 +5,7 @@ package gadget.util
 	
 	
 
+	import com.adobe.utils.NumberFormatter;
 	import com.crmgadget.eval.Evaluator;
 	import com.google.analytics.debug._Style;
 	
@@ -1964,6 +1965,15 @@ package gadget.util
 					mm.minimum = 0;
 					mm.maximum = 59;
 					mm.value = intMM;
+					//bug#8372
+					mm.valueFormatFunction = function(value:Number):String{
+					
+						if(value<10){
+							return "0"+value;
+						}
+						
+						return value.toString();
+					}
 					mm.addEventListener(Event.CHANGE,function(e:Event):void{
 						if(fieldInfo.element_name == "StartTime"){
 							var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;

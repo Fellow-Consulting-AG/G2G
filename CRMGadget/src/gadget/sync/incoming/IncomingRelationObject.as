@@ -94,10 +94,10 @@ package gadget.sync.incoming
 						if(!StringUtils.isEmpty(parentRelationField.ChildRelationId)){
 							fields.addItem({"element_name":parentRelationField.ChildRelationId});
 						}
-						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields);
+						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
 					}catch(e:SQLError){
 						fields.removeItemAt(fields.length-1);//remove last column
-						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields);
+						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
 					}
 				}
 				

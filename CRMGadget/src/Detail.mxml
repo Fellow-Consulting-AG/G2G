@@ -342,7 +342,7 @@
 				hBox.addChild(vbox2);
 				innerCanvas.addChild(hBox);
 				viewstack.addChild(innerCanvas);
-				var where:String = "ShipToPrimary='" + item["ExternalSystemId"] + "'";
+				var where:String = "ShipToPrimary='" + item["CustomText35"] + "'";
 				
 				var lsAcc:ArrayCollection = Database.revenueDao.query(where+" AND Data_Type='" +DashboardRevenue.Account1 +"' order by BusinessArea,Group_,Brand");
 				var lsAcc2:ArrayCollection = Database.revenueDao.query(where+" AND Data_Type='" +DashboardRevenue.Account2 +"' order by BusinessArea,Group_,Brand,Catalog");

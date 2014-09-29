@@ -1,6 +1,7 @@
 package gadget.sync.incoming
 {
 	import flash.errors.SQLError;
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
 	import gadget.dao.DAOUtils;
@@ -19,6 +20,7 @@ package gadget.sync.incoming
 		
 		private var _currentRequestIds:ArrayCollection;
 		protected var _readParentIds:Boolean = true;
+		protected var _existRetrieved:Dictionary = null;
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -28,6 +30,7 @@ package gadget.sync.incoming
 			this._parentTask = parentTask;
 			this._dependOnParent = dependOnParent;
 			this._parentRelationField = parentFieldIds;
+			_existRetrieved = new Dictionary();
 		}
 		
 		
@@ -88,9 +91,9 @@ package gadget.sync.incoming
 				if(_readParentIds &&(count<=0 ||dependOnParent)){
 					_readParentIds= false;
 					_dependOnParent = true;
+					
 					var fields:ArrayCollection = new ArrayCollection([{"element_name":DAOUtils.getOracleId(parentTask.entityIDour)}]);
-					try{
-						
+					try{						
 						if(!StringUtils.isEmpty(parentRelationField.ChildRelationId)){
 							fields.addItem({"element_name":parentRelationField.ChildRelationId});
 						}
@@ -134,9 +137,11 @@ package gadget.sync.incoming
 					searchProductSpec=searchProductSpec+"["+parentRelationField.ParentRelationId+"] = \'"+parentObj[DAOUtils.getOracleId(parentTask.entityIDour)]+'\'';
 					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
 						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
-						if(!StringUtils.isEmpty(thisId)){							
+						if(!StringUtils.isEmpty(thisId) && !_existRetrieved.hasOwnProperty(thisId)){							
 							searchProductSpec=searchProductSpec+" OR ";
-							searchProductSpec=searchProductSpec+"[Id]=\'"+thisId+"\'";;
+							searchProductSpec=searchProductSpec+"[Id]=\'"+thisId+"\'";
+							this._existRetrieved[thisId] = thisId;
+							
 						}
 					}
 									
@@ -154,13 +159,31 @@ package gadget.sync.incoming
 			}
 		}
 		
+		protected function restoreRequest():void{
+			if(dependOnParent){
+				parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);
+				for each(var parentObj:Object in _currentRequestIds){
+					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
+						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
+						if(!StringUtils.isEmpty(thisId)){		
+							delete this._existRetrieved[thisId];
+							
+						}
+					}
+				}
+			}
+		}
+		
 		override protected function handleErrorGeneric(soapAction:String, request:XML, response:XML, mess:String, errors:XMLList):Boolean {
 			var notRretry:Boolean = super.handleErrorGeneric(soapAction,request,response,mess,errors);
-			if(!notRretry){
-				parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);
+			if(!notRretry || mess.indexOf("SBL-DBC-00112")!=-1){
+				notRretry = false;
+				restoreRequest();
 			}
 			return notRretry;
 		}
+		
+		
 		
 		protected override function nextPage(lastPage:Boolean):void {
 			if(!dependOnParent){
@@ -170,14 +193,15 @@ package gadget.sync.incoming
 				if(lastPage){
 					if(parentTask.listRetrieveId.length<=0){						
 						super.nextPage(true);
-					}else{						
+					}else{				
+						
 						_page=0;
 						doRequest();
 					}
 				}else{
 				
-					parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);				
-				
+					//parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);				
+					restoreRequest();
 					_page++;
 					doRequest();
 				}

@@ -571,227 +571,68 @@
 				return ls;
 			}
 			private function getListOpportunitySalesStage():String{
-				var dMonth12:Date = new Date();
-				var dMonth11:Date = new Date();
-				var dMonth10:Date = new Date();
-				var dMonth9:Date = new Date();
-				var dMonth8:Date = new Date();
-				var dMonth7:Date = new Date();
-				var dMonth6:Date = new Date();
-				var dMonth5:Date = new Date();
-				var dMonth4:Date = new Date();
-				var dMonth3:Date = new Date();
-				var dMonth2:Date = new Date();
-				var dMonth1:Date = new Date();
-				
-				var date:Date = new Date();
-				
-				dMonth12.setMonth(date.getMonth());
-				dMonth11.setMonth(date.getMonth() - 1);
-				dMonth10.setMonth(date.getMonth() - 2);
-				dMonth9.setMonth(date.getMonth() - 3);
-				dMonth8.setMonth(date.getMonth() - 4);
-				dMonth7.setMonth(date.getMonth() - 5);
-				dMonth6.setMonth(date.getMonth() - 6);
-				dMonth5.setMonth(date.getMonth() - 7);
-				dMonth4.setMonth(date.getMonth() - 8);
-				dMonth3.setMonth(date.getMonth()-9);
-				dMonth2.setMonth(date.getMonth() - 10);
-				dMonth1.setMonth(date.getMonth() - 11);
-				
+
 				var formatter:DateFormatter = new DateFormatter(); 
 				formatter.formatString = "YYYY-MM"; 
-				
-				
+
 				var objectTransaction:Object = Database.transactionDao.find("Opportunity");
 				var defaultFitler:Object =  Database.filterDao.getObjectFilter("Opportunity",objectTransaction.default_filter);
-					
-				
-				
-				
-				
-				var obj12:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth12),defaultFitler);
-				var obj11:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth11),defaultFitler);
-				var obj10:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth10),defaultFitler);
-				var obj9:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth9),defaultFitler);
-				var obj8:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth8),defaultFitler);
-				var obj7:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth7),defaultFitler);
-				var obj6:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth6),defaultFitler);
-				var obj5:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth5),defaultFitler);
-				var obj4:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth4),defaultFitler);
-				var obj3:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth3),defaultFitler);
-				var obj2:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth2),defaultFitler);
-				var obj1:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth1),defaultFitler);
-				
-				formatter.formatString = "MMM YY"; 
-				
-				
-				var dec:String = formatter.format(dMonth12);
-				var nov:String = formatter.format(dMonth11);
-				var oct:String = formatter.format(dMonth10);
-				var sep:String = formatter.format(dMonth9);
-				var aug:String = formatter.format(dMonth8);
-				var jul:String = formatter.format(dMonth7);
-				var jun:String = formatter.format(dMonth6);
-				var may:String = formatter.format(dMonth5);
-				var apr:String = formatter.format(dMonth4);
-				var march:String = formatter.format(dMonth3);
-				var feb:String = formatter.format(dMonth2);
-				var jan:String = formatter.format(dMonth1);
-				
-				obj12["month"] = dec;
-				obj11["month"] = nov;
-				obj10["month"] = oct;
-				obj9["month"] = sep;
-				obj8["month"] = aug;
-				obj7["month"] = jul;
-				obj7["month"] = jun;
-				obj5["month"] = may;
-				obj4["month"] = apr;
-				obj3["month"] = march;
-				obj2["month"] = feb;
-				obj1["month"] = jan;
-				
+
+				var formatterMMDD:DateFormatter = new DateFormatter(); 
+				formatterMMDD.formatString = "MMM YY"; 
+				var trHeader:String = "";
+				var trContentTable:String = "";
 				listOppAllMonth = new ArrayCollection();
-				listOppAllMonth.addItem(obj12);
-				listOppAllMonth.addItem(obj11);
-				listOppAllMonth.addItem(obj10);
-				listOppAllMonth.addItem(obj9);
-				listOppAllMonth.addItem(obj8);
-				listOppAllMonth.addItem(obj7);
-				listOppAllMonth.addItem(obj7);
-				listOppAllMonth.addItem(obj5);
-				listOppAllMonth.addItem(obj4);
-				listOppAllMonth.addItem(obj3);
-				listOppAllMonth.addItem(obj2);
-				listOppAllMonth.addItem(obj1);
+				var date:Date = new Date();
+				for(var i:int=0;i<12;i++){
+					var dMonth:Date = new Date();
+					dMonth.setMonth(date.getMonth()- i);
+					var obj:Object = getOpportunitySalesStageByMonth(formatter.format(dMonth),defaultFitler);
+					
+					var fmValue:String = formatterMMDD.format(dMonth);
+					obj["month"] = fmValue;
+					trHeader = trHeader + '<tr style="height:25px">'+'<td>'+fmValue+'</td>'+'</tr>';
+					
+					trContentTable = trContentTable + 
+						'<tr style="height:25px">'+
+							'<td width="200px">'+obj["display_open"]+'</td>'+
+							'<td width="200px">'+obj["display_won"]+'</td>'+
+							'<td width="200px">'+obj["display_lost"]+'</td>'+
+						'</tr>';
+					listOppAllMonth.addItem(obj);
+				}
+
 				var html:String = '<html>'+
-					
-					
-	'<head></head>'+
-	'<body>'+
-		'<table width="100%">'+
-		'<tr>'+
-		'<td width="80px"></td>'+
-		'<td>'+
-		'<table cellspacing="0" width="100%">'+
-			'<tr style="text-align: center;font-weight: bold;font-size: 12;">'+
-				'<td width="200px">Open</td>'+
-				'<td width="200px">Closed/Won</td>'+
-				'<td width="200px">Closed/Lost</td>'+
-			'</tr>'+
-		'</table>'+
-		'</td>'+
-		'</tr>'+
-		'<tr>'+
-			'<td>'+
-		'<table cellspacing="0" width="80px" style="font-size: 12;text-align: right;font-weight: bold;">'+
-				'<tr style="height:25px">'+
-					'<td>'+dec+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-					'<td>'+nov+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-					'<td>'+oct+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+sep+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+aug+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+jul+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+jun+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+may+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+apr+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+march+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+feb+'</td>'+
-				'</tr>'+
-				'<tr style="height:25px">'+
-				'<td>'+jan+'</td>'+
-				'</tr>'+
-		'</table>'+
-		'</td>'+
-		'<td>'+
-		'<table cellspacing="0" width="100%" style="font-size: 12;text-align: right;" border="1 solid gray" with="600px">'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj12["display_open"]+'</td>'+
-			'<td width="200px">'+obj12["display_won"]+'</td>'+
-			'<td width="200px">'+obj12["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr >'+
-			'<td width="200px">'+obj11["display_open"]+'</td>'+
-			'<td width="200px">'+obj11["display_won"]+'</td>'+
-			'<td width="200px">'+obj11["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj10["display_open"]+'</td>'+
-			'<td width="200px">'+obj10["display_won"]+'</td>'+
-			'<td width="200px">'+obj10["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj9["display_open"]+'</td>'+
-			'<td width="200px">'+obj9["display_won"]+'</td>'+
-			'<td width="200px">'+obj9["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj8["display_open"]+'</td>'+
-			'<td width="200px">'+obj8["display_won"]+'</td>'+
-			'<td width="200px">'+obj8["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj7["display_open"]+'</td>'+
-			'<td width="200px">'+obj7["display_won"]+'</td>'+
-			'<td width="200px">'+obj7["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj6["display_open"]+'</td>'+
-			'<td width="200px">'+obj6["display_won"]+'</td>'+
-			'<td width="200px">'+obj6["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj5["display_open"]+'</td>'+
-			'<td width="200px">'+obj5["display_won"]+'</td>'+
-			'<td width="200px">'+obj5["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj4["display_open"]+'</td>'+
-			'<td width="200px">'+obj4["display_won"]+'</td>'+
-			'<td width="200px">'+obj4["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj3["display_open"]+'</td>'+
-			'<td width="200px">'+obj3["display_won"]+'</td>'+
-			'<td width="200px">'+obj3["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj2["display_open"]+'</td>'+
-			'<td width="200px">'+obj2["display_won"]+'</td>'+
-			'<td width="200px">'+obj2["display_lost"]+'</td>'+
-			'</tr>'+
-			'<tr style="height:25px">'+
-			'<td width="200px">'+obj1["display_open"]+'</td>'+
-			'<td width="200px">'+obj1["display_won"]+'</td>'+
-			'<td width="200px">'+obj1["display_lost"]+'</td>'+
-			'</tr>'+
-		'</table>'+
-		'</td>'+
-		'</tr>'+
-	'</table>'+
-	'</body>'+
-'</html>';
+				'<head></head>'+
+				'<body>'+
+					'<table width="100%">'+
+					'<tr>'+
+					'<td width="80px"></td>'+
+					'<td>'+
+					'<table cellspacing="0" width="100%">'+
+						'<tr style="text-align: center;font-weight: bold;font-size: 12;">'+
+							'<td width="200px">Open</td>'+
+							'<td width="200px">Closed/Won</td>'+
+							'<td width="200px">Closed/Lost</td>'+
+						'</tr>'+
+					'</table>'+
+					'</td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td>'+
+					'<table cellspacing="0" width="80px" style="font-size: 12;text-align: right;font-weight: bold;">'+
+						trHeader +
+					'</table>'+
+					'</td>'+
+					'<td>'+
+					'<table cellspacing="0" width="100%" style="font-size: 12;text-align: right;" border="1 solid gray" with="600px">'+
+						trContentTable +
+					'</table>'+
+					'</td>'+
+					'</tr>'+
+				'</table>'+
+				'</body>'+
+			'</html>';
 				
 				
 				

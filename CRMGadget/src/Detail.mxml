@@ -90,7 +90,7 @@
 			[Bindable] public var subtype:int = 0;
 			[Bindable] public var subtypeActivity:int = 0;
 			[Bindable] public var create:Boolean = false;
-			[Bindable] public var link_from_revenue:Boolean = false;
+			//[Bindable] public var link_from_revenue:Boolean = false;
 			
 			
 			private var itemBefore:Object;
@@ -282,7 +282,7 @@
 				innerCanvas.horizontalScrollPolicy = "off";
 				innerCanvas.percentWidth = 100;
 				innerCanvas.percentHeight = 100;
-				innerCanvas.label = i18n._('GLOBAL_PAGE') + " " + (viewstack.getChildren().length+1);
+				innerCanvas.label = "Rev by TM";
 				var hBoxAcc1:HBox = new HBox();
 				var hBox:HBox = new HBox();
 				hBox.percentWidth = 100;
@@ -313,7 +313,7 @@
 				innerCanvas.horizontalScrollPolicy = "off";
 				innerCanvas.percentWidth = 100;
 				innerCanvas.percentHeight = 100;
-				innerCanvas.label = i18n._('GLOBAL_PAGE') + " " + (viewstack.getChildren().length+1);
+				innerCanvas.label = "Rev Details";
 				hBox = new HBox();
 				hBox.percentWidth = 100;
 				hBox.percentHeight = 100;
@@ -348,10 +348,10 @@
 				var lsAcc2:ArrayCollection = Database.revenueDao.query(where+" AND Data_Type='" +DashboardRevenue.Account2 +"' order by BusinessArea,Group_,Brand,Catalog");
 				btnExportExcel1.addEventListener(MouseEvent.CLICK,function (e:MouseEvent):void{
 					ExportExcelUtils.export(lsAcc,DashboardRevenue.colDP1,exportError);
-				})
+				});
 				btnExportExcel2.addEventListener(MouseEvent.CLICK,function (e:MouseEvent):void{
 					ExportExcelUtils.export(lsAcc2, DashboardRevenue.colAccP2,exportError);
-				})
+				});
 				
 				DashboardRevenue.drawTitle(labelTitle1,DashboardRevenue.Account1);
 				DashboardRevenue.drawTitle(labelTitle2,DashboardRevenue.Account2);
@@ -1893,8 +1893,8 @@
 					if(item.objTree!=null){
 					refreshData();
 				}
-				if(link_from_revenue){
-				initAdditionalTabRevenue();
+				if(entity.toLowerCase()=="account"){
+					initAdditionalTabRevenue();
 				}
 				
 				}

@@ -66,9 +66,9 @@
 					
 					//_list.selectItem(item);
 					if(item != null){
-						if("OpportunityName" != column.dataField && "AccountName" != column.dataField){
+						/*if("OpportunityName" != column.dataField && "AccountName" != column.dataField){
 							item["link_from_revenue"] = true;
-						}
+						}*/
 						_list.editScreenDetail(item,parEntity);
 					}else{
 						Alert.show("E1 " + parEntity + " " + extId + " is not available in CRM, please contact your local admin for assistance.","" , Alert.OK ,this.parentApplication as MainWindow);

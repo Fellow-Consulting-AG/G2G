@@ -6,11 +6,13 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.lists.List;
 			import gadget.lists.ListDetail;
 			import gadget.util.GUIUtils;
 			import gadget.util.Relation;
+			import gadget.util.StringUtils;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.AdvancedDataGrid;
@@ -26,19 +28,18 @@
 			private var grid:AdvancedDataGrid;
 			private var list:ArrayCollection ;			
 			private var _parentEntity:String;
-			private var _listDetail:ListDetail;
+			private var _list:List;
 			
 			
-			public function get listDetail():ListDetail
+			public function get listDetail():List
 			{
-				return _listDetail;
+				return _list;
 			}
-
-			public function set listDetail(value:ListDetail):void
+			
+			public function set listDetail(value:List):void
 			{
-				_listDetail = value;
+				_list = value;
 			}
-
 			public function get parentEntity():String
 			{
 				return _parentEntity;
@@ -52,14 +53,18 @@
 			private function clickFunction(e:Event):void{
 				if(column!=null){
 					var entity:String = super.data.gadget_type;		
-					var relation:Object = Relation.getRelation(entity,parentEntity);
-					if(relation!=null){
-						var currentItem:Object = Database.getDao(entity).findByGadgetId(super.data.gadget_id);
-						var parentId:String = currentItem[relation.keySrc];
-						listDetail.list.editScreenDetail(Database.getDao(parentEntity).findByOracleId(parentId),parentEntity,null,false);					
-						
+					if(StringUtils.isEmpty(parentEntity)){
+						_list.editScreenDetail(Database.getDao(entity).findByOracleId(super.data[DAOUtils.getOracleId(entity)]),entity,null,false);		
 					}else{
-						//TODO alert missing relation
+						var relation:Object = Relation.getRelation(entity,parentEntity);
+						if(relation!=null){
+							var currentItem:Object = Database.getDao(entity).findByGadgetId(super.data.gadget_id);
+							var parentId:String = currentItem[relation.keySrc];
+							_list.editScreenDetail(Database.getDao(parentEntity).findByOracleId(parentId),parentEntity,null,false);					
+							
+						}else{
+							//TODO alert missing relation
+						}
 					}
 				}
 			}	
@@ -77,9 +82,9 @@
 				super.listData = value;
 				if(value!=null){
 					grid= value.owner as AdvancedDataGrid;
-					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
-					if(list!=null){					
-						column = grid.columns[list.columnIndex];						
+					var listGrid:AdvancedDataGridListData = value as AdvancedDataGridListData;
+					if(listGrid!=null){					
+						column = grid.columns[listGrid.columnIndex];						
 					}
 					
 				}

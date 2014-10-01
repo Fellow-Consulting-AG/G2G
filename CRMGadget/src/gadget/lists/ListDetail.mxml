@@ -167,7 +167,7 @@
 					if(dao!=null && linkFields.hasOwnProperty(col.dataField)){
 						var renderer:ClassFactory = new ClassFactory(LinkButtonColRenderer);
 						renderer.properties = new Object();
-						renderer.properties["listDetail"]=this;
+						renderer.properties["listDetail"]=this.list;
 						renderer.properties["parentEntity"]=linkFields[col.dataField];	
 						col.itemRenderer = renderer;
 					}

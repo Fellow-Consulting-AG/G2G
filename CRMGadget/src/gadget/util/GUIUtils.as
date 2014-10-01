@@ -32,6 +32,7 @@ package gadget.util
 	import gadget.control.GridHeaderRendererFactory;
 	import gadget.control.ImageTextInput;
 	import gadget.control.ImageTreeFinder;
+	import gadget.control.LinkButtonColRenderer;
 	import gadget.control.MultiSelectList;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomFieldDAO;
@@ -74,6 +75,7 @@ package gadget.util
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.controls.dataGridClasses.DataGridItemRenderer;
+	import mx.core.ClassFactory;
 	import mx.core.UIComponent;
 	import mx.core.Window;
 	import mx.events.CalendarLayoutChangeEvent;
@@ -733,7 +735,13 @@ package gadget.util
 					cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,'0');
 				}
 			}
-			
+			var renderer:ClassFactory = null;
+			if(item.gadget_type == "Account" && related=="Contact"){
+				renderer = new ClassFactory(LinkButtonColRenderer);
+				renderer.properties = new Object();
+				renderer.properties["listDetail"]=detail.list;
+				
+			}
 			/*
 			if(relation.supportTable != Database.contactAccountDao.entity){
 				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
@@ -766,6 +774,9 @@ package gadget.util
 						}					
 						//dgCol.headerRenderer = new GridHeaderRendererFactory(dgCol.headerText,relation.entityDest);
 						dgCol.dataField = colname;
+						if(renderer != null && dgCol.dataField=="ContactLastName"){
+							dgCol.itemRenderer = renderer;
+						}
 						columns.push(dgCol);
 						//i=i+1;
 					}
@@ -821,7 +832,9 @@ package gadget.util
 //						//	field.element_name = "Product";
 //						//}
 //						dgCol2.dataField = field.element_name;
-						
+						if(renderer != null && dgCol2.dataField=="ContactLastName"){
+							dgCol2.itemRenderer = renderer;
+						}
 						columns.push(dgCol2);
 						
 					}

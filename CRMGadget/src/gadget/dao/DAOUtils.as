@@ -122,6 +122,10 @@ package gadget.dao
 				// s += "|| CASE WHEN primaryShipToCity IS NOT NULL THEN ' (' || primaryShipToPostalCode || ' ' || primaryShipToCity || ')' WHEN primaryBillToCity IS NOT NULL THEN ' (' || primaryBillToPostalCode || ' ' || primaryBillToCity || ')' ELSE '' END";
 				// Change Request #450
 				s += "||  CASE WHEN Location IS NOT NULL THEN ' (' || Location || ')' ELSE '' END";
+			}else if ( entity == "Contact") {
+				// s += "|| CASE WHEN primaryShipToCity IS NOT NULL THEN ' (' || primaryShipToPostalCode || ' ' || primaryShipToCity || ')' WHEN primaryBillToCity IS NOT NULL THEN ' (' || primaryBillToPostalCode || ' ' || primaryBillToCity || ')' ELSE '' END";
+				// Change Request #450
+				s += "||  CASE WHEN ContactType IS NOT NULL THEN ' (' || ContactType || ')' ELSE '' END";
 			}
 			return s;
 		}

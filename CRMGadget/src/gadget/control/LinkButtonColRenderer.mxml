@@ -93,6 +93,7 @@
 		]]>
 		
 	</fx:Script>
-	
-	<mx:LinkButton id="btnLink" click="clickFunction(event)" color="#2c79b8" textDecoration="underline" width="100%"/>
+	<mx:Canvas width="100%" horizontalScrollPolicy="off">
+		<mx:LinkButton id="btnLink" click="clickFunction(event)" color="#2c79b8" textDecoration="underline" width="100%"/>
+	</mx:Canvas>
 </s:MXAdvancedDataGridItemRenderer>

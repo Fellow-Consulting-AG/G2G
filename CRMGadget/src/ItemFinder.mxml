@@ -36,7 +36,10 @@
 					orderable.setVisible(false);
 					//this.height = 428;
 				}
-				if(relation.entitySrc == "Account" && Database.contactDao.entity == dao.entity){
+				if(relation.entitySrc == Database.accountDao.entity && Database.contactDao.entity == dao.entity){
+					showAllContact.visible = true;
+				}else if(relation.entityDest == Database.opportunityDao.entity){
+					showAllContact.label = i18n._("OPEN_OPPORTUNITIES@Open Opportunities");
 					showAllContact.visible = true;
 				}
 				if(objRel){
@@ -73,8 +76,12 @@
 							currentFilter = null;
 						}
 					}					
-					if(showAllContact.visible && !chkAll.selected && !StringUtils.isEmpty(item["AccountId"])){
-						currentFilter = "AccountId=" + "'" + item["AccountId"] + "'";
+					if(showAllContact.visible){
+						if(relation.entityDest == Database.opportunityDao.entity && chkAll.selected){
+							currentFilter = "Status != 'Closed'";
+						}else if(Database.contactDao.entity == relation.entityDest && !chkAll.selected && !StringUtils.isEmpty(item["AccountId"])){
+							currentFilter = "AccountId=" + "'" + item["AccountId"] + "'";
+						}	
 					}
 					allItems = Database.linkDao.allItemFinders(new ArrayCollection([relation.entityDest]), 
 						searchInput.text.toUpperCase(), currentFilter);
@@ -163,10 +170,15 @@
 			}
 			private function onChkAllClick():void{
 				if(chkAll.selected){
-					allItems = Database.linkDao.allItems(new ArrayCollection([relation.entityDest]), "", null);
+					var w:String = "";
+					if(relation.entityDest == Database.opportunityDao.entity){
+						w = "Status != 'Closed'";
+					}
+					allItems = Database.linkDao.allItems(new ArrayCollection([relation.entityDest]), "", w);
 				}else{
 					doSearch();
 				}
+				updateInfo();
 			}
 		]]>
 	</mx:Script>
@@ -182,7 +194,7 @@
 						<mx:Button visible="false" id="btnAdd" label="{i18n._('GLOBAL_CREATE')}" click="addNewEntity()" right="0"/>	
 					</mx:HBox>
 				</mx:FormItem>
-				<mx:FormItem visible="false" label="All" id="showAllContact">
+				<mx:FormItem visible="false" label="{i18n._('ALL@All')}" id="showAllContact">
 					<mx:CheckBox id="chkAll" click="onChkAllClick()"/>
 				</mx:FormItem>
 				<mx:FormItem label="{getOrderableDiplayName()}" id="orderable">

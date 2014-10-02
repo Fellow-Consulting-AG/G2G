@@ -1074,12 +1074,11 @@
 										newObj["PrimaryContactLastName"] = con["ContactLastName"];
 									}
 								}
-							}
+							}							
 							break;
 						}
 					}	
-				}
-				
+				}				
 				selectList(entity).openScreenCreate(newObj, subtype);
 				// selectList(entity).checkLayoutRecordType(newObj, subtype);
 				
@@ -1448,6 +1447,11 @@
 			}		
 			
 			public function selectList(entity:String=null):List {
+				
+				//clear selected item
+				for each (var list:List in navigator.getChildren()) {
+					list.list.selectedIndex=-1;
+				}
 				var index:int =0;
 				if(StringUtils.isEmpty(entity)){
 					entity = selectedEntity;

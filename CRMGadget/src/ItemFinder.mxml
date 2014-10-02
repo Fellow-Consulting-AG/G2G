@@ -40,6 +40,7 @@
 					showAllContact.visible = true;
 				}else if(relation.entityDest == Database.opportunityDao.entity){
 					showAllContact.label = i18n._("OPEN_OPPORTUNITIES@Open Opportunities");
+					chkAll.selected = true;
 					showAllContact.visible = true;
 				}
 				if(objRel){

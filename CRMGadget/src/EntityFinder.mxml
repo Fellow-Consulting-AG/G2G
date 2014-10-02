@@ -66,7 +66,14 @@
 				action(selectedItem);
 				close();
 			}
-
+			
+			private function onChkAllClick(e:MouseEvent){
+				if(chkAll.selected){
+					allItems = Database.linkDao.allItems(new ArrayCollection([entity]), "", null);
+				}else{
+					
+				}
+			}
 			
 		]]>
 	</mx:Script>
@@ -77,7 +84,14 @@
 			<mx:Form width="100%" paddingBottom="8">
 				<mx:Label id="info" left="0"/><!--CRO 05.01.2011-->
 				<mx:FormItem label="{i18n._('GLOBAL_SEARCH')}">
-					<mx:TextInput width="200" id="searchInput" change="doSearch()"/>
+					<mx:HBox width="100%">
+						<mx:TextInput width="200" id="searchInput" change="doSearch()"/>
+						<mx:HBox>
+							<mx:CheckBox id="chkAll" click="onChkAllClick"/>
+							<mx:Label text="All"/>
+						</mx:HBox>
+					</mx:HBox>
+					
 				</mx:FormItem><!--CRO 05.01.2011 ENTITY_FINDER_FORM_ITEM_RESULTS-->
 				<mx:FormItem label="{i18n._('GLOBAL_RESULTS')}" width="100%">
 					<mx:List id="resultList" width="100%" dataProvider="{allItems}" rowHeight="27" rowCount="10" click="selectItem(resultList.selectedItem)">

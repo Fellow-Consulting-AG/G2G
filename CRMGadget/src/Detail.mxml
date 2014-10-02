@@ -919,7 +919,7 @@
 					// hide button groupingPDF, groupPDFPreview
 					showGroupingPDFBtn = false;
 				}
-				buttons.addItem({label: disable ? NEXT_STR : CANCEL_STR, icon: disable ? null : ImageUtils.cancelIcon});
+				buttons.addItem({label: disable ? NEXT_STR : CLOSE_STR, icon: disable ? null : ImageUtils.cancelIcon});
 				buttons.addItem({label: create? CREATE_STR : UPDATE_STR, icon: create? ImageUtils.addIcon : ImageUtils.editIcon, disabled: disable});
 				
 				buttonBar.dataProvider = buttons;
@@ -979,7 +979,7 @@
 					close = commit();				
 				}
 				if (close) {
-					if (event.label != CANCEL_STR && event.label != NEXT_STR) {
+					if (event.label != CLOSE_STR && event.label != NEXT_STR) {
 						addEventListener(Event.CLOSE, nextAction);
 						
 						if(comboAction.selectedItem.data == SAVE_STR){
@@ -992,7 +992,7 @@
 						}
 					}else{
 						// close form when next action is clone.
-						if(comboAction.selectedItem.data == CLONE_STR || event.label == CANCEL_STR){
+						if(comboAction.selectedItem.data == CLONE_STR || event.label == CLOSE_STR){
 							comboAction.selectedIndex = 0;
 						}
 						if(item.picture!=null && list.detail.item!=null){

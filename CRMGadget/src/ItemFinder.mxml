@@ -3,7 +3,7 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="460" height="448"
+	width="460" height="468"
 	title="{Database.customLayoutDao.getDisplayName(relation.entityDest) +' '+ i18n._('GLOBAL_FINDER')}" 
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="updateInfo(); init()">
 	
@@ -35,6 +35,9 @@
 				}else{
 					orderable.setVisible(false);
 					//this.height = 428;
+				}
+				if(relation.entitySrc == "Account" && Database.contactDao.entity == dao.entity){
+					showAllContact.visible = true;
 				}
 				if(objRel){
 					searchInput.text = objRel["uppername"];
@@ -70,7 +73,9 @@
 							currentFilter = null;
 						}
 					}					
-						
+					if(showAllContact.visible && !chkAll.selected && !StringUtils.isEmpty(item["AccountId"])){
+						currentFilter = "AccountId=" + "'" + item["AccountId"] + "'";
+					}
 					allItems = Database.linkDao.allItemFinders(new ArrayCollection([relation.entityDest]), 
 						searchInput.text.toUpperCase(), currentFilter);
 					
@@ -156,10 +161,17 @@
 				item["PrimaryContact"] = textInput.text;
 				GUIUtils.openDetailScreen(true,mainWindow,"Contact",refreshFunction, item,false,  0);
 			}
+			private function onChkAllClick():void{
+				if(chkAll.selected){
+					allItems = Database.linkDao.allItems(new ArrayCollection([relation.entityDest]), "", null);
+				}else{
+					doSearch();
+				}
+			}
 		]]>
 	</mx:Script>
 	<mx:Style source="styles.css"/>
-	<mx:Canvas styleName="main" left="0" top="0" width="460" height="448" right="0" bottom="0"><!--CRO 05.01.2011-->
+	<mx:Canvas styleName="main" left="0" top="0" width="460" height="468" right="0" bottom="0"><!--CRO 05.01.2011-->
 		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{GUIUtils.getItemFinderLabel(Database.customLayoutDao.getDisplayName(relation.entityDest) , ' ' + i18n._('GLOBAL_FINDER'))}"/>
 		<mx:VBox top="32" left="16" right="16">
 			<mx:Form width="100%" paddingBottom="8">
@@ -169,6 +181,9 @@
 						<mx:TextInput width="200" id="searchInput" change="doSearch()"/>
 						<mx:Button visible="false" id="btnAdd" label="{i18n._('GLOBAL_CREATE')}" click="addNewEntity()" right="0"/>	
 					</mx:HBox>
+				</mx:FormItem>
+				<mx:FormItem visible="false" label="All" id="showAllContact">
+					<mx:CheckBox id="chkAll" click="onChkAllClick()"/>
 				</mx:FormItem>
 				<mx:FormItem label="{getOrderableDiplayName()}" id="orderable">
 					<mx:CheckBox width="200" id="chkOrderable" click="doSearch()" />

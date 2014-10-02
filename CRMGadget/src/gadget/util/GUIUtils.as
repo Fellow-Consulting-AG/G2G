@@ -1977,7 +1977,11 @@ package gadget.util
 					mm.width = 40;
 					mm.minimum = 0;
 					mm.maximum = 59;
-					mm.value = intMM;
+					if(!create){
+						mm.value = intMM;
+					}else{
+						mm.value =0;//bug#8419
+					}
 					//bug#8372
 					mm.valueFormatFunction = function(value:Number):String{
 					

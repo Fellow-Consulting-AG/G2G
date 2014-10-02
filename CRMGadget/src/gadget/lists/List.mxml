@@ -539,7 +539,7 @@
 			}
 			
 			public function openScreenCreate(model:Object = null, subtype:int = 0, 
-											 item:Object=null,refreshFunction:Function=null,  preEntity:String=null,refreshList:Boolean=true):void {
+											 item:Object=null,refreshFunction:Function=null,  preEntity:String=null,refreshList:Boolean=true,executeFormula:Boolean=true):void {
 				var screenCreate:Detail = new Detail();
 				screenCreate.list = this;
 				var obj:Object = list.selectedItem;
@@ -676,8 +676,9 @@
 				
 				}
 				*/
-				
-				Utils.doFomulaField(entity,screenCreate.item,false,subtype);
+				if(executeFormula){
+					Utils.doFomulaField(entity,screenCreate.item,false,subtype);
+				}
 				
 				// setup a default oracle Id for embedded items.
 				if(entity == MainWindow.VISIT_CUSTOMER){

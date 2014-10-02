@@ -30,6 +30,25 @@ package gadget.dao
 		}
 		
 		
+		public function getIgnoreCopyFields():ArrayCollection{
+			return new ArrayCollection(
+					[
+					'SalesStage',
+					'SalesStageId',
+					'CloseDate',
+					'OpportunityId',
+					'gadget_id',
+					'local_update',
+					'delete',
+					'error',
+					'ood_lastmodified',
+					'sync_number',
+					'important',
+					'favorite'
+					]);
+		}
+		
+		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{
 			return INGNORE_FIELDS;
 		}

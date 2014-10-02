@@ -1072,6 +1072,14 @@
 					if(comboAction.selectedItem.subtype != null){
 						nextSubtype = comboAction.selectedItem.subtype;
 					}
+					//bug#8424----copy opportunity
+					if(entity==Database.opportunityDao.entity && data==Database.opportunityDao.entity){
+						other = Database.opportunityDao.findByOracleId(item[DAOUtils.getOracleId(data)]);
+						for each(var f:String in Database.opportunityDao.getIgnoreCopyFields()){
+							delete other[f];
+						}
+					}
+					
 					
 					// for #4981 Data are not linked && for CH #5653 Next - Link
 					if((entity == "Activity" && nextEntity == "Contact" && subtype == ActivityDataUtils.APPOINTMENT_SUBTYPE) ||
@@ -1081,11 +1089,15 @@
 							&& nextSubtype == ActivityDataUtils.APPOINTMENT_SUBTYPE)){
 						// link Account for next contact and next appointment
 						mainWindow.selectList(data).openScreenCreate(other, nextSubtype, item, null, entity);
+					}else if(entity==Database.opportunityDao.entity && data==Database.opportunityDao.entity){						
+						mainWindow.selectList(data).openScreenCreate(other, nextSubtype,null,null,null,true,false);
 					}else{
 						mainWindow.selectList(data).openScreenCreate(other, nextSubtype);
 					}
 				}
 			}
+			
+			
 			
 			public function displayAttachments():void{
 				var attachments:ArrayCollection = Database.attachmentDao.selectAttachment(entity, item.gadget_id);

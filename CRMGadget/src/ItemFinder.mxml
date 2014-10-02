@@ -30,19 +30,23 @@
 				var dao:BaseDAO = Database.getDao(relation.entityDest);
 				var objRel:Object = dao.findByOracleId(item[relation.keySrc]);
 				if(relation.entityDest==Database.productDao.entity){
-					orderable.setVisible(true);
+					optionItem.setVisible(true);
 					//this.height = 448;
+				}
+				else if(relation.entitySrc == Database.activityDao.entity && Database.contactDao.entity == dao.entity){
+					optionItem.setVisible(true);
+					if(!StringUtils.isEmpty(item["AccountId"]) && StringUtils.isEmpty(filter)){
+						filter = "AccountId=" + "'" + item["AccountId"] + "'";
+					}
+				}else if(relation.entityDest == Database.opportunityDao.entity){					
+					chkOption.selected = true;
+					optionItem.setVisible(true);
 				}else{
-					orderable.setVisible(false);
+					optionItem.setVisible(false);
+					
 					//this.height = 428;
 				}
-				if(relation.entitySrc == Database.accountDao.entity && Database.contactDao.entity == dao.entity){
-					showAllContact.visible = true;
-				}else if(relation.entityDest == Database.opportunityDao.entity){
-					showAllContact.label = i18n._("OPEN_OPPORTUNITIES@Open Opportunities");
-					chkAll.selected = true;
-					showAllContact.visible = true;
-				}
+				optionItem.includeInLayout=optionItem.visible;
 				if(objRel){
 					searchInput.text = objRel["uppername"];
 					searchInput.setSelection(searchInput.text.length, searchInput.text.length);
@@ -70,20 +74,28 @@
 					minLenght=1;
 				}
 				if (StringUtils.replaceAll_(searchInput.text,"*","").length >= minLenght || currentFilter != null) {
-					if(relation.entityDest==Database.productDao.entity){//bug#5069--orderable
-						if(chkOrderable.selected){
-							currentFilter = "Orderable='true'";	
+					
+					if(optionItem.visible){
+						
+						if(chkOption.selected){
+							if(relation.entityDest==Database.productDao.entity){//bug#5069--orderable
+								currentFilter = "Orderable='true'";	
+							}else if(relation.entityDest == Database.opportunityDao.entity){
+								currentFilter = "Status != 'Closed'";
+							}else{
+								currentFilter = null;
+							}
 						}else{
-							currentFilter = null;
+							if(Database.contactDao.entity == relation.entityDest && !StringUtils.isEmpty(item["AccountId"])){
+								currentFilter = "AccountId=" + "'" + item["AccountId"] + "'";
+							}else{
+								currentFilter = null;
+							}
 						}
-					}					
-					if(showAllContact.visible){
-						if(relation.entityDest == Database.opportunityDao.entity && chkAll.selected){
-							currentFilter = "Status != 'Closed'";
-						}else if(Database.contactDao.entity == relation.entityDest && !chkAll.selected && !StringUtils.isEmpty(item["AccountId"])){
-							currentFilter = "AccountId=" + "'" + item["AccountId"] + "'";
-						}	
+						
 					}
+					
+					
 					allItems = Database.linkDao.allItemFinders(new ArrayCollection([relation.entityDest]), 
 						searchInput.text.toUpperCase(), currentFilter);
 					
@@ -152,7 +164,12 @@
 						}
 				}
 			}
-			private function getOrderableDiplayName():String{
+			private function getOptionDiplayName():String{
+				if(relation.entitySrc == Database.activityDao.entity && Database.contactDao.entity == relation.entityDest){
+					return i18n._('ALL@All');
+				}else if(relation.entityDest == Database.opportunityDao.entity){
+					return i18n._("OPEN_OPPORTUNITIES@Open Opportunities");				
+				}
 				var fieldInfo:Object = FieldUtils.getField(Database.productDao.entity, "Orderable");
 				
 				return fieldInfo.display_name;
@@ -169,18 +186,7 @@
 				item["PrimaryContact"] = textInput.text;
 				GUIUtils.openDetailScreen(true,mainWindow,"Contact",refreshFunction, item,false,  0);
 			}
-			private function onChkAllClick():void{
-				if(chkAll.selected){
-					var w:String = "";
-					if(relation.entityDest == Database.opportunityDao.entity){
-						w = "Status != 'Closed'";
-					}
-					allItems = Database.linkDao.allItems(new ArrayCollection([relation.entityDest]), "", w);
-				}else{
-					doSearch();
-				}
-				updateInfo();
-			}
+			
 		]]>
 	</mx:Script>
 	<mx:Style source="styles.css"/>
@@ -194,12 +200,9 @@
 						<mx:TextInput width="200" id="searchInput" change="doSearch()"/>
 						<mx:Button visible="false" id="btnAdd" label="{i18n._('GLOBAL_CREATE')}" click="addNewEntity()" right="0"/>	
 					</mx:HBox>
-				</mx:FormItem>
-				<mx:FormItem visible="false" label="{i18n._('ALL@All')}" id="showAllContact">
-					<mx:CheckBox id="chkAll" click="onChkAllClick()"/>
-				</mx:FormItem>
-				<mx:FormItem label="{getOrderableDiplayName()}" id="orderable">
-					<mx:CheckBox width="200" id="chkOrderable" click="doSearch()" />
+				</mx:FormItem>				
+				<mx:FormItem label="{getOptionDiplayName()}" id="optionItem">
+					<mx:CheckBox width="200" id="chkOption" click="doSearch()" />
 				</mx:FormItem>
 				<!--CRO 05.01.2011-->
 				<mx:FormItem label="{i18n._('GLOBAL_RESULTS')}" width="100%">

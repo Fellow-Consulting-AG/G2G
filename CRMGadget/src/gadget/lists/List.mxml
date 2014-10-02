@@ -905,11 +905,12 @@
 						
 						if(butLinkBar != null) buttonCSV = butLinkBar.getChildAt(event.index) as LinkButton;
 					} 
-					var exportFunction:Function= exportToPDF;
+					//var exportFunction:Function= exportToPDF;
 					if(event.label == i18n._(LIST_LABEL_CSV_EXPORT)){
-						exportFunction = exportToCSV;
-					}				
-					Utils.showLoadingProgressWindow(exportFunction, i18n._(StringUtils.LOADING_STR), i18n._(StringUtils.ATTACHMENTS_STR));
+						exportToCSV();
+					}else{				
+						Utils.showLoadingProgressWindow(exportToPDF, i18n._(StringUtils.LOADING_STR), i18n._(StringUtils.ATTACHMENTS_STR));
+					}
 				}
 				// Add OrgChat
 				/*

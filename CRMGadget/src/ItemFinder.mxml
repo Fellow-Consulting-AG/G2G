@@ -41,6 +41,10 @@
 				}else if(relation.entityDest == Database.opportunityDao.entity){					
 					chkOption.selected = true;
 					optionItem.setVisible(true);
+					if(StringUtils.isEmpty(filter)){
+						filter = "Status != 'Closed'";
+					}
+					
 				}else{
 					optionItem.setVisible(false);
 					

@@ -84,7 +84,7 @@
 			
 			public static const VISIT_CUSTOMER:String = "VisitCustomer";
 			public static const LABEL_VISIT_CUSTOMER:String = i18n._("GLOBAL_VISIT_CUSTOMER@Visit Customer");
-
+			
 			public static const CHAT:String = "Chat";
 			public static const DAILY_AGENDA:String = "DailyAgenda";
 			public static const mapCustomTab:Object = {Dashboard:"Dashboard",RevenueReport:"RevenueReport",Chat:"Chat",DailyAgenda:"DailyAgenda", DashboardReport: "DashboardReport",VisitCustomer:"VisitCustomer"}
@@ -225,11 +225,11 @@
 				{data:GLOBAL_DELETE, label:i18n._(GLOBAL_DELETE) + ' - D', icon:deleteIcon}				
 			];
 			private var layoutsMenuData:Array=[			
-			
-					{data:MAINWINDOW_SUBMENU_LIST_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_LIST_LAYOUT),icon:listLayoutIcon},
-					{data:MAINWINDOW_SUBMENU_CUSTOM_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_CUSTOM_LAYOUT),icon:listLayoutIcon},
-					{data:MAINWINDOW_SUBMENU_VIEW_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_VIEW_LAYOUT),icon:listLayoutIcon}
-			
+				
+				{data:MAINWINDOW_SUBMENU_LIST_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_LIST_LAYOUT),icon:listLayoutIcon},
+				{data:MAINWINDOW_SUBMENU_CUSTOM_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_CUSTOM_LAYOUT),icon:listLayoutIcon},
+				{data:MAINWINDOW_SUBMENU_VIEW_LAYOUT,label:i18n._(MAINWINDOW_SUBMENU_VIEW_LAYOUT),icon:listLayoutIcon}
+				
 			];
 			private var toolsMenuData:Array =
 				[
@@ -247,20 +247,20 @@
 				];
 			private var  helpMenuData:Array =[
 				
-					{data:MAINWINDOW_SUBMENU_SUPPORT,label:i18n._(MAINWINDOW_SUBMENU_SUPPORT),icon:supportIcon},
-					{data:MAINWINDOW_SUBMENU_HELP_CONTENTS,label:i18n._(MAINWINDOW_SUBMENU_HELP_CONTENTS) + ' - F1',icon:helpIcon},
-					{data:MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND,label:i18n._(MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND),icon:ideaIcon},
-					{data:MAINWINDOW_SUBMENU_ABOUT,label:i18n._(MAINWINDOW_SUBMENU_ABOUT) + ' CRMGadget2Go',icon:aboutIcon}
-				];
+				{data:MAINWINDOW_SUBMENU_SUPPORT,label:i18n._(MAINWINDOW_SUBMENU_SUPPORT),icon:supportIcon},
+				{data:MAINWINDOW_SUBMENU_HELP_CONTENTS,label:i18n._(MAINWINDOW_SUBMENU_HELP_CONTENTS) + ' - F1',icon:helpIcon},
+				{data:MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND,label:i18n._(MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND),icon:ideaIcon},
+				{data:MAINWINDOW_SUBMENU_ABOUT,label:i18n._(MAINWINDOW_SUBMENU_ABOUT) + ' CRMGadget2Go',icon:aboutIcon}
+			];
 			
 			private var helpMenuDataUpdateApp:Array=[//Bug #1477 CRO-->
 				
-					{data:MAINWINDOW_SUBMENU_SUPPORT,label:i18n._(MAINWINDOW_SUBMENU_SUPPORT),icon:supportIcon},
-					{data:GLOBAL_APPLICATION_UPDATE,label:i18n._(GLOBAL_APPLICATION_UPDATE),icon:updateIcon},
-					{data:MAINWINDOW_SUBMENU_HELP_CONTENTS,label:i18n._(MAINWINDOW_SUBMENU_HELP_CONTENTS) + ' - F1',icon:helpIcon},
-					{data:MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND,label:i18n._(MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND),icon:ideaIcon},
-					{data:MAINWINDOW_SUBMENU_ABOUT,label:i18n._(MAINWINDOW_SUBMENU_ABOUT) + ' CRMGadget2Go',icon:aboutIcon}
-				];
+				{data:MAINWINDOW_SUBMENU_SUPPORT,label:i18n._(MAINWINDOW_SUBMENU_SUPPORT),icon:supportIcon},
+				{data:GLOBAL_APPLICATION_UPDATE,label:i18n._(GLOBAL_APPLICATION_UPDATE),icon:updateIcon},
+				{data:MAINWINDOW_SUBMENU_HELP_CONTENTS,label:i18n._(MAINWINDOW_SUBMENU_HELP_CONTENTS) + ' - F1',icon:helpIcon},
+				{data:MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND,label:i18n._(MAINWINDOW_SUBMENU_IDEAS_ON_DEMAND),icon:ideaIcon},
+				{data:MAINWINDOW_SUBMENU_ABOUT,label:i18n._(MAINWINDOW_SUBMENU_ABOUT) + ' CRMGadget2Go',icon:aboutIcon}
+			];
 			
 			
 			
@@ -278,7 +278,7 @@
 				}else if(Database.preferencesDao.isEnableAUTO_SYNC() && autoSyncDate != null && parseFloat(autoSyncDate.sync_date)<nowTime){
 					Alert.show(i18n._("START_SYNC_BEFORE_CLOSING_G2G"),i18n._("SYNCHRONIZE_ALERT_WARNING"), Alert.OK | Alert.CANCEL, this, onSyncEvent, null, Alert.OK);
 				}else{
-						
+					
 					cleanDatabaseAndExit();
 				}
 				
@@ -457,13 +457,13 @@
 				syncBtn2.visible = true;
 				syncBtn2.includeInLayout = true;
 				//don't need to refresh all list because when change tab it is auto refresh-----------mony
-//				for each(var list:List in navigator.getChildren()) {
-//					list.initGridColumns();
-//					list.filterData();
-//					list.initCalendar(); // Bug #213
-//					// CH # Bug 254
-//					list.detail.init();
-//				}
+				//				for each(var list:List in navigator.getChildren()) {
+				//					list.initGridColumns();
+				//					list.filterData();
+				//					list.initCalendar(); // Bug #213
+				//					// CH # Bug 254
+				//					list.detail.init();
+				//				}
 				if(isUpdateTransaction && isUpdateTrans){
 					updateTransactions();	
 					if(this._currentSelectedList!=null){
@@ -595,7 +595,7 @@
 					titleLabel.text = appInfo.name + " " + appInfo.version;
 				}
 				
-					
+				
 				
 				
 				// load window logo.
@@ -645,7 +645,7 @@
 				}else{//CRO 11.02.2011
 					reportMenuITem = {data:"MAINWINDOW_SUBMENU_REPORTS", label:i18n._('GLOBAL_REPORTS'), icon:reportIcon,children:[
 						{data:"GLOBAL_BIRTHDAY_LIST", label:i18n._(GLOBAL_BIRTHDAY_LIST),icon:cakeIcon}]
-						};		
+					};		
 					toolsMenuData.push(reportMenuITem);
 				}
 				
@@ -1052,33 +1052,75 @@
 				
 				var newObj:Object;
 				if(entity == 'Activity'){
-					switch(subtype){
-						case 0: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE); break;
-						case 1: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE); break;
-						case 2: {
-							newObj =ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE); 
+//					switch(subtype){
+//						case 0: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE); break;
+//						case 1: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE); break;
+//						case 2: {
+							newObj =ActivityDataUtils.getActivityData(subtype); 
 							var obj:Object = getListByEntity("Account").list.selectedItem;
-							if(Database.preferencesDao.isEnableCallCopySubject() && obj != null && obj.AccountId != null){
-								obj = Database.accountDao.findByOracleId(obj.AccountId);
-								//bug#
-								//newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
-								newObj.AccountId = obj.AccountId ;
-								newObj.AccountName = obj.AccountName;
-								//bug#8313
-								if(Database.preferencesDao.isAutoSetPrimaryContact()){
-									var con:Object = Database.contactDao.findByOracleId(obj["PrimaryContactId"]);
-									newObj["PrimaryContactId"] = obj["PrimaryContactId"];
-									newObj["PrimaryContact"] = obj["PrimaryContactFullName"];
-									if(con!=null){
-										newObj["PrimaryContactFirstName"] = con["ContactFirstName"];
-										newObj["PrimaryContactLastName"] = con["ContactLastName"];
+							
+							
+							if(Database.preferencesDao.isEnableCallCopySubject()){
+								var objContact:Object = null;
+								var selectedList:List = navigator.selectedChild as List;
+								var selectedItem:Object = null;
+								var selectedEntity:String = selectedList.entity;
+								var accId:String = "";
+								var contId:String = "";
+								var contFullName:String = "";
+								if(StringUtils.isEmpty(accId) && obj != null && !StringUtils.isEmpty(obj.AccountId)){
+									obj = Database.accountDao.findByOracleId(obj.AccountId);
+									//bug#
+									//newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
+									newObj.AccountId = obj.AccountId ;
+									newObj.AccountName = obj.AccountName;
+									contId = obj["PrimaryContactId"];
+									contFullName =  obj["PrimaryContactFullName"];
+									
+									
+								}
+								
+								if(selectedEntity == Database.contactDao.entity && selectedList.list != null && selectedList.list.selectedItem != null){
+									// selected contact object
+									selectedItem = selectedList.list.selectedItem;
+									if(selectedItem != null){
+										contId = selectedItem["ContactId"];
+										objContact = Database.contactDao.findByOracleId(contId);
+										if(obj == null){
+											accId = objContact["AccountId"];
+										}
+										if(!StringUtils.isEmpty(accId)){
+											newObj.AccountId = accId ;
+											newObj.AccountName = objContact["AccountName"];
+										}
+										contFullName = objContact["ContactFullName"];
 									}
 								}
-							}							
-							break;
+								
+								
+								
+								//bug#8313
+								if(Database.preferencesDao.isAutoSetPrimaryContact()){
+									if(objContact == null && !StringUtils.isEmpty(contId)){
+										objContact = Database.contactDao.findByOracleId(contId);
+									}
+//									var con:Object = Database.contactDao.findByOracleId(obj["PrimaryContactId"]);
+									newObj["PrimaryContactId"] = contId;
+									newObj["PrimaryContact"] = contFullName;
+									if(objContact!=null){
+										newObj["PrimaryContactFirstName"] = objContact["ContactFirstName"];
+										newObj["PrimaryContactLastName"] = objContact["ContactLastName"];
+									}
+								}
+//							}
+//							break;
 						}
-					}	
-				}				
+//					}	
+					
+					
+					
+				}
+				
 				selectList(entity).openScreenCreate(newObj, subtype);
 				// selectList(entity).checkLayoutRecordType(newObj, subtype);
 				
@@ -1154,104 +1196,104 @@
 			private static function returnIcon(entity:String, subtype:int=0):Class{
 				
 				return ImageUtils.getImage(entity,subtype);
-//				var icontype:String;
-//				switch (entity) {
-//					case VISIT_CUSTOMER:
-//						visitCustomer = ImageUtils.getImage(entity)
-//						icontype = 'visitCustomer'; break; //Dashboard
-//					
-//					case DAILY_AGENDA:
-//						dailyAgenda = ImageUtils.getImage(entity)
-//						icontype = 'dailyAgendaIcon'; break; //Dashboard
-//					case DASHBOARD:
-//						dashboardIcon = ImageUtils.getImage(entity)
-//						icontype = 'dashboardIcon'; break; //Dashboard
-//					case CHAT:
-//						chatIcon = ImageUtils.getImage(entity)
-//						icontype = 'chatIcon'; break; //Account
-//					case 'Account':
-//						accountIcon = ImageUtils.getImage(entity);
-//						icontype = 'accountIcon'; break; //Account
-//					case 'Asset':
-//						assetIcon = ImageUtils.getImage(entity);
-//						icontype = 'assetIcon'; break; //Asset
-//					case 'Contact':
-//						contactIcon = ImageUtils.getImage(entity);
-//						icontype = 'contactIcon'; break; //Contact
-//					case 'Opportunity':
-//						opportunityIcon = ImageUtils.getImage(entity);
-//						icontype = 'opportunityIcon'; break; //Opportunity
-//					case 'Activity':
-//						if(subtype==0){
-//							activityIcon = ImageUtils.getImage(entity, subtype);
-//							icontype = 'activityIcon';
-//						}else if(subtype==1){
-//							activityAppointmentIcon = ImageUtils.getImage(entity, subtype);
-//							icontype = 'activityAppointmentIcon';
-//						}else{
-//							activityCallIcon = ImageUtils.getImage(entity, subtype);
-//							icontype = 'activityCallIcon';
-//						}
-//						break; //Activity
-//					case 'Product':
-//						productIcon = ImageUtils.getImage(entity);
-//						icontype = 'productIcon'; break; //Product
-//					case 'Service Request':
-//						serviceIcon = ImageUtils.getImage(entity);
-//						icontype = 'serviceIcon'; break; //ServiceRequest
-//					case 'Campaign':
-//						campaignIcon = ImageUtils.getImage(entity);
-//						icontype = 'campaignIcon'; break; //Campaign
-//					case 'Custom Object 1':
-//						customObjectIcon = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon'; break; //CustomObject
-//					case 'Lead':
-//						leadIcon = ImageUtils.getImage(entity);
-//						icontype = 'leadIcon'; break; //Lead
-//					
-//					case 'Custom Object 2':
-//						customObjectIcon2 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon2'; break; //CustomObject2
-//					case 'Custom Object 3':
-//						customObjectIcon3 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon3'; break; //CustomObject3
-//					case 'CustomObject7':
-//						customObjectIcon7 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon7'; break; //CustomObject7
-//					case 'CustomObject14':
-//						customObjectIcon14 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon14'; break; //CustomObject14
-//					case 'CustomObject4':
-//						customObjectIcon4 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon4'; break; //CustomObject4
-//					case 'CustomObject5':
-//						customObjectIcon5 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon5'; break; //CustomObject5
-//					case 'CustomObject6':
-//						customObjectIcon6 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon6'; break; //CustomObject6
-//					case 'CustomObject8':
-//						customObjectIcon8 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon8'; break; //CustomObject8
-//					case 'CustomObject9':
-//						customObjectIcon9 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon9'; break; //CustomObject9
-//					case 'CustomObject10':
-//						customObjectIcon10 = ImageUtils.getImage(entity);
-//						icontype = 'customObjectIcon10'; break; //CustomObject10
-//					case 'Territory':
-//						territoryIcon = ImageUtils.getImage(entity);
-//						icontype = 'territoryIcon'; break; //Territory
-//					case 'Note':
-//						noteIcon = ImageUtils.getImage(entity);
-//						icontype = 'noteIcon'; break; //Note
-//					case 'MedEdEvent':
-//						medEdEventIcon = ImageUtils.getImage(entity);
-//						icontype = 'medEdEventIcon'; break; //MedEd Event
-//					
-//					default: icontype = '';
-//				}
-//				return icontype;
+				//				var icontype:String;
+				//				switch (entity) {
+				//					case VISIT_CUSTOMER:
+				//						visitCustomer = ImageUtils.getImage(entity)
+				//						icontype = 'visitCustomer'; break; //Dashboard
+				//					
+				//					case DAILY_AGENDA:
+				//						dailyAgenda = ImageUtils.getImage(entity)
+				//						icontype = 'dailyAgendaIcon'; break; //Dashboard
+				//					case DASHBOARD:
+				//						dashboardIcon = ImageUtils.getImage(entity)
+				//						icontype = 'dashboardIcon'; break; //Dashboard
+				//					case CHAT:
+				//						chatIcon = ImageUtils.getImage(entity)
+				//						icontype = 'chatIcon'; break; //Account
+				//					case 'Account':
+				//						accountIcon = ImageUtils.getImage(entity);
+				//						icontype = 'accountIcon'; break; //Account
+				//					case 'Asset':
+				//						assetIcon = ImageUtils.getImage(entity);
+				//						icontype = 'assetIcon'; break; //Asset
+				//					case 'Contact':
+				//						contactIcon = ImageUtils.getImage(entity);
+				//						icontype = 'contactIcon'; break; //Contact
+				//					case 'Opportunity':
+				//						opportunityIcon = ImageUtils.getImage(entity);
+				//						icontype = 'opportunityIcon'; break; //Opportunity
+				//					case 'Activity':
+				//						if(subtype==0){
+				//							activityIcon = ImageUtils.getImage(entity, subtype);
+				//							icontype = 'activityIcon';
+				//						}else if(subtype==1){
+				//							activityAppointmentIcon = ImageUtils.getImage(entity, subtype);
+				//							icontype = 'activityAppointmentIcon';
+				//						}else{
+				//							activityCallIcon = ImageUtils.getImage(entity, subtype);
+				//							icontype = 'activityCallIcon';
+				//						}
+				//						break; //Activity
+				//					case 'Product':
+				//						productIcon = ImageUtils.getImage(entity);
+				//						icontype = 'productIcon'; break; //Product
+				//					case 'Service Request':
+				//						serviceIcon = ImageUtils.getImage(entity);
+				//						icontype = 'serviceIcon'; break; //ServiceRequest
+				//					case 'Campaign':
+				//						campaignIcon = ImageUtils.getImage(entity);
+				//						icontype = 'campaignIcon'; break; //Campaign
+				//					case 'Custom Object 1':
+				//						customObjectIcon = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon'; break; //CustomObject
+				//					case 'Lead':
+				//						leadIcon = ImageUtils.getImage(entity);
+				//						icontype = 'leadIcon'; break; //Lead
+				//					
+				//					case 'Custom Object 2':
+				//						customObjectIcon2 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon2'; break; //CustomObject2
+				//					case 'Custom Object 3':
+				//						customObjectIcon3 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon3'; break; //CustomObject3
+				//					case 'CustomObject7':
+				//						customObjectIcon7 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon7'; break; //CustomObject7
+				//					case 'CustomObject14':
+				//						customObjectIcon14 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon14'; break; //CustomObject14
+				//					case 'CustomObject4':
+				//						customObjectIcon4 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon4'; break; //CustomObject4
+				//					case 'CustomObject5':
+				//						customObjectIcon5 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon5'; break; //CustomObject5
+				//					case 'CustomObject6':
+				//						customObjectIcon6 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon6'; break; //CustomObject6
+				//					case 'CustomObject8':
+				//						customObjectIcon8 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon8'; break; //CustomObject8
+				//					case 'CustomObject9':
+				//						customObjectIcon9 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon9'; break; //CustomObject9
+				//					case 'CustomObject10':
+				//						customObjectIcon10 = ImageUtils.getImage(entity);
+				//						icontype = 'customObjectIcon10'; break; //CustomObject10
+				//					case 'Territory':
+				//						territoryIcon = ImageUtils.getImage(entity);
+				//						icontype = 'territoryIcon'; break; //Territory
+				//					case 'Note':
+				//						noteIcon = ImageUtils.getImage(entity);
+				//						icontype = 'noteIcon'; break; //Note
+				//					case 'MedEdEvent':
+				//						medEdEventIcon = ImageUtils.getImage(entity);
+				//						icontype = 'medEdEventIcon'; break; //MedEd Event
+				//					
+				//					default: icontype = '';
+				//				}
+				//				return icontype;
 			}
 			
 			private function tabChangeListener(event:Event):void{
@@ -1262,13 +1304,13 @@
 					viewMenuData[i].toggled = "false";
 				}
 				//Change Request #7701 CRO
-//				if(mapCustomTab[currentEntity] != null){  
-//					filterList.visible = false;
-//					filterList.includeInLayout = false;
-//				}else{
-//					filterList.visible = true;
-//					filterList.includeInLayout = true;
-//				}
+				//				if(mapCustomTab[currentEntity] != null){  
+				//					filterList.visible = false;
+				//					filterList.includeInLayout = false;
+				//				}else{
+				//					filterList.visible = true;
+				//					filterList.includeInLayout = true;
+				//				}
 				viewMenuData[stack.selectedIndex].toggled = "true";
 			}
 			
@@ -1447,11 +1489,6 @@
 			}		
 			
 			public function selectList(entity:String=null):List {
-				
-				//clear selected item
-				for each (var list:List in navigator.getChildren()) {
-					list.list.selectedIndex=-1;
-				}
 				var index:int =0;
 				if(StringUtils.isEmpty(entity)){
 					entity = selectedEntity;
@@ -1731,7 +1768,7 @@
 				
 				var viewLayout:Object = layoutsMenuData[2];
 				viewLayout.enabled = enableListAndView;
-					
+				
 				
 			}
 			

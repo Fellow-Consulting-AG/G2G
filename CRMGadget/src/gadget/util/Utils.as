@@ -36,6 +36,7 @@ package gadget.util {
 	import flashx.textLayout.formats.Float;
 	
 	import gadget.control.AutoComplete;
+	import gadget.control.CalculatedField;
 	import gadget.control.LoadingIndicator;
 	import gadget.dao.AllUsersDAO;
 	import gadget.dao.BaseDAO;
@@ -2153,6 +2154,7 @@ package gadget.util {
 			commitObjects(dao,xml.elements("custom_fields").children(),true,function(obj:Object):void{
 				if(obj.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
 						Database.customFieldDao.addTableColumn(obj.entity,obj.fieldName,"TEXT");
+						if(obj.fieldType=='Formula') CalculatedField.refreshFormulaField(obj,false);
 				}
 				
 				if(obj.column_name.indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){

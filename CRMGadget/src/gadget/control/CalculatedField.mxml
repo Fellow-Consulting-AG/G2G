@@ -523,17 +523,21 @@
 				}	
 			}
 			
-			private function refreshFormulaField(customField:Object):void{
+			public static function refreshFormulaField(customField:Object,useTransaction:Boolean=true):void{
 				var list:ArrayCollection = Database.getDao(customField.entity).queryAll();
 				var ownerUser:Object = Database.allUsersDao.ownerUser();
-				Database.begin();
+				if(useTransaction){
+					Database.begin();
+				}
 				for each(var objEntity:Object in list){
 					var result:String = Utils.doEvaluate(customField.value,ownerUser, customField.entity, customField.fieldName, objEntity,null);
 					objEntity[customField.fieldName] = result;
 					// Database.getDao(customField.entity).update(objEntity);
 					Database.getDao(customField.entity).updateByGadgetId(customField.fieldName,objEntity.gadget_id,result);
 				}
-				Database.commit();
+				if(useTransaction){
+					Database.commit();
+				}				
 			}
 			
 			private function update_clickHanler(event:MouseEvent):void {

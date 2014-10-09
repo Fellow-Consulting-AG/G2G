@@ -562,7 +562,9 @@ package gadget.sync.outgoing
 				short = "Outdated";
 			} else if (faultString.indexOf("(SBL-DAT-00542)")>=0 || 
 						faultString.indexOf("(SBL-ODS-00446)")>=0 ||			
-						faultString.indexOf("(SBL-DAT-00553)")>=0) {
+						faultString.indexOf("(SBL-DAT-00553)")>=0 ||
+						faultString.indexOf("(SBL-DAT-00278)")>=0||
+						faultString.indexOf("SBL-DAT-00279")>=0){
 				oops ="cannot {4} {1} with Id {2}: access denied to '{3}': {6}";
 				short = "Forbidden";
 			} else if (faultString.indexOf("(SBL-DAT-00382)")>=0 ||
@@ -644,13 +646,17 @@ package gadget.sync.outgoing
 				return false;
 			}
 			var currentRecords:Object = getCurrentRecordError();
-			warn(i18n._(oops, getDao().entity, currentRecords[SodID], ObjectUtils.joinFields(currentRecords, getNameCols()), updated ? "update" : "create", short, XmlUtils.XMLcleanString(faultString)));
+			warn(i18n._(oops, getDao().entity, currentRecords[SodID], ObjectUtils.joinFields(currentRecords, getNameCols()), getOperation(), short, XmlUtils.XMLcleanString(faultString)));
 			notify(ObjectUtils.joinFields(currentRecords, getNameCols()), i18n._(short));
 			faulted++;
 			dao.setErrorGid(currentRecords.gadget_id, true);
 			trace(faultString.toString());
 			doRequest();
 			return true;
+		}
+		
+		protected function getOperation():String{
+			return updated ? "update" : "create";
 		}
 		
 		

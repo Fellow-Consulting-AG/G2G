@@ -64,6 +64,9 @@ package gadget.sync.tasklists {
 						
 				}
 			}
+			if(obj.entity == Database.activityDao.entity){
+				outs.push(new OutgoingSubObject(obj.entity,Database.allUsersDao.entity));
+			}
 			
 			
 		}

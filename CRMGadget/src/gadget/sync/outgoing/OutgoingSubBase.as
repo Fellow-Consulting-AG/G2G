@@ -173,6 +173,11 @@ package gadget.sync.outgoing
  			sendRequest(URNexe,request);
 
 		}
+		
+		override protected function getOperation():String{
+			return oper=="insert"?"Created":oper=="update"?"Updated":"deleted";
+		}
+		
 		override protected function handleResponse(request:XML, result:XML):int{
 			var i:int = 0;
 			if(oper=="delete"){

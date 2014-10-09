@@ -752,15 +752,21 @@ package gadget.util
 				//Mony hack 
 				//var i:int=0; // SC-20110616
 				//if(relation.isColDynamic){
-					for each(var colname:String in relation.labelSupport) {
+					var labelSupport:Array = relation.labelSupport;
+					var labelDest:Array = relation.labelDest;
+					for (var i:int=0;i<labelSupport.length;i++) {
 						var dgCol:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 						//var obj:Object = null;
-						
+						var colname:String = labelSupport[i];
 						var obj:Object = null;
 						if(relation.supportTable == "Contact.CustomObject2"){
 							obj = FieldUtils.getField(relation.entityDest, colname);
 						}else{
 							obj = FieldUtils.getField(relation.supportTable, colname);
+						}
+						
+						if((obj==null || obj!=null && obj.display_name==colname) && i<labelDest.length ){//try to get display name from destination label
+							obj = FieldUtils.getField(relation.entityDest, labelDest[i]);
 						}
 //						if(subDao!=null){
 //							obj = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),colname);

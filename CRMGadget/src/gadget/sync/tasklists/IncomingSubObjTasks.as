@@ -19,7 +19,7 @@ package gadget.sync.tasklists {
 		
 		var syncContactAccount:Boolean = false;
 		var syncContactC02:Boolean = false;
-		
+		var syncActivityUser:Boolean = false;
 		for each(var o:Object in list){
 			
 			if(o.entity == "Account"){				
@@ -29,6 +29,9 @@ package gadget.sync.tasklists {
 				syncContactAccount=true;
 				syncContactC02=true;
 				
+			}
+			if(o.entity == Database.activityDao.entity){	
+				syncActivityUser = true;
 			}
 			//sub
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
@@ -70,6 +73,10 @@ package gadget.sync.tasklists {
 		}
 		if(syncContactC02){
 			subSync.push(new IncomingSubContact("Contact","Custom Object 2"));
+		}
+		
+		if(syncActivityUser){
+			subSync.push(new IncomingSubobjects(Database.activityDao.entity,Database.allUsersDao.entity));
 		}
 		
 		return subSync;

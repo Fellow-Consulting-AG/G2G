@@ -689,6 +689,22 @@ package gadget.sync.incoming {
 				OOPS("=Error while saveing data....", e.details);
 				Database.errorLoggingDao.add(e, null);
 			}
+			
+			//update formular field
+			
+			var customFormularFields:ArrayCollection = Database.customFieldDao.selectCustomFormularFields(entityIDour);
+			if(customFormularFields!=null && customFormularFields.length>0){
+				var updateFields:Array = new Array();
+				var curentSave:Object = dao.findByOracleId(tmpOb[DAOUtils.getOracleId(entityIDour)]);
+				for each(var customField:Object in customFormularFields){
+					updateFields.push(customField.fieldName);
+					var result:String = Utils.doEvaluate(customField.value,Database.allUsersDao.ownerUser(), customField.entity, customField.fieldName, curentSave,null);
+					curentSave[customField.fieldName] = result;
+				}
+				
+				dao.updateByField(updateFields,curentSave,DAOUtils.getOracleId(entityIDour));
+			
+			}
 			//update language info
 			if(this is IncomingCurrentUserData){
 				LocaleService.updateLanguageInfo(tmpOb);

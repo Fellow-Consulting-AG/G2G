@@ -1100,7 +1100,7 @@
 								
 								
 								//bug#8313
-								if(Database.preferencesDao.isAutoSetPrimaryContact()){
+								if(Database.preferencesDao.isAutoSetPrimaryContact()||selectedEntity == Database.contactDao.entity){
 									if(objContact == null && !StringUtils.isEmpty(contId)){
 										objContact = Database.contactDao.findByOracleId(contId);
 									}

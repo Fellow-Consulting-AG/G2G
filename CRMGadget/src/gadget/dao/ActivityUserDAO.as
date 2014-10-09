@@ -19,10 +19,12 @@ package gadget.dao
 				id:     [ 'ActivityId', 'UserId' ],
 				columns: TEXTCOLUMNS
 			},{
+				oracle_id:"Id",
+				unique:['ActivityId,UserId'],
 				name_column:["UserAlias"],
 				search_columns:["UserAlias"]
 			});
-
+			_isSyncWithParent = false;
 			/*
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
@@ -41,6 +43,14 @@ package gadget.dao
 			stmtDelete.sqlConnection = sqlConnection;
 			stmtDelete.text = "DELETE FROM activity_user WHERE activityId = :activityId AND userId = :userId";
 */			
+		}
+		
+		override public function fix_sync_incoming(rec:Object,parent:Object=null):Boolean { 
+			if(parent!=null){
+				rec['ActivityId']=parent['ActivityId'];
+				rec['Subject']=parent['Subject'];
+			}
+			return true;
 		}
 /*		
 		public function insert(activityUser:Object):void{
@@ -61,6 +71,51 @@ package gadget.dao
 			return new ArrayCollection(stmtSelect.getResult().data);
 		}
 */
+		override protected function getIncomingIgnoreFields():ArrayCollection{
+			
+			return new ArrayCollection(["ActivityId","Subject","EMailAddr","EMailAddr","Alias","FirstName","Role"]);
+		}
+		override protected function getOutgoingIgnoreFields():ArrayCollection{
+			return new ArrayCollection([
+				"ActivityId",	
+				"Subject",
+				"UserAlias","Alias",
+				"UserEmail","EMailAddr",
+				"UserExternalSystemId","ExternalSystemId",
+				"UserFirstName","FirstName",
+				"UserLastName","LastName",
+				"UserRole","Role",
+				
+				"CreatedBy",
+				"CreatedByAlias",
+				"CreatedByEMailAddr",
+				"CreatedByExternalSystemId",
+				"CreatedByFirstName",
+				"CreatedByFullName",
+				"CreatedById",
+				"CreatedByIntegrationId",
+				"CreatedByLastName",
+				"CreatedByUserSignInId",
+				"CreatedDate",
+				
+				"ModId",
+				"ModifiedBy",
+				"ModifiedById",
+				"ModifiedDate",
+				
+				"UpdatedByAlias",
+				"UpdatedByEMailAddr",
+				"UpdatedByExternalSystemId",
+				"UpdatedByFirstName",
+				"UpdatedByFullName",
+				"UpdatedByIntegrationId",
+				"UpdatedByLastName",
+				"UpdatedByUserSignInId",
+				
+			]);
+		}
+		
+		
 		private const TEXTCOLUMNS:Array = [
 			ID("Id"),
 			ID(".ActivityId"),				// Missing in WSDL

@@ -135,6 +135,22 @@ package gadget.dao {
 			}
 			return customFieldlist;
 		}
+		
+		
+		public function selectCustomFormularFields(entity:String):ArrayCollection {
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity}));
+			var customFieldlist:ArrayCollection = new ArrayCollection();
+			for each(var obj:Object in list){
+				
+				if( obj['fieldType']=='Formula'){
+					customFieldlist.addItem(obj);
+				} 
+				
+			}
+			return customFieldlist;
+		}
+		
+		
 		public function selectCustomFieldsSum(child:String):ArrayCollection {
 			
 			return new ArrayCollection(select(vars, null, {sum_entity_name:child}));

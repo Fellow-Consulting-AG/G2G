@@ -223,7 +223,7 @@ package
 
 				//var xmlFile:File =Utils.writeFile( model.assessmentModel + "_" + accName + DateUtils.getCurrentDateAsSerial() +".xml",xmlByte); // generate pdf
 				var xmlFile:File =Utils.writeFile( name +".xml",xmlByte); // generate pdf
-				xlsName = xmlFile.nativePath.replace(".xml" , ".xlsx");
+				xlsName = xmlFile.nativePath.replace(".xml" , ".xls");
 
 				
 				// java jdk
@@ -297,7 +297,7 @@ package
 					
 					//	var file:File =new File(content); // generate pdf
 					file.openWithDefaultApplication();
-					attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".xlsx");
+					attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".xls");
 					openned = true;
 				}
 			} 

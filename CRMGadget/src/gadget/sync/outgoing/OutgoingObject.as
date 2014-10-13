@@ -564,7 +564,8 @@ package gadget.sync.outgoing
 						faultString.indexOf("(SBL-ODS-00446)")>=0 ||			
 						faultString.indexOf("(SBL-DAT-00553)")>=0 ||
 						faultString.indexOf("(SBL-DAT-00278)")>=0||
-						faultString.indexOf("SBL-DAT-00279")>=0){
+						faultString.indexOf("SBL-DAT-00279")>=0||
+						faultString.indexOf("(SBL-DAT-00284)")>=0){
 				oops ="cannot {4} {1} with Id {2}: access denied to '{3}': {6}";
 				short = "Forbidden";
 			} else if (faultString.indexOf("(SBL-DAT-00382)")>=0 ||

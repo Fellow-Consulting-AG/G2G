@@ -1068,7 +1068,7 @@
 								var accId:String = "";
 								var contId:String = "";
 								var contFullName:String = "";
-								if(StringUtils.isEmpty(accId) && obj != null && !StringUtils.isEmpty(obj.AccountId)){
+								if(obj != null && !StringUtils.isEmpty(obj.AccountId)){
 									obj = Database.accountDao.findByOracleId(obj.AccountId);
 									//bug#
 									//newObj.Subject = obj.AccountName == null ? "" : obj.AccountName;
@@ -1489,6 +1489,10 @@
 			}		
 			
 			public function selectList(entity:String=null):List {
+				//clear selected item
+				for each (var list:List in navigator.getChildren()) {
+					list.list.selectedIndex=-1;
+				}
 				var index:int =0;
 				if(StringUtils.isEmpty(entity)){
 					entity = selectedEntity;

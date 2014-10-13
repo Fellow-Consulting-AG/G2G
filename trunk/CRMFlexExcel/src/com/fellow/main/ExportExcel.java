@@ -178,7 +178,6 @@ public class ExportExcel {
 			}
 			
 			workBook.write(out);
-			
 			/*dataOutputStream.write(out.toByteArray());
 
 			 dataOutputStream.flush();
@@ -189,16 +188,17 @@ public class ExportExcel {
 		//	String content = new String(Base64.encodeBase64(out.toByteArray()));
 //			System.out.println(content);
 			
-			/*File file = new File(folder,"C:/Users/ASUS/Desktop/Test.xlsx");
-			FileOutputStream nfiel = new FileOutputStream(file);
-			nfiel.write(out.toByteArray());*/
+			/*File filetest = new File("C:/Users/ASUS/Desktop/Test.xls");
+			FileOutputStream nfielTest = new FileOutputStream(filetest);
+			nfielTest.write(out.toByteArray());*/
 			
 			String fName = f.getName().replace("xml", "xls");
-			fName = URLEncoder.encode(fName, "UTF-8");
+//			fName = URLEncoder.encode(fName, "UTF-8");
 			File file = new File(folder,fName);
 			FileOutputStream nfiel = new FileOutputStream(file);
 			nfiel.write(out.toByteArray());
 			out.close();
+			nfiel.close();
 			//byte[] theByteArray = stringToConvert.getBytes();    
 
 			/*DataOutputStream dataOutputStream = new DataOutputStream(System.out);

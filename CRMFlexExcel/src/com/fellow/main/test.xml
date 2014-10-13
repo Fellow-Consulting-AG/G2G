@@ -1,1244 +1,754 @@
-﻿<model title="KiB Tryggmat" isCreateSum="false" sumType="">
-  <page title="2.1 EKP" isCreateSum="false" assessmentType="Activity Assessment">
-    <Section title="T-2.1 EKP- EKP Verksamhetsbeskrivning">
-      <row isheader="true" title="">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+﻿<model title="Foersaeljningsledare Butiks" isCreateSum="false" sumType="%">
+  <page title="1 Försäljning" isCreateSum="false" assessmentType="Activity Assessment">
+    <Section title="B-1 Försäljning- 1 Kunden">
+      <row isheader="true" title="B-1 Försäljning- 1 Kunden">
+        <col value="Svar"/>
         <col value="Kommentar"/>
-        <col value="Korrigerande åtgärd"/>
-        <col value="Ansvarig"/>
-        <col value="Datum"/>
       </row>
-      <row title="2.1 EKP Verksamhetsbeskrivning" colspan="9"/>
-      <row odd="true" title="2.1 EKP Verksamhetsbeskrivning">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.1 EKP-  LEDNINGEN">
-      <row title="2.1.1 LEDNINGEN" colspan="9"/>
-      <row odd="true" title="2.1.1 LEDNINGEN">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 1">
-      <row odd="true" title="2.1.1.1 Möten">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 2">
-      <row odd="true" title="2.1.1.2 Policy">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 3">
-      <row odd="true" title="2.1.1.3 Organisation">
+      <row odd="true" title="Är kunden identifierad på din marknad?">
         <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Vet du hur stor din marknadspotential är?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Gör du årligen kundundersökningar (NKI el. kundkompassen)samt följer upp med medarbetarna?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har du något unikt i ditt kunderbjudande?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Följer du upp dina ICA-kortskunder kontinuerligt?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="20.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 4">
-      <row odd="true" title="2.1.1.4 Registering kommun">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
+    <Section title="B-1 Försäljning - 2 Kundvarv/kommunikation">
+      <row isheader="true" title="B-1 Försäljning - 2 Kundvarv/kommunikation">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
       </row>
-    </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 5">
-      <row odd="true" title="2.1.1.5 Leverantörer">
+      <row odd="true" title="Är du nöjd med butikens kundvarv/layout?">
         <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Gör du årligen en Säljplan för att alltid ha en attraktiv butik mot kund varje dag?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns det rutiner för skyltning av priser och kommunikationsmaterial i butiken?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Arbetas det med gavelexponeringar eller andra exponeringar på ett strukturerat sätt?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Anser du att varutrycket/fyllnadsgraden motsvarar kundens förväntningar?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="20.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.1 EKP- 1 Ledningen- 6">
-      <row odd="true" title="2.1.1.6 Egenimport">
-        <col value="0"/>
-        <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-1 Försäljning- 3 Prisupplevelse &amp; matupplevelse">
+      <row isheader="true" title="B-1 Försäljning- 3 Prisupplevelse &amp; matupplevelse">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Anser du att priset motsvarar kundens förväntningar?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns rutiner för prisupplevelse?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Har ni en utvecklingsplan för att förenkla och inspirera kunden varje dag?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Kan du idag på ett bra sätt jämföra/benchmarka din försäljningsutveckling?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Är du duktig på att upptäcka och förmedla trender?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.1 EKP- AVVIKELSER system">
-      <row title="2.1.2 AVVIKELSER system" colspan="9"/>
-      <row odd="true" title="2.1.2 AVVIKELSER system">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-1 Försäljning- 4 Kundrelation">
+      <row isheader="true" title="B-1 Försäljning- 4 Kundrelation">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Finns tydligt kundfokus bland medarbetarna? (Hälsar, är hjälpsamma, trevliga?)">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har kunden möjlighet att komma med förslag och funderingar?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Har ni någon nöjd kund-garanti och följs den upp?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Jobbar ni med kundaktiviteter?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Jobbar ni med lokalt engagemang såsom sponsring?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.1 EKP- 2 Avvikelser- 1">
-      <row odd="true" title="2.1.2.1 Åtgärder &amp; dok">
+    <Section title="B-1 Försäljning- 5 Konkurrens">
+      <row isheader="true" title="B-1 Försäljning- 5 Konkurrens">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Kan du dina konkurrenters kunderbjudande och styrkor och svagheter?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.1 EKP- 3 Internrevision- 1">
-      <row title="2.1.3 INTERNREVISION" colspan="9"/>
-      <row odd="true" title="2.1.3 INTERNREVISION">
+      <row odd="false" title="Kan du erbjuda kunden mer eller minst lika mycket som dina konkurrenter?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.1 EKP-  DOK. KRAV aktuella dokument/rutiner">
-      <row title="2.1.4 DOK. KRAV aktuella dokument/rutiner" colspan="9"/>
-      <row odd="true" title="2.1.4 DOK. KRAV aktuella dokument/rutiner">
+      <row odd="true" title="Är dina medarbetare medvetna om butikens styrkor och svagheter?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.1 EKP- 4 Dok.Krav- 1">
-      <row odd="true" title="2.1.4.1 Tillgänglighet">
+      <row odd="false" title="Görs egna prisjämförelser mot dina konkurrenter?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.1 EKP-4 Dok.Krav- 2">
-      <row odd="true" title="2.1.4.2 Redovisande dokument">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="true" title="Vet du hur din konkurrenssituation ser ut på längre sikt? (2-5 år)">
         <col value="0"/>
         <col value=""/>
-        <col value=""/>
-        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
     <pageTotal>
       <row title="Summa">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+        <col value="Svar"/>
       </row>
       <row>
-        <col value="2"/>
-        <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value="8.00"/>
       </row>
     </pageTotal>
   </page>
-  <page title="2.2 Personal" isCreateSum="false" assessmentType="Activity Assessment">
-    <Section title="T-2.2 Persona l- UTBILDNING plan">
-      <row isheader="true" title="">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+  <page title="2 Sortiment" isCreateSum="false" assessmentType="Activity Assessment">
+    <Section title="B-2 Sortiment- 1 Kunderbjudande">
+      <row isheader="true" title="B-2 Sortiment- 1 Kunderbjudande">
+        <col value="Svar"/>
         <col value="Kommentar"/>
-        <col value="Korrigerande åtgärd"/>
-        <col value="Ansvarig"/>
-        <col value="Datum"/>
       </row>
-      <row title="2.2.1 UTBILDNING plan" colspan="9"/>
-      <row odd="true" title="2.2.1 UTBILDNING plan">
+      <row odd="true" title="Anser du att sortimentet i butiken motsvarar kundens förväntningar och behov idag?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.2 Personal- 1 Utbildning- 1">
-      <row odd="true" title="2.2.1.1 Introduktionsutbildning">
-        <col value="0"/>
-        <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="false" title="Finns det rutiner kring butikens sortiment?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns en förnyelseplan för respektive avdelning?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Jobbar ni aktivt med EMV?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Har du det stöd och de resurser som krävs för att underhålla och utveckla sortimentet?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.2 Personal- 1 Utbildning- 2">
-      <row odd="true" title="2.2.1.2 Hygienutbildning">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-2 Sortiment- 2 Pris">
+      <row isheader="true" title="B-2 Sortiment- 2 Pris">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Använder du prisprofil?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Följer du din prisprofil?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns det en genomtänkt prisstrategi?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Aktiverar ni prisfiler varje vecka?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Följer ni externa leverantörers inpriser varje vecka?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.2 Personal- 1 Utbildning- 3">
-      <row odd="true" title="2.2.1.3 Intyg/Diplom">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B- 2 Sortiment- 3 Marginal">
+      <row isheader="true" title="B- 2 Sortiment- 3 Marginal">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Följer du upp ditt marginalutfall?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Följer du upp ditt marginalutfall på gavlar/exponeringar?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Följer du upp pris och marginal för externa leverantörer?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Följer du upp avvikelse per avdelning?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Följer du upp aktivitetspåverkan/kampanjandel?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.2 Personal- 1 Utbildning- 4">
-      <row odd="true" title="2.2.1.4 HACCP">
+    <Section title="B-2 Sortiment- 4 Svinn">
+      <row isheader="true" title="B-2 Sortiment- 4 Svinn">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Registrerar du synligt svinn per avdelning?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="1"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns måltal för hur högt svinnet får vara i butiken?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns någon svinnansvarig i er butik?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Jobbar ni aktivt med åtgärder för att sänka synligt och osynligt svinn?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Har du det stöd och de resurser som krävs för att minimera svinnet?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.2 Personal - PERSONLIG HYGIEN hygienregler">
-      <row title="2.2.2 PERSONLIG HYGIEN hygienregler" colspan="9"/>
-      <row odd="true" title="2.2.2 PERSONLIG HYGIEN hygienregler">
+    <Section title="B-2 Sortiment- 5 AOB">
+      <row isheader="true" title="B-2 Sortiment- 5 AOB">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Inventerar du minst en gång i veckan i AOB?">
         <col value="0"/>
-        <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.2 Personal- 2 Personlig hygien- 1">
-      <row odd="true" title="2.2.2.1 Smittorisk">
+      <row odd="false" title="Jobbar ni med förhandsorder i AOB?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.2 Personal- 2 Personlig hygien- 2">
-      <row odd="true" title="2.2.2.2 Arbetskläder">
+      <row odd="true" title="Har ni säkerställda rutiner kring kross, svinn, internhandel, reklamationer och kassa enligt AOB dri">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.2 Personal- 2 Personlig hygien- 3">
-      <row odd="true" title="2.2.2.3 Separering arbetskläder">
+      <row odd="false" title="Använder du dig av löpande bokslutsinventering i AOB?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="1"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.2 Personal- 2 Personlig hygien- 4">
-      <row odd="true" title="2.2.2.4 Hälsodeklaration">
-        <col value="0"/>
-        <col value="1"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="true" title="Har du det stöd och resurser som krävs för att underhålla utveckla AOB?">
         <col value="0"/>
         <col value=""/>
-        <col value=""/>
-        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
     <pageTotal>
       <row title="Summa">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+        <col value="Svar"/>
       </row>
       <row>
-        <col value="0"/>
-        <col value="3"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="2"/>
+        <col value="0.00"/>
       </row>
     </pageTotal>
   </page>
-  <page title="2.3 Anläggning" isCreateSum="false" assessmentType="Activity Assessment">
-    <Section title="T-2.3 Anläggning -  LOKALER &amp; UTR.">
-      <row isheader="true" title="">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+  <page title="3 Organisation" isCreateSum="false" assessmentType="Activity Assessment">
+    <Section title="B-3 Organisation- 1 Omvärld,Affärsidé &amp; affärsplan">
+      <row isheader="true" title="B-3 Organisation- 1 Omvärld,Affärsidé &amp; affärsplan">
+        <col value="Svar"/>
         <col value="Kommentar"/>
-        <col value="Korrigerande åtgärd"/>
-        <col value="Ansvarig"/>
-        <col value="Datum"/>
       </row>
-      <row title="2.3.1 LOKALER &amp; UTR." colspan="9"/>
-      <row odd="true" title="2.3.1 LOKALER &amp; UTR.">
+      <row odd="true" title="Uppdateras er organisation i takt med att omvärlden förändras?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 1">
-      <row odd="true" title="2.3.1.1 Material &amp; Inredning">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="false" title="Finns tydliga mål för närmaste året/åren?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Jobbar du/ni med affärsplan med mätbara, enkla och uppföljningsbara mål årligen?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns det en aktuell affärsidé?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 2">
-      <row odd="true" title="2.3.1.2 Ventilation">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-3 Organisation- 2 Ledning">
+      <row isheader="true" title="B-3 Organisation- 2 Ledning">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Lever du/ni upp till ICAs ledar- och medarbetarsyn?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns en tydlig organisation/organisationsschema/ansvarsområden?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns ledningsgrupp/driftsgrupp?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Jobbar du aktivt med och följer upp provköpen?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Har du det stöd och resurser som krävs för att utveckla din organisation?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 3">
-      <row odd="true" title="2.3.1.3 Tappställen &amp; avlopp">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-3 Organisation- 3 Medarbetare">
+      <row isheader="true" title="B-3 Organisation- 3 Medarbetare">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Finns skriftliga anställningsavtal för alla medarbetare och även för personer utöver vanlig tid?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns program för introduktion av nya medarbetare?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns tydliga befattningsbeskrivningar för alla medarbetare?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Genomförs årliga medarbetarsamtal på ett strukturerat sätt?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Känns dina medarbetare motiverade och engagerade?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 4">
-      <row odd="true" title="2.3.1.4 Belysning">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-3 Organisation- 4 Kommunikation">
+      <row isheader="true" title="B-3 Organisation- 4 Kommunikation">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Finns tydlig mötesstruktur för ledningsgruppen/driftsgrupen?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Finns tydlig mötesstruktur för alla medarbetare?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Törs alla säga vad de tycker på arbetsplatsen?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Fungerar möten mer som dialogmöten än bara rapportering?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Finns en fungerande internkommunikation med anslagstavlor, Intern-TV?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 5">
-      <row odd="true" title="2.3.1.5 Splitterskydd">
+    <Section title="B-3 Organisation- 5 Köpman">
+      <row isheader="true" title="B-3 Organisation- 5 Köpman">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Är du en aktiv handlare?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 1 Lokaler &amp; UTR.- 6">
-      <row odd="true" title="2.3.1.6 Hantvättställ">
+      <row odd="false" title="Brukar du vara med på handlarträffar, nätverk m.m?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning - UNDERHÅLL rutiner &amp; dokumentati">
-      <row title="2.3.2 UNDERHÅLL rutiner &amp; dokumentation" colspan="9"/>
-      <row odd="true" title="2.3.2 UNDERHÅLL rutiner &amp; dokumentation">
+      <row odd="true" title="Trivs du med att vara handlare?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 2 Underhåll- 1">
-      <row odd="true" title="2.3.2.1 Utrustning arbetsytor">
+      <row odd="false" title="Anser du att du har en bra arbetssituation idag?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 2 Underhåll- 2">
-      <row odd="true" title="2.3.2.2 Mätutrustning">
+      <row odd="true" title="Vet du vad du gör om 5 år?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.3 Anläggning - 2.3.3 AVFALLSHANTERING rutiner">
-      <row title="2.3.3 AVFALLSHANTERING rutiner" colspan="9"/>
-      <row odd="true" title="2.3.3 AVFALLSHANTERING rutiner">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 3 Avfallshantering- 1">
-      <row odd="true" title="2.3.3.1 Förvaring avfall">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.3 Anläggning - SKADEDJURSKONTR.">
-      <row title="2.3.4 SKADEDJURSKONTR." colspan="9"/>
-      <row odd="true" title="2.3.4 SKADEDJURSKONTR.">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 4 Skadedjurskontr- 1">
-      <row odd="true" title="2.3.4.1 Karta/skiss/rapporter">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.3 Anläggning- 5 Vatten &amp; Is- 1">
-      <row title="2.3.5.1 VATTEN &amp; IS" colspan="9"/>
-      <row odd="true" title="2.3.5.1 VATTEN &amp; IS">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
     <pageTotal>
       <row title="Summa">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+        <col value="Svar"/>
       </row>
       <row>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value="0.00"/>
       </row>
     </pageTotal>
   </page>
-  <page title="2.4 HACCP" isCreateSum="false" assessmentType="Activity Assessment">
-    <Section title="T-2.4 HACCP- 2 HACCP uppdaterat &amp; implementerat">
-      <row isheader="true" title="">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+  <page title="4 Effektiv Butik" isCreateSum="false" assessmentType="Activity Assessment">
+    <Section title="B-4 Effektiv butik- 1 Personal">
+      <row isheader="true" title="B-4 Effektiv butik- 1 Personal">
+        <col value="Svar"/>
         <col value="Kommentar"/>
-        <col value="Korrigerande åtgärd"/>
-        <col value="Ansvarig"/>
-        <col value="Datum"/>
       </row>
-      <row title="2.4 HACCP uppdaterat &amp; implementerat" colspan="9"/>
-      <row odd="true" title="2.4 HACCP uppdaterat &amp; implementerat">
+      <row odd="true" title="Följs de totala personalkostnaderna upp löpande?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 1 FAROANALYS">
-      <row title="2.4.1 FAROANALYS" colspan="9"/>
-      <row odd="true" title="2.4.1 FAROANALYS">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="false" title="Har du kunskap och resurser för schemaläggning och timplanering?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Jobbar ni aktivt för att höja kostnadsmedvetenheten hos medarbetarna?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Följs antal arbetstimmar upp löpande?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Följer du upp sjukfrånvaro?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.4 HACCP- 1 Faroanalys- 1">
-      <row odd="true" title="2.4.1.1 faror/processteg/produkter">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-4 Effektiv butik- 2 Lokal">
+      <row isheader="true" title="B-4 Effektiv butik- 2 Lokal">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Har du begärt in offert från andra aktörer för sophämtning?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har du begärt in offert från andra aktörer för städning?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Har du tagit konsulthjälp för butikens elförbrukning?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har du ett bra stöd i fastighetsfrågor?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Får du den service du ska enligt hyresavtalet?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.4 HACCP- 1 Faroanalys- 2">
-      <row odd="true" title="2.4.1.2 flödesschema">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-4 Effektiv butik- 3 Reklam">
+      <row isheader="true" title="B-4 Effektiv butik- 3 Reklam">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Går du igenom profilens marknadsföringsmix varje år?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har du en genomtänkt upplaga på DR och KSM?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Sätts de centralt utskickade kommunikationspaketen upp?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Tar du hjälp av ICA-reklamen för din marknadsföring?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Tar du hjälp av dina sponsringskontakter tex vid inventering/packningshjälp i kassan?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP">
-      <row title="2.4.2 CCP &amp; HACCP" colspan="9"/>
-      <row odd="true" title="2.4.2 CCP &amp; HACCP">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-4 Effektiv butik- 4 Administration">
+      <row isheader="true" title="B-4 Effektiv butik- 4 Administration">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Utnyttjar du tekniken som finns för din redovisning?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har ni rutiner för inventering av lotter och spel?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Har ni rutiner för pantkvitton och bonuscheckar?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Har ni rutiner för kassaavstämning?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Har ni rutiner för pengahantering?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP-  1">
-      <row odd="true" title="2.4.2.1 identifierade CP/CCP">
+    <Section title="B-4 Effektiv butik- 5 Övrigt?">
+      <row isheader="true" title="B-4 Effektiv butik- 5 Övrigt?">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Har du sett över dina service/leasing/bevaknings/värdetransport - avtal det senaste året?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP- 2">
-      <row odd="true" title="2.4.2.2 kritiska gränsvärden">
+      <row odd="false" title="Har dina medarbetare genomgått grundläggande säkerhetsutbildning?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP- 3">
-      <row odd="true" title="2.4.2.3 övervakning CP/CCP">
+      <row odd="true" title="Är du anmäld till ICA Säkerhetscenters sms-tjänst för att kunna ta emot varningar och nyheter?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP- 4">
-      <row odd="true" title="2.4.2.4 Arbetsinstruktioner">
+      <row odd="false" title="Har du en förberedelse inför oförutsedda händelser?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP- 5">
-      <row odd="true" title="2.4.2.5 Åtgärdshantering">
+      <row odd="true" title="Har du sett över dina företagsförsäkringar det senaste året?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.4 HACCP- 2 CCP &amp; HACCP- 6">
-      <row odd="true" title="2.4.2.6 Revidering HACCP">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
     <pageTotal>
       <row title="Summa">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+        <col value="Svar"/>
       </row>
       <row>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value="0.00"/>
       </row>
     </pageTotal>
   </page>
-  <page title="2.5 Arbetsrutiner" isCreateSum="false" assessmentType="Activity Assessment">
-    <Section title="T-2.5 Arbetsrutiner - TEMP. KONTROLL">
-      <row isheader="true" title="">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+  <page title="5 Rapport &amp; Uppföljning" isCreateSum="false" assessmentType="Activity Assessment">
+    <Section title="B-5 Rapport &amp; uppföljning- 1 Budget &amp; uppföljning">
+      <row isheader="true" title="B-5 Rapport &amp; uppföljning- 1 Budget &amp; uppföljning">
+        <col value="Svar"/>
         <col value="Kommentar"/>
-        <col value="Korrigerande åtgärd"/>
-        <col value="Ansvarig"/>
-        <col value="Datum"/>
       </row>
-      <row title="2.5.1 TEMP. KONTROLL" colspan="9"/>
-      <row odd="true" title="2.5.1 TEMP. KONTROLL">
+      <row odd="true" title="Jobbar butiken med budget eller annan typ av ekonomisk planering?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 1 Temp-Kontroll- 1">
-      <row odd="true" title="2.5.1.1 Dokumentation">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+      <row odd="false" title="Är den ekonomiska planeringen kommunicerad till samtliga medarbetare?">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Finns det en plan för hur butiken ska nå uppsatt resultatmål?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Följs resultatrapporter upp löpande?">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Kommuniceras det löpande till medarbetarna hur butiken presterar?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.5 Arbetsrutiner - RENGÖRING">
-      <row title="2.5.2 RENGÖRING" colspan="9"/>
-      <row odd="true" title="2.5.2 RENGÖRING">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+    <Section title="B-5 Rapport &amp; uppföljning- 2 Diskussionsfrågor">
+      <row isheader="true" title="B-5 Rapport &amp; uppföljning- 2 Diskussionsfrågor">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Försäljningsutveckling">
         <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Bruttovinstutveckling">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="true" title="Övriga kostnader">
+        <col value="0"/>
         <col value=""/>
+      </row>
+      <row odd="false" title="Resultat">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="true" title="Uppföljning av nyckeltal?">
+        <col value="0"/>
+        <col value=""/>
+      </row>
+      <row odd="false" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
-    <Section title="T-2.5 Arbetsrutiner- 2 Rengöring- 1">
-      <row odd="true" title="2.5.2.1 Rengöringsprogram">
+    <Section title="B-5 Rapport &amp; uppföljning- 3 Framtid/förnyelse">
+      <row isheader="true" title="B-5 Rapport &amp; uppföljning- 3 Framtid/förnyelse">
+        <col value="Svar"/>
+        <col value="Kommentar"/>
+      </row>
+      <row odd="true" title="Finns plan/ambition för kvalitetscertifiering?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 2 Rengöring- 2">
-      <row odd="true" title="2.5.2.2 Kontroll &amp; provtagning">
+      <row odd="false" title="Är du nöjd med butikens miljöarbete?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 2 Rengöring- 3">
-      <row odd="true" title="2.5.2.3 Förvaring städredskap &amp; kemikalier">
+      <row odd="true" title="Finns det en plan för framtida investeringar i verksamheten?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 2 Rengöring- 4">
-      <row odd="true" title="2.5.2.4 Märkning kemikalier">
+      <row odd="false" title="Genererar butiken tillräckligt resultat för att genomföra planerade investeringar?">
         <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
         <col value=""/>
       </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner - VARUMOTTAGNING rutiner">
-      <row title="2.5.3 VARUMOTTAGNING rutiner" colspan="9"/>
-      <row odd="true" title="2.5.3 VARUMOTTAGNING rutiner">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 3 Varumottagning- 1">
-      <row odd="true" title="2.5.3.1 Kontroll">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 3 Varumottagning- 2">
-      <row odd="true" title="2.5.3.2 Ytteremballage">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner - FÖRVARING rutiner">
-      <row title="2.5.4 FÖRVARING rutiner" colspan="9"/>
-      <row odd="true" title="2.5.4 FÖRVARING rutiner">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 1">
-      <row odd="true" title="2.5.4.1 Avsedda utrymmen">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 2">
-      <row odd="true" title="2.5.4.2 Ovidkommande föremål">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 3">
-      <row odd="true" title="2.5.4.3 Golvförvaring">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 4">
-      <row odd="true" title="2.5.4.4 Utgånget datum">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 5">
-      <row odd="true" title="2.5.4.5 Separering">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 4 Förvaring- 6">
-      <row odd="true" title="2.5.4.6 Allergener">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner - UTKÖRNING">
-      <row title="2.5.5 UTKÖRNING" colspan="9"/>
-      <row odd="true" title="2.5.5 UTKÖRNING">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner -  PRODUKTMÄRKNING förpackad p">
-      <row title="2.5.6 PRODUKTMÄRKNING förpackad produkt" colspan="9"/>
-      <row odd="true" title="2.5.6 PRODUKTMÄRKNING förpackad produkt">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 6 Produktmärkning- 1">
-      <row odd="true" title="2.5.6.1 lösvikt">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 6 Produktmärkning- 2">
-      <row odd="true" title="2.5.6.2 Ursprungsmärkning">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner - SPÅRBARHET">
-      <row title="2.5.7 SPÅRBARHET" colspan="9"/>
-      <row odd="true" title="2.5.7 SPÅRBARHET">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 7 Spårbarhet- 1">
-      <row odd="true" title="2.5.7.1 bakåt">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 7 Spårbarhet- 2">
-      <row odd="true" title="2.5.7.2 framåt">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- FÖRPACKNING">
-      <row title="2.5.8 FÖRPACKNING" colspan="9"/>
-      <row odd="true" title="2.5.8 FÖRPACKNING">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- Reklam./Återkallelse rutin">
-      <row title="2.5.9 Reklam./Återkallelse rutin" colspan="9"/>
-      <row odd="true" title="2.5.9 Reklam./Återkallelse rutin">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 9 Reklam/Återkallelse- 1">
-      <row odd="true" title="2.5.9.1 Dokumentation">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- RETURHANTERING rutin">
-      <row title="2.5.10 RETURHANTERING rutin" colspan="9"/>
-      <row odd="true" title="2.5.10 RETURHANTERING rutin">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 10 Returhantering- 1">
-      <row odd="true" title="2.5.10.1 märkning förvaring">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
-      </row>
-    </Section>
-    <Section title="T-2.5 Arbetsrutiner- 10 Returhantering- 2">
-      <row odd="true" title="2.5.10.2 returnering">
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value=""/>
-        <col value=""/>
-        <col value=""/>
+      <row odd="true" title="Totalt">
+        <col value="0.00"/>
         <col value=""/>
       </row>
     </Section>
     <pageTotal>
       <row title="Summa">
-        <col value="EA"/>
-        <col value="UA"/>
-        <col value="MA"/>
-        <col value="SA"/>
-        <col value="KA"/>
+        <col value="Svar"/>
       </row>
       <row>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
-        <col value="0"/>
+        <col value="0.00"/>
       </row>
     </pageTotal>
   </page>
   <modelTotal>
     <row title="">
-      <col value="EA"/>
-      <col value="UA"/>
-      <col value="MA"/>
-      <col value="SA"/>
-      <col value="KA"/>
-      <col value="EA:Ej Aktuell, UA:Utan Anmärkning, MA:Mindre Avvikelse, SA:Större Avvikelse, KA:Kritisk Avvikelse."/>
+      <col value="Svar"/>
     </row>
     <row title="Totala Avvikelser">
-      <col value="2"/>
-      <col value="4"/>
-      <col value="0"/>
-      <col value="0"/>
-      <col value="2"/>
-    </row>
-    <row title="Internrevision resultat">
-      <col value="18 månader"/>
+      <col value="1.60"/>
     </row>
   </modelTotal>
-  <header title="ICA Internrevision, baserad på: SVENSK STANDARD FÖR LIVSMEDELSHANTERING I BUTIK">
+  <header title="test">
     <row title="Representant ICA" value=""/>
-    <row title="Butiksnamn" value="ACME Computer Parts"/>
-    <row title="Leverans Adress 1" value="Hemling 1022"/>
+    <row title="Butiksnamn" value="ICA Nära Duvbo"/>
+    <row title="Leverans Adress 1" value="Tulegatan 65"/>
     <row title="Leverans Adress 2" value=""/>
-    <row title="Leverans Postnummer" value="89051"/>
-    <row title="Leverans Ort" value="LÅNGVIKSMON"/>
-    <row title="Profil" value="ICA To Go"/>
-    <row title="Köpman" value=""/>
-    <row title="Kvalitetsansvarig i butik/Miljöansvarig I butik" value=""/>
-    <row title="Datum" value="2013-07-03"/>
+    <row title="Leverans Postnummer" value="17232"/>
+    <row title="Leverans Ort" value="SUNDBYBERG"/>
+    <row title="Profil" value="Nära"/>
+    <row title="Handlare" value=""/>
+    <row title="Primär Kontakt" value=""/>
+    <row title="Datum" value="2013-07-31"/>
   </header>
 </model>

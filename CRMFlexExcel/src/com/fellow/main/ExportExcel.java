@@ -1,31 +1,28 @@
 package com.fellow.main;
 
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
 import com.fellow.dto.DtoColumn;
 import com.fellow.dto.DtoHeaders;
@@ -41,21 +38,21 @@ import com.fellow.dto.DtoSections;
 
 public class ExportExcel {
 	protected static final short SHEET_EXPORT = 0;
-	private XSSFWorkbook workBook = null;
-	private XSSFSheet sheet = null;
-	private XSSFCellStyle styleGrey =null;
-	private XSSFCellStyle styleBlack = null;
-	private XSSFCellStyle styleBlackBoldCenter = null;
-	private XSSFCellStyle styleGreen = null;
-	private XSSFCellStyle styleGreenLeft = null;
-	private XSSFCellStyle styleNomal =null;
-	private XSSFCellStyle styleUnlock =null;
-	private XSSFCellStyle defualtStyle;
+	private HSSFWorkbook workBook = null;
+	private HSSFSheet sheet = null;
+	private HSSFCellStyle styleGrey =null;
+	private HSSFCellStyle styleBlack = null;
+	private HSSFCellStyle styleBlackBoldCenter = null;
+	private HSSFCellStyle styleGreen = null;
+	private HSSFCellStyle styleGreenLeft = null;
+	private HSSFCellStyle styleNomal =null;
+	private HSSFCellStyle styleUnlock =null;
+	private HSSFCellStyle defualtStyle;
 	private boolean isFoersaeljningsledare = false;
 	
 	private String template_name = "";
 	public void exportExcel(String fpath){
-//		fpath ="C:/Users/ASUS/Desktop/test.xml";
+//		fpath ="C:/Users/ASUS/Desktop/KiB Miljö-1.xml";
 		//fpath = "C:\Users\ASUS\AppData\Local\Temp\flaA67E.tmp\KiB Tryggmat_ICA_Nära_Duvbo_2014.06.19.11.38.27.xml";
 //		fpath = fpath.replaceAll("\\", "/");
 		File f = new File(fpath);
@@ -63,67 +60,104 @@ public class ExportExcel {
 		//DataOutputStream dataOutputStream = new DataOutputStream(System.out);
 		
 		try{
-			
-			ByteArrayOutputStream out=new ByteArrayOutputStream();
-	        DtoModel dtoModel = (DtoModel) loadData(DtoModel.class, fpath);  
-	        Color color = null;
+			DtoModel dtoModel = (DtoModel) loadData(DtoModel.class, fpath);  
 			if("KiB Miljö".equalsIgnoreCase(dtoModel.getTitle())){
-				template_name = "Miljo.xlsx";
-				color = new Color(153,204,0);
+				template_name = "Miljo.xls";
+				
 			}else if("Foersaeljningsledare Butiks".equalsIgnoreCase(dtoModel.getTitle())){
-				template_name = "Foersaeljningsledare.xlsx";
+				template_name = "Foersaeljningsledare.xls";
 				isFoersaeljningsledare = true;
-				color = new Color(204,0,0);
+				
 			}else if("KiB Tryggmat".equalsIgnoreCase(dtoModel.getTitle())){
-				template_name = "Tryggmat.xlsx";
-				color = new Color(255,51,0);
+				template_name = "Tryggmat.xls";
+				
 			}
 			workBook =  getWorkBook();
+			ByteArrayOutputStream out=new ByteArrayOutputStream();
+	        
+	        HSSFColor color = null;
+			if("KiB Miljö".equalsIgnoreCase(dtoModel.getTitle())){				
+				color = getColor(workBook,HSSFColor.BLUE_GREY.index,153,204,0);
+			}else if("Foersaeljningsledare Butiks".equalsIgnoreCase(dtoModel.getTitle())){				
+				isFoersaeljningsledare = true;
+				color =getColor(workBook,HSSFColor.BLUE_GREY.index,204,0,0);
+			}else if("KiB Tryggmat".equalsIgnoreCase(dtoModel.getTitle())){				
+				color = getColor(workBook,HSSFColor.BLUE_GREY.index,255,51,0);
+			}
+			
 			if(workBook != null){
 			
 				sheet = getSheet(workBook);
 				defualtStyle=workBook.createCellStyle();
-				//style.setAlignment(XSSFCellStyle.ALIGN_LEFT);
+				setCellBorder(defualtStyle);
+				//style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
 				int startRow = 2;
+				/*
+				HSSFRow row=sheet.getRow(0);
+				HSSFCell cell = row.getCell(0);
+				
+				HSSFFont redFont = workBook.createFont();
+				redFont.setColor(HSSFColor.RED.index);
+				redFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+				HSSFFont whiteFont = workBook.createFont();
+				whiteFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+				whiteFont.setColor(HSSFColor.WHITE.index);
 				
 				
+				String header = dtoModel.getHeader()==null?"":dtoModel.getHeader().getTitle();
+				dtoModel.getHeader().getTitle();
 				
+				
+				HSSFCellStyle style = createFillBackGroundColor(workBook, HSSFColor.BLACK.index, null);
+				style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+				// assign the style to the cell
+				cell.setCellStyle(style);
+				
+				HSSFRichTextString text = new HSSFRichTextString();
+				text.setString(header);
+				if(header != null && header.length()>3){
+					text.applyFont(0, 3, redFont);
+					text.applyFont(4, header.length(), whiteFont);
+				}
+				
+				cell.setCellValue(text);
+				*/
 				// styleGreen = header color of table
-				styleGreen = createFillBackGroundColor(workBook, new XSSFColor(color), null);
+				styleGreen = createFillBackGroundColor(workBook, color.getIndex(), null);
 				
-				XSSFFont font = workBook.createFont();
-				font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
+				HSSFFont font = workBook.createFont();
+				font.setFontName(HSSFFont.FONT_ARIAL);
 			    //font.setFontHeightInPoints((short)10);
 			    font.setColor(IndexedColors.WHITE.getIndex());
 			    styleGreen.setFont(font);
-			    styleGreen.setAlignment(HorizontalAlignment.RIGHT);
-			    styleGreen.setVerticalAlignment(VerticalAlignment.CENTER);
+			    styleGreen.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+			    styleGreen.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
 			    
-			    styleGreenLeft = createFillBackGroundColor(workBook, new XSSFColor(color), null);
+			    styleGreenLeft = createFillBackGroundColor(workBook, color.getIndex(), null);
 			    styleGreenLeft.setFont(font);
-			    styleGreenLeft.setAlignment(HorizontalAlignment.LEFT);
-			    styleGreenLeft.setVerticalAlignment(VerticalAlignment.CENTER);
+			    styleGreenLeft.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+			    styleGreenLeft.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
 			    
-				styleGrey = createFillBackGroundColor(workBook, new XSSFColor(new Color(192,192,192)), null);
-				styleBlack = createFillBackGroundColor(workBook, new XSSFColor(new Color(0,0,0)), null);
+				styleGrey = createFillBackGroundColor(workBook, getColor(workBook,HSSFColor.DARK_BLUE.index,192,192,192).getIndex(), null);
+				styleBlack = createFillBackGroundColor(workBook, HSSFColor.BLACK.index, null);
 			    styleBlack.setFont(font);
 				
-			    styleBlackBoldCenter = createFillBackGroundColor(workBook, new XSSFColor(new Color(0,0,0)), null);
-			    XSSFFont fontBold = workBook.createFont();
-				font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
+			    styleBlackBoldCenter = createFillBackGroundColor(workBook, HSSFColor.BLACK.index, null);
+			    HSSFFont fontBold = workBook.createFont();
+				font.setFontName(HSSFFont.FONT_ARIAL);
 				fontBold.setColor(IndexedColors.WHITE.getIndex());
-				fontBold.setBold(true);
+				fontBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 			    styleBlackBoldCenter.setFont(font);
-			    styleBlackBoldCenter.setAlignment(HorizontalAlignment.CENTER);
+			    styleBlackBoldCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 			    
 			    
-				styleNomal = (XSSFCellStyle)workBook.createCellStyle();
-				styleNomal.setAlignment(HorizontalAlignment.LEFT);
+				styleNomal = (HSSFCellStyle)workBook.createCellStyle();
+				styleNomal.setAlignment(HSSFCellStyle.ALIGN_LEFT);
 				
-				styleUnlock = (XSSFCellStyle)workBook.createCellStyle();
-				styleUnlock.setAlignment(HorizontalAlignment.LEFT);
+				styleUnlock = (HSSFCellStyle)workBook.createCellStyle();
+				styleUnlock.setAlignment(HSSFCellStyle.ALIGN_LEFT);
 				
-				styleGrey.setAlignment(HorizontalAlignment.LEFT);
+				styleGrey.setAlignment(HSSFCellStyle.ALIGN_LEFT);
 				setCellBorder(styleGreen);
 				setCellBorder(styleGrey);
 				setCellBorder(styleNomal);
@@ -159,7 +193,8 @@ public class ExportExcel {
 			FileOutputStream nfiel = new FileOutputStream(file);
 			nfiel.write(out.toByteArray());*/
 			
-			String fName = f.getName().replace("xml", "xlsx");
+			String fName = f.getName().replace("xml", "xls");
+			fName = URLEncoder.encode(fName, "UTF-8");
 			File file = new File(folder,fName);
 			FileOutputStream nfiel = new FileOutputStream(file);
 			nfiel.write(out.toByteArray());
@@ -183,19 +218,36 @@ public class ExportExcel {
 		}
 
 	}
-	private void setCellBorder(XSSFCellStyle style){
+	 public HSSFColor getColor(HSSFWorkbook workbook, short index, int red, int green, int blue) {
+		 HSSFPalette palette = workbook.getCustomPalette();
+		 HSSFColor hssfColor = null;
+
+		 hssfColor = palette.findColor((byte)red, (byte)green, (byte)blue);
+		 if (hssfColor == null) {
+			
+		 palette.setColorAtIndex(index, (byte)red, (byte)green, (byte)blue);
+		 hssfColor = palette.getColor(index);
+		 }
+
+		 return hssfColor;
+		 }
+
+	private void setCellBorder(HSSFCellStyle style){
 		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);             
 		style.setBorderRight(HSSFCellStyle.BORDER_THIN);            
 		style.setBorderTop(HSSFCellStyle.BORDER_THIN);              
 		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        
-		style.setBorderColor(BorderSide.LEFT,new XSSFColor(new Color(0,0,0)));
-		style.setBorderColor(BorderSide.RIGHT,new XSSFColor(new Color(0,0,0)));
-		style.setBorderColor(BorderSide.TOP,new XSSFColor(new Color(0,0,0)));
-		style.setBorderColor(BorderSide.BOTTOM,new XSSFColor(new Color(0,0,0)));
+        style.setBottomBorderColor(HSSFColor.BLACK.index);
+        style.setTopBorderColor(HSSFColor.BLACK.index);
+        style.setRightBorderColor(HSSFColor.BLACK.index);
+        style.setLeftBorderColor(HSSFColor.BLACK.index);
+//		style.setBorderColor(HSSFCellStyle.LEFT,new HSSFColor(new Color(0,0,0)));
+//		style.setBorderColor(BorderSide.RIGHT,new HSSFColor(new Color(0,0,0)));
+//		style.setBorderColor(BorderSide.TOP,new HSSFColor(new Color(0,0,0)));
+//		style.setBorderColor(BorderSide.BOTTOM,new HSSFColor(new Color(0,0,0)));
 	}
 	private int createModelTotal(DtoModel dtoModel,int startRow){
-		XSSFCellStyle style = null;
+		HSSFCellStyle style = styleNomal;
 		DtoModelTotal modelTotal = dtoModel.getModelTotal();
 		if(modelTotal != null && modelTotal.getRows() != null && modelTotal.getRows().size()>0){
 			
@@ -206,12 +258,12 @@ public class ExportExcel {
 			}
 			int indRow = 0;
 			for(DtoRow row : modelTotal.getRows()){
-				XSSFRow qRow=sheet.getRow(startRow);
+				HSSFRow qRow=sheet.getRow(startRow);
 				if(qRow == null){
 					qRow=sheet.createRow(startRow);
 				}
 				if(isFoersaeljningsledare){
-					mergeCell(startRow, startCol, endCol, qRow);
+					mergeCell(startRow, startCol, endCol, qRow,defualtStyle);
 				}
 				if(indRow == 0){
 					if(!isFoersaeljningsledare){
@@ -221,7 +273,7 @@ public class ExportExcel {
 					
 					style = styleGreenLeft;
 					
-					fillCell(qRow, 0,"", XSSFCell.CELL_TYPE_STRING, true,styleGreen);
+					fillCell(qRow, 0,"", HSSFCell.CELL_TYPE_STRING, true,styleGreen);
 //					style.setAlignment(HorizontalAlignment.LEFT);
 					
 					
@@ -229,20 +281,20 @@ public class ExportExcel {
 				}else if(indRow == 1){
 					style = styleGrey;
 //					style.setAlignment(HorizontalAlignment.LEFT);
-					fillCell(qRow, 0,row.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
+					fillCell(qRow, 0,row.getTitle(), HSSFCell.CELL_TYPE_STRING, true,styleGreen);
 				}
 				if(indRow == 2){
 					
 //					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
-					mergeCell(startRow, 1, 9, qRow);
-					fillCell(qRow, 0,row.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
+					mergeCell(startRow, 1, 9, qRow,styleNomal);
+					fillCell(qRow, 0,row.getTitle(), HSSFCell.CELL_TYPE_STRING, true,styleGreen);
 					//style.setAlignment(HorizontalAlignment.LEFT);
-					style = null;
+					//style = null;
 				}else{
 					if(!isFoersaeljningsledare){
 //						sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 6, 9));
-						mergeCell(startRow, 6, 9, qRow);
-						fillCell(qRow, 7,"", XSSFCell.CELL_TYPE_STRING, true,styleGreen);
+						mergeCell(startRow, 6, 9, qRow,styleNomal);
+						fillCell(qRow, 7,"", HSSFCell.CELL_TYPE_STRING, true,styleGreen);
 					}
 					
 				}
@@ -252,7 +304,7 @@ public class ExportExcel {
 				int c = endCol+1;
 				if(cols != null && cols.size()>0){
 					for(DtoColumn col : cols){
-						fillCell(qRow, c,col.getValue(), XSSFCell.CELL_TYPE_STRING, true,style);
+						fillCell(qRow, c,col.getValue(), HSSFCell.CELL_TYPE_STRING, true,style);
 						
 						c++;
 					}
@@ -264,26 +316,26 @@ public class ExportExcel {
 		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));
 		return startRow;
 	}
-	private void mergeCell(int startRow,int startCol,int endCol,XSSFRow row){
+	private void mergeCell(int startRow,int startCol,int endCol,HSSFRow row,HSSFCellStyle style){
 		sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, startCol, endCol));
 		for(int i=startCol;i<=endCol;i++){
-			fillCell(row, i,"", XSSFCell.CELL_TYPE_STRING, true,null);
+			fillCell(row, i,"", HSSFCell.CELL_TYPE_STRING, true,style);
 		}
 	}
 	private int createPageSection(DtoModel dtoModel,int startRow){
 		List<DtoPages> pages = dtoModel.getPages();
 		if(pages != null && pages.size()>0){
 			
-			XSSFCellStyle style = null;
+			HSSFCellStyle style = styleNomal;
 			
 			for(DtoPages page : pages){
 				
-				XSSFRow row=sheet.getRow(startRow);
+				HSSFRow row=sheet.getRow(startRow);
 				if(row == null){
 					row=sheet.createRow(startRow);
 				}
 				sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 9));
-				fillCell(row, 0, page.getTitle(), XSSFCell.CELL_TYPE_STRING, true,defualtStyle);
+				fillCell(row, 0, page.getTitle(), HSSFCell.CELL_TYPE_STRING, true,null);
 				
 				startRow++;
 				
@@ -297,7 +349,7 @@ public class ExportExcel {
 							for(DtoRow r : dtoRow){
 								
 								List<DtoColumn> lstQ = r.getColumns();
-								XSSFRow qRow=sheet.getRow(startRow);
+								HSSFRow qRow=sheet.getRow(startRow);
 								if(qRow == null){
 									qRow=sheet.createRow(startRow);
 								}
@@ -306,29 +358,29 @@ public class ExportExcel {
 								}else if(!r.isOdd()){
 									style = styleGrey;
 								}else{
-									style = null;
+									style = styleNomal;
 								}
 								int c = 1;
 								if(r.getColspan()>0){
 									style = styleGrey;
 //									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,r.getColspan()));
-									mergeCell(startRow, 0, r.getColspan(), qRow);
+									mergeCell(startRow, 0, r.getColspan(), qRow, defualtStyle);
 								}else if(isFoersaeljningsledare){
 //									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,0,6));
 //									sheet.addMergedRegion(new CellRangeAddress(startRow,startRow,8,9));
-									mergeCell(startRow, 0, 6, qRow);
-									mergeCell(startRow, 8, 9, qRow);
+									mergeCell(startRow, 0, 6, qRow, defualtStyle);
+									mergeCell(startRow, 8, 9, qRow, defualtStyle);
 									c=7;
 								}
-								fillCell(qRow, 0, r.getTitle(), XSSFCell.CELL_TYPE_STRING, true, style);
+								fillCell(qRow, 0, r.getTitle(), HSSFCell.CELL_TYPE_STRING, true, style);
 								
 								if(lstQ != null && lstQ.size()>0){
 									for(DtoColumn colQ : lstQ){
 										boolean lock = true;
-										int cellStyle = XSSFCell.CELL_TYPE_STRING;
+										int cellStyle = HSSFCell.CELL_TYPE_STRING;
 										try{
 											Double.parseDouble(colQ.getValue());
-											cellStyle = XSSFCell.CELL_TYPE_NUMERIC;
+											cellStyle = HSSFCell.CELL_TYPE_NUMERIC;
 										}catch(NumberFormatException nfe){
 											if(!isFoersaeljningsledare && c > 6 && r.isHeader()==false){
 												
@@ -361,8 +413,8 @@ public class ExportExcel {
 		return startRow;
 	}
 	private void createPageTotal(DtoPages page,int startRow){
-//		XSSFCellStyle styleBlack = createFillBackGroundColor(workBook, new XSSFColor(new Color(0,0,0)), null);
-		XSSFCellStyle style = null;
+//		HSSFCellStyle styleBlack = createFillBackGroundColor(workBook, new HSSFColor(new Color(0,0,0)), null);
+		HSSFCellStyle style = styleNomal;
 		DtoPageTotal pageTotal = page.getPageTotal();
 		if(pageTotal != null && pageTotal.getRows()!= null && pageTotal.getRows().size()>0){
 			
@@ -370,34 +422,34 @@ public class ExportExcel {
 				int c=5;
 				
 
-				XSSFRow qRow=sheet.getRow(startRow);
+				HSSFRow qRow=sheet.getRow(startRow);
 				if(qRow == null){
 					qRow=sheet.createRow(startRow);
 				}
 				if(isFoersaeljningsledare){
 //					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 8));
-					mergeCell(startRow, 0, 8, qRow);
+					mergeCell(startRow, 0, 8, qRow,styleNomal);
 					c = 9;
 				}else{
 //					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 4));
-					mergeCell(startRow, 0, 4, qRow);
-					fillCell(qRow, 1, "", XSSFCell.CELL_TYPE_STRING, true, style);
-					fillCell(qRow, 2, "", XSSFCell.CELL_TYPE_STRING, true, style);
-					fillCell(qRow, 3, "", XSSFCell.CELL_TYPE_STRING, true, style);
-					fillCell(qRow, 4, "", XSSFCell.CELL_TYPE_STRING, true, style);
+					mergeCell(startRow, 0, 4, qRow,styleNomal);
+					fillCell(qRow, 1, "", HSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 2, "", HSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 3, "", HSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 4, "", HSSFCell.CELL_TYPE_STRING, true, style);
 				}
 				if(StringUtils.isNotBlank(row.getTitle())){
 					style = styleBlack;
-					fillCell(qRow, 0, row.getTitle(), XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 0, row.getTitle(), HSSFCell.CELL_TYPE_STRING, true, style);
 				}else{
 					style = styleGrey;
-					fillCell(qRow, 0, "", XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, 0, "", HSSFCell.CELL_TYPE_STRING, true, style);
 				}
 				
 				
 				
 				for(DtoColumn col : row.getColumns()){
-					fillCell(qRow, c, col.getValue(), XSSFCell.CELL_TYPE_STRING, true, style);
+					fillCell(qRow, c, col.getValue(), HSSFCell.CELL_TYPE_STRING, true, style);
 					c++;
 				}
 				startRow++;
@@ -413,30 +465,30 @@ public class ExportExcel {
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 9));
 		    sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 9));
 			// replace title
-			XSSFRow row=sheet.getRow(2);
+			HSSFRow row=sheet.getRow(2);
 			if(row == null){
 				row=sheet.createRow(2);
 			}
-			XSSFCellStyle style =  styleBlackBoldCenter;
+			HSSFCellStyle style =  styleBlackBoldCenter;
 			
 		    
-			fillCell(row, 0, header.getTitle(), XSSFCell.CELL_TYPE_STRING, true,style);
+			fillCell(row, 0, header.getTitle(), HSSFCell.CELL_TYPE_STRING, true,style);
 			startRow = 4;
 		}
 		
-		//XSSFCellStyle styleVal = sheet.getRow(2).getCell(1).getCellStyle();
+		//HSSFCellStyle styleVal = sheet.getRow(2).getCell(1).getCellStyle();
 		for(int i=0;i<header.getRows().size();i++){
-			XSSFRow row=sheet.getRow(startRow);
+			HSSFRow row=sheet.getRow(startRow);
 			if(row == null){
 				row=sheet.createRow(startRow);
 			}
 			//sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 2));
 //			sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 1, 9));
-			mergeCell(startRow, 1, 9, row);
+			mergeCell(startRow, 1, 9, row,styleNomal);
 			DtoRow rowHeader = header.getRows().get(i);
 			
-			fillCell(row, 0, rowHeader.getTitle(), XSSFCell.CELL_TYPE_STRING, true,styleGreen);
-			fillCell(row, 1, rowHeader.getValue(), XSSFCell.CELL_TYPE_STRING, true,styleNomal);
+			fillCell(row, 0, rowHeader.getTitle(), HSSFCell.CELL_TYPE_STRING, true,styleGreen);
+			fillCell(row, 1, rowHeader.getValue(), HSSFCell.CELL_TYPE_STRING, true,styleNomal);
 			startRow++;
 		}		
 		sheet.createRow(startRow);
@@ -445,10 +497,10 @@ public class ExportExcel {
 	}
 	
 	
-	protected XSSFCellStyle createFillBackGroundColor(XSSFWorkbook workBook, XSSFColor color, XSSFCellStyle oldStyle) {
-		XSSFCellStyle style = null;
+	protected HSSFCellStyle createFillBackGroundColor(HSSFWorkbook workBook, short color, HSSFCellStyle oldStyle) {
+		HSSFCellStyle style = workBook.createCellStyle();
 		if (oldStyle != null) {
-		style = (XSSFCellStyle)oldStyle.clone();
+			style.cloneStyleFrom(oldStyle);
 		
 		}
 		else {
@@ -456,30 +508,30 @@ public class ExportExcel {
 		
 		}
 
-		style.setFillPattern(XSSFCellStyle.FINE_DOTS);
+		style.setFillPattern(HSSFCellStyle.FINE_DOTS);
 		style.setFillForegroundColor(color);
 		style.setFillBackgroundColor(color);
 		return style;
 		}
 
-	public XSSFWorkbook getWorkBook(){
+	public HSSFWorkbook getWorkBook(){
 		try {
 			
-			return new XSSFWorkbook(ExportExcel.class.getResourceAsStream(template_name));
+			return new HSSFWorkbook(ExportExcel.class.getResourceAsStream(template_name));
 		} catch (IOException e) {
 			
 			System.out.println(e.getMessage());
 		}
 		return null;
 	}
-	public XSSFSheet getSheet(XSSFWorkbook workBook){
+	public HSSFSheet getSheet(HSSFWorkbook workBook){
 		return workBook.getSheetAt(SHEET_EXPORT);
 	}
 	
 	
-	protected  XSSFCell fillCell(XSSFRow r, int cellnr, String content,int type,boolean isLock,XSSFCellStyle style) {
+	protected  HSSFCell fillCell(HSSFRow r, int cellnr, String content,int type,boolean isLock,HSSFCellStyle style) {
 		
-		XSSFCell cell = r.getCell((short)cellnr);
+		HSSFCell cell = r.getCell((short)cellnr);
 		if (cell==null) {
 			cell = r.createCell((short)cellnr);
 			
@@ -489,8 +541,8 @@ public class ExportExcel {
 		//cell.setCellType(type);
 		if(style == null){
 			style = cell.getCellStyle();
-			style.setAlignment(HorizontalAlignment.LEFT);
-			setCellBorder(style);
+			style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+			//setCellBorder(style);
 		}
 		
 		style.setWrapText(true);
@@ -498,21 +550,21 @@ public class ExportExcel {
 		cell.setCellStyle(style);
 		
 		
-		if(type==XSSFCell.CELL_TYPE_BOOLEAN){
+		if(type==HSSFCell.CELL_TYPE_BOOLEAN){
 			if(StringUtils.isNotBlank(content)){
 				cell.setCellValue(Boolean.valueOf(content));
 			}else{
 				//if  value null
-				cell.setCellValue(new XSSFRichTextString());
+				cell.setCellValue(new HSSFRichTextString());
 			}
-		}else if(type==XSSFCell.CELL_TYPE_NUMERIC){
+		}else if(type==HSSFCell.CELL_TYPE_NUMERIC){
 			if(StringUtils.isNotBlank(content)){
 				cell.setCellValue(Double.valueOf(content));	
 			}else{
 				//if value null
-				cell.setCellValue(new XSSFRichTextString());
+				cell.setCellValue(new HSSFRichTextString());
 			}
-		}else if(type==XSSFCell.CELL_TYPE_STRING){
+		}else if(type==HSSFCell.CELL_TYPE_STRING){
 			cell.setCellValue(content);
 		}	
 	

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -52,7 +51,7 @@ public class ExportExcel {
 	
 	private String template_name = "";
 	public void exportExcel(String fpath){
-//		fpath ="C:/Users/ASUS/Desktop/KiB Miljö-1.xml";
+//		fpath ="C:/Users/ASUS/Desktop/KiB Miljö_testFC_2014.10.13.17.32.01.xml";
 		//fpath = "C:\Users\ASUS\AppData\Local\Temp\flaA67E.tmp\KiB Tryggmat_ICA_Nära_Duvbo_2014.06.19.11.38.27.xml";
 //		fpath = fpath.replaceAll("\\", "/");
 		File f = new File(fpath);
@@ -289,7 +288,7 @@ public class ExportExcel {
 					mergeCell(startRow, 1, 9, qRow,styleNomal);
 					fillCell(qRow, 0,row.getTitle(), HSSFCell.CELL_TYPE_STRING, true,styleGreen);
 					//style.setAlignment(HorizontalAlignment.LEFT);
-					//style = null;
+					style = null;
 				}else{
 					if(!isFoersaeljningsledare){
 //						sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 6, 9));

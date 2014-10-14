@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.ibm.jtc.orb.map.Value;
+import org.apache.poi.ss.formula.functions.Value;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Attribute")

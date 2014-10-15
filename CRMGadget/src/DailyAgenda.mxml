@@ -288,9 +288,13 @@
 			private function getStartTimeEndTime(date:Date):Object{
 				var object:Object = new Object();
 				date.setHours(0, 0, 1);
-				object.StartTime = DateUtils.format(date, DateUtils.DATABASE_DATETIME_FORMAT);
+				
+				var sTime:Date = new Date(date.getTime()-DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
+				
+				object.StartTime = DateUtils.format(sTime, DateUtils.DATABASE_DATETIME_FORMAT);
 				date.setHours(23, 59, 59);
-				object.EndTime = DateUtils.format(date, DateUtils.DATABASE_DATETIME_FORMAT);
+				var endTime:Date = new Date(date.getTime()-DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
+				object.EndTime = DateUtils.format(endTime, DateUtils.DATABASE_DATETIME_FORMAT);
 				return object;
 			}
 			//Open daily agenda layout

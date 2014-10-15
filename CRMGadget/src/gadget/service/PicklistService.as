@@ -1,5 +1,7 @@
 package gadget.service
 {
+	import flash.utils.Dictionary;
+	
 	import flashx.textLayout.operations.PasteOperation;
 	
 	import gadget.control.CalculatedField;
@@ -89,6 +91,7 @@ package gadget.service
 			return picklist;
 		}
 		
+		
 		public static function getPicklist_crmod(entity:String, field:String,langCode:String):ArrayCollection {			
 			var picklist:ArrayCollection;
 			var crmodEntity:String = DAOUtils.getRecordType(entity);
@@ -102,35 +105,29 @@ package gadget.service
 				//bug#8137
 				picklist=getPicklist_crmod(Database.accountCompetitorDao.entity,"ReverseRelationshipRole",langCode);
 			}
-			
-			if(picklist==null || picklist.length<1){
-				var picklist2:ArrayCollection = Database.picklistServiceDao.getPicklists(field, crmodEntity, langCode);
-				// if there are some value missing, we add them from the ENU picklist (english-us)
-				var picklistUs:ArrayCollection = Database.picklistServiceDao.getPicklists(field, crmodEntity, "ENU");
-				for each (var itemUs:Object in picklistUs) {
-					var found:Boolean = false;
-					// we check if the US item is already present in the picklist
-					for each (var tmp:Object in picklist2) {
-						if (itemUs.data == tmp.data) {
-							found = true;
-							break;
-						}
-					}
-					if (found == false) {
-						// item not found => we add it in the picklist
-						picklist2.addItem(itemUs);
-					}
-				}
-				
+			var picklist2:ArrayCollection = Database.picklistServiceDao.getPicklists(field, crmodEntity, langCode);
+			if(picklist==null || picklist.length<1){			
+		
 				if (picklist2.length > 0) {				
 					picklist = picklist2;
 				}
+			}else{
+				//manage order
+				if(picklist2!=null && picklist2.length>0){
+					var mapLabel:Dictionary = new Dictionary();
+					for each(var po:Object in picklist){
+						mapLabel[po.data]=po.label;
+					}
+					for each(var po2:Object in picklist2){
+						if(mapLabel.hasOwnProperty(po2.data)){
+							po2.label=mapLabel[po2.data];
+						}
+					}
+					
+					picklist = picklist2;
+				}
 			}
-//			if (picklist2.length > 0) {				
-//				picklist = picklist2;
-//			} else {
-//				picklist = Database.picklistDao.select(field, crmodEntity);
-//			}
+
 			return picklist;
 		}
 		

@@ -23,7 +23,7 @@ package gadget.dao
 			
 			stmtSelect = new SQLStatement();
 			stmtSelect.sqlConnection = sqlConnection;
-			stmtSelect.text = "SELECT * FROM picklist_service WHERE LanguageCode=:LanguageCode and  ObjectName = :record_type AND FieldName = :field_name AND Disabled = :disabled ORDER BY Order3_ asc";
+			stmtSelect.text = "SELECT ValueId data,Value label,Order3_ Order_  FROM picklist_service WHERE LanguageCode=:LanguageCode and  ObjectName = :record_type AND FieldName = :field_name AND Disabled = :disabled ORDER BY Order3_ asc";
 			
 			stmtSelectOne = new SQLStatement();
 			stmtSelectOne.sqlConnection = sqlConnection;
@@ -101,7 +101,7 @@ package gadget.dao
 			stmtSelect.parameters[":disabled"] = "false";
 			exec(stmtSelect);
 			var result:Array=stmtSelect.getResult().data;
-			var pick:ArrayCollection = new ArrayCollection();
+			var pick:ArrayCollection = new ArrayCollection(result);
 			//items.addItemAt({data:'',label:''},0);
 //			return items;
 //			
@@ -118,10 +118,10 @@ package gadget.dao
 //			});
 			
 			// SCH : 6449
-			// add Order_ property for sorting
-			for each (var r:Object in result) {
-				pick.addItem({ data:r.ValueId, label:r.Value, Order_:r.Order3_ });
-			}
+			// add Order_ property for sorting//Mony--do not loop we can make it in sql query
+//			for each (var r:Object in result) {
+//				pick.addItem({ data:r.ValueId, label:r.Value, Order_:r.Order3_ });
+//			}
 			return pick;
 		}
 

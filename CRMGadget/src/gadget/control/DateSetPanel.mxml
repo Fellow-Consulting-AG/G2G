@@ -187,14 +187,17 @@
 				for each(var obj:Object in tileList.dataProvider){
 					if(obj.mapDistance){
 						var distance:Object = obj.mapDistance.distance;
-						var duration:Object = obj.mapDistance.duration;	
-						
-						var objDistance=getDistanceAsKmAnMiles(distance.value);
-						var objDuration:Object = getDuration(duration.value);
-						totalDuration.hour+=objDuration.hour;
-						totalDuration.mn+=objDuration.mn;
-						totalDistance.km+=objDistance.km;
-						totalDistance.mi+=objDistance.mi;
+						var duration:Object = obj.mapDistance.duration;							
+						if(duration!=null){
+							var objDuration:Object = getDuration(duration.value);
+							totalDuration.hour+=objDuration.hour;
+							totalDuration.mn+=objDuration.mn;
+						}
+						if(distance!=null){
+							var objDistance=getDistanceAsKmAnMiles(distance.value);
+							totalDistance.km+=objDistance.km;
+							totalDistance.mi+=objDistance.mi;
+						}
 						
 						
 					}

@@ -38,7 +38,7 @@ package gadget.util
 				")";
 			
 			//bug#8044--show only owner calender
-			filter ="("+filter+ ") AND ActivityId IN (SELECT ActivityId from  activity_user WHERE UserId='" +Database.allUsersDao.ownerUser().Id+"')";
+			filter ="("+filter+ ") AND ( OwnerId='" +Database.allUsersDao.ownerUser().Id+"' OR ActivityId IN (SELECT ActivityId from  activity_user WHERE UserId='" +Database.allUsersDao.ownerUser().Id+"'))";
 			return filter;
 		} 
 		

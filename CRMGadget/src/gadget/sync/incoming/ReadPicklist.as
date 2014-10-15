@@ -1,5 +1,7 @@
 package gadget.sync.incoming
 {
+	import flash.utils.Dictionary;
+	
 	import gadget.dao.Database;
 	import gadget.dao.PicklistDAO;
 	import gadget.dao.SupportDAO;
@@ -133,35 +135,38 @@ package gadget.sync.incoming
 			}
 			var picklistDao:PicklistDAO = Database.picklistDao;
 			Database.begin();
-		
-			for each(var value:XML in result.ns2::ListOfParentPicklistValue[0].ns2::ParentPicklistValue[0].ns2::ListOfPicklistValue[0].ns2::PicklistValue) {
-				
-				var picklistObj:Object = new Object();
-				
-				
-				picklistObj.record_type = recordType;
-				picklistObj.field_name = fieldName;
-				picklistObj.code = value.ns2::Code[0].toString();
-				picklistObj.value = value.ns2::DisplayValue[0].toString();
-				picklistObj.disabled = value.ns2::Disabled[0].toString();
-				picklistObj.Order_ = cnt+1;
-				var currentValue:Object = picklistDao.find(picklistObj);
-				if(currentValue!=null) picklistDao.delete_(picklistObj);	
-				
-				/*if (currentValue==null && value.ns2::Disabled[0].toString() == 'Y') continue;			
- 				if (currentValue != null && value.ns2::Disabled[0].toString() == 'N') {
-					picklistDao.update(picklistObj);	
-				} else if (currentValue != null && value.ns2::Disabled[0].toString() == 'Y'){
-					picklistDao.delete_(picklistObj);					
-			    } else {
-					picklistDao.insert(picklistObj);
-				}*/
-				
-				picklistDao.insert(picklistObj);
-				
-					
-				cnt++;
-				_nbItems++;
+			var existCode:Dictionary = new Dictionary();
+			for each(var pvalue:XML in result.ns2::ListOfParentPicklistValue[0].ns2::ParentPicklistValue) {
+				for each(var value:XML in pvalue.ns2::ListOfPicklistValue[0].ns2::PicklistValue) {
+					var code:String = value.ns2::Code[0].toString();
+					if(!existCode.hasOwnProperty(code)){
+						var picklistObj:Object = new Object();			
+						existCode[code]=code;
+						picklistObj.record_type = recordType;
+						picklistObj.field_name = fieldName;
+						picklistObj.code = code;
+						picklistObj.value = value.ns2::DisplayValue[0].toString();
+						picklistObj.disabled = value.ns2::Disabled[0].toString();
+						picklistObj.Order_ = cnt+1;
+						var currentValue:Object = picklistDao.find(picklistObj);
+						if(currentValue!=null) picklistDao.delete_(picklistObj);	
+						
+						/*if (currentValue==null && value.ns2::Disabled[0].toString() == 'Y') continue;			
+		 				if (currentValue != null && value.ns2::Disabled[0].toString() == 'N') {
+							picklistDao.update(picklistObj);	
+						} else if (currentValue != null && value.ns2::Disabled[0].toString() == 'Y'){
+							picklistDao.delete_(picklistObj);					
+					    } else {
+							picklistDao.insert(picklistObj);
+						}*/
+						
+						picklistDao.insert(picklistObj);
+						
+							
+						cnt++;
+						_nbItems++;
+					}
+				}
 			}
 			Database.commit();
 			notifyCreation(false, recordType+"/"+fieldName);

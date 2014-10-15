@@ -1793,7 +1793,7 @@ package gadget.util
 				}
 			}
 			
-			return 24;
+			return 23;
 		}
 		
 		/**

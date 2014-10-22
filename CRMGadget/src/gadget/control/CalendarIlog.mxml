@@ -63,7 +63,7 @@
 			[Bindable] public var deleteIcon:Class = ImageUtils.deleteIcon; 
 			[Bindable] public var copyIcon:Class = ImageUtils.copyIcon;
 			[Bindable] public var languageCode:String;
-			public function init():void {
+			public function init(isLoadData:Boolean=false):void {
 				var currentUser:Object = Database.allUsersDao.ownerUser()
 				languageCode = currentUser.LanguageCode==null?"":currentUser.LanguageCode;			
 				resourceManager.localeChain =['en_US'];
@@ -118,7 +118,9 @@
 				cal.addEventListener(CalendarEvent.ITEM_ROLL_OVER, isResizable);
 				cal.addEventListener(KeyboardEvent.KEY_DOWN, keyboardDeleteHandler);
 				MenuUtils.getContextMenuIBMCalendar(cal, addActivity, openDetail, deleteItem);
-				//loadData();---no need to load data when create
+				if(isLoadData){
+					loadData();
+				}
 			}
 			
 			public function keyboardDeleteHandler(event:KeyboardEvent):void {

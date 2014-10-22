@@ -51,12 +51,19 @@
 			public static function writeToConfigFile(path:String,databasePWD:String=""):void {
 				var applicationObject:Object = Utils.getAppInfo();
 				var userFile:File = File.userDirectory.resolvePath(Database.CUSTOM_DATABASE);				
-				var configDbXML:XML = 
-					<configuration>
+				var configDbXML:XML = Database.getConfigXML();
+				if(configDbXML==null){
+					configDbXML =	<configuration>
 						<databaselocation>{path}</databaselocation>
 						<appversion>{applicationObject.version}</appversion>
 						<database_password>{databasePWD}</database_password>
-					</configuration>
+						<accepted_eula>false</accepted_eula>
+						</configuration>
+				}else{
+					configDbXML.databaselocation = path;
+					configDbXML.appversion = applicationObject.version;
+					configDbXML.database_password = databasePWD;
+				}
 				Utils.writeUTFBytes(userFile, configDbXML.toXMLString());
 			}
 			

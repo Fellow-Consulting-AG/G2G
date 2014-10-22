@@ -1232,13 +1232,26 @@ package gadget.dao {
 		
 		public static function getCustomDatabasePathFromFile():String {
 			var file:File = File.userDirectory.resolvePath(Database.CUSTOM_DATABASE);
-			var xml:XML = new XML(Utils.readUTFBytes(file));
-			return xml.elements("databaselocation");
+			if(file.exists){
+				var xml:XML = new XML(Utils.readUTFBytes(file));
+				var location:String = xml.elements("databaselocation").toString();
+				if(location.toLocaleLowerCase()=='default'){
+					location = File.userDirectory.nativePath;
+				}
+				
+				return location;
+			}
+			return null;
 		}
+		
+		
 		public static function getConfigXML():XML{
 			var file:File = File.userDirectory.resolvePath(Database.CUSTOM_DATABASE);
-			var xml:XML = new XML(Utils.readUTFBytes(file));
-			return xml;
+			if(file.exists){
+				var xml:XML = new XML(Utils.readUTFBytes(file));
+				return xml;
+			}
+			return null;
 		}
 		public static function get dailyAgendaColumnLayoutDao():DailyAgendaColumnsLayoutDAO {
 			return database._dailyAgendaColumnLayoutDao;

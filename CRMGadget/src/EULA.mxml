@@ -19,6 +19,7 @@
 		<![CDATA[
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
+			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			
 			public var crmGadget:CRMGadget;
@@ -58,22 +59,20 @@
 				//var encrypt_DB_file:File = File.applicationDirectory.resolvePath(Database.getCustomDatabasePathFromFile() + "/" + Database.ENCRYPTED_DB_NAME);
 				//var db_file:File = File.applicationDirectory.resolvePath(Database.getCustomDatabasePathFromFile() + "/" + Database.DB_NAME);
 							
-				var ENCRYPT_DB_FILE:File = File.applicationDirectory.resolvePath(Database.getCustomDatabasePathFromFile() + "/" + Database.ENCRYPTED_DB_NAME);
-				var NOT_ENCRYPT_DB_FILE:File = File.applicationDirectory.resolvePath(Database.getCustomDatabasePathFromFile() + "/" + Database.DB_NAME);
-				
-				var current_db_file:File = ENCRYPT_DB_FILE.exists? ENCRYPT_DB_FILE:NOT_ENCRYPT_DB_FILE;
-				if(current_db_file.exists){
-					InitDbLocation.writeToConfigFile(Database.getCustomDatabasePathFromFile());
-				}
-				
-				if(ENCRYPT_DB_FILE.exists){
-					//displayVerifyEncryptPasswordWindow();
-					accessDatabase();
-				}else if(NOT_ENCRYPT_DB_FILE.exists){
-					displayMainWindowAndInitDB(Database.DB_NAME);
-				}else{
+				var dbPath:String = Database.getCustomDatabasePathFromFile();
+				if(StringUtils.isEmpty(dbPath)){
 					displayInitDbLocation();
+				}else{
+					var ENCRYPT_DB_FILE:File = File.applicationDirectory.resolvePath(dbPath + "/" + Database.ENCRYPTED_DB_NAME);
+					var NOT_ENCRYPT_DB_FILE:File = File.applicationDirectory.resolvePath(dbPath + "/" + Database.DB_NAME);		
+					InitDbLocation.writeToConfigFile(dbPath);
+					if(NOT_ENCRYPT_DB_FILE.exists){
+						displayMainWindowAndInitDB(Database.DB_NAME);						
+					}else{
+						accessDatabase();
+					}
 				}
+				
 				this.close();
 			}
 			

@@ -51,8 +51,17 @@ package gadget.service
 			var cache:CacheUtils = new CacheUtils("picklist");		
 			if(resetPicklist) cache.del(entity + "/" + field);		
 			var picklist:ArrayCollection = cache.get(entity + "/" + field) as ArrayCollection;			
-			if (picklist != null) {				
-				return new ArrayCollection(picklist.source);
+			if (picklist != null) {		
+				var result:ArrayCollection = new ArrayCollection(picklist.source);
+				if(emptyValue && picklist.length>0){
+					var firstObj:Object = picklist.getItemAt(0);
+					if(firstObj.data!=''&&firstObj.label!=''){
+						result.addItemAt({data:'',label:''},0);
+					}
+					
+				}
+				return result;
+				
 			}
 			
 			picklist = getPicklist_crmod(entity, field,langCode);

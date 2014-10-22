@@ -112,7 +112,7 @@
 			private function incrementTime(event:TimerEvent):void {
 				
 				// Change Request #217
-				if(!NOT_ENCRYPT_DB_FILE.exists && !ENCRYPT_DB_FILE.exists || !Database.exist(Database.CUSTOM_DATABASE)){ //no DB
+				if(!NOT_ENCRYPT_DB_FILE.exists && !ENCRYPT_DB_FILE.exists && !Database.exist(Database.CUSTOM_DATABASE)){ //no DB
 					if(!DISABLE_EULA_FILE.exists){
 						displayLicenseWindow();
 					}else{
@@ -122,10 +122,10 @@
 						start();
 					}
 				// --- VM -- #491
-				}else if(checkEULA_Veriosn() && (ENCRYPT_DB_FILE.exists || NOT_ENCRYPT_DB_FILE.exists)){
+				}else if(checkEULA_Veriosn()){
 					isNewVersion = true;
 					displayLicenseWindow();
-				}else if(ENCRYPT_DB_FILE.exists){ //ENCRYPT_DB_FILE exists
+				}else if(!StringUtils.isEmpty(Database.getCustomDatabasePathFromFile())){ //ENCRYPT_DB_FILE exists
 						//displayVerifyEncryptPasswordWindow();
 					   
 					    accessDatabase();
@@ -144,21 +144,25 @@
 				try{
 					var xml:XML = new XML(fileData);	
 					var oldVersion:String = xml.appversion;
+					var accepted_eula:String = xml.accepted_eula;
+					stream.close();
+					if(accepted_eula.toLocaleLowerCase()!='true'){
+						if(!StringUtils.isEmpty(oldVersion)){
+							var curVersion:String = appInfo.version;
+								if(Number(curVersion) > Number(oldVersion)){							
+									return true;
+								}else{
+									return false;
+								}
+						}
+					}else{
+						return false;
+					}
 				}catch(e:Error){
 					var messageStr:String = e.message;
 					var errorStr:String = messageStr.substr(messageStr.indexOf(':') + 1, messageStr.length);
 					trace('read version ------- ' + errorStr);
 					return true
-				}
-				stream.close();
-				
-				if(!StringUtils.isEmpty(oldVersion)){
-					var curVersion:String = appInfo.version;
-						if(Number(curVersion) > Number(oldVersion)){							
-							return true;
-						}else{
-							return false;
-						}
 				}
 				return true;
 				

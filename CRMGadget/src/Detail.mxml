@@ -1905,7 +1905,7 @@
 					if(item.objTree!=null){
 					refreshData();
 				}
-				if(entity.toLowerCase()=="account"){
+				if(entity.toLowerCase()=="account" && Database.preferencesDao.isEnableRevenueReport()){
 					initAdditionalTabRevenue();
 				}
 				

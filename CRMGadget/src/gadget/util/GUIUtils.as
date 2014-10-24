@@ -240,9 +240,11 @@ package gadget.util
 					var objectSQLQuery:Object = objSql.objectSQLQuery;
 					var displayObj:DisplayObject = objSql.displayObj;
 					if(displayObj is VBox) {
-						var grid:DataGrid = ((displayObj as VBox).getChildAt(0)) as DataGrid;
-						var count:int = (grid.dataProvider as ArrayCollection).length;
-						sqlListCounts.addItem(Utils.createNewObject(["key","count"],[objectSQLQuery.column_name,count<0?0:count]));
+						var grid:AdvancedDataGrid = ((displayObj as VBox).getChildAt(0)) as AdvancedDataGrid;
+						if(grid!=null){
+							var count:int = (grid.dataProvider as ArrayCollection).length;
+							sqlListCounts.addItem(Utils.createNewObject(["key","count"],[objectSQLQuery.column_name,count<0?0:count]));
+						}
 					}
 				}
 			}
@@ -360,7 +362,7 @@ package gadget.util
 		}
 		
 		
-		private static function refreshSqlGrid(detail:Detail, grid:DataGrid,objectSQLQuery:Object ):void{
+		private static function refreshSqlGrid(detail:Detail, grid:AdvancedDataGrid,objectSQLQuery:Object ):void{
 			//bug 1725
 			var lstData:ArrayCollection = Database.queryDao.executeQuery(objectSQLQuery.sqlString);
 			Utils.parseCurrency(detail.item.CurrencyCode,objectSQLQuery,lstData);

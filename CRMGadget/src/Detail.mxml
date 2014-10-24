@@ -2478,12 +2478,12 @@
 																}
 																
 																private function openSurvey():void{
-																var acc:Object = Utils.getAccount(item);
-																if(acc == null){
-																Alert.show(i18n._("YOU_CAN_NOT_CREATE_SURVEY_WITH_ACCOUNT_IN_APPOINTMENT"),this.title, Alert.OK, this);
-																}else{
-																	startInspection.openAssessmentModel(item);
-																}
+																	var acc:Object = Utils.getAccount(item);
+																	if(acc == null){
+																		Alert.show(i18n._("YOU_CAN_NOT_CREATE_SURVEY_WITH_ACCOUNT_IN_APPOINTMENT"),this.title, Alert.OK, this);
+																	}else{
+																		startInspection.openAssessmentModel(item);
+																	}
 																}
 		]]>		
 		

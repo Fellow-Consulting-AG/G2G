@@ -547,7 +547,8 @@
 								var combobox:ComboBox = mappingControlObject[field] as ComboBox; 
 								storeCustomFieldsAccount[field] = combobox.selectedItem.data;
 							}
-							
+							//mark account as update
+							storeCustomFieldsAccount.local_update=new Date().getTime();
 							Database.accountDao.update(storeCustomFieldsAccount);
 						}
 						

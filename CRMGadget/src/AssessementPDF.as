@@ -297,7 +297,9 @@ package
 					
 					//	var file:File =new File(content); // generate pdf
 					file.openWithDefaultApplication();
-					attachPDFToAppointment(file,model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".xls");
+					var attName:String = model.assessmentModel + "_" + accName +  DateUtils.format(new Date(), "MM.YYYY") +".xls";
+					attName = attName.replace(/ /g,"_");
+					attachPDFToAppointment(file,attName);
 					openned = true;
 				}
 			} 

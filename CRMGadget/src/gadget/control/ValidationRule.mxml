@@ -226,7 +226,7 @@
 							<mx:VBox>
 								<mx:HBox>
 									<mx:Label text="{i18n._('GLOBAL_ENTITY')}" textAlign="right" width="100" fontWeight="bold" />
-									<mx:ComboBox id="cboEntitys" dataProvider="{FieldManagmentWindow.entityList}" change="changeCboEntity()" width="160" />
+									<mx:ComboBox id="cboEntitys" dataProvider="{FieldManagmentWindow.entityList}" labelFunction="{FieldManagmentWindow.getEntityDisplayName}" change="changeCboEntity()" width="160" />
 								</mx:HBox>
 								<mx:HBox>
 									<mx:Label text="{i18n._('GLOBAL_RULE_NAME')}" textAlign="right" width="100" fontWeight="bold" />

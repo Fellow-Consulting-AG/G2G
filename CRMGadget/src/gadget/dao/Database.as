@@ -1703,6 +1703,9 @@ package gadget.dao {
 				YcheckLayout("CustomObject8");
 				YcheckLayout("CustomObject9");
 				YcheckLayout("CustomObject10");
+				YcheckLayout("CustomObject11");
+				YcheckLayout("CustomObject12");
+				YcheckLayout("CustomObject13");
 				YcheckLayout("CustomObject15");
 				YcheckLayout("Asset");
 				YcheckLayout("Territory");
@@ -1750,6 +1753,9 @@ package gadget.dao {
 				YcheckListLayout("CustomObject8");
 				YcheckListLayout("CustomObject9");
 				YcheckListLayout("CustomObject10");
+				YcheckListLayout("CustomObject11");
+				YcheckListLayout("CustomObject12");
+				YcheckListLayout("CustomObject13");
 				YcheckListLayout("CustomObject15");
 				YcheckListLayout("Asset");
 				YcheckListLayout("Territory");
@@ -1800,6 +1806,9 @@ package gadget.dao {
 				YcheckViewLayout("CustomObject8");
 				YcheckViewLayout("CustomObject9");
 				YcheckViewLayout("CustomObject10");
+				YcheckViewLayout("CustomObject11");
+				YcheckViewLayout("CustomObject12");
+				YcheckViewLayout("CustomObject13");
 				YcheckViewLayout("CustomObject15");
 				YcheckViewLayout("Asset");
 				YcheckViewLayout("Territory");
@@ -1864,6 +1873,9 @@ package gadget.dao {
 				YcheckCustomLayout("CustomObject8", "custom8Default", "Custom Object 8", "Custom Objects 8");
 				YcheckCustomLayout("CustomObject9", "custom9Default", "Custom Object 9", "Custom Objects 9");
 				YcheckCustomLayout("CustomObject10", "custom10Default", "Custom Object 10", "Custom Objects 10");
+				YcheckCustomLayout("CustomObject11", "custom10Default", "Custom Object 11", "Custom Objects 11");
+				YcheckCustomLayout("CustomObject12", "custom10Default", "Custom Object 12", "Custom Objects 12");
+				YcheckCustomLayout("CustomObject13", "custom10Default", "Custom Object 13", "Custom Objects 13");
 				YcheckCustomLayout("CustomObject15", "custom15Default", "Custom Object 15", "Custom Objects 15");
 				
 				YcheckCustomLayout("Activity.Product", "productDefault", "Product Detailed", "Product Detailed");
@@ -3016,13 +3028,16 @@ package gadget.dao {
 			{entity:"CustomObject8",sync_order:17, rank:17},
 			{entity:"CustomObject9",sync_order:18, rank:18},
 			{entity:"CustomObject10",sync_order:19, rank:19},
-			{entity:"CustomObject15",sync_order:24, rank:20},
-			{entity:"Asset",sync_order:7, rank:21},
-			{entity:"Territory",sync_order:14, rank:22},
-			{entity:"Note",sync_order:21, rank:23},
-			{entity:"MedEdEvent",sync_order:23, rank:24},
-			{entity:"BusinessPlan",sync_order:24, rank:25},
-			{entity:"Objectives",sync_order:25, rank:26}
+			{entity:"CustomObject11",sync_order:20, rank:20},
+			{entity:"CustomObject12",sync_order:21, rank:21},
+			{entity:"CustomObject13",sync_order:22, rank:22},
+			{entity:"CustomObject15",sync_order:23, rank:23},
+			{entity:"Asset",sync_order:7, rank:24},
+			{entity:"Territory",sync_order:25, rank:25},
+			{entity:"Note",sync_order:26, rank:26},
+			{entity:"MedEdEvent",sync_order:27, rank:27},
+			{entity:"BusinessPlan",sync_order:28, rank:28},
+			{entity:"Objectives",sync_order:29, rank:29}
 		];
 		
 		//Account.Account,Account.Objective,Account.ServiceRequest,Account.Opportunity,Account.CustomObject2,
@@ -3125,6 +3140,10 @@ package gadget.dao {
 			{entity:"CustomObject6",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject8",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject9",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+			{entity:"CustomObject11",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+			{entity:"CustomObject12",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+			{entity:"CustomObject13",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+			{entity:"CustomObject15",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject10",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]}
 			//{entity:"Asset",sub:[{name:"Activity",enabled:0}]},
 			//{entity:"Territory",sub:[{name:"Activity",enabled:0}]},

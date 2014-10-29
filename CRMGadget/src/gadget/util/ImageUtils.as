@@ -90,6 +90,9 @@ package gadget.util{
 		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject8Img:Class;
 		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject9Img:Class;
 		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject10Img:Class;
+		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject11Img:Class;
+		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject12Img:Class;
+		[Embed(source='/assets/custom.png')] [Bindable] private static var customObject13Img:Class;
 		[Embed(source='/assets/note.png')] [Bindable] private static var noteImg:Class;
 		[Embed(source='/assets/meded.png')] [Bindable] private static var medEdImg:Class;
 		
@@ -114,6 +117,9 @@ package gadget.util{
 		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom8BWImg:Class;
 		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom9BWImg:Class;
 		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom10BWImg:Class;
+		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom11BWImg:Class;
+		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom12BWImg:Class;
+		[Embed(source='/assets/custom_bw.png')] [Bindable] private static var custom13BWImg:Class;
 		[Embed(source='/assets/lead_bw.png')] [Bindable] private static var leadBWImg:Class;
 		[Embed(source='/assets/product_bw.png')] [Bindable] private static var productBWImg:Class;
 		[Embed(source='/assets/note_bw.png')] [Bindable] private static var noteBWImg:Class;
@@ -143,6 +149,9 @@ package gadget.util{
 		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject8DefaultImg:Class;
 		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject9DefaultImg:Class;
 		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject10DefaultImg:Class;
+		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject11DefaultImg:Class;
+		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject12DefaultImg:Class;
+		[Embed(source='/assets/custom/si_custobj16.gif')] [Bindable] private static var customObject13DefaultImg:Class;
 		[Embed(source='/assets/custom/si_flag.png')] [Bindable] private static var flagBWImg:Class;
 		[Embed(source='/assets/custom/si_note16.gif')] [Bindable] private static var noteDefaultImg:Class;
 		[Embed(source='/assets/custom/si_meded16.gif')] [Bindable] private static var medEdDefaultImg:Class;
@@ -171,6 +180,9 @@ package gadget.util{
 		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom8DefaultBWImg:Class;
 		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom9DefaultBWImg:Class;
 		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom10DefaultBWImg:Class;
+		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom11DefaultBWImg:Class;
+		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom12DefaultBWImg:Class;
+		[Embed(source='/assets/custom/si_custobj16_bw.gif')] [Bindable] private static var custom13DefaultBWImg:Class;
 		[Embed(source='/assets/custom/si_note16_bw.gif')] [Bindable] private static var noteDefaultBWImg:Class;
 		[Embed(source='/assets/custom/si_meded16_bw.gif')] [Bindable] private static var medEdDefaultBWImg:Class;
 		[Embed(source='/assets/objective.gif')] [Bindable] private static var objectivesDefaultBWImg:Class;
@@ -537,7 +549,22 @@ package gadget.util{
 				case "custom10": return customObject10Img;
 				case "custom10BW": return custom10BWImg;	
 				case "custom10Default": return customObject10DefaultImg;	
-				case "custom10DefaultBW": return custom10DefaultBWImg;		
+				case "custom10DefaultBW": return custom10DefaultBWImg;	
+					
+				case "custom11": return customObject11Img;
+				case "custom11BW": return custom11BWImg;	
+				case "custom11Default": return customObject11DefaultImg;	
+				case "custom11DefaultBW": return custom11DefaultBWImg;
+					
+				case "custom12": return customObject12Img;
+				case "custom12BW": return custom12BWImg;	
+				case "custom12Default": return customObject12DefaultImg;	
+				case "custom12DefaultBW": return custom12DefaultBWImg;	
+					
+				case "custom13": return customObject13Img;
+				case "custom13BW": return custom13BWImg;	
+				case "custom13Default": return customObject13DefaultImg;	
+				case "custom13DefaultBW": return custom13DefaultBWImg;	
 					
 				case "lead": return leadImg;
 				case "leadDefault": return leadDefaultImg;	

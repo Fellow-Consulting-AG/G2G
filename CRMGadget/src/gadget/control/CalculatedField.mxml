@@ -204,6 +204,8 @@
 							obj["relationId"] = relation.keySrc;
 							obj["Id"] = relation.keyDest;
 							lst.addItem(obj);
+							//replace the temporay label
+							obj.label = Database.customLayoutDao.getDisplayName(obj.entity);
 						}
 					}
 				}

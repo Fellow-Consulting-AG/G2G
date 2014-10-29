@@ -545,6 +545,21 @@ package gadget.util {
 			{col:0, row:1, column_name:"Name"}, 
 			{col:0, row:2, column_name:"Description"} 
 		];
+		private static const DEFAULT_CUSTOM_OBJECT_11:Array = [
+			{col:0, row:0, column_name:"#0", custom:"Key Information"},
+			{col:0, row:1, column_name:"Name"}, 
+			{col:0, row:2, column_name:"Description"} 
+		];
+		private static const DEFAULT_CUSTOM_OBJECT_12:Array = [
+			{col:0, row:0, column_name:"#0", custom:"Key Information"},
+			{col:0, row:1, column_name:"Name"}, 
+			{col:0, row:2, column_name:"Description"} 
+		];
+		private static const DEFAULT_CUSTOM_OBJECT_13:Array = [
+			{col:0, row:0, column_name:"#0", custom:"Key Information"},
+			{col:0, row:1, column_name:"Name"}, 
+			{col:0, row:2, column_name:"Description"} 
+		];
 		
 		private static const DEFAULT_CUSTOM_OBJECT_15:Array = [
 			{col:0, row:0, column_name:"#0", custom:"Key Information"},
@@ -861,6 +876,9 @@ package gadget.util {
 				case 'CustomObject8' : return DEFAULT_CUSTOM_OBJECT_8;
 				case 'CustomObject9' : return DEFAULT_CUSTOM_OBJECT_9;
 				case 'CustomObject10' : return DEFAULT_CUSTOM_OBJECT_10;	
+				case 'CustomObject11' : return DEFAULT_CUSTOM_OBJECT_11;
+				case 'CustomObject12' : return DEFAULT_CUSTOM_OBJECT_12;
+				case 'CustomObject13' : return DEFAULT_CUSTOM_OBJECT_13;
 				case 'Asset' : return DEFAULT_ASSET;
 				case 'Territory' : return DEFAULT_TERRITORY;
 				case 'Note' : return DEFAULT_NOTE;
@@ -920,6 +938,9 @@ package gadget.util {
 		private static var defaultFieldCustomObject8:ArrayCollection = new ArrayCollection(["Name","Description"]);
 		private static var defaultFieldCustomObject9:ArrayCollection = new ArrayCollection(["Name","Description"]);
 		private static var defaultFieldCustomObject10:ArrayCollection = new ArrayCollection(["Name","Description"]);
+		private static var defaultFieldCustomObject11:ArrayCollection = new ArrayCollection(["Name","Description"]);
+		private static var defaultFieldCustomObject12:ArrayCollection = new ArrayCollection(["Name","Description"]);
+		private static var defaultFieldCustomObject13:ArrayCollection = new ArrayCollection(["Name","Description"]);
 		private static var defaultFieldCustomObject15:ArrayCollection = new ArrayCollection(["Name","Description"]);
 		private static var defaultFieldAsset:ArrayCollection = new ArrayCollection(["Product","Status","Type"]);
 		private static var defaultFieldTerritory:ArrayCollection = new ArrayCollection(["TerritoryName","Description"]);
@@ -971,6 +992,9 @@ package gadget.util {
 				case 'CustomObject8': return defaultFieldCustomObject8;
 				case 'CustomObject9': return defaultFieldCustomObject9;
 				case 'CustomObject10': return defaultFieldCustomObject10;	
+				case 'CustomObject11': return defaultFieldCustomObject11;	
+				case 'CustomObject12': return defaultFieldCustomObject12;	
+				case 'CustomObject13': return defaultFieldCustomObject13;	
 				case 'CustomObject15': return defaultFieldCustomObject15;	
 				case 'Asset': return defaultFieldAsset;
 				case 'Territory': return defaultFieldTerritory;
@@ -1031,6 +1055,9 @@ package gadget.util {
 				case 'CustomObject8' : return ["Description"];
 				case 'CustomObject9' : return ["Description"];
 				case 'CustomObject10' : return ["Description"];	
+				case 'CustomObject11' : return ["Description"];	
+				case 'CustomObject12' : return ["Description"];	
+				case 'CustomObject13' : return ["Description"];	
 				case 'CustomObject15' : return ["Description"];	
 				case 'Asset' : return ["Product","Status","Type"];
 				case 'Territory' : return ["TerritoryName","Description"];

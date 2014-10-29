@@ -17,6 +17,7 @@
 			import flash.sampler.getSetterInvocationCount;
 			
 			import gadget.control.CalculatedField;
+			import gadget.control.FellowImageRenderer;
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
@@ -81,7 +82,14 @@
 					{data:"Custom_Object_3", entity:"Custom Object 3", label:"Custom Object 3"},
 					{data:"CustomObject7", entity:"CustomObject7", label:"Custom Object 7"},
 					{data:"Custom_Object_14", entity:"CustomObject14", label:"Custom Object 14"},
-					
+					{data:"CustomObject6",entity:"CustomObject6", label:"Custom Object 6"},
+					{data:"CustomObject8",entity:"CustomObject8", label:"Custom Object 8"},
+					{data:"CustomObject9",entity:"CustomObject9", label:"Custom Object 9"},
+					{data:"CustomObject10",entity:"CustomObject10", label:"Custom Object 10"},
+					{data:"CustomObject11",entity:"CustomObject11", label:"Custom Object 11"},
+					{data:"CustomObject12",entity:"CustomObject12", label:"Custom Object 12"},
+					{data:"CustomObject13",entity:"CustomObject13", label:"Custom Object 13"},
+					{data:"CustomObject15",entity:"CustomObject15", label:"Custom Object 15"},
 					{data:"CustomObject4", entity:"CustomObject4", label:"Custom Object 4"},
 					{data:"CustomObject5", entity:"CustomObject5", label:"Custom Object 5"}
 
@@ -110,13 +118,27 @@
 					{data:"Custom Object 3", label:"Custom Object 3"},
 					{data:"CustomObject7", label:"Custom Object 7"},
 					{data:"CustomObject14", label:"Custom Object 14"},
-					
+					{data:"CustomObject6", label:"Custom Object 6"},
+					{data:"CustomObject8", label:"Custom Object 8"},
+					{data:"CustomObject9", label:"Custom Object 9"},
+					{data:"CustomObject10", label:"Custom Object 10"},
+					{data:"CustomObject11", label:"Custom Object 11"},
+					{data:"CustomObject12", label:"Custom Object 12"},
+					{data:"CustomObject13", label:"Custom Object 13"},
+					{data:"CustomObject15", label:"Custom Object 15"},
 					{data:"CustomObject4", label:"Custom Object 4"},
 					{data:"CustomObject5", label:"Custom Object 5"}
 				]);
 			
 			private static var _cache_cascading_crm:CacheUtils = new CacheUtils("cascading_crm");
 			private static var _cache_customField:CacheUtils = new CacheUtils("customField");
+			
+			
+			public static function getEntityDisplayName(item:Object):String{
+				
+				return Database.customLayoutDao.getDisplayName(item.data);				
+				
+			}
 			
 			private function init():void {	
 				// fieldsGrid.dataProvider = Database.customFieldDao.selectAll();
@@ -291,7 +313,7 @@
 						<mx:FormItem>
 							<mx:HBox>
 								<mx:Label text="{i18n._('GLOBAL_ENTITY')}" textAlign="right" width="100" fontWeight="bold" />
-								<mx:ComboBox id="cboEntitys" dataProvider="{entityList}" change="refreshListDataGrid()" width="160" />
+								<mx:ComboBox id="cboEntitys" dataProvider="{entityList}" labelFunction="{FieldManagmentWindow.getEntityDisplayName}" change="refreshListDataGrid()" width="160" />
 								<mx:Label text="{i18n._('GLOBAL_LANGUAGE')}" textAlign="right" width="150" fontWeight="bold" />
 								<mx:ComboBox id="cbolanguageCodes" dataProvider="{languageCodes}" change="changeLanguageCode()" width="160" />
 							</mx:HBox>

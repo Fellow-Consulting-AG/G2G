@@ -148,10 +148,15 @@
 			}
 			private function initGridColumns(grid:AdvancedDataGrid,entity:String):void{
 				var columns:ArrayCollection = new ArrayCollection();
-				var child:DataGridColumn ;
+				var child:DataGridColumn ;				
 				var fields:ArrayCollection = Database.subColumnLayoutDao.fetchColumnLayout(this.entity,entity);
 				if(fields == null || fields.length < 1){
-					fields = Database.columnsLayoutDao.getColumnLayout(entity, filter.type);
+					var subFilter:Object = Database.filterDao.getDefaultFilter(entity);
+					var type:String = filter.type;
+					if(subFilter!=null){
+						type = subFilter.type;
+					}
+					fields = Database.columnsLayoutDao.getColumnLayout(entity,type);
 				}
 				if(fields == null || fields.length < 1){
 					return;

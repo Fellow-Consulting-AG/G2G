@@ -271,6 +271,10 @@ package gadget.dao
 			exec(stmtUpdateFavorite);
 		}
 		
+		public function getIgnoreCopyFields():ArrayCollection{
+			return new ArrayCollection();
+		}
+		
 		public function updateRelationFields(objsVals:Object, criteria:Object):void{
 			
 			var where:String="";			

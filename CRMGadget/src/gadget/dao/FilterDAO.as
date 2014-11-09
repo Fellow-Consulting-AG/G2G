@@ -27,7 +27,7 @@ package gadget.dao {
 		private var stmtIncreaseType:SQLStatement;
 		private static const LIST_CACHE_FILTER:String="listfilterbyentity";
 		private var cache:CacheUtils = new CacheUtils("Filter_DAO");
-		
+		private var stmtSelectDefaultFilter:SQLStatement;
 		public function FilterDAO(sqlConnection:SQLConnection) {
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
@@ -81,6 +81,10 @@ package gadget.dao {
 			stmtIncreaseType = new SQLStatement();
 			stmtIncreaseType.sqlConnection = sqlConnection;
 			stmtIncreaseType.text = "SELECT MAX(type) AS type FROM filter WHERE entity = :entity";
+			
+			stmtSelectDefaultFilter = new SQLStatement();
+			stmtSelectDefaultFilter.sqlConnection = sqlConnection;
+			stmtSelectDefaultFilter.text = "SELECT * from filter where entity=:entity and type=(select default_filter from transactions where entity = :entity) ";
 			
 		}
 		
@@ -216,6 +220,17 @@ package gadget.dao {
 			exec(stmtIncreaseType);
 			return stmtIncreaseType.getResult().data[0].type + 1;
 		}
+		
+		public function getDefaultFilter(entity:String):Object{
+			stmtSelectDefaultFilter.parameters[":entity"] = entity;
+			exec(stmtSelectDefaultFilter);
+			var result:Array = stmtSelectDefaultFilter.getResult().data;
+			if(result!=null){
+				return result[0];
+			}
+			return null;
+		}
+		
 		
 	}
 }

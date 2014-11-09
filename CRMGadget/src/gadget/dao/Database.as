@@ -186,6 +186,29 @@ package gadget.dao {
 		private  var _revenueDao:RevenueDao;
 		private  var _revenueMappingProductFamilyDao:RevenueMappingProductFamilyDao;
 		
+		private var _templateDao:OrderTemplate;
+		private var _templateItemDao:OrderTemplateItem;
+		
+		public function get templateDao():OrderTemplate
+		{
+			return _templateDao;
+		}
+
+		public function set templateDao(value:OrderTemplate):void
+		{
+			_templateDao = value;
+		}
+
+		public function get templateItemDao():OrderTemplateItem
+		{
+			return _templateItemDao;
+		}
+
+		public function set templateItemDao(value:OrderTemplateItem):void
+		{
+			_templateItemDao = value;
+		}
+
 		public static function get revenueMappingProductFamilyDao():RevenueMappingProductFamilyDao
 		{
 			return database._revenueMappingProductFamilyDao;
@@ -1632,6 +1655,9 @@ package gadget.dao {
 			_sortColumnDao = new SortColumnDAO(_sqlConnection, _work);
 			_revenueDao = new RevenueDao(_sqlConnection, _work);
 			_revenueMappingProductFamilyDao = new RevenueMappingProductFamilyDao(_sqlConnection, _work);
+			_templateDao=new OrderTemplate(_sqlConnection,_work);
+			_templateItemDao=new OrderTemplateItem(_sqlConnection,_work);
+			
 		}
 		
 		
@@ -3140,7 +3166,8 @@ package gadget.dao {
 			{entity:"CustomObject6",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject8",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject9",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
-			{entity:"CustomObject11",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
+			{entity:"CustomObject11",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
+				{name:"CustomObject12",sodname:"CustomObject12",enabled:0,entity_name:"CustomObject12",syncable:true}]},
 			{entity:"CustomObject12",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject13",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject15",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},

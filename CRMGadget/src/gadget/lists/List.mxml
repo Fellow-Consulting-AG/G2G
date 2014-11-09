@@ -430,22 +430,23 @@
 				if(obj != null && !StringUtils.isEmpty(obj.column_order) && FieldUtils.getField(entity,obj.column_order)!=null){
 					order_by = " " + obj.column_order + " " + obj.order_type;
 				}
-				
+				//bug#8712
+				if(filter && filter.type == Database.FAVORITE) {
+					filterQuery = " favorite = 1 ";
+				}else if(filter && filter.type == Database.IMPORTANT) {
+					var num:String = Database.preferencesDao.getValue('important_length',"").toString();
+					if( !StringUtils.isEmpty(num) && num != 'unlimited'){
+						imLimit = parseInt(num);
+					}
+					filterQuery = " important IS NOT NULL AND important > 0";
+					order_by = " important DESC";
+				}else if(filter && filter.type == Database.MISSING_PDF && filter.entity == Database.serviceDao.entity){
+					filterQuery = "(CustomPickList10='SUSP' OR CustomPickList10='AWPT' OR CustomPickList11='TECO') And gadget_id Not In (Select gadget_id from attachment where entity='Service Request' And gadget_id is not null and (filename like '%.pdf' or filename like '%.doc' or filename like '%.docx'))";
+				}				
 				// SC20110613
 				if (startCriteria == null) {
 					var imLimit:int = 1001;
-					if(filter && filter.type == Database.FAVORITE) {
-						filterQuery = " favorite = 1 ";
-					}else if(filter && filter.type == Database.IMPORTANT) {
-						var num:String = Database.preferencesDao.getValue('important_length',"").toString();
-						if( !StringUtils.isEmpty(num) && num != 'unlimited'){
-							imLimit = parseInt(num);
-						}
-						filterQuery = " important IS NOT NULL AND important > 0";
-						order_by = " important DESC";
-					}else if(filter && filter.type == Database.MISSING_PDF && filter.entity == Database.serviceDao.entity){
-						filterQuery = "(CustomPickList10='SUSP' OR CustomPickList10='AWPT' OR CustomPickList11='TECO') And gadget_id Not In (Select gadget_id from attachment where entity='Service Request' And gadget_id is not null and (filename like '%.pdf' or filename like '%.doc' or filename like '%.docx'))";
-					}				
+					
 					records = dao.findAll(columns, filterQuery, selectedId, imLimit,order_by);
 				} else {
 					var searchFeilds:String = "(uppername >= " + StringUtils.sqlStrArg(startCriteria) + " AND uppername <= " + StringUtils.sqlStrArg(endCriteria + "zzzz") + ")";
@@ -455,10 +456,10 @@
 					}
 					//#1010 CRO search German characters (Ä or AE)
 					searchFeilds = Utils.replaceGermanCharacter(searchFeilds,Utils.charUpperGermanAccents,Utils.charGerman);
-					
-					records = dao.findAll(columns, searchFeilds + 
-						(StringUtils.isEmpty(filterQuery) ? "" : " AND " + filterQuery), 
-						selectedId, limited,order_by);
+					if(!StringUtils.isEmpty(filterQuery)){
+						searchFeilds="("+searchFeilds+")"+" AND " + filterQuery
+					}
+					records = dao.findAll(columns, searchFeilds,selectedId, limited,order_by);
 				}
 				//Mony---------use labelfunction instead
 				//Utils.parseDateTime(entity, columns, records);
@@ -1241,6 +1242,10 @@
 					entityName = "Activity";
 				}
 				var fieldInfo:Object = FieldUtils.getField(entityName,col.dataField);
+				if(fieldInfo==null){
+					//bug#8718 try to read custom field
+					fieldInfo = FieldUtils.getField(entityName,col.dataField,false,true);
+				}
 				var isDateTime:Boolean = fieldInfo.data_type == 'Date/Time';
 				var fieldValue:String = item[col.dataField];	
 				if(!StringUtils.isEmpty(fieldValue)){

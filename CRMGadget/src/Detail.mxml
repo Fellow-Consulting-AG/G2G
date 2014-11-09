@@ -19,6 +19,7 @@
 			import gadget.control.CalendarIlog;
 			import gadget.control.ImageTextInput;
 			import gadget.control.ImageTreeFinder;
+			import gadget.control.SampleItemView;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.CustomRecordTypeServiceDAO;
@@ -271,9 +272,21 @@
 				initButtons(); 
 				initTab(); 
 				initForm(); 
+				initSampleItemTab();
 				displayAttachments(); 
 				initDragDropWindow();
 				
+			}
+			
+			private function initSampleItemTab():void{
+				if(entity==Database.customObject11Dao.entity){
+					var innerCanvas:Canvas = new SampleItemView();
+					innerCanvas.horizontalScrollPolicy = "off";
+					innerCanvas.percentWidth = 100;
+					innerCanvas.percentHeight = 100;
+					innerCanvas.label =i18n._( "SAMPLE_ITEMS@Sample Items");
+					viewstack.addChild(innerCanvas);
+				}
 			}
 			private function initAdditionalTabRevenue():void{
 				var labelTitle1:Label = new Label();
@@ -1073,9 +1086,10 @@
 						nextSubtype = comboAction.selectedItem.subtype;
 					}
 					//bug#8424----copy opportunity
-					if(entity==Database.opportunityDao.entity && data==Database.opportunityDao.entity){
-						other = Database.opportunityDao.findByOracleId(item[DAOUtils.getOracleId(data)]);
-						for each(var f:String in Database.opportunityDao.getIgnoreCopyFields()){
+					if(entity== data && (data==Database.opportunityDao.entity||data==Database.customObject11Dao.entity)){
+						var dao:BaseDAO = Database.getDao(data);
+						other = dao.findByOracleId(item[DAOUtils.getOracleId(data)]);
+						for each(var f:String in dao.getIgnoreCopyFields()){
 							delete other[f];
 						}
 					}
@@ -1858,11 +1872,12 @@
 				isNew = false;
 				// setup window dimensions
 				for(var p:int=0;p<numOfPage;p++){
+					var canv:Canvas = innerCanvasL[p];
 					if (leftFormL[p].getChildren().length == 0 &&
 						rightFormL[p].getChildren().length == 0) {
 						viewstack.removeChild(innerCanvasL[p]);
 						continue;
-					}
+					}					
 					
 					var heightMax:int = heightLeftL[p];
 					if (heightRightL[p] > heightMax) {
@@ -1905,7 +1920,7 @@
 					if(item.objTree!=null){
 					refreshData();
 				}
-				if(entity.toLowerCase()=="account" && Database.preferencesDao.isEnableRevenueReport()){
+				if(entity==Database.accountDao.entity && Database.preferencesDao.isEnableRevenueReport()){
 					initAdditionalTabRevenue();
 				}
 				

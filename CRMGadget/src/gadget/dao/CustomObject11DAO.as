@@ -2,6 +2,8 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	
+	import mx.collections.ArrayCollection;
 
 	public class CustomObject11DAO extends CustomeObjectBaseDao {
 
@@ -19,6 +21,21 @@ package gadget.dao
 
 		override public function get entity():String {
 			return "CustomObject11";
+		}
+		
+		override public function getIgnoreCopyFields():ArrayCollection{
+			return new ArrayCollection(
+				[					
+					'Id',
+					'gadget_id',
+					'local_update',
+					'delete',
+					'error',
+					'ood_lastmodified',
+					'sync_number',
+					'important',
+					'favorite'
+				]);
 		}
 		
 		private var textColumns:Array = [

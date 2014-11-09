@@ -30,7 +30,7 @@ package gadget.dao
 		}
 		
 		
-		public function getIgnoreCopyFields():ArrayCollection{
+		override public function getIgnoreCopyFields():ArrayCollection{
 			return new ArrayCollection(
 					[
 					'SalesStage',

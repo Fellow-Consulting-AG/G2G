@@ -741,6 +741,20 @@ package gadget.util {
 		
 		];
 		
+		public static function getFieldDisplayName(entity:String,element_name:String):String{
+			
+			var obj:Object = getField(entity,element_name);
+			if(obj==null){
+				obj = getField(entity,element_name,false,true);
+			}
+			
+			if(obj!=null){
+				return obj.display_name;
+			}
+			
+			return element_name;
+			
+		}
 		
 		// Entity is the CG internal transaction name
 		public static function getField(entity:String, column_name:String,changeElementName:Boolean=false,sqlCustomField:Boolean=false):Object {

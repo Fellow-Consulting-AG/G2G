@@ -535,7 +535,7 @@ package gadget.util
 			{entitySrc:"CustomObject12", keySrc:"CustomObject10Id", keyDest:"Id", labelSrc:["CustomObject10Name"], labelDest:["Name"], entityDest:"CustomObject10"},
 			{entitySrc:"CustomObject12", keySrc:"CustomObject11Id", keyDest:"Id", labelSrc:["CustomObject11Name"], labelDest:["Name"], entityDest:"CustomObject11"},
 			{entitySrc:"CustomObject12", keySrc:"CustomObject13Id", keyDest:"Id", labelSrc:["CustomObject13Name"], labelDest:["Name"], entityDest:"CustomObject13"},
-			{entitySrc:"CustomObject12", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name"], labelDest:["Name"], entityDest:"CustomObject14"},
+			{entitySrc:"CustomObject12", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name","CustomObject14ExternalSystemId"], labelDest:["Name","ExternalSystemId"], entityDest:"CustomObject14"},
 			{entitySrc:"CustomObject12", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
 			{entitySrc:"CustomObject13", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},

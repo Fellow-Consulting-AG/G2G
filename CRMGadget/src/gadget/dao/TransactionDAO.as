@@ -36,6 +36,7 @@ package gadget.dao
 		private var stmtUpdateAllField:SQLStatement;
 		private var stmtUpdateSyncOrder:SQLStatement;
 		private var stmtUpdSortCol:SQLStatement;
+		
 		public function TransactionDAO(sqlConnection:SQLConnection) {
 			//super(sqlConnection);
 			stmtInsert = new SQLStatement();
@@ -87,6 +88,8 @@ package gadget.dao
 			stmtUpdateSyncOrder=new SQLStatement();
 			stmtUpdateSyncOrder.text="UPDATE transactions SET  sync_order= :sync_order,display=:display where entity = :entity ";
 			stmtUpdateSyncOrder.sqlConnection=sqlConnection;
+			
+		
 		}
 		
 		
@@ -281,6 +284,7 @@ package gadget.dao
 			return -99;
 			
 		}
+		
 		
 		public function makeDefaultFilter(default_filter:int, entity:String):void{
 			stmtSetDefaultFilter.parameters[":default_filter"] = default_filter;

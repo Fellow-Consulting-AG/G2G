@@ -84,7 +84,15 @@
 			
 					records = Database.columnsLayoutDao.fetchColumnLayout(entity, filter_type);
 				}
-				
+				//try to get column with the filter
+				if(records.length==0){
+					var subFilter:Object = Database.filterDao.getDefaultFilter(entity);
+					var type:String = filter.type;
+					if(subFilter!=null){
+						type = subFilter.type;
+					}
+					records = Database.columnsLayoutDao.getColumnLayout(entity,type);
+				}
 				// Get Default filter
 				if(records.length==0) records = Database.columnsLayoutDao.fetchColumnLayout(entity);
 				selectedCols = new ArrayCollection();

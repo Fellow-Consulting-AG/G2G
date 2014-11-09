@@ -19,7 +19,7 @@
 			public function getImage(e:Event):void {
 				var iImage:Image = e.currentTarget as Image;
 				var iLoader:Loader = new Loader();
-				if(data[_fieldImage]) {
+				if(data!=null && data[_fieldImage]) {
 					iLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void {
 						iImage.source = e.currentTarget.content;
 					});

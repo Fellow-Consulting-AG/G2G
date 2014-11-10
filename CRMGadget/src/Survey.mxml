@@ -265,9 +265,11 @@
 								delete quest[dtoCol.colProperty];
 							}
 						}
-						
+						/*if(quest.isHeader=="1"){
+							continue;
+						}*/
 						quest.RemoveCommentBox = quest.RemoveComment;
-						quest.isHeader = false;
+						//quest.isHeader = false;
 						quest.odd =  odd ? false : true;
 						quest.gadget_id = task == null ? null : task.gadget_id;
 						

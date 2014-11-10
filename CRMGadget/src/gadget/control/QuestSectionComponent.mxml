@@ -51,7 +51,10 @@
 					}
 					return AssessmentSectionTotal(data).getPercentTotal(col).toFixed(2) + "%";
 				}else{
-					return data[col.colProperty];
+					if(data.isHeader =="1"){
+						return "";
+					}
+					return data[col.colProperty]==null?"":data[col.colProperty];
 				}
 			}
 			

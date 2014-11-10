@@ -351,11 +351,15 @@ package
 				}
 				
 				for each(var quest:Object in lstQues){
+					
 					if((model.assessmentModel=="KiB Miljö" || model.assessmentModel=="KiB Tryggmat") && quest["backgroundColor"]=="1"){
 						var sectionHeader:XML = <row/>;
 						sectionHeader.@title=quest.Question;
 						sectionHeader.@colspan=lstColumn.length;
 						xmlSection.appendChild(sectionHeader);
+					}
+					if(quest["isHeader"]=="1" && quest["backgroundColor"]=="1"){
+						continue;
 					}
 					var xmlQuestion:XML = <row/>;
 					xmlSection.appendChild(xmlQuestion);

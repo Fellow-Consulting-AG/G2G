@@ -1306,6 +1306,12 @@
 				cl.editable = false;
 				columns.push(cl);
 				
+				cl = new AdvancedDataGridColumn();
+				cl.dataField = "isHeader";
+				cl.itemRenderer = new ClassFactory(CheckBoxQuestionPDFBackgroundRender);
+				cl.headerText = iAseesment.translate("ASSESSMENT_FIELD_IS_HEADER@Is Header");
+				cl.editable = false;
+				columns.push(cl);
 				datagridQuestion.groupedColumns = columns;
 				datagridQuestion.validateNow();
 				

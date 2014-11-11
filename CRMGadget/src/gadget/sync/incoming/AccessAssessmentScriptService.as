@@ -72,6 +72,20 @@ package gadget.sync.incoming
 			return obj;
 		}
 		
+		private function checkOldQuestion(objNewQ:Object,listOldQuestion:ArrayCollection):void{
+			if(listOldQuestion != null && listOldQuestion.length>0){
+				var assName:String = objNewQ['AssessmentName'];
+				var quesId:String = objNewQ['QuestionId'];
+				for each(var oldQues:Object in listOldQuestion){
+					if(oldQues['AssessmentName'] == assName && oldQues['QuestionId'] == quesId){
+						objNewQ['isHeader'] = oldQues['isHeader'];
+						objNewQ['backgroundColor'] = oldQues['backgroundColor'];
+						break;
+					}
+				}
+			}
+			
+		}
 		
 		override protected function handleResponse(request:XML, result:XML):int {
 			if (getFailed()) {
@@ -83,7 +97,7 @@ package gadget.sync.incoming
 			var questions:ArrayCollection = new ArrayCollection();
 			var answers:ArrayCollection = new ArrayCollection();
 			
-			
+			var listOldQuestions:ArrayCollection = new ArrayCollection(Database.questionDao.fetch());
 			
 			for each (var objects:XML in result.ns2::ListOfSalesAssessmentTemplate[0].ns2::SalesAssessmentTemplate) {
 				
@@ -102,6 +116,8 @@ package gadget.sync.incoming
 						for each (var quesObj:XML in objects.ns2::ListOfSalesAssessmentTemplateAttribute[indexQues].ns2::SalesAssessmentTemplateAttribute) {
 							var indexAnswer:int = 0;
 							var queRec:Object = createObject(quesObj,asseRec, Database.questionDao.getFields());
+							//add old value of isHeader and backgroundColor
+							checkOldQuestion(queRec,listOldQuestions);
 							questions.addItem(queRec);
 							for each(var ansObj:XML in quesObj.ns2::ListOfSalesAssessmentAttributeValue[indexAnswer].ns2::SalesAssessmentAttributeValue){
 								var ansRec:Object = createObject(ansObj,queRec, Database.answerDao.getFields());

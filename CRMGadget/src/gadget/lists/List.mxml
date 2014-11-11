@@ -449,10 +449,11 @@
 					
 					records = dao.findAll(columns, filterQuery, selectedId, imLimit,order_by);
 				} else {
-					var searchFeilds:String = "(uppername >= " + StringUtils.sqlStrArg(startCriteria) + " AND uppername <= " + StringUtils.sqlStrArg(endCriteria + "zzzz") + ")";
+					startCriteria =  startCriteria + "%";
+					var searchFeilds:String = "(uppername LIKE " + StringUtils.sqlStrArg(startCriteria) + ")";
 					
 					if(entity=="Account"){
-						searchFeilds += " OR (uppername3 >= " + StringUtils.sqlStrArg(startCriteria) + " AND uppername3 <= " + StringUtils.sqlStrArg(endCriteria + "zzzz") + ")";
+						searchFeilds += " OR (uppername3 LIKE " + StringUtils.sqlStrArg(startCriteria) + ")";
 					}
 					//#1010 CRO search German characters (Ä or AE)
 					searchFeilds = Utils.replaceGermanCharacter(searchFeilds,Utils.charUpperGermanAccents,Utils.charGerman);

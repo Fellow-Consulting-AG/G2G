@@ -280,7 +280,8 @@
 			
 			private function initSampleItemTab():void{
 				if(entity==Database.customObject11Dao.entity){
-					var innerCanvas:Canvas = new SampleItemView();
+					var innerCanvas:SampleItemView = new SampleItemView();
+					innerCanvas.item = this.item;
 					innerCanvas.horizontalScrollPolicy = "off";
 					innerCanvas.percentWidth = 100;
 					innerCanvas.percentHeight = 100;

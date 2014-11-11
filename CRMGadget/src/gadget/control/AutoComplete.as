@@ -160,6 +160,8 @@ public class AutoComplete extends ComboBox
 	private var dropdownClosed:Boolean=true;
 	
 	private var isChangeByType:Boolean = false;
+	
+	private var _updateRelateFieldOnSelected:Function;
 
 	//--------------------------------------------------------------------------
 	//
@@ -404,6 +406,16 @@ public class AutoComplete extends ComboBox
 		}
 		isChangeByType = false;
 		typedTextChanged = true;
+		
+	}
+	
+	override public function set selectedItem(value:Object):void
+	{						
+		
+		super.selectedItem = value;
+		if(updateRelateFieldOnSelected!=null){
+			updateRelateFieldOnSelected(value);
+		}
 		
 	}
 	
@@ -748,5 +760,16 @@ public class AutoComplete extends ComboBox
 			collection.refresh();
   	    }
   	}
+
+	public function get updateRelateFieldOnSelected():Function
+	{
+		return _updateRelateFieldOnSelected;
+	}
+
+	public function set updateRelateFieldOnSelected(value:Function):void
+	{
+		_updateRelateFieldOnSelected = value;
+	}
+
 }	
 }

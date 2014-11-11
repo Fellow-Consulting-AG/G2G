@@ -2,15 +2,15 @@
 <s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 								  xmlns:s="library://ns.adobe.com/flex/spark" 
 								  xmlns:mx="library://ns.adobe.com/flex/mx" 
-								  focusEnabled="true" xmlns:control="gadget.control.*">
+								 xmlns:control="gadget.control.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
-			import mx.controls.AdvancedDataGrid;
-			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
-			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+			import mx.controls.DataGrid;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.dataGridClasses.DataGridListData;
 			import mx.controls.listClasses.BaseListData;
-			public var column:AdvancedDataGridColumn;	
+			public var column:DataGridColumn;	
 			
 
 			public function set labelFunction(value:Function):void
@@ -51,8 +51,11 @@
 				 if(column!=null && value){
 					 var val:Object = value[column.dataField];						
 					 cborender.selectedItem=val;
-				 }			
+				 }
+				 cborender.setFocus();
 			 }		
+			
+			
 			private function itemChange(event:Event):void{
 				if(data!=null && column!=null){
 					data[column.dataField] = cborender.selectedItem;
@@ -64,8 +67,8 @@
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
-					var grid:AdvancedDataGrid = value.owner as AdvancedDataGrid;
-					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
+					var grid:DataGrid = value.owner as DataGrid;
+					var list:DataGridListData = value as DataGridListData;
 					if(list!=null){					
 						column = grid.columns[list.columnIndex];
 						cborender.width = column.width-3;
@@ -79,10 +82,14 @@
 				return cborender.selectedItem
 			}
 			
-			
+			protected function onSelectedItem(selectedObj:Object):void{
+				if(data!=null && selectedObj!=null && updateRelateField!=null){
+					updateRelateField(data,selectedObj);
+				}
+			}
 			
 		]]>
 		
 	</fx:Script>
-	<control:AutoComplete id="cborender" change="itemChange(event)" lookAhead="true"  labelField="Name"/>
+	<control:AutoComplete id="cborender" change="itemChange(event)" lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
 </s:MXDataGridItemRenderer>

@@ -9,8 +9,12 @@
 			import gadget.i18n.i18n;
 			import gadget.util.FieldUtils;
 			import gadget.util.StringUtils;
+			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
+			import mx.containers.Form;
+			import mx.containers.FormItem;
+			import mx.controls.Label;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.FlexEvent;
@@ -23,6 +27,7 @@
 				if(rows==null){
 					rows = new ArrayCollection();
 				}
+				createHeaderForm();
 				initColumns();
 				//add empty row
 				rows.addItem(new Object());
@@ -31,16 +36,20 @@
 				//ADD ACTION
 				editableGrid.addEventListener(KeyboardEvent.KEY_DOWN, function(evt:KeyboardEvent):void {
 					if(evt.keyCode == Keyboard.ENTER || evt.keyCode == Keyboard.TAB){
-						if( editableGrid.editedItemPosition &&  rows.length-1 == editableGrid.editedItemPosition.rowIndex  && editableGrid.editedItemPosition.columnIndex == editableGrid.columns.length -1 ){
-							var newObj:Object = {};
-							if(rows==null){
-								rows = new ArrayCollection();
+						if(editableGrid.editedItemPosition){
+							var editColumn:DataGridColumn = editableGrid.columns[editableGrid.editedItemPosition.columnIndex];
+							if( rows.length-1 == editableGrid.editedItemPosition.rowIndex  && editColumn.dataField=='CustomCurrency2' ){
+								var newObj:Object = {};
+								if(rows==null){
+									rows = new ArrayCollection();
+								}
+								rows.addItem(newObj); //add a blank record
+								var index:Number = editableGrid.editedItemPosition.rowIndex+1;
+								editableGrid.dataProvider = rows;
+								//								editableGrid.selectedIndex = index;
+								editableGrid.editedItemPosition = {columnIndex:0, rowIndex:index};
+							
 							}
-							rows.addItem(newObj); //add a blank record
-							var index:Number = editableGrid.editedItemPosition.rowIndex+1;
-							editableGrid.dataProvider = rows;
-							//								editableGrid.selectedIndex = index;
-							editableGrid.editedItemPosition = {columnIndex:0, rowIndex:index};
 						}
 					}
 				});
@@ -61,6 +70,7 @@
 					'updateRelateField':function(item:Object,selectedItem:Object):void{
 						if(selectedItem!=null){
 							item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
+							item.CustomCurrency1 = selectedItem.CustomCurrency0;
 						}
 					},
 					'labelFunction':function(item:Object):String{
@@ -73,9 +83,9 @@
 				//item no
 				cols.push(createColumn('CustomObject14ExternalSystemId',15,false));
 				cols.push(createColumn('IndexedNumber0',15));
-				cols.push(createColumn('CustomCurrency1',15));
+				cols.push(createColumn('CustomCurrency1',15,false));
 				cols.push(createColumn('CustomCurrency2',15));
-				cols.push(createColumn('CustomCurrency0',15));
+				cols.push(createColumn('CustomCurrency0',15,false));
 				
 				editableGrid.columns = cols;
 			}
@@ -91,7 +101,7 @@
 				return col;
 				
 			}
-			private function getItemName(item:Object, col:AdvancedDataGridColumn):String {
+			private function getItemName(item:Object, col:DataGridColumn):String {
 				if(item == null) return "";
 				return item[col.dataField]?item[col.dataField].Name:"";
 			}
@@ -100,20 +110,56 @@
 				
 				
 				
-				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId"}]),null,null,-1);
+				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0"}]),null,null,-1);
 				if(picklist!=null){
 					picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
 				}
 				return picklist;
 			}
 			
+			
+			private function getDisplayName(item:Object,entity:String):String{
+				return FieldUtils.getFieldDisplayName(entity, item.element_name);				
+			}
+			
+			private function getHeaderField():ArrayCollection{
+				return new ArrayCollection([{element_name:'ContactFullName'},
+						{element_name:'ContactAccountName'},{element_name:'IndexedDate0'},{element_name:'Phone'/*not found*/},{element_name:'CustomText36'},{element_name:'CustomText33'}]);
+			}
+			
+			private function createHeaderForm():void{
+				var form:Form = new Form();
+				for each(var field:Object in getHeaderField()){
+					var formItem:FormItem = new FormItem();
+					formItem.label = field.display_name == null ? getDisplayName(field,Database.customObject11Dao.entity) : field.display_name;
+					var columnValue:Label = new Label();
+					columnValue.setStyle("fontWeight","bold");
+					if(item!=null){
+						columnValue.text = item[field.element_name];						
+					}					
+					formItem.addChild(columnValue);
+					form.addChild(formItem);
+				}
+				
+				headerInfo.addChild(form);
+			}
+			
+			private function saveTemplate(e:Event):void{
+				var saveScreent:SaveOrderTemplate = new SaveOrderTemplate();
+				
+				WindowManager.openModal(saveScreent);
+			}
+			
+			
 		]]>
 	</fx:Script>
-	<mx:VBox top="36" left="8" right="8" bottom="8">	
-		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>	
+	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%">	
+		<mx:HBox id="headerInfo" width="100%"/>
+		<mx:HBox y="0" x="{width-100}"   id="buttonImportExport" horizontalAlign="right" paddingTop="20" width="100%">
+			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="saveTemplate(event)"/>
+			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" />		
+		</mx:HBox>
+		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>		
 	</mx:VBox>
-	<mx:HBox y="0" x="{width-100}"  paddingTop="-1" id="buttonImportExport">
-		<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" />
-		<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" />		
-	</mx:HBox>
+	
 </mx:Canvas>

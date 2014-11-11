@@ -3,7 +3,7 @@
 		   xmlns:s="library://ns.adobe.com/flex/spark" 
 		   xmlns:mx="library://ns.adobe.com/flex/mx"
 		   showFlexChrome="false" transparent="true" systemChrome="none"
-		    width="460" height="468" xmlns:control="gadget.control.*">
+		    width="470" height="480" xmlns:control="gadget.control.*">
 	<fx:Script>
 		<![CDATA[
 			import gadget.dao.Database;
@@ -15,7 +15,7 @@
 		<control:TitleBar title="{i18n._('ORDER_TEMPLATE@Order Template')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
 		<mx:VBox top="30" left="0" right="0" bottom="0" width="100%">
 			<mx:Canvas width="100%" height="100%">
-				<mx:VBox width="100%" height="100%">
+				<mx:VBox width="100%" height="100%" paddingRight="10" paddingLeft="10">
 					<mx:Form paddingTop="5" paddingLeft="0" width="100%">	
 						<mx:FormItem>
 							<mx:VBox>
@@ -33,15 +33,26 @@
 						</mx:FormItem>						
 						
 					</mx:Form>
-					<mx:DataGrid id="editableGrid" paddingLeft="10" editable="true" sortableColumns="false" width="99%" height="100%" paddingRight="10">	
+					<mx:DataGrid id="editableGrid" editable="false" sortableColumns="false" width="100%" height="100%">	
 						<mx:columns>				
 							
-							<mx:DataGridColumn   dataField="Customobject14Name"  headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14Name')}" />
-							<mx:DataGridColumn editable="false" dataField="CustomObject14ExternalSystemId" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14ExternalSystemId')}"/>
-							<mx:DataGridColumn dataField="IndexedNumber0" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'IndexedNumber0')}"/>
-							<mx:DataGridColumn editable="false" dataField="CustomCurrency1" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency1')}"/>
-							<mx:DataGridColumn dataField="CustomCurrency2" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency2')}"/>
-							<mx:DataGridColumn editable="false" dataField="CustomCurrency0" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency0')}"/>
+							<mx:DataGridColumn   dataField="ItemName"  headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14Name')}" width="200" />
+							<mx:DataGridColumn editable="false" dataField="ItemNo" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14ExternalSystemId')}" width="120"/>
+							<mx:DataGridColumn dataField="Qty" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'IndexedNumber0')}" width="80"/>
+							<mx:DataGridColumn width="50"  headerText="">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:LinkButton icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" >
+											<fx:Script>
+												<![CDATA[
+													import gadget.i18n.i18n;
+												]]>
+											</fx:Script>
+										</mx:LinkButton>
+	
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
 							
 						</mx:columns>				
 					</mx:DataGrid>

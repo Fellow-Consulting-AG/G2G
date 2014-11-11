@@ -13,13 +13,12 @@ package gadget.dao
 				search_columns: [ 'ItemId' ],
 				display_name : "ItemName",
 				unique:['Id'],								
-				columns: {'TEXT' : textColumns,'INTEGER':["Qty"] }
+				columns: {'TEXT' : textColumns,'INTEGER':["Qty"],'Id': "INTEGER PRIMARY KEY AUTOINCREMENT" }
 			});
 		}
 		
-		private var textColumns:Array = ["TemplateId",
-			"Id",			
-			"ItemId",
+		private var textColumns:Array = ["TemplateId",						
+			"ItemNo",
 			"ItemName"];
 	}
 }

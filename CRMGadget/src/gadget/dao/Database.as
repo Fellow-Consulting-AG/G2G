@@ -3167,7 +3167,7 @@ package gadget.dao {
 			{entity:"CustomObject8",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject9",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject11",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
-				{name:"CustomObject12",sodname:"CustomObject12",enabled:0,entity_name:"CustomObject12",syncable:true}]},
+				{name:"CustomObject12",sodname:"CustomObject12",enabled:0,entity_name:"CustomObject12",syncable:false}]},
 			{entity:"CustomObject12",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject13",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},
 			{entity:"CustomObject15",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true}]},

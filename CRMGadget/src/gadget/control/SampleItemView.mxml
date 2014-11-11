@@ -62,7 +62,7 @@
 				var cols:Array = new Array();
 				
 				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name',25);				
+				var itemName:DataGridColumn =createColumn('CustomObject14Name',35);				
 				itemName.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -86,7 +86,12 @@
 				cols.push(createColumn('CustomCurrency1',15,false));
 				cols.push(createColumn('CustomCurrency2',15));
 				cols.push(createColumn('CustomCurrency0',15,false));
-				
+				//deleted column
+				var deleteCol:DataGridColumn = createColumn("",1,false);
+				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
+				deleteRender.properties={parentComp:this,addEmptyRow:true};
+				deleteCol.itemRenderer=deleteRender;
+				cols.push(deleteCol);
 				editableGrid.columns = cols;
 			}
 			
@@ -145,6 +150,11 @@
 			}
 			
 			private function saveTemplate(e:Event):void{
+				var items:ArrayCollection = editableGrid.dataProvider as ArrayCollection; 
+				var lstTemplate:ArrayCollection = new ArrayCollection();
+				for each(var obj:Object in items){
+					//TODO
+				}
 				var saveScreent:SaveOrderTemplate = new SaveOrderTemplate();
 				
 				WindowManager.openModal(saveScreent);

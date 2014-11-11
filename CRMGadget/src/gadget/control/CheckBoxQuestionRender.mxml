@@ -98,7 +98,7 @@
 				
 				if(column!=null && value){
 					
-					if(data!=null && !data.isHeader && !data.isFooter){
+					if(data!=null && (!data.isHeader || data.isHeader=='0') && !data.isFooter){
 						if(chkBox==null){
 							chkBox = new CheckBox();
 							chkBox.addEventListener(MouseEvent.CLICK,clickFunction);

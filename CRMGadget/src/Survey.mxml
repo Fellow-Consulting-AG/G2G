@@ -600,7 +600,7 @@
 				
 				
 				for(var j:int=0; j<lstQues.length;j++){
-					if(!lstQues[j].isHeader){
+					if(!lstQues[j].isHeader || lstQues[j].isHeader=='0' ){
 						var mapCols:ArrayCollection = Database.assessmentMappingDao.selectByQuestionId(lstQues[j].QuestionId,assModel.recordId);
 						for each(var dtoCol:Object in mapCols){
 							var questProp:String = dtoCol.ColumnProperty;

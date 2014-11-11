@@ -18,7 +18,7 @@
 					
 			 override public function set data(value:Object):void{		
 				 super.data = value;
-				 if(data.isHeader){
+				 if(data.isHeader && data.isHeader=='1'){
 				  	txtVal.setStyle("backgroundColor",0x92B8FF);
 					hbcell.setStyle("backgroundColor",0x92B8FF);
 					txtVal.setStyle("fontWeight","bold");

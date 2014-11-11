@@ -244,10 +244,10 @@
 					bindFilterCol.selectedIndex = Utils.getComboColIndex(criteria1.column_name, criteria1.entity_dest);
 					bindFilterParam.selectedIndex = Utils.getComboColIndex(criteria1.param, criteria1.entity_src);
 				}else {
-					var relation:Object = Relation.getRelation(filter.entity_src, filter.entity_dest);
+					var relation:Object = Relation.getRelation(filter.entity_dest,filter.entity_src);//one 2 many relation
 					if(relation) {
-						bindFilterCol.selectedIndex = Utils.getComboColIndex(relation.keyDest, relation.entityDest);
-						bindFilterParam.selectedIndex = Utils.getComboColIndex(relation.keySrc, relation.entitySrc);
+						bindFilterCol.selectedIndex = Utils.getComboColIndex(relation.keySrc, relation.entitySrc);
+						bindFilterParam.selectedIndex = Utils.getComboColIndex(relation.keyDest, relation.entityDest);
 					}
 				}
 			}

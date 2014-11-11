@@ -85,7 +85,7 @@
 				
 				if(column!=null && value){
 					
-					if(data!=null && !data.isHeader && !data.isFooter){
+					if(data!=null && (!data.isHeader||data.isHeader=='0') && !data.isFooter){
 						if(radio==null){
 							radio = new RadioButton();
 							radio.addEventListener(MouseEvent.CLICK,clickFunction);

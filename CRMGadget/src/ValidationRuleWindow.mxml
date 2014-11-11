@@ -36,6 +36,7 @@
 				});
 				cbolanguageCodes.selectedIndex = CalculatedField.getComboSelectedIndex(cbolanguageCodes,CustomFieldDAO.DEFAULT_LANGUAGE_CODE);
 				this.systemManager.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDown);
+				cboEntitys.setFocus();
 			}
 			private function changeLanguageCode():void{
 				var languageCode:String = CalculatedField.getComboDataField(cbolanguageCodes);

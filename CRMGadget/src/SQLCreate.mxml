@@ -80,6 +80,7 @@
 				numberValidator.minValue = 1;
 				validator.push(numberValidator);
 				validator = validator.concat(sqlFilterForm.validate());
+				object.setFocus();
 			}
 			
 			private function getSelectedColumn(entity_dest:String, columns:String):ArrayCollection {

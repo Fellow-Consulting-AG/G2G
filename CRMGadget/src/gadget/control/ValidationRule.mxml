@@ -7,6 +7,7 @@
 	title="{i18n._('GLOBAL_VALIDATION_RULE')}"
 	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
 	initialize="init()"
+	creationComplete="window1_creationCompleteHandler(event)"
 	
 	>
 	
@@ -35,6 +36,7 @@
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
 			import mx.controls.TextArea;
+			import mx.events.FlexEvent;
 			import mx.formatters.DateBase;
 			import mx.validators.NumberValidator;
 			import mx.validators.StringValidator;
@@ -212,6 +214,12 @@
 				chkActive.selected = rule.active=="1"?true:false;			
 			}
 			
+
+			protected function window1_creationCompleteHandler(event:FlexEvent):void
+			{
+				txtRuleName.setFocus();
+			}
+
 		]]>
 	</mx:Script>
 	

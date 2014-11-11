@@ -2640,7 +2640,7 @@ package gadget.dao {
 			
 			XcheckColumn(sqlConnection, 'custom_layout','custom_layout_title','TEXT'); // Change Request #747
 			XcheckColumn(sqlConnection, 'custom_layout','layout_depend_on','TEXT');
-			XcheckColumn(sqlConnection, 'question','isHeader','BOOLEAN', '0');
+			XcheckColumn(sqlConnection, 'question','isHeader','TEXT', '0');
 		}
 		
 		private function XchangedDateToDatabaseDateFormat(sqlConnection:SQLConnection, entity:String, columns:Array):void {

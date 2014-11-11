@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+								  xmlns:s="library://ns.adobe.com/flex/spark" 
+								  xmlns:mx="library://ns.adobe.com/flex/mx" 
+								  focusEnabled="true" xmlns:control="gadget.control.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.AdvancedDataGrid;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
+			import mx.controls.listClasses.BaseListData;
+			public var column:AdvancedDataGridColumn;	
+			
+
+			public function set labelFunction(value:Function):void
+			{
+				if(value!=null){
+					this.cborender.labelFunction = value;
+				}
+			}
+
+			
+
+			public function get updateRelateField():Function
+			{
+				return _updateRelateField;
+			}
+
+			public function set updateRelateField(value:Function):void
+			{
+				_updateRelateField = value;
+			}
+
+			private var _updateRelateField:Function;
+					
+
+			public function set dataProvider(value:ArrayCollection):void
+			{
+				this.cborender.dataProvider = value;
+				this.cborender.validateNow();
+			}
+			
+			override public function setFocus():void{
+				super.setFocus();
+				this.cborender.setFocus();
+			}
+
+			override public function set data(value:Object):void{		
+				 super.data = value;
+				 if(column!=null && value){
+					 var val:Object = value[column.dataField];						
+					 cborender.selectedItem=val;
+				 }			
+			 }		
+			private function itemChange(event:Event):void{
+				if(data!=null && column!=null){
+					data[column.dataField] = cborender.selectedItem;
+					if(updateRelateField!=null){
+						updateRelateField(data,cborender.selectedItem);
+					}
+				}
+			}
+			override public function set listData(value:BaseListData):void{
+				super.listData = value;
+				if(value!=null){
+					var grid:AdvancedDataGrid = value.owner as AdvancedDataGrid;
+					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
+					if(list!=null){					
+						column = grid.columns[list.columnIndex];
+						cborender.width = column.width-3;
+					}
+				
+				}
+			}
+			
+			
+			public function get selectedItem():Object{
+				return cborender.selectedItem
+			}
+			
+			
+			
+		]]>
+		
+	</fx:Script>
+	<control:AutoComplete id="cborender" change="itemChange(event)" lookAhead="true"  labelField="Name"/>
+</s:MXDataGridItemRenderer>

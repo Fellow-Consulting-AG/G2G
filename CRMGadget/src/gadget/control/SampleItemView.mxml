@@ -11,6 +11,8 @@
 			import gadget.util.StringUtils;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.FlexEvent;
 			[Bindable] public var item:Object;
 			[Bindable] public var rows:ArrayCollection;
@@ -21,6 +23,7 @@
 				if(rows==null){
 					rows = new ArrayCollection();
 				}
+				initColumns();
 				//add empty row
 				rows.addItem(new Object());
 				editableGrid.dataProvider = rows;
@@ -46,64 +49,68 @@
 				
 			}
 			
-			private function getItemName(item:Object, col:DataGridColumn):String {
+			protected function initColumns():void{
+				var cols:Array = new Array();
+				
+				//itemname
+				var itemName:DataGridColumn =createColumn('CustomObject14Name',25);				
+				itemName.editorDataField='selectedItem';
+				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
+				colRenderer.properties={											
+					'dataProvider':getDataProvider(),
+					'updateRelateField':function(item:Object,selectedItem:Object):void{
+						if(selectedItem!=null){
+							item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
+						}
+					},
+					'labelFunction':function(item:Object):String{
+						return item.Name;
+					}};
+				itemName.labelFunction = getItemName;				
+				itemName.itemEditor = colRenderer;				
+				cols.push(itemName);
+				
+				//item no
+				cols.push(createColumn('CustomObject14ExternalSystemId',15,false));
+				cols.push(createColumn('IndexedNumber0',15));
+				cols.push(createColumn('CustomCurrency1',15));
+				cols.push(createColumn('CustomCurrency2',15));
+				cols.push(createColumn('CustomCurrency0',15));
+				
+				editableGrid.columns = cols;
+			}
+			
+			
+			private function createColumn(dataField:String,width:Number,editable:Boolean=true):DataGridColumn{
+				var col:DataGridColumn = new DataGridColumn();
+				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,dataField);
+				col.dataField = dataField;
+				col.editable = editable;
+				col.width=width;
+				
+				return col;
+				
+			}
+			private function getItemName(item:Object, col:AdvancedDataGridColumn):String {
 				if(item == null) return "";
 				return item[col.dataField]?item[col.dataField].Name:"";
+			}
+			
+			private function getDataProvider():ArrayCollection {
+				
+				
+				
+				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId"}]),null,null,-1);
+				if(picklist!=null){
+					picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
+				}
+				return picklist;
 			}
 			
 		]]>
 	</fx:Script>
 	<mx:VBox top="36" left="8" right="8" bottom="8">	
-		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%" >
-			
-			<mx:columns>				
-							
-				<mx:DataGridColumn dataField="Customobject14Name" editorDataField="selectedItem" labelFunction="{getItemName}" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14Name')}" >
-					<mx:itemEditor>
-						<fx:Component>
-							<control:AutoComplete lookAhead="true" dataProvider="{getDataProvider()}" labelField="Name">
-								
-								<fx:Script>
-									<![CDATA[
-										import gadget.dao.Database;
-										
-										import mx.collections.ArrayCollection;
-										
-										private function getDataProvider():ArrayCollection {
-											
-											
-											
-											var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId"}]),null,null,-1);
-											if(picklist!=null){
-												picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
-											}
-											return picklist;
-										}
-										override public function set selectedItem(value:Object):void
-										{						
-											if(value!=null){
-												data.CustomObject14ExternalSystemId = value.ExternalSystemId;
-											}
-											super.selectedItem = value;
-											
-											
-										}
-										
-									]]>
-								</fx:Script>
-							</control:AutoComplete >
-						</fx:Component>
-					</mx:itemEditor>
-				</mx:DataGridColumn>
-				<mx:DataGridColumn editable="false" dataField="CustomObject14ExternalSystemId" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomObject14ExternalSystemId')}"/>
-				<mx:DataGridColumn dataField="IndexedNumber0" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'IndexedNumber0')}"/>
-				<mx:DataGridColumn dataField="CustomCurrency1" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency1')}"/>
-				<mx:DataGridColumn dataField="CustomCurrency2" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency2')}"/>
-				<mx:DataGridColumn dataField="CustomCurrency0" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,'CustomCurrency0')}"/>
-				
-			</mx:columns>				
-		</mx:DataGrid>		
-		
+		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>	
 	</mx:VBox>
 	<mx:HBox y="0" x="{width-100}"  paddingTop="-1" id="buttonImportExport">
 		<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" />

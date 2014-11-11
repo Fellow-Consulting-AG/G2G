@@ -7,6 +7,7 @@
 	title="{i18n._(MainWindow.MAINWINDOW_SUBMENU_FIELDMANAGMENT)}"
 	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
 	initialize="init()" xmlns:s="library://ns.adobe.com/flex/spark"
+	creationComplete="window1_creationCompleteHandler(event)"
 	
 	>
 	
@@ -37,6 +38,7 @@
 			import mx.controls.TextArea;
 			import mx.controls.dataGridClasses.DataGridItemRenderer;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.utils.StringUtil;
 			import mx.validators.StringValidator;
 			import mx.validators.Validator;
@@ -153,6 +155,7 @@
 				});
 				cbolanguageCodes.selectedIndex = CalculatedField.getComboSelectedIndex(cbolanguageCodes,CustomFieldDAO.DEFAULT_LANGUAGE_CODE);
 				this.systemManager.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDown);
+				
 			}
 			private function keyDown(evt:KeyboardEvent):void {
 				if (evt.charCode == Keyboard.ESCAPE) {
@@ -300,6 +303,12 @@
 			}
 			
 						
+
+			protected function window1_creationCompleteHandler(event:FlexEvent):void
+			{
+				cboEntitys.setFocus();
+			}
+
 		]]>
 	</mx:Script>
 	

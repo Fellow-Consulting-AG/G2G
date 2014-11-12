@@ -279,7 +279,7 @@
 			}
 			
 			private function initSampleItemTab():void{
-				if(entity==Database.customObject11Dao.entity){
+				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
 					var innerCanvas:SampleItemView = new SampleItemView();
 					innerCanvas.item = this.item;
 					innerCanvas.horizontalScrollPolicy = "off";

@@ -59,8 +59,7 @@
 			}
 			
 			protected function initColumns():void{
-				var cols:Array = new Array();
-				
+				var cols:Array = new Array();				
 				//itemname
 				var itemName:DataGridColumn =createColumn('CustomObject14Name',35);				
 				itemName.editorDataField='selectedItem';
@@ -71,6 +70,8 @@
 						if(selectedItem!=null){
 							item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
 							item.CustomCurrency1 = selectedItem.CustomCurrency0;
+							item.CustomObject13Name = selectedItem.CustomObject13Name;
+							item.CustomObject13Id = selectedItem.CustomObject13Id;
 						}
 					},
 					'labelFunction':function(item:Object):String{
@@ -81,22 +82,22 @@
 				cols.push(itemName);
 				
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',15,false));
-				cols.push(createColumn('IndexedNumber0',15));
-				cols.push(createColumn('CustomCurrency1',15,false));
-				cols.push(createColumn('CustomCurrency2',15));
-				cols.push(createColumn('CustomCurrency0',15,false));
+				cols.push(createColumn('CustomObject14ExternalSystemId',17,false));
+				cols.push(createColumn('IndexedNumber0',10));
+				cols.push(createColumn('CustomCurrency1',8,false));
+				cols.push(createColumn('CustomCurrency2',9));
+				cols.push(createColumn('CustomCurrency0',13,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",1,false);
+				var deleteCol:DataGridColumn = createColumn("",7,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={parentComp:this,addEmptyRow:true};
-				deleteCol.itemRenderer=deleteRender;
+				deleteCol.itemRenderer=deleteRender;				
 				cols.push(deleteCol);
 				editableGrid.columns = cols;
 			}
 			
 			
-			private function createColumn(dataField:String,width:Number,editable:Boolean=true):DataGridColumn{
+			public static function createColumn(dataField:String,width:Number,editable:Boolean=true):DataGridColumn{
 				var col:DataGridColumn = new DataGridColumn();
 				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,dataField);
 				col.dataField = dataField;
@@ -115,7 +116,7 @@
 				
 				
 				
-				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0"}]),null,null,-1);
+				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0,CustomObject13Name,CustomObject13Id"}]),null,null,-1);
 				if(picklist!=null){
 					picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
 				}
@@ -134,42 +135,57 @@
 			
 			private function createHeaderForm():void{
 				var form:Form = new Form();
+				form.percentWidth =100;
 				for each(var field:Object in getHeaderField()){
 					var formItem:FormItem = new FormItem();
 					formItem.label = field.display_name == null ? getDisplayName(field,Database.customObject11Dao.entity) : field.display_name;
+					formItem.percentWidth=100;
 					var columnValue:Label = new Label();
 					columnValue.setStyle("fontWeight","bold");
+					columnValue.percentWidth=100;
 					if(item!=null){
 						columnValue.text = item[field.element_name];						
 					}					
 					formItem.addChild(columnValue);
 					form.addChild(formItem);
-				}
-				
+				}				
 				headerInfo.addChild(form);
 			}
 			
-			private function saveTemplate(e:Event):void{
+			private function openSaveTemplate(e:Event):void{
 				var items:ArrayCollection = editableGrid.dataProvider as ArrayCollection; 
 				var lstTemplate:ArrayCollection = new ArrayCollection();
-				for each(var obj:Object in items){
-					//TODO
+				for each(var rec:Object in items){
+					var obj:Object = new Object();
+					obj.ItemName = rec['CustomObject14Name']?rec['CustomObject14Name'].Name:""
+					obj.ItemNo =rec.CustomObject14ExternalSystemId;
+					obj.Qty = rec.IndexedNumber0;
+					obj.PlantId = rec.CustomObject13Id;
+					obj.PlantName = rec.CustomObject13Name;
+					lstTemplate.addItem(obj);
 				}
 				var saveScreent:SaveOrderTemplate = new SaveOrderTemplate();
-				
+				saveScreent.items = lstTemplate;
 				WindowManager.openModal(saveScreent);
+			}
+			
+			private function openImportTemplate(e:Event):void{
+				var importWindow:ImportOrderTemplate = new ImportOrderTemplate();
+				WindowManager.openModal(importWindow);
 			}
 			
 			
 		]]>
 	</fx:Script>
 	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%">	
-		<mx:HBox id="headerInfo" width="100%"/>
+		<mx:Canvas id="headerInfo" width="100%"/>
 		<mx:HBox y="0" x="{width-100}"   id="buttonImportExport" horizontalAlign="right" paddingTop="20" width="100%">
-			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="saveTemplate(event)"/>
-			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" />		
+			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="openSaveTemplate(event)"/>
+			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		
 		</mx:HBox>
-		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>		
+		<mx:HBox id="hgrid" width="100%" height="100%">
+			<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>
+		</mx:HBox>
 	</mx:VBox>
 	
 </mx:Canvas>

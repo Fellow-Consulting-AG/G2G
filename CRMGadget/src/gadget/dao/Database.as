@@ -189,25 +189,19 @@ package gadget.dao {
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
 		
-		public function get templateDao():OrderTemplate
+		public static function get templateDao():OrderTemplate
 		{
-			return _templateDao;
+			return database._templateDao;
 		}
 
-		public function set templateDao(value:OrderTemplate):void
+		
+
+		public static function get templateItemDao():OrderTemplateItem
 		{
-			_templateDao = value;
+			return database._templateItemDao;
 		}
 
-		public function get templateItemDao():OrderTemplateItem
-		{
-			return _templateItemDao;
-		}
-
-		public function set templateItemDao(value:OrderTemplateItem):void
-		{
-			_templateItemDao = value;
-		}
+		
 
 		public static function get revenueMappingProductFamilyDao():RevenueMappingProductFamilyDao
 		{

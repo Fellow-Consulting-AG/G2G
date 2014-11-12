@@ -8,17 +8,20 @@ package gadget.dao
 		{
 			super( sqlConnection, work, {
 				table: 'order_template_item',
-				oracle_id: 'Id',
+				oracle_id: 'gadget_id',
 				name_column: [ 'ItemName' ],
 				search_columns: [ 'ItemId' ],
 				display_name : "ItemName",
-				unique:['Id'],								
-				columns: {'TEXT' : textColumns,'INTEGER':["Qty"],'Id': "INTEGER PRIMARY KEY AUTOINCREMENT" }
+				unique:['gadget_id'],								
+				columns: {'TEXT' : textColumns,'INTEGER':["Qty"],'gadget_id': "INTEGER PRIMARY KEY AUTOINCREMENT" }
 			});
 		}
 		
-		private var textColumns:Array = ["TemplateId",						
+		private var textColumns:Array = ["TemplateId",	"TemplateName",					
 			"ItemNo",
-			"ItemName"];
+			"ItemName",
+			"PlantId",
+			"PlantName"
+		];
 	}
 }

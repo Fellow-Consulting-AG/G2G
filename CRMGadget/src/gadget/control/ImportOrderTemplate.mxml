@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   showFlexChrome="false" transparent="true" systemChrome="none"
+		    width="470" height="480" xmlns:control="gadget.control.*"
+			initialize="init();">
+	<fx:Script>
+		<![CDATA[
+			import gadget.dao.Database;
+			import gadget.i18n.i18n;
+			import gadget.util.FieldUtils;
+			
+			import mx.collections.ArrayCollection;
+			[Binable]
+			private var templateName2Description:Dictionary = new Dictionary();
+			[Binable]
+			private var templateItems:ArrayCollection;
+			private function init():void{
+				var templates:ArrayCollection =new ArrayCollection( Database.templateDao.fetch());			
+				for each(var template:Object in templates){
+					templateName2Description[template.TemplateName]=template.Description;
+				}
+				templateItems = new ArrayCollection(Database.templateDao.fetch());				
+				
+			}
+			
+			private function getDescription(data:Object,col:AdvancedDataGridColumn):String{
+				if(data['GroupLabel']!=null){
+					return templateName2Description[data['GroupLabel']];
+				}
+				
+				return '';
+			}
+			private function getGroupLabel(data:Object,col:AdvancedDataGridColumn):String{
+				var lbl:String = data['GroupLabel'];
+				if(lbl==null){
+					lbl = data['ItemName'];
+				}
+				return lbl;
+			}
+		]]>
+	</fx:Script>
+	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
+		<control:TitleBar title="{i18n._('IMPORT_ORDER_TEMPLATE@Import Order Template')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
+		<mx:AdvancedDataGrid width="100%" height="100%" initialize="gc.refresh();" >
+			<mx:dataProvider>
+				<mx:GroupingCollection2 id="gc" source="{templateItems}">
+					<mx:grouping>
+						<mx:Grouping>
+							<mx:GroupingField name="TemplateName"/>							
+						</mx:Grouping>
+					</mx:grouping>
+				</mx:GroupingCollection2>
+			</mx:dataProvider>        
+			<mx:columns>
+				<mx:AdvancedDataGridColumn dataField="GroupLabel" headerText="{i18n._('TEMPLATE/ITEM_NAME@Template/Item Name')}" labelFunction="getGroupLabel"/>
+				<mx:AdvancedDataGridColumn dataField="Description" labelFunction="getDescription"
+										   headerText="{i18n._('GLOBAL_DESCRIPTION')}"/>
+				<mx:AdvancedDataGridColumn dataField="ItemNo" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity, 'CustomObject14ExternalSystemId')}"/>
+				<mx:AdvancedDataGridColumn dataField="PlantName" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity, 'CustomObject13Name')}}"/>
+			</mx:columns>
+		</mx:AdvancedDataGrid>    
+	</mx:Canvas>
+</mx:Window>

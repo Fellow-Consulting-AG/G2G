@@ -2650,6 +2650,7 @@ package gadget.util
 			
 			dateControl.selectedDate = dateObject;
 			dateControl.enabled = !readonly;
+			dateControl.parseFunction = null;
 			dateControl.labelFunction = function(item:Date):String{
 				var dformater:DateFormatter = new DateFormatter();
 				dformater.formatString = localeFormat2;

@@ -28,7 +28,7 @@ package gadget.dao
 				});
 				
 				stmtSelectByQuestionId.sqlConnection = sqlConnection;
-				stmtSelectByQuestionId.text = "Select * from assessmentmapping where QuestionId=:QuestionId and ModelId=:ModelId";			
+//				stmtSelectByQuestionId.text = "Select * from assessmentmapping where QuestionId=:QuestionId and ModelId=:ModelId";			
 				
 				
 				
@@ -64,8 +64,9 @@ package gadget.dao
 		
 		
 		public function selectByQuestionId(questId:String,modelId:String):ArrayCollection{
-			stmtSelectByQuestionId.parameters[":QuestionId"]=questId;
-			stmtSelectByQuestionId.parameters[":ModelId"]=modelId;
+//			stmtSelectByQuestionId.parameters[":QuestionId"]=questId;
+//			stmtSelectByQuestionId.parameters[":ModelId"]=modelId;
+			stmtSelectByQuestionId.text = "Select * from assessmentmapping where QuestionId like '%"+questId+"' and ModelId='"+modelId+"'";
 			exec(stmtSelectByQuestionId);
 			return new ArrayCollection(stmtSelectByQuestionId.getResult().data);
 			

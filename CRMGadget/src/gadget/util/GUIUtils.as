@@ -2639,6 +2639,7 @@ package gadget.util
 			dateControl.yearNavigationEnabled = true;
 			//CRO Bug #1567
 			dateControl.firstDayOfWeek = MONDAY;
+			dateControl.width = 90;
 			// We parse the item value into a date object
 			var dateObject:Date;
 			var tmpDate:Object = item[element_name];

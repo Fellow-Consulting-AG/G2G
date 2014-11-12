@@ -199,7 +199,7 @@ package
 //					Database.assessmentDao.update({'TotalStoreToField':dtoAss.totalStoreToField,'iscreatesum':dtoAss.isCreateSum},{'AssessmentId':dtoAss.assessmentId});
 //				}
 				for each(var ques:Object in question){
-					Database.questionDao.update({"backgroundColor" : ques["backgroundColor"],"isHeader":ques['isHeader']},{"QuestionId":ques['QuestionId']});
+					Database.questionDao.updateQuestion({"backgroundColor" : ques["backgroundColor"],"isHeader":ques['isHeader']},{"QuestionId":ques['QuestionId']});
 					Database.assessmentMappingDao.deleteByQuestionId(String(ques['QuestionId']),modelId);
 					for each(var col:DtoColumn in columns){
 						if(col.colProperty!='Question'){

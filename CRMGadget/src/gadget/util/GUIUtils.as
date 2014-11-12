@@ -1902,6 +1902,7 @@ package gadget.util
 					var localeFormat:String = datePattern.dateFormat;
 					df.formatString = localeFormat;
 					df.yearNavigationEnabled = true;
+					df.parseFunction = null;
 					df.labelFunction = function(item:Date):String{
 						var dformater:DateFormatter = new DateFormatter();
 						dformater.formatString = localeFormat;

@@ -6,6 +6,7 @@ package gadget.dao
 
 	public class QuestionDAO extends SimpleTable
 	{
+		private var stmtUpdate:SQLStatement = null;
 		private var stmtCheckColumn:SQLStatement = new SQLStatement();
 		private var textColumns:Array = ["QuestionId",
 			"AssessmentName",
@@ -39,6 +40,9 @@ package gadget.dao
 				columns: { 'TEXT' : textColumns }
 			});
 			
+			stmtUpdate = new SQLStatement();
+			stmtUpdate.sqlConnection = sqlConnection;
+			
 			stmtCheckColumn = new SQLStatement();
 			stmtCheckColumn.sqlConnection = sqlConnection;
 			//stmtCheckColumn.text = "SELECT " + params.column + " FROM " + params.table + " LIMIT 0";
@@ -66,7 +70,18 @@ package gadget.dao
 			del(null);
 			
 		}
-		
+		public function updateQuestion(data:Object, criteria:Object=null):void{
+			var cols:String = "";
+			var c:String		= "";
+			var col:String;
+			for (col in data) {
+				cols	+= c + " "  + col+"='"+data[col]+"'";
+				c		=  ",";
+			}
+			
+			stmtUpdate.text = "update question set " + cols +" where QuestionId like '%" + criteria['QuestionId'] +"'";
+			exec(stmtUpdate);
+		}
 		
 		public function checkColumn(column:String):void {
 	

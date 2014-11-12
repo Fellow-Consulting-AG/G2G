@@ -35,7 +35,7 @@
 						}
 						
 						txtVal.text = data[column.dataField];
-						txtVal.visible  = true;
+						txtVal.visible  = false;
 						txtVal.setStyle("fontWeight","bold");
 						hBoxCell.setStyle("backgroundColor", 0x92B8FF);
 						txtVal.setStyle("backgroundColor", 0x92B8FF);

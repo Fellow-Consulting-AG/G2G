@@ -71,6 +71,7 @@
 								Database.templateItemDao.insert(item);
 							}
 							Database.commit();
+							close();
 						}catch(e:SQLError){
 							Database.rollback();
 						}

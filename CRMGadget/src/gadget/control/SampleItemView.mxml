@@ -2,9 +2,10 @@
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		   xmlns:s="library://ns.adobe.com/flex/spark" 
 		   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:control="gadget.control.*"
-		   creationComplete="canvas1_creationCompleteHandler(event)">
+		   creationComplete="init(event)">
 	<fx:Script>
 		<![CDATA[
+			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.util.FieldUtils;
@@ -14,19 +15,33 @@
 			import mx.collections.ArrayCollection;
 			import mx.containers.Form;
 			import mx.containers.FormItem;
+			import mx.controls.Alert;
 			import mx.controls.Label;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.utils.StringUtil;
 			[Bindable] public var item:Object;
 			[Bindable] public var rows:ArrayCollection;
-			
-			
-			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			public var detailScreen:Detail;
+			private var deletedItems:ArrayCollection;
+			private var field2Label:Dictionary = new Dictionary();
+			protected function init(event:FlexEvent):void
 			{
-				if(rows==null){
-					rows = new ArrayCollection();
+				if(item!=null && StringUtils.isEmpty(item['Id'])){
+					if(rows==null){
+						rows = new ArrayCollection();
+					}
+				}else{
+					
+					rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':item['Id']}));
+					
 				}
+				
+				
+				
+				
 				createHeaderForm();
 				initColumns();
 				//add empty row
@@ -58,10 +73,33 @@
 				
 			}
 			
+			public function updateHeaderInfo(obj:Object):void{
+				this.item = obj;
+				for(var field:String in field2Label){
+					var lbl:Label = field2Label[field] as Label;
+					lbl.text = item[field];
+				}
+			}
+			
+			public function importItems(items:ArrayCollection):void{
+				if(items!=null){
+					for each(var deleted:Object in editableGrid.dataProvider){
+						if(deleted.gadget_id!=null){
+							deletedItems.addItem(deleted);
+						}
+					}
+					
+					items.addItem({});//add empty row
+					rows = items;
+					editableGrid.dataProvider = rows;
+					editableGrid.validateNow();
+				}
+			}
+			
 			protected function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name',39);				
+				var itemName:DataGridColumn =createColumn('CustomObject14Name',35);				
 				itemName.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -82,16 +120,17 @@
 				cols.push(itemName);
 				
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',22,false));
+				cols.push(createColumn('CustomObject14ExternalSystemId',21,false));
 				cols.push(createColumn('IndexedNumber0',10));
 				cols.push(createColumn('CustomCurrency1',10,false));
 				cols.push(createColumn('CustomCurrency2',10));
-				cols.push(createColumn('CustomCurrency0',13,false));
+				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
 				var deleteCol:DataGridColumn = createColumn("",4,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={parentComp:this,addEmptyRow:true};
-				deleteCol.itemRenderer=deleteRender;				
+				deleteCol.itemRenderer=deleteRender;	
+				deleteCol.minWidth=3;
 				cols.push(deleteCol);
 				editableGrid.columns = cols;
 			}
@@ -109,7 +148,157 @@
 			}
 			private function getItemName(item:Object, col:DataGridColumn):String {
 				if(item == null) return "";
-				return item[col.dataField]?item[col.dataField].Name:"";
+				var obj:Object = item[col.dataField];
+				if(obj is String){
+					return obj as String;
+				}else{
+					return item[col.dataField]?item[col.dataField].Name:"";
+				}
+			}
+			
+			
+			public function save(co11:Object):void{
+				
+				var dp:ArrayCollection = editableGrid.dataProvider as ArrayCollection;				
+			    var missingIndex:int = checkValidator();
+				if(missingIndex!=-1){
+					Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_ERROR@Error'),Alert.OK,this, function(eventObj:CloseEvent):void {
+						if (eventObj.detail==Alert.OK) {
+							editableGrid.selectedIndex = missingIndex; 
+						}
+					});	
+				}else{
+				
+						var newDataProvider:ArrayCollection = new ArrayCollection();
+						for each(var tmp:Object in dp){
+							var t:Object = new Object;
+							for(var p:String in tmp){
+								if(p=='CustomObject14Name'){
+									var itemObj:Object = tmp[p];
+									if(itemObj){
+										t[p] = itemObj.Name;
+										t.CustomObject14Id=itemObj.Id;
+									}
+								}else{
+									t[p] = tmp[p];
+								}
+								
+							}
+							newDataProvider.addItem(t);
+						}
+						newDataProvider.filterFunction = isNotEmptyRow;
+						newDataProvider.refresh();
+					
+					
+						Database.begin();
+						try{
+							if(deletedItems!=null){
+								for each(var dObj:Object in deletedItems){
+									var oracleId:String=dObj[DAOUtils.getOracleId(Database.customObject12Dao.entity)];
+									if(oracleId==null || oracleId.indexOf('#')!=-1){
+										Database.customObject12Dao.delete_(dObj);
+									}else{
+										Database.customObject12Dao.deleteTemporary(dObj);
+									}
+								}
+							}
+							var owner:Object = Database.allUsersDao.ownerUser();
+							for each(var itemSave:Object in newDataProvider){
+								
+								var isUpdate:Boolean = itemSave.gadget_id!=null;
+								if(!isUpdate){
+									//set owner field
+									for each(var obj:Object in Database.customObject12Dao.getOwnerFields()){						
+										itemSave[obj.entityField] = owner[obj.userField];
+									}
+									//set-relation to customobject11
+									itemSave['CustomObject11Name']=co11['Id'];
+									itemSave['CustomObject11Id']=co11['Name']
+									Database.customObject12Dao.insert(itemSave);
+									itemSave = Database.customObject12Dao.selectLastRecord()[0];
+									itemSave['Id']='#'+itemSave.gadget_id;
+									Database.customObject12Dao.update(itemSave);
+								}else{
+									itemSave["deleted"] = false;
+									itemSave["error"] = false;
+									Database.customObject12Dao.update(itemSave);
+								}
+								
+								
+							}
+					
+						Database.commit();
+					}catch(e:SQLError){
+						Database.rollback();
+					}
+				}
+				
+			}
+			
+			public function hasError():Boolean{
+				var missingIndex:int =  checkValidator();
+				
+				if(missingIndex!=-1){
+					
+					editableGrid.selectedIndex = missingIndex;
+					
+					return true;
+				}
+				
+				return false;
+			}
+			
+			private function isNotEmptyRow(value:Object):Boolean{
+				for(var f:String in value){
+					if(f!='mx_internal_uid'){
+						var fieldV:Object = value[f];
+						if(fieldV!=null){
+							if(fieldV is String){
+								if(!StringUtils.isEmpty(value[f])){
+									return true;
+								}
+							}else{
+								if(isNotEmptyRow(fieldV)){
+									return true;
+								}
+							}
+							
+						}
+						
+					}
+				}
+				return false;
+			}
+			private function checkValidator():int {
+				var index:int = -1;
+				var isMissing:Boolean = false;
+				var lstItems:ArrayCollection = editableGrid.dataProvider as ArrayCollection;
+				lstItems.filterFunction = isNotEmptyRow;
+				lstItems.refresh();
+				
+				for each(var item:Object in lstItems){
+					
+					index++;
+					if( checkEmpty(item,"CustomObject14Name") ||
+						checkEmpty(item,"IndexedNumber0") ||						
+						checkEmpty(item,"CustomCurrency2")
+					){
+						isMissing = true;						
+						break;
+					}
+				}
+				return isMissing ? index : -1;
+			}
+			
+			
+			private function checkEmpty(item:Object, fieldName:String):Boolean {
+				var obj:Object = item[fieldName];				
+				if(obj is String){
+					return  StringUtils.isEmpty(item[fieldName]);
+				}else{
+					return  StringUtils.isEmpty(obj.Name);
+				}
+				
 			}
 			
 			private function getDataProvider():ArrayCollection {
@@ -146,6 +335,7 @@
 					if(item!=null){
 						columnValue.text = item[field.element_name];						
 					}					
+					field2Label[field.element_name] = columnValue;
 					formItem.addChild(columnValue);
 					form.addChild(formItem);
 				}				
@@ -157,7 +347,14 @@
 				var lstTemplate:ArrayCollection = new ArrayCollection();
 				for each(var rec:Object in items){
 					var obj:Object = new Object();
-					obj.ItemName = rec['CustomObject14Name']?rec['CustomObject14Name'].Name:""
+					var name:Object = rec['CustomObject14Name'];
+					if(name is String){
+						obj.ItemName = name;
+					}else{
+						if(name!=null){
+							obj.ItemName = name.Name;
+						}
+					}					
 					obj.ItemNo =rec.CustomObject14ExternalSystemId;
 					obj.Qty = rec.IndexedNumber0;
 					obj.PlantId = rec.CustomObject13Id;
@@ -171,6 +368,7 @@
 			
 			private function openImportTemplate(e:Event):void{
 				var importWindow:ImportOrderTemplate = new ImportOrderTemplate();
+				importWindow.importItems = importItems;
 				WindowManager.openModal(importWindow);
 			}
 			

@@ -76,33 +76,36 @@
 							var items:ArrayCollection;
 							if(provider is HierarchicalCollectionView){
 								var gc2:GroupingCollection2 =(provider as HierarchicalCollectionView).source as GroupingCollection2; 
+							
 								items = gc2.source as ArrayCollection;
-								if(data.children!=null && (data.children is ArrayCollection || data.children is Array)){
-									for each(var ch:Object in data.children){
-										items.removeItemAt(items.getItemIndex(ch));
-									}
-								}else{
-									items.removeItemAt(items.getItemIndex(data));
+								var childrens:ArrayCollection = data.children;
+								items.filterFunction = function(obj:Object):Boolean{
+									return !childrens.contains(obj);
 								}
+								items.refresh();								
 								gc2.source = items;
 								gc2.refresh();
 								grid.validateNow();
 								return;
-							}else if(provider is Array){
+							}else{ 
+								
+								
+								if(provider is Array){
 								items = new ArrayCollection(provider as Array);	
-							}							
-							else{
-								items = provider as ArrayCollection;
-							}
-							
-							if(items!=null && items.length>0){
-								var rowInd:int=items.getItemIndex(data);
-								items.removeItemAt(rowInd);
-								if(items.length==rowInd && addEmptyRow){//delete last row must be add empty row
-									items.addItem(new Object());
+								}							
+								else{
+									items = provider as ArrayCollection;
 								}
-								grid.dataProvider = items;
-								grid.validateNow();
+								
+								if(items!=null && items.length>0){
+									var rowInd:int=items.getItemIndex(data);
+									items.removeItemAt(rowInd);
+									if(items.length==rowInd && addEmptyRow){//delete last row must be add empty row
+										items.addItem(new Object());
+									}
+									grid.dataProvider = items;
+									grid.validateNow();
+								}
 							}
 							
 						}

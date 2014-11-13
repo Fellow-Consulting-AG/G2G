@@ -390,9 +390,14 @@ public class AutoComplete extends ComboBox
 	}
 	
 	public function setSelectedItemByText(input:String):void{
-		updateDataProvider( function(element:*):Boolean{return true});
-		
-		typedText=input;
+		updateDataProvider(function (element:*):Boolean 
+		{
+			var flag:Boolean=false;
+			if(filterFunction!=null)
+				flag=filterFunction(element,input);
+			return flag;
+		});
+		typedText = input;
 	}
 
 	/**
@@ -461,9 +466,13 @@ public class AutoComplete extends ComboBox
 			if(!labelFound){//try to find with code
 				for each(var ele:Object in tempCollection){
 					if(ele.data==input){
+						labelFound=true;
 						this.selectedItem = obj;
 						input = itemToLabel(ele);
 					}
+				}
+				if(!labelFound){
+					this.selectedItem=null;//clear selection
 				}
 			}
 			

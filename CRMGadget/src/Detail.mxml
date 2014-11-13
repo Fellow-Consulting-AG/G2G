@@ -13,6 +13,8 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.google.maps.interfaces.INavigationControl;
+			
 			import gadget.control.AutoComplete;
 			import gadget.control.AutoCompleteAddress;
 			import gadget.control.CalculatedField;
@@ -75,6 +77,7 @@
 			import mx.controls.TextArea;
 			import mx.controls.TextInput;
 			import mx.controls.VRule;
+			import mx.core.INavigatorContent;
 			import mx.core.UIComponent;
 			import mx.events.CalendarLayoutChangeEvent;
 			import mx.events.ItemClickEvent;
@@ -118,7 +121,7 @@
 			private var visibleInspection:Boolean;
 			private var isShowFeed:Boolean;
 			private var currentUser:Object; 
-			
+			private var sampleView:SampleItemView;
 			private const CALL:int =2;
 			public static const APPOINTMENT:int=1;
 			private const TASK:int=0;
@@ -280,13 +283,14 @@
 			
 			private function initSampleItemTab():void{
 				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
-					var innerCanvas:SampleItemView = new SampleItemView();
-					innerCanvas.item = this.item;
-					innerCanvas.horizontalScrollPolicy = "off";
-					innerCanvas.percentWidth = 100;
-					innerCanvas.percentHeight = 100;
-					innerCanvas.label =i18n._( "SAMPLE_ITEMS@Sample Items");
-					viewstack.addChild(innerCanvas);
+					sampleView = new SampleItemView();
+					sampleView.item = this.item;
+					sampleView.detailScreen = this;
+					sampleView.horizontalScrollPolicy = "off";
+					sampleView.percentWidth = 100;
+					sampleView.percentHeight = 100;
+					sampleView.label =i18n._( "SAMPLE_ITEMS@Sample Items");
+					viewstack.addChild(sampleView);
 				}
 			}
 			private function initAdditionalTabRevenue():void{
@@ -484,6 +488,13 @@
 			
 			private function commit():Boolean {
 				
+				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+					if(sampleView!=null && sampleView.hasError()){
+						Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_ERROR@Error Sample Item'),Alert.OK,this);
+						return false;		
+					}
+				
+				}
 				var strCreateOrUpdate:String = create ? "Create" : "Update";
 				var msgObj:Object = null;
 				
@@ -786,6 +797,11 @@
 				
 				//bug8043---no relation set in sublist (while i see the contact in rel.item setcion on the right)
 				createSubObject();
+				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+					if(sampleView!=null){
+						sampleView.save(item);
+					}
+				}
 				
 				
 				//if(refreshHomTask != null) refreshHomTask(); //1243 CRO
@@ -2501,6 +2517,16 @@
 																		startInspection.openAssessmentModel(item);
 																	}
 																}
+			
+					private function changeTabListener(e:Event):void{
+						var selectedTab:INavigatorContent=viewstack.selectedChild;
+						if(selectedTab!=null && selectedTab.label==i18n._( "SAMPLE_ITEMS@Sample Items")){
+							if(sampleView!=null){
+								updateItemFields();
+								sampleView.updateHeaderInfo(item);
+							}
+						}
+					}
 		]]>		
 		
 	</mx:Script>
@@ -2514,7 +2540,7 @@
 				<mx:TextInput id="txtComment" width="100%" keyDown="txtComment_keyDownHandler(event)"/>
 				<mx:Button doubleClickEnabled="true" id="btnComment" label="Post Comment" click="btnComment_clickHandler(event)"/>
 			</mx:HBox>
-			<mx:TabNavigator id="viewstack" width="100%" height="100%" tabHeight="24" creationPolicy="all" top="0" bottom="0"/>
+			<mx:TabNavigator id="viewstack" width="100%" height="100%" tabHeight="24" creationPolicy="all" top="0" bottom="0" change="changeTabListener(event)"/>
 		</mx:VBox>
 		<mx:Canvas id="buttonCanvas" left="8" right="8" bottom="8" height="30">
 			<mx:HBox left="8" right="8" horizontalGap="0">

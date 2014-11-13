@@ -12,13 +12,24 @@
 			import gadget.util.FieldUtils;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.events.CloseEvent;
+			
+			import org.purepdf.pdf.ArabicLigaturizer;
 			[Binable]
 			private var templateName2Description:Dictionary = new Dictionary();
 			[Binable]
 			private var templateItems:ArrayCollection = new ArrayCollection();
+			
+			public var importItems:Function;
 			private function init():void{
 				initColumns();				
+				refreshGrid();
+			}
+			
+			private function refreshGrid():void{
+				templateName2Description = new Dictionary();//clear old map
 				var templates:ArrayCollection =new ArrayCollection( Database.templateDao.fetch());			
 				for each(var template:Object in templates){
 					templateName2Description[template.Name]=template.Description;
@@ -26,6 +37,7 @@
 				templateItems = new ArrayCollection(Database.templateItemDao.fetch());				
 				gc.source = templateItems;
 				gc.refresh();
+				griditem.validateNow();
 			}
 			
 			private function getDescription(data:Object,col:AdvancedDataGridColumn):String{
@@ -45,6 +57,27 @@
 				col.sortable=false;
 				
 				return col;
+				
+			}
+			
+			protected function doDeleteTemplate(obj:Object):void{
+				Alert.show(i18n._("GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE@Are you sure you want to delete?"), i18n._('GLOBAL_DELETE@Delete'), Alert.YES | Alert.NO, this, function(eventObj:CloseEvent):void {
+					
+					if (eventObj.detail==Alert.YES) {
+						try{
+							Database.begin();
+							var templateId:String = obj.children[0].TemplateId;
+							Database.templateDao.delete_({'gadget_id':templateId});
+							for each(var itemD:Object in obj.children){
+								Database.templateDao.delete_({'gadget_id':itemD.gadget_id});
+							}
+							Database.commit();
+							refreshGrid();
+						}catch(e:SQLError){
+							Database.rollback();
+						}
+					
+					}}, null, Alert.NO);
 				
 			}
 			
@@ -76,10 +109,8 @@
 				deleteRender.properties={parentComp:this,addEmptyRow:false,
 				showDeleteButton:function(obj:Object):Boolean{
 						return obj!=null && obj['GroupLabel']!=null;
-				}
-//				doDelete:function(delteRow:Object):void{
-//					//
-//				}
+				},
+				doDelete:doDeleteTemplate
 				};
 				deleteCol.itemRenderer=deleteRender;				
 				cols.push(deleteCol);
@@ -92,27 +123,60 @@
 				}
 				return lbl;
 			}
+			public function doImport(e:Event):void{
+				var obj:Object = griditem.selectedItems;
+				if(obj!=null&&obj is Array){
+					var a:Array = obj as Array;
+					if(a.length==0){
+						obj = null;
+					}else{
+						obj = a[0];
+					}
+				}
+				if(obj['GroupLabel']==null || obj==null){
+					Alert.show(i18n._("PLEASE_SELECT_TEMPLATE@Please select a template."), i18n._('GLOBAL_ERROR@Error'), Alert.OK,this);					
+					return;
+				}
+				
+				if(importItems!=null){
+					var items:ArrayCollection = new ArrayCollection();
+					for each(var o:Object in obj.children){
+						var item:Object = new Object();						
+						item.CustomObject14Name = o.ItemName;
+						item.CustomObject14ExternalSystemId =o.ItemNo;
+						item.IndexedNumber0 = o.Qty;
+						item.CustomObject13Id = o.PlantId;
+						item.CustomObject13Name = o.PlantName;
+						items.addItem(item);
+					}
+					importItems(items);
+				}
+				
+				this.close();
+			}
 		]]>
 	</fx:Script>
 	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
 		<control:TitleBar title="{i18n._('IMPORT_ORDER_TEMPLATE@Import Order Template')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
 		<mx:VBox top="30" left="0" right="0" bottom="0" width="100%">
-			<mx:AdvancedDataGrid id="griditem" sortExpertMode="true" width="100%" height="100%" initialize="gc.refresh();" >
-				<mx:dataProvider>
-					<mx:GroupingCollection2 id="gc">
-						<mx:grouping>
-							<mx:Grouping>
-								<mx:GroupingField name="TemplateName"/>							
-							</mx:Grouping>
-						</mx:grouping>
-					</mx:GroupingCollection2>
-				</mx:dataProvider>        
-				
-			</mx:AdvancedDataGrid>  
-			<mx:HBox horizontalAlign="right" width="100%" paddingRight="10" paddingBottom="10">
-				<mx:Button id="btnCancel"   label="{i18n._('GLOBAL_CANCEL@Cancel')}" click="{this.close()}"/>
-				<mx:Button id="btnSave"   label="{i18n._('GLOBAL_IMPORT@Import')}" click="{}"/>						
-			</mx:HBox>			
+			<mx:VBox width="100%" height="100%" paddingRight="10" paddingLeft="10">
+				<mx:AdvancedDataGrid id="griditem" sortExpertMode="true" width="100%" height="100%" initialize="gc.refresh();" >
+					<mx:dataProvider>
+						<mx:GroupingCollection2 id="gc">
+							<mx:grouping>
+								<mx:Grouping>
+									<mx:GroupingField name="TemplateName"/>							
+								</mx:Grouping>
+							</mx:grouping>
+						</mx:GroupingCollection2>
+					</mx:dataProvider>        
+					
+				</mx:AdvancedDataGrid>  
+				<mx:HBox horizontalAlign="right" width="100%" paddingRight="10" paddingBottom="10">
+					<mx:Button id="btnCancel"   label="{i18n._('GLOBAL_CANCEL@Cancel')}" click="{this.close()}"/>
+					<mx:Button id="btnSave"   label="{i18n._('GLOBAL_IMPORT@Import')}" click="doImport(event)"/>						
+				</mx:HBox>		
+			</mx:VBox>
 		</mx:VBox>
 	</mx:Canvas>
 </mx:Window>

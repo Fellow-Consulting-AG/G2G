@@ -70,19 +70,6 @@ package gadget.dao
 			del(null);
 			
 		}
-		public function updateQuestion(data:Object, criteria:Object=null):void{
-			var cols:String = "";
-			var c:String		= "";
-			var col:String;
-			for (col in data) {
-				cols	+= c + " "  + col+"='"+data[col]+"'";
-				c		=  ",";
-			}
-			
-			stmtUpdate.text = "update question set " + cols +" where QuestionId like '%" + criteria['QuestionId'] +"'";
-			exec(stmtUpdate);
-		}
-		
 		public function checkColumn(column:String):void {
 	
 				stmtCheckColumn.text = "SELECT " + column + " FROM question LIMIT 0";

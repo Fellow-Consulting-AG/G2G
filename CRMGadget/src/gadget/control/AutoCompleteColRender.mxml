@@ -50,20 +50,26 @@
 				 super.data = value;
 				 if(column!=null && value){
 					 var val:Object = value[column.dataField];						
-					 cborender.selectedItem=val;
+					 ensureSelected(val);
 				 }
 				 cborender.setFocus();
 			 }		
 			
 			
-			private function itemChange(event:Event):void{
-				if(data!=null && column!=null){
-					data[column.dataField] = cborender.selectedItem;
-					if(updateRelateField!=null){
-						updateRelateField(data,cborender.selectedItem);
+			private function ensureSelected(obj:Object):void{
+				if(obj!=null){
+					if(obj is String){
+						cborender.setSelectedItemByText(obj as String);
+					}else{
+						cborender.setSelectedItemByText(obj.Name);
 					}
+				}else{
+					cborender.selectedItem = obj;
 				}
 			}
+			
+			
+			
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
@@ -79,7 +85,8 @@
 			
 			
 			public function get selectedItem():Object{
-				return cborender.selectedItem
+				return cborender.selectedItem;			
+					
 			}
 			
 			protected function onSelectedItem(selectedObj:Object):void{
@@ -91,5 +98,5 @@
 		]]>
 		
 	</fx:Script>
-	<control:AutoComplete id="cborender" change="itemChange(event)" lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
+	<control:AutoComplete id="cborender"  lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
 </s:MXDataGridItemRenderer>

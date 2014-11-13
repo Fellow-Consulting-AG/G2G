@@ -388,6 +388,12 @@ public class AutoComplete extends ComboBox
 	{
 	    return _typedText;
 	}
+	
+	public function setSelectedItemByText(input:String):void{
+		updateDataProvider( function(element:*):Boolean{return true});
+		
+		typedText=input;
+	}
 
 	/**
 	 *  @private
@@ -402,7 +408,9 @@ public class AutoComplete extends ComboBox
 			invalidateDisplayList();
 			dispatchEvent(new Event("typedTextChange"))	;
 		}else{
+			
 			_typedText = ensureSelectedLabel(input);
+			
 		}
 		isChangeByType = false;
 		typedTextChanged = true;
@@ -610,7 +618,7 @@ public class AutoComplete extends ComboBox
 					else
 					{
 					    textInput.text = _typedText;
-					    textInput.selectRange(cursorPosition, cursorPosition); //setSelection(cursorPosition, cursorPosition);
+					   textInput.selectRange(cursorPosition, cursorPosition); //setSelection(cursorPosition, cursorPosition);
 					    removeHighlight = false;
 					}
 						
@@ -624,10 +632,11 @@ public class AutoComplete extends ComboBox
 			    
 			    typedTextChanged= false;
 			}
-		    else if(typedText)
+		    else if(typedText){
 		    	//Sets the selection when user navigates the suggestion list through
 		    	//arrows keys.
 				textInput.selectRange(_typedText.length,textInput.text.length); //.setSelection(_typedText.length,textInput.text.length);
+			}
 		}
  	    if(showDropdown && !dropdown.visible)
  	    {
@@ -743,10 +752,14 @@ public class AutoComplete extends ComboBox
 	 *  @private
 	 *  Updates the dataProvider used for showing suggestions
 	 */
-	private function updateDataProvider():void
+	private function updateDataProvider(filterFunction:Function=null):void
 	{
 		dataProvider = tempCollection;
- 		collection.filterFunction = templateFilterFunction;
+		if(filterFunction==null){
+ 			collection.filterFunction = templateFilterFunction;
+		}else{
+			collection.filterFunction = filterFunction;
+		}
 		collection.refresh();
 
 	    //In case there are no suggestions, check there is something in the localHistory
@@ -756,7 +769,11 @@ public class AutoComplete extends ComboBox
 			usingLocalHistory = true;
             dataProvider = so.data.suggestions;
             usingLocalHistory = false;
-	 		collection.filterFunction = templateFilterFunction;
+			if(filterFunction==null){
+				collection.filterFunction = templateFilterFunction;
+			}else{
+				collection.filterFunction = filterFunction;
+			}
 			collection.refresh();
   	    }
   	}

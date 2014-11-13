@@ -61,7 +61,7 @@
 			protected function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name',35);				
+				var itemName:DataGridColumn =createColumn('CustomObject14Name',39);				
 				itemName.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -82,13 +82,13 @@
 				cols.push(itemName);
 				
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',17,false));
+				cols.push(createColumn('CustomObject14ExternalSystemId',22,false));
 				cols.push(createColumn('IndexedNumber0',10));
-				cols.push(createColumn('CustomCurrency1',8,false));
-				cols.push(createColumn('CustomCurrency2',9));
+				cols.push(createColumn('CustomCurrency1',10,false));
+				cols.push(createColumn('CustomCurrency2',10));
 				cols.push(createColumn('CustomCurrency0',13,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",7,false);
+				var deleteCol:DataGridColumn = createColumn("",4,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={parentComp:this,addEmptyRow:true};
 				deleteCol.itemRenderer=deleteRender;				
@@ -184,7 +184,7 @@
 			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		
 		</mx:HBox>
 		<mx:HBox id="hgrid" width="100%" height="100%">
-			<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%" height="100%"/>
+			<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="100%"  height="100%"/>
 		</mx:HBox>
 	</mx:VBox>
 	

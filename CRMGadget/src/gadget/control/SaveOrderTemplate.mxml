@@ -113,12 +113,12 @@
 			<mx:Canvas width="100%" height="100%">
 				<mx:VBox width="100%" height="100%" paddingRight="10" paddingLeft="10">
 					<mx:Form paddingTop="5" paddingLeft="0" width="100%">	
-						<mx:FormItem required="true" textAlign="right" label="{i18n._('GLOBAL_NAME@Name')}" >
+						<mx:FormItem required="true" label="{i18n._('GLOBAL_NAME@Name')}" >
 							<mx:VBox>
 								<mx:TextInput id="txtOrderName" width="300" />	
 							</mx:VBox>
 						</mx:FormItem>
-						<mx:FormItem required="false" label="{i18n._('GLOBAL_DESCRIPTION')}" textAlign="right">
+						<mx:FormItem required="false" label="{i18n._('GLOBAL_DESCRIPTION')}" >
 							<mx:TextArea id="txtDescription" width="300" height="100"/>
 						</mx:FormItem>
 						

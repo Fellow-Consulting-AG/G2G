@@ -78,6 +78,7 @@ package gadget.util
 	import mx.core.ClassFactory;
 	import mx.core.UIComponent;
 	import mx.core.Window;
+	import mx.events.AdvancedDataGridEvent;
 	import mx.events.CalendarLayoutChangeEvent;
 	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
@@ -1392,7 +1393,7 @@ package gadget.util
 				}
 			}
 			
-			grid.addEventListener(DataGridEvent.COLUMN_STRETCH, function(evt:DataGridEvent):void {
+			grid.addEventListener(AdvancedDataGridEvent.COLUMN_STRETCH, function(evt:AdvancedDataGridEvent):void {
 				var column:DataGridColumn = grid.columns[evt.columnIndex];
 				var col:Object = {"filter_id":objectSQLQuery.column_name, "entity":objectSQLQuery.entity, "field_name":column.dataField,"width":column.width};
 				var rst:Object = Database.customTableWidthConfigurationDao.find(col);

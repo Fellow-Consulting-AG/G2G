@@ -3,7 +3,7 @@
 		   xmlns:s="library://ns.adobe.com/flex/spark" 
 		   xmlns:mx="library://ns.adobe.com/flex/mx"
 		   showFlexChrome="false" transparent="true" systemChrome="none"
-		    width="470" height="480" xmlns:control="gadget.control.*"
+		    width="980" height="580" xmlns:control="gadget.control.*"
 			initialize="init();">
 	<fx:Script>
 		<![CDATA[
@@ -12,17 +12,20 @@
 			import gadget.util.FieldUtils;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			[Binable]
 			private var templateName2Description:Dictionary = new Dictionary();
 			[Binable]
-			private var templateItems:ArrayCollection;
+			private var templateItems:ArrayCollection = new ArrayCollection();
 			private function init():void{
+				initColumns();				
 				var templates:ArrayCollection =new ArrayCollection( Database.templateDao.fetch());			
 				for each(var template:Object in templates){
-					templateName2Description[template.TemplateName]=template.Description;
+					templateName2Description[template.Name]=template.Description;
 				}
-				templateItems = new ArrayCollection(Database.templateDao.fetch());				
-				
+				templateItems = new ArrayCollection(Database.templateItemDao.fetch());				
+				gc.source = templateItems;
+				gc.refresh();
 			}
 			
 			private function getDescription(data:Object,col:AdvancedDataGridColumn):String{
@@ -31,6 +34,56 @@
 				}
 				
 				return '';
+			}
+			
+			private function createColumn(dataField:String,width:Number,editable:Boolean=false):AdvancedDataGridColumn{
+				var col:AdvancedDataGridColumn = new AdvancedDataGridColumn();
+				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,dataField);
+				col.dataField = dataField;
+				col.editable = editable;
+				col.width=width;
+				col.sortable=false;
+				
+				return col;
+				
+			}
+			
+			private function initColumns():void{
+				var cols:Array = new Array();				
+				//itemname
+				var col:AdvancedDataGridColumn =createColumn('GroupLabel',24);				
+				col.headerText= i18n._('TEMPLATE/ITEM_NAME@Template/Item Name');
+				col.labelFunction=getGroupLabel;
+				cols.push(col);
+				
+				
+				col=createColumn('',32,false);
+				col.dataField = 'Description';
+				col.labelFunction=getDescription;
+				col.headerText=i18n._('GLOBAL_DESCRIPTION');
+				cols.push(col);
+				
+				col=createColumn('CustomObject14ExternalSystemId',15,false);
+				col.dataField = 'ItemNo';
+				cols.push(col);		
+				
+				col=createColumn('CustomObject13Name',25,false);
+				col.dataField = 'PlantName';
+				cols.push(col);			
+				//deleted column
+				var deleteCol:AdvancedDataGridColumn = createColumn("",4,false);
+				var deleteRender:ClassFactory = new ClassFactory(AdvancedDataGridDeleteColRender);
+				deleteRender.properties={parentComp:this,addEmptyRow:false,
+				showDeleteButton:function(obj:Object):Boolean{
+						return obj!=null && obj['GroupLabel']!=null;
+				}
+//				doDelete:function(delteRow:Object):void{
+//					//
+//				}
+				};
+				deleteCol.itemRenderer=deleteRender;				
+				cols.push(deleteCol);
+				griditem.columns = cols;
 			}
 			private function getGroupLabel(data:Object,col:AdvancedDataGridColumn):String{
 				var lbl:String = data['GroupLabel'];
@@ -43,23 +96,23 @@
 	</fx:Script>
 	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
 		<control:TitleBar title="{i18n._('IMPORT_ORDER_TEMPLATE@Import Order Template')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
-		<mx:AdvancedDataGrid width="100%" height="100%" initialize="gc.refresh();" >
-			<mx:dataProvider>
-				<mx:GroupingCollection2 id="gc" source="{templateItems}">
-					<mx:grouping>
-						<mx:Grouping>
-							<mx:GroupingField name="TemplateName"/>							
-						</mx:Grouping>
-					</mx:grouping>
-				</mx:GroupingCollection2>
-			</mx:dataProvider>        
-			<mx:columns>
-				<mx:AdvancedDataGridColumn dataField="GroupLabel" headerText="{i18n._('TEMPLATE/ITEM_NAME@Template/Item Name')}" labelFunction="getGroupLabel"/>
-				<mx:AdvancedDataGridColumn dataField="Description" labelFunction="getDescription"
-										   headerText="{i18n._('GLOBAL_DESCRIPTION')}"/>
-				<mx:AdvancedDataGridColumn dataField="ItemNo" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity, 'CustomObject14ExternalSystemId')}"/>
-				<mx:AdvancedDataGridColumn dataField="PlantName" headerText="{FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity, 'CustomObject13Name')}}"/>
-			</mx:columns>
-		</mx:AdvancedDataGrid>    
+		<mx:VBox top="30" left="0" right="0" bottom="0" width="100%">
+			<mx:AdvancedDataGrid id="griditem" sortExpertMode="true" width="100%" height="100%" initialize="gc.refresh();" >
+				<mx:dataProvider>
+					<mx:GroupingCollection2 id="gc">
+						<mx:grouping>
+							<mx:Grouping>
+								<mx:GroupingField name="TemplateName"/>							
+							</mx:Grouping>
+						</mx:grouping>
+					</mx:GroupingCollection2>
+				</mx:dataProvider>        
+				
+			</mx:AdvancedDataGrid>  
+			<mx:HBox horizontalAlign="right" width="100%" paddingRight="10" paddingBottom="10">
+				<mx:Button id="btnCancel"   label="{i18n._('GLOBAL_CANCEL@Cancel')}" click="{this.close()}"/>
+				<mx:Button id="btnSave"   label="{i18n._('GLOBAL_IMPORT@Import')}" click="{}"/>						
+			</mx:HBox>			
+		</mx:VBox>
 	</mx:Canvas>
 </mx:Window>

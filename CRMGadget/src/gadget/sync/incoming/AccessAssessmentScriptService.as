@@ -79,6 +79,7 @@ package gadget.sync.incoming
 				// #8766 can not save because of hidden specail charater
 				quesId = quesId.replace("﻿﻿4","4");
 				quesId = quesId.replace("﻿4","4");
+				objNewQ['QuestionId'] = quesId;
 				for each(var oldQues:Object in listOldQuestion){
 					if(oldQues['AssessmentName'] == assName && oldQues['QuestionId'] == quesId){
 						objNewQ['isHeader'] = oldQues['isHeader'];

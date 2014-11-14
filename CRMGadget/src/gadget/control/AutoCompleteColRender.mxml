@@ -97,8 +97,8 @@
 			}
 			
 			protected function onSelectedItem(selectedObj:Object):void{
-				if(data!=null && selectedObj!=null && updateRelateField!=null){
-					updateRelateField(data,selectedObj);
+				if(column!=null && data!=null && selectedObj!=null && updateRelateField!=null){					
+					updateRelateField(data,selectedObj);					
 				}
 			}
 			

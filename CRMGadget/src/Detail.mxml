@@ -290,6 +290,7 @@
 					sampleView.percentWidth = 100;
 					sampleView.percentHeight = 100;
 					sampleView.label =i18n._( "SAMPLE_ITEMS@Sample Items");
+					
 					viewstack.addChild(sampleView);
 				}
 			}
@@ -490,7 +491,7 @@
 				
 				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
 					if(sampleView!=null && sampleView.hasError()){
-						Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_ERROR@Error Sample Item'),Alert.OK,this);
+						Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Item'),Alert.OK,this);
 						return false;		
 					}
 				

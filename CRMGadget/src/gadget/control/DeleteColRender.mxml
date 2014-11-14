@@ -2,8 +2,7 @@
 <s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 								  xmlns:s="library://ns.adobe.com/flex/spark" 
 								  xmlns:mx="library://ns.adobe.com/flex/mx" 
-								 xmlns:control="gadget.control.*"
-								 textAlign="center"
+								 xmlns:control="gadget.control.*"								 
 								 >
 	<fx:Script>
 		<![CDATA[
@@ -19,6 +18,7 @@
 			import mx.events.CloseEvent;
 			private var grid:DataGrid;
 			private var _addEmptyRow:Boolean=false;
+			private var _createEmptyRow:Function;
 			private var _parentComp:Sprite;
 
 			public function get parentComp():Sprite
@@ -33,10 +33,12 @@
 			override public function set data(value:Object):void{		
 				super.data = value;
 				var isSHowDeleteButton:Boolean = false;
-				for(var f:String in value){
-					if(f!='mx_internal_uid' && value[f]!=null && !StringUtils.isEmpty(value[f].toString())){
-						isSHowDeleteButton = true;
-						break;
+				if(!value.isNew){
+					for(var f:String in value){
+						if(f!='mx_internal_uid' && value[f]!=null && !StringUtils.isEmpty(value[f].toString())){
+							isSHowDeleteButton = true;
+							break;
+						}
 					}
 				}
 				btnDelete.visible=isSHowDeleteButton;
@@ -63,7 +65,11 @@
 								var rowInd:int=items.getItemIndex(data);
 								items.removeItemAt(rowInd);
 								if(items.length==rowInd && addEmptyRow){//delete last row must be add empty row
-									items.addItem(new Object());
+									if(createEmptyRow!=null){
+										items.addItem(createEmptyRow());
+									}else{
+										items.addItem(new Object());
+									}
 								}
 								grid.dataProvider = items;
 								grid.validateNow();
@@ -84,10 +90,22 @@
 			{
 				_addEmptyRow = value;
 			}
+
+			public function get createEmptyRow():Function
+			{
+				return _createEmptyRow;
+			}
+
+			public function set createEmptyRow(value:Function):void
+			{
+				_createEmptyRow = value;
+			}
 			
 			
 		]]>
 		
 	</fx:Script>
-	<mx:LinkButton id="btnDelete" icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" click="{deleteRow()}" />
+	<mx:Canvas width="100%" horizontalScrollPolicy="off">
+		<mx:LinkButton width="100%" id="btnDelete" icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" click="{deleteRow()}" />
+	</mx:Canvas>
 </s:MXDataGridItemRenderer>

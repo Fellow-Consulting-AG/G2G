@@ -15,12 +15,13 @@ package gadget.dao
 				display_name : "ItemName",
 				index: ["TemplateId",'TemplateName'],
 				unique:['gadget_id'],								
-				columns: {'TEXT' : textColumns,'INTEGER':["Qty"],'gadget_id': "INTEGER PRIMARY KEY AUTOINCREMENT" }
+				columns: {'TEXT' : textColumns,'gadget_id': "INTEGER PRIMARY KEY AUTOINCREMENT" }
 			});
 		}
 		
-		private var textColumns:Array = ["TemplateId",	"TemplateName",					
+		private var textColumns:Array = ["TemplateId",	"TemplateName",	"Qty",				
 			"ItemNo",
+			"ItemId",
 			"ItemName",
 			"PlantId",
 			"PlantName"

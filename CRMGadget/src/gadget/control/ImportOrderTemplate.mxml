@@ -69,7 +69,7 @@
 							var templateId:String = obj.children[0].TemplateId;
 							Database.templateDao.delete_({'gadget_id':templateId});
 							for each(var itemD:Object in obj.children){
-								Database.templateDao.delete_({'gadget_id':itemD.gadget_id});
+								Database.templateItemDao.delete_({'gadget_id':itemD.gadget_id});
 							}
 							Database.commit();
 							refreshGrid();
@@ -133,7 +133,7 @@
 						obj = a[0];
 					}
 				}
-				if(obj['GroupLabel']==null || obj==null){
+				if(obj==null||obj['GroupLabel']==null){
 					Alert.show(i18n._("PLEASE_SELECT_TEMPLATE@Please select a template."), i18n._('GLOBAL_ERROR@Error'), Alert.OK,this);					
 					return;
 				}
@@ -147,6 +147,7 @@
 						item.IndexedNumber0 = o.Qty;
 						item.CustomObject13Id = o.PlantId;
 						item.CustomObject13Name = o.PlantName;
+						item.CustomObject14Id = o.ItemId;
 						items.addItem(item);
 					}
 					importItems(items);

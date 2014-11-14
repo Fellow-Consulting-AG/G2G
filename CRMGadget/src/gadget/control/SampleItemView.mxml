@@ -9,6 +9,7 @@
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.util.FieldUtils;
+			import gadget.util.GUIUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			import gadget.window.WindowManager;
@@ -26,7 +27,7 @@
 			[Bindable] public var item:Object;
 			[Bindable] public var rows:ArrayCollection;
 			public var detailScreen:Detail;
-			private var deletedItems:ArrayCollection;
+			private var deletedItems:ArrayCollection = new ArrayCollection();
 			private var field2Label:Dictionary = new Dictionary();
 			protected function init(event:FlexEvent):void
 			{
@@ -80,6 +81,7 @@
 				Utils.executeFomulaFields(Database.customObject12Dao.entity,obj,new ArrayCollection([{column_name:'IndexedNumber0'},
 					{column_name:'CustomCurrency1'},
 					{column_name:'CustomCurrency2'},
+					{column_name:'Name'},
 					{column_name:'CustomCurrency0'}]));
 				obj.isNew=true;
 				
@@ -112,7 +114,7 @@
 			protected function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name', 314);				
+				var itemName:DataGridColumn =createColumn('CustomObject14Name', 35);				
 				itemName.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -127,13 +129,13 @@
 								item.CustomObject13Name = selectedItem.CustomObject13Name;
 								item.CustomObject13Id = selectedItem.CustomObject13Id;
 								item.CustomObject14Id = selectedItem.Id;
-							}else{
-								item.CustomObject14ExternalSystemId = null;
-								item.CustomCurrency1 = 0;
-								item.CustomObject13Name = null;
-								item.CustomObject13Id = null;
-								item.CustomObject14Id = null;
 							}
+						}else{
+							item.CustomObject14ExternalSystemId = null;
+							item.CustomCurrency1 = 0;
+							item.CustomObject13Name = null;
+							item.CustomObject13Id = null;
+							item.CustomObject14Id = null;
 						}
 					},
 					'labelFunction':function(item:Object):String{
@@ -145,15 +147,19 @@
 				//edit:275, 197,90,111,113,112,38
 				//new:314,202,108,86,87,104,35
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',202,false));
-				cols.push(createColumn('IndexedNumber0',108,true,'0-9'));
-				cols.push(createColumn('CustomCurrency1',86,false));
-				cols.push(createColumn('CustomCurrency2',87,true,'0-9.,'));
-				cols.push(createColumn('CustomCurrency0',104,false));
+				cols.push(createColumn('CustomObject14ExternalSystemId',18,false));
+				cols.push(createColumn('IndexedNumber0',10,true,'0-9'));
+				cols.push(createColumn('CustomCurrency1',10,false));
+				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
+				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",35,false);
+				var deleteCol:DataGridColumn = createColumn("",5,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
-				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyRow};
+				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyRow,'postDelete':function(d:Object):void{
+					if(d!=null && d.gadget_id!=null){
+						deletedItems.addItem(d);
+					}
+				}};
 				deleteCol.itemRenderer=deleteRender;	
 				deleteCol.minWidth=3;
 				cols.push(deleteCol);
@@ -188,7 +194,38 @@
 					return obj?obj.Name:"";
 				}
 			}
-			
+			public function cloneItems():ArrayCollection{
+				var newDataProvider:ArrayCollection = new ArrayCollection();
+				var ignoreCopiedFields:ArrayCollection = Database.customObject12Dao.getIgnoreCopyFields();
+				for each(var tmp:Object in editableGrid.dataProvider){
+					var t:Object = new Object;
+					for(var p:String in tmp){
+						if(p=='mx_internal_uid' ||ignoreCopiedFields.contains(p) ){
+							continue;//ignore copy field
+						}
+						
+						if(p=='CustomObject14Name'){
+							var itemObj:Object = tmp[p];
+							if(itemObj is String){
+								t[p]=itemObj;
+							}else if(itemObj!=null){
+								t[p] = itemObj.Name;										
+							}else{
+								t[p] = null;
+								t.CustomObject14Id=null;
+							}
+						}else{
+							t[p] = tmp[p];
+						}
+						
+					}
+					newDataProvider.addItem(t);
+				}
+				newDataProvider.filterFunction = isNotEmptyRow;
+				newDataProvider.refresh();
+				
+				return newDataProvider;
+			}
 			
 			public function save(co11:Object):void{
 				
@@ -286,13 +323,13 @@
 			}
 			
 			private function isNotEmptyRow(value:Object):Boolean{
-				if(!value.isNew){
+				if(value!=null &&!value.isNew){
 					for(var f:String in value){
 						if(f!='mx_internal_uid'){
 							var fieldV:Object = value[f];
 							if(fieldV!=null){
-								if(fieldV is String){
-									if(!StringUtils.isEmpty(value[f])){
+								if(fieldV is String || fieldV is Boolean || fieldV is Number){
+									if(!StringUtils.isEmpty(fieldV.toString())){
 										return true;
 									}
 								}else{
@@ -345,9 +382,6 @@
 			}
 			
 			private function getDataProvider():ArrayCollection {
-				
-				
-				
 				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0,CustomObject13Name,CustomObject13Id"}]),null,null,-1);
 				if(picklist!=null){
 					picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
@@ -360,26 +394,26 @@
 				return FieldUtils.getFieldDisplayName(entity, item.element_name);				
 			}
 			
-			private function getHeaderField():ArrayCollection{
-				return new ArrayCollection([{element_name:'ContactFullName'},
-						{element_name:'ContactAccountName'},{element_name:'IndexedDate0'},{element_name:'Phone'/*not found*/},{element_name:'CustomText36'},{element_name:'CustomText33'}]);
+			public static function getHeaderField():ArrayCollection{
+				return new ArrayCollection([{element_name:'ContactFullName'},{element_name:'CustomText52'},
+						{element_name:'ContactAccountName'},{element_name:'IndexedDate0'},{element_name:'CustomText33'},{element_name:'CustomText36'},{element_name:'CustomText32'}]);
 			}
 			
 			private function createHeaderForm():void{
 				var form:Form = new Form();
-				form.percentWidth =100;
+				form.percentWidth=100;
+				form.addChild(GUIUtils.getHeader(i18n._('SAMPLE_HEADER_INFO@Header Infomation')));
 				for each(var field:Object in getHeaderField()){
-					var formItem:FormItem = new FormItem();
-					formItem.label = field.display_name == null ? getDisplayName(field,Database.customObject11Dao.entity) : field.display_name;
-					formItem.percentWidth=100;
+					var formItem:FormItem = new FormItem();					
+					formItem.label = field.display_name == null ? getDisplayName(field,Database.customObject11Dao.entity) : field.display_name;						
 					var columnValue:Label = new Label();
-					columnValue.setStyle("fontWeight","bold");
-					columnValue.percentWidth=100;
+					columnValue.setStyle("fontWeight","bold");					
 					if(item!=null){
 						columnValue.text = item[field.element_name];						
 					}					
 					field2Label[field.element_name] = columnValue;
 					formItem.addChild(columnValue);
+					
 					form.addChild(formItem);
 				}				
 				headerInfo.addChild(form);
@@ -430,7 +464,7 @@
 			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		
 		</mx:HBox>
 		
-		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false"  height="100%"/>
+		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false"  height="100%" width="100%"/>
 		
 	</mx:VBox>
 	

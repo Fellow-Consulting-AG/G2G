@@ -15,6 +15,7 @@ package gadget.util
 	
 	import gadget.control.AppointmentPDF;
 	import gadget.control.CustomPurePDF;
+	import gadget.control.SampleItemView;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -290,6 +291,131 @@ package gadget.util
 			} else {
 				step2(entity, subtype, item, create, errorMessage,byteSign);
 			}
+		}
+		
+		public static function sampleItemsToPDF(item:Object,sampleItems:ArrayCollection):void{
+			
+			var bytes:ByteArray = null;
+			var pdfLogo:String = Database.preferencesDao.getValue(PreferencesDAO.PDF_LOGO) as String;
+			
+			if (!StringUtils.isEmpty(pdfLogo)) {
+				var base64Dec:Base64Decoder = new Base64Decoder();
+				base64Dec.decode(pdfLogo);
+				bytes = base64Dec.toByteArray();
+				loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void {
+					doExportSampleItems(item,sampleItems,   bytes, e.target.width, e.target.height);
+				});
+				loader.loadBytes(bytes);
+			} else {
+				doExportSampleItems( item,sampleItems);
+			}
+			
+			
+			
+		}
+		
+		private static function doExportSampleItems(item:Object,sampleItems:ArrayCollection,logo:ByteArray=null,width:int=0,height:int=0):void{
+			var entity:String = Database.customObject11Dao.entity;
+			var pdfSize:String = "PORTRAIT" ;
+			var rotat:Boolean = false;
+			pdfSize = Database.preferencesDao.getValue(PreferencesDAO.PDF_SIZE)as String ;
+			if(pdfSize.toLocaleUpperCase()=="LANDSCAPE"){
+				rotat = true;
+			}
+			
+			var title:String = Utils.getEntityDisplayName(entity);
+			var pdfHeader:String = Database.preferencesDao.getValue(PreferencesDAO.PDF_HEADER) as String;			
+			var fileName:String = entity + " exported on " +  DateUtils.getCurrentDateAsSerial() + ".pdf";
+			var pdf:CustomPurePDF = new CustomPurePDF(pdfHeader,logo,width,height);
+			
+			// --- create doc pdf first ---//
+			var document:PdfDocument = pdf.createDocument(rotat);
+			
+			var table: PdfPTable = new PdfPTable(2);
+			
+			table.widthPercentage = 100;
+			var details:ArrayCollection = new ArrayCollection();
+			addTitle(document,title,table);
+			//header information
+			for each(var field:Object in getOrderFields()){
+				if(field.isTitle){
+					addTitle(document,field.display_name as String,table);
+				}else{
+					var data:String = item[field.element_name] == null ? ' ' : item[field.element_name];
+					if (field.data_type == 'Picklist') {
+						data = PicklistService.getValue(entity,field.element_name,item[field.element_name],item);
+					}
+					addSampleField(table, field.display_name, data);
+				}
+			}
+			
+			//add items title
+			addTitle(document,Database.customLayoutDao.getPlural(Database.customObject14Dao.entity),table);			
+			//write items
+			
+			var newLine:PdfPCell = new PdfPCell();
+			newLine.colspan = 2;
+			newLine.border = 0;
+			newLine.fixedHeight = 10;			
+			table.addCell(newLine);
+			
+			addSampleItemGrid(table,getItemFields(),sampleItems.toArray());	
+			document.add(table);
+			document.close();
+			Utils.writeFile( fileName, pdf.getByteArray() ).openWithDefaultApplication();
+		}
+		
+		protected static function getOrderFields():Array{
+			var tempFields:ArrayCollection =SampleItemView.getHeaderField();
+			var fields:Array  = new Array();
+			fields.push({isTitle:true,display_name:i18n._('SAMPLE_HEADER_INFO@Header Infomation')});
+			
+			for each(var f:Object in tempFields){
+				var obj:Object = new Object();
+				obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject11Dao.entity,f.element_name);
+				obj.element_name = f.element_name;
+				fields.push(obj);
+			} 
+			return fields;
+		}
+		
+		private static function getItemFields():Array{
+			var tempFields:Array =['CustomObject14Name','CustomObject14ExternalSystemId','IndexedNumber0','CustomCurrency1','CustomCurrency2','CustomCurrency0'];
+			var fields:Array  = new Array();
+			
+			for each(var f:String in tempFields){
+				var obj:Object = new Object();
+				obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,f);
+				obj.element_name = f;
+				fields.push(obj);
+			} 
+			
+			return fields;
+			
+		}
+		
+		private static function addSampleField(table: PdfPTable,display:String,data:String):void{
+			var font: Font = getUnicodeFont(11, Font.BOLD );
+			var fontNormal: Font = getUnicodeFont(11);
+			
+			
+			var label:Paragraph = new Paragraph(display + "  ", fontNormal );
+			var vaue:Paragraph = new Paragraph(data , font );
+			
+			var cell: PdfPCell = new PdfPCell();
+			label.alignment = Element.ALIGN_LEFT;
+			cell.addElement(label);
+			cell.border = 0;
+			cell.paddingRight = 7;
+			table.addCell(cell);
+			
+			cell = new PdfPCell();
+			vaue.alignment = Element.ALIGN_LEFT;
+			cell.addElement(vaue);
+			cell.border = 0;
+			table.addCell(cell);
+			
 		}
 		
 		
@@ -652,6 +778,94 @@ package gadget.util
 		
 		
 		
+		private static function addSampleItemGrid(table: PdfPTable, fields:Array, dataSource:Array):void {
+			var colorName:Object = Database.preferencesDao.getValue(PreferencesDAO.HEADER_COLOR_PDF);
+			var headerColor:Array = Utils.MAP_HEADER_COLOR_PDF[colorName];
+			if(headerColor == null) {
+				colorName = Preferences.DARK_BLUE;
+				headerColor = Utils.MAP_HEADER_COLOR_PDF[colorName];
+				
+			}
+			var font: Font = getUnicodeFont(11, Font.BOLD );
+			var fontNormal: Font = getUnicodeFont(11);
+			//setFont(pdf, FontFamily.HELVETICA, 9 );
+			var columns:Array = new Array();
+			var columnCount:int = 6;
+			for each(var objCol:Object in fields) if (!objCol.hidden) columnCount++;
+			//var columnWidth:int = columnWidth = Math.floor((pdf.getDefaultSize().mmSize[0] - (pdf.getMargins().left * 2)) / columnCount);
+			var tableGrid:PdfPTable = new PdfPTable(columnCount);
+			tableGrid.widthPercentage = 100;
+			/* color rgb
+			E4E4FE = 228,228,254
+			C8C8FE = 200,200,254
+			9191FE = 145,145,254
+			*/
+			var color:org.purepdf.colors.RGBColor = new org.purepdf.colors.RGBColor();
+			color.setValue(headerColor[0][0],headerColor[0][1],headerColor[0][2]);
+			font.color = RGBColor.BLACK;
+			var colInd:int=1;
+			for each(var obj:Object in fields){
+				if (obj.hidden) continue;
+				//var alignStr:String = Align.LEFT;
+				var cellHeader:PdfPCell = new PdfPCell();
+				cellHeader.backgroundColor = color;
+				cellHeader.verticalAlignment = Element.ALIGN_MIDDLE ;
+				var p:Paragraph = new Paragraph(obj.display_name,font);
+				//if(obj.data_type=="Number" || obj.data_type=="Currency" || obj.data_type=="Integer") alignStr = Element.ALIGN_RIGHT;
+				if(colorName == Preferences.DARK_BLUE || colorName == Preferences.BLACK){
+					font.color = RGBColor.WHITE;
+				}
+				p.alignment = Element.ALIGN_CENTER;
+				cellHeader.addElement(p);
+				if(colInd==1){
+					cellHeader.colspan=4;
+				}else if(colInd<5){
+					cellHeader.colspan=2;
+				}
+				tableGrid.addCell(cellHeader);
+				
+				colInd++;
+				
+			}
+			
+			var odd:Boolean = false;
+			for each (var data:Object in dataSource){
+				color = new org.purepdf.colors.RGBColor();
+				if(odd){
+					//color.setValue(228,228,254);
+					color.setValue(headerColor[1][0],headerColor[1][1],headerColor[1][2]);
+					
+				}else{
+					//color.setValue(200,200,254);
+					color = null;
+				}
+				colInd = 1;
+				for each(var prop:Object in fields){
+					if (prop.hidden) continue;
+					var cellValue:PdfPCell = new PdfPCell();
+					cellValue.backgroundColor = color;
+					var val:Paragraph = new Paragraph(data[prop.element_name],fontNormal);
+					cellValue.addElement(val);
+					if(colInd==1){
+						cellValue.colspan=4;
+					}else if(colInd<5){
+						cellValue.colspan=2;
+					}
+					colInd++;
+					tableGrid.addCell(cellValue);
+					
+				}
+				odd = !odd;
+			}
+			var cell:PdfPCell = new PdfPCell();
+			cell.colspan = 2;
+			cell.border = 0; 
+			cell.addElement(tableGrid);
+			table.addCell(cell);
+			
+		}
+		
+		
 		
 		private static function addGrid(document: PdfDocument, fields:Array, dataSource:Array):void {
 			var colorName:Object = Database.preferencesDao.getValue(PreferencesDAO.HEADER_COLOR_PDF);
@@ -707,6 +921,7 @@ package gadget.util
 					color = null;
 				}
 				for each(var prop:Object in fields){
+					if (prop.hidden) continue;
 					var cellValue:PdfPCell = new PdfPCell();
 					cellValue.backgroundColor = color;
 					var val:Paragraph = new Paragraph(data[prop.element_name],fontNormal);

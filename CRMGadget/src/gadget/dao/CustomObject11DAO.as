@@ -23,20 +23,7 @@ package gadget.dao
 			return "CustomObject11";
 		}
 		
-		override public function getIgnoreCopyFields():ArrayCollection{
-			return new ArrayCollection(
-				[					
-					'Id',
-					'gadget_id',
-					'local_update',
-					'delete',
-					'error',
-					'ood_lastmodified',
-					'sync_number',
-					'important',
-					'favorite'
-				]);
-		}
+		
 		
 		private var textColumns:Array = [
 			"AccountExternalSystemId",

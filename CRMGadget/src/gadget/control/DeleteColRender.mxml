@@ -20,6 +20,8 @@
 			private var _addEmptyRow:Boolean=false;
 			private var _createEmptyRow:Function;
 			private var _parentComp:Sprite;
+			
+			private var _postDelete:Function;
 
 			public function get parentComp():Sprite
 			{
@@ -71,6 +73,9 @@
 										items.addItem(new Object());
 									}
 								}
+								if(postDelete!=null){
+									postDelete(data);
+								}
 								grid.dataProvider = items;
 								grid.validateNow();
 							}
@@ -101,11 +106,22 @@
 				_createEmptyRow = value;
 			}
 			
+
+			public function get postDelete():Function
+			{
+				return _postDelete;
+			}
+
+			public function set postDelete(value:Function):void
+			{
+				_postDelete = value;
+			}
+			
 			
 		]]>
 		
 	</fx:Script>
-	<mx:Canvas width="100%" horizontalScrollPolicy="off">
-		<mx:LinkButton width="100%" id="btnDelete" icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" click="{deleteRow()}" />
-	</mx:Canvas>
+	
+		<mx:LinkButton id="btnDelete" icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" click="{deleteRow()}" />
+	
 </s:MXDataGridItemRenderer>

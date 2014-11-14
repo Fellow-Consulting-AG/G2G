@@ -373,7 +373,7 @@ package gadget.dao
 		}
 		
 		public function getByParentId(criteria:Object):Array{
-			var where:String="";			
+			var where:String=" WHERE (deleted = 0 OR deleted IS null)";			
 			
 			var col:String="";			
 			var query:String = "SELECT  '" + entity + "' gadget_type, * FROM " + tableName ;
@@ -386,7 +386,7 @@ package gadget.dao
 			}
 			
 			
-			where=where!="" ? " WHERE "+where.substr(5) : "";
+			//where=where!="" ? " WHERE "+where.substr(5) : "";
 			query = query + where;
 			stmtGetByParentId.text=query;
 			exec(stmtGetByParentId);

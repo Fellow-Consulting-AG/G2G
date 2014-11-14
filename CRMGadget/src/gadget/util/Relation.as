@@ -495,7 +495,7 @@ package gadget.util
 			{entitySrc:"CustomObject11", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},
 			{entitySrc:"CustomObject11", keySrc:"ProductId", keyDest:"ProductId", labelSrc:["ProductName","CustomCurrency20"], labelDest:["ProductName","ListPrice"], entityDest:"PriceListLineItem"},
 			{entitySrc:"CustomObject11", keySrc:"ActivityId", keyDest:"ActivityId", labelSrc:["ActivityName"], labelDest:["Subject"], entityDest:"Activity"},
-			{entitySrc:"CustomObject11", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact"},
+			{entitySrc:"CustomObject11", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName",'ContactFirstName','ContactLastName','ContactAccountName'], labelDest:["ContactFullName",'ContactFirstName','ContactLastName','AccountName'], entityDest:"Contact"},
 			{entitySrc:"CustomObject11", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:["OpportunityName"], labelDest:["OpportunityName"], entityDest:"Opportunity"},
 			{entitySrc:"CustomObject11", keySrc:"ServiceRequestId", keyDest:"ServiceRequestId", labelSrc:["ServiceRequestNumber"], labelDest:["SRNumber"], entityDest:"Service Request"},
 			{entitySrc:"CustomObject11", keySrc:"LeadId", keyDest:"LeadId", labelSrc:["LeadFullName"], labelDest:["LeadFullName"], entityDest:"Lead"},

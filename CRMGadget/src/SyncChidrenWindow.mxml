@@ -42,7 +42,8 @@
 					for each(var child:Object in listChildren){
 						var check:CheckBox = new CheckBox();
 						check.height = 25;
-						check.label = child.sub;
+						check.data = child.sub;
+						check.label = Database.customLayoutDao.getDisplayName(child.sub);
 						check.selected = child.enabled;
 						check.addEventListener(MouseEvent.CLICK, onClickCheckBox);
 						enableTransaction.addChild(check);
@@ -118,7 +119,7 @@
 					var obj:Object = new Object();
 					var enabled:int = checkBox.selected == true? 1:0;
 					obj["entity"] = entity;
-					obj["sub"] = checkBox.label;
+					obj["sub"] = checkBox.data;
 					obj["enabled"] = enabled;
 					obj["advanced_filter"] = cboAdvance.selectedItem.type;
 					Database.subSyncDao.updateEnabled(obj);

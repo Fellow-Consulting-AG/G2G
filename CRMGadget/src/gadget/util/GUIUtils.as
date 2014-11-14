@@ -1684,6 +1684,8 @@ package gadget.util
 					(child.getChildAt(0) as NumericStepper).value = value.toString();				
 				} else if (component is Text) {
 					(component as Text).text = value.toString();
+				}else if(component is GoogleLocalSearchAddress){
+					(component as GoogleLocalSearchAddress).addressText = value.toString();
 				}
 			}
 		}

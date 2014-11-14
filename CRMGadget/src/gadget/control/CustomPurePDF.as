@@ -4,7 +4,11 @@ package gadget.control
 	
 	import flash.utils.ByteArray;
 	
+	import flashx.textLayout.tlf_internal;
+	
 	import gadget.dao.Database;
+	
+	import mx.olap.aggregators.AverageAggregator;
 	
 	import org.purepdf.Font;
 	import org.purepdf.elements.HeaderFooter;
@@ -32,6 +36,7 @@ package gadget.control
 		[Embed(source="/assets/fonts/ARIAL.TTF", mimeType="application/octet-stream")] private var arial: Class;
 		[Embed(source="/assets/fonts/epkyouka.ttf", mimeType="application/octet-stream")] private var jpn: Class;
 		[Embed(source="/assets/fonts/simfang.ttf", mimeType="application/octet-stream")] private var chinese: Class;
+		[Embed(source="/assets/fonts/avenir-roman.ttf", mimeType="application/octet-stream")] private var avenir: Class;
 		[Embed(source="/assets/fonts/XB Roya.ttf", mimeType="application/octet-stream")]
 		private var arabiDEU: Class;
 		public function CustomPurePDF(text:String="", logo:ByteArray=null, logoWidth:int=0, logoHeight:int=0)
@@ -51,6 +56,8 @@ package gadget.control
 			var fontName:String ="arial.ttf";
 			if(languageCode == "DEU" || languageCode =="ARA"){
 				fontName ="arbic.ttf";
+			}else if(languageCode=='ENU' || languageCode=='ENG'){
+				fontName = 'avenir.ttf';
 			}
 			//if(languageCode =="JPN"){
 			//	fontName ="japanese_unicode.ttf";
@@ -65,9 +72,11 @@ package gadget.control
 	
 		public function createDocument(rotate:Boolean=false,marginLeft:int=25,marginRight:int=25,marginTop:int=50,marginBottom:int=50):PdfDocument{
 			FontsResourceFactory.getInstance().registerFont( BaseFont.HELVETICA, new BuiltinFonts.HELVETICA() );
-			FontsResourceFactory.getInstance().registerFont( BaseFont.HELVETICA_BOLD, new BuiltinFonts.HELVETICA_BOLD() );
+			FontsResourceFactory.getInstance().registerFont( BaseFont.HELVETICA_BOLD, new BuiltinFonts.HELVETICA_BOLD() );			
+			
 			FontsResourceFactory.getInstance().registerFont("arial.ttf", new chinese() );
 			FontsResourceFactory.getInstance().registerFont("arbic.ttf", new arabiDEU() );
+			FontsResourceFactory.getInstance().registerFont("avenir.ttf", new avenir() );
 			
 			//FontsResourceFactory.getInstance().registerFont("japanese_unicode.ttf", new jpn() );
 			//FontsResourceFactory.getInstance().registerFont("chinese_unicode.ttf", new chinese() );

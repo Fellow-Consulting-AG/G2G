@@ -792,6 +792,11 @@ package gadget.util {
 						
 		}		
 		
+		
+		public static function getEntityDisplayName(entity:String,subtype:int=0):String{
+			return Database.customLayoutDao.getDisplayName(entity, subtype);
+		}
+		
 		public static function styleFunction(item:Object, column:AdvancedDataGridColumn):Object {
 			if(item==null){
 				return {};

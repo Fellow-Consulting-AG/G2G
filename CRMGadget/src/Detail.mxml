@@ -274,24 +274,29 @@
 				subtypeActivity = subtype;
 				initButtons(); 
 				initTab(); 
-				initForm(); 
-				initSampleItemTab();
+				initForm(); 				
 				displayAttachments(); 
 				initDragDropWindow();
 				
 			}
 			
 			private function initSampleItemTab():void{
-				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
-					sampleView = new SampleItemView();
-					sampleView.item = this.item;
-					sampleView.detailScreen = this;
-					sampleView.horizontalScrollPolicy = "off";
-					sampleView.percentWidth = 100;
-					sampleView.percentHeight = 100;
-					sampleView.label =i18n._( "SAMPLE_ITEMS@Sample Items");
-					
+				if(sampleView!=null){
 					viewstack.addChild(sampleView);
+				}else{
+					if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+						sampleView = new SampleItemView();
+						sampleView.item = this.item;
+						sampleView.rows = item.sampleItems as ArrayCollection;
+						delete item.sampleItems;
+						sampleView.detailScreen = this;
+						sampleView.horizontalScrollPolicy = "off";
+						sampleView.percentWidth = 100;
+						sampleView.percentHeight = 100;
+						sampleView.label =i18n._( "SAMPLE_ITEMS@Sample Items");
+						
+						viewstack.addChild(sampleView);
+					}
 				}
 			}
 			private function initAdditionalTabRevenue():void{
@@ -851,6 +856,9 @@
 						}
 					}
 				}
+				if(entity==Database.customObject11Dao.entity&& UserService.COLOPLAST == UserService.getCustomerId()){
+					item.sampleItems = sampleView.rows;
+				}
 			}
 			
 			public function checkAutoComplete(alertMessage:Boolean=false):Boolean {
@@ -1109,6 +1117,14 @@
 						other = dao.findByOracleId(item[DAOUtils.getOracleId(data)]);
 						for each(var f:String in dao.getIgnoreCopyFields()){
 							delete other[f];
+						}
+						
+						if(UserService.COLOPLAST == UserService.getCustomerId()){
+							if(sampleView !=null){
+								//copy sample item
+								other.sampleItems = sampleView.cloneItems();
+								
+							}
 						}
 					}
 					
@@ -1942,6 +1958,8 @@
 					initAdditionalTabRevenue();
 				}
 				
+				initSampleItemTab();
+				
 				}
 				
 				
@@ -2255,14 +2273,19 @@
 										return bytes;
 										}
 										private function exportToPdfWithEpad(event:MouseEvent):void{
-										var enable_pdf_signature:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_PDF_SIGNATURE, 0);
-										if(enable_pdf_signature){
-										epadPanel.generatePDF = exportToPDF;
-										epadPanel.startSign_clickHandler(event);
-										epadPanel.detail=this;
-										}else{
-											exportToPDF();
-										}
+											if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+												updateItemFields();
+												PDFUtil.sampleItemsToPDF(item,sampleView.cloneItems());
+											}else{
+												var enable_pdf_signature:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_PDF_SIGNATURE, 0);
+												if(enable_pdf_signature){
+												epadPanel.generatePDF = exportToPDF;
+												epadPanel.startSign_clickHandler(event);
+												epadPanel.detail=this;
+												}else{
+													exportToPDF();
+												}
+											}
 										}
 										private function exportToPDF():void {
 										var sign:String = epadPanel.stringImage;
@@ -2548,9 +2571,7 @@
 				<mx:LinkButton doubleClickEnabled="true" id="customLayoutBtn" icon="@Embed('/assets/customize.png')" toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_CUSTOMIZE_LAYOUT')}" click="editLayout()"/>
 				<mx:LinkButton doubleClickEnabled="true" id="attachmentBtn" icon="@Embed('/assets/attachment.png')" click="openAttachmentFileLayout()" visible="{!create}"/>
 				<mx:LinkButton doubleClickEnabled="true" id="validationBtn" icon="@Embed('/assets/validation_rules.png')" toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_VALIDATION_RULE')}" click="openValidationList();" visible="{!create}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="pdfExportBtn" icon="{ImageUtils.pdfIcon}" toolTip="{i18n._('GLOBAL_PDF_EXPORT')}" click="Utils.showLoadingProgressWindow(function():void{
-							   exportToPdfWithEpad(event);
-							   }, i18n._(StringUtils.LOADING_STR), i18n._(StringUtils.ATTACHMENTS_STR));" visible="{!create}"/>
+				<mx:LinkButton doubleClickEnabled="true" id="pdfExportBtn" icon="{ImageUtils.pdfIcon}" toolTip="{i18n._('GLOBAL_PDF_EXPORT')}" click="  exportToPdfWithEpad(event)" visible="{!create}"/>
 				<mx:LinkButton doubleClickEnabled="true" id="groupingPDF" icon="{ImageUtils.reportIcon}" toolTip="{i18n._('GLOBAL_GROUPING_PDF')}" click="printServiceRequest(false)" includeInLayout="{showGroupingPDFBtn}" visible="{showGroupingPDFBtn}"/>
 				<mx:LinkButton doubleClickEnabled="true" id="groupPDFPreview" icon="{ImageUtils.previewIcon}" toolTip="{i18n._('GLOBAL_GROUPING_PDF_PREVIEW')}" click="printServiceRequest(true)" includeInLayout="{showGroupingPDFBtn}" visible="{showGroupingPDFBtn}"/>
 				<mx:LinkButton doubleClickEnabled="true" id="kitchenReport" icon="{ImageUtils.kitchenReportIcon}" toolTip="TCS Kitchen Report" click="diplayKitchenReport()" includeInLayout="{showKitchenReport}" visible="{showKitchenReport}"/>

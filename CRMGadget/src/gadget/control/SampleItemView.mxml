@@ -19,10 +19,12 @@
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
 			import mx.controls.Label;
-			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
+			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
 			import mx.utils.StringUtil;
 			[Bindable] public var item:Object;
 			[Bindable] public var rows:ArrayCollection;
@@ -31,14 +33,16 @@
 			private var field2Label:Dictionary = new Dictionary();
 			protected function init(event:FlexEvent):void
 			{
-				if(item!=null && StringUtils.isEmpty(item['Id'])){
-					if(rows==null){
-						rows = new ArrayCollection();
+				if(rows==null || rows.length<1){
+					if(item!=null && StringUtils.isEmpty(item['Id'])){
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+					}else{
+						
+						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':item['Id']}));
+						
 					}
-				}else{
-					
-					rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':item['Id']}));
-					
 				}
 				
 				
@@ -46,43 +50,91 @@
 				
 				createHeaderForm();
 				initColumns();
+				editableGrid.addEventListener(ItemClickEvent.ITEM_CLICK,function(e:ListEvent):void{
+					
+					addEmptyRow(false,true,e.columnIndex);
+				
+				});
 				//add empty row
-				rows.addItem(createEmptyRow());
+				rows.addItem(createEmptyObject());
 				editableGrid.dataProvider = rows;
 				editableGrid.validateNow();
 				//ADD ACTION
 				editableGrid.addEventListener(KeyboardEvent.KEY_DOWN, function(evt:KeyboardEvent):void {
-					if(evt.keyCode == Keyboard.ENTER || evt.keyCode == Keyboard.TAB){
-						if(editableGrid.editedItemPosition){
-							var editColumn:DataGridColumn = editableGrid.columns[editableGrid.editedItemPosition.columnIndex];
-							if( rows.length-1 == editableGrid.editedItemPosition.rowIndex  && editColumn.dataField=='CustomCurrency2' ){
-								var newObj:Object = createEmptyRow();
-								if(rows==null){
-									rows = new ArrayCollection();
-								}
-								
-								rows.addItem(newObj); //add a blank record
-								var index:Number = editableGrid.editedItemPosition.rowIndex+1;
-								editableGrid.dataProvider = rows;
-								//								editableGrid.selectedIndex = index;
-								editableGrid.editedItemPosition = {columnIndex:0, rowIndex:index};
-							
-							}
+					if(evt.keyCode == Keyboard.ENTER){
+						addEmptyRow(true);	
+					}else if(evt.keyCode == Keyboard.TAB){
+						var oldColIndex:int = editableGrid.editedItemPosition.columnIndex;
+						var editColumn:DataGridColumn = editableGrid.columns[oldColIndex];
+						if(editColumn.dataField=='CustomCurrency2'){
+							addEmptyRow(true);
 						}
 					}
+						
 				});
 				
 				
 				
 			}
 			
-			private function createEmptyRow():Object{
+			private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
+				if(editableGrid.editedItemPosition){
+					
+					var oldColIndex:int = editableGrid.editedItemPosition.columnIndex;
+					var editColumn:DataGridColumn = editableGrid.columns[oldColIndex];
+					var oldRowIndex:int = editableGrid.editedItemPosition.rowIndex;
+					if((rows.length-1== oldRowIndex+1 || rows.length==oldRowIndex+1) ){//add empty row
+						
+						var lastRow:Object = rows.getItemAt(rows.length-1);
+						if(lastRow.isNew){
+							return;
+						}
+						
+						var newObj:Object = createEmptyObject();
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+						
+						rows.addItem(newObj); //add a blank record						
+						editableGrid.dataProvider = rows;
+//						editableGrid.validateNow();
+						if(setSelected){
+							
+							editableGrid.editedItemPosition = {columnIndex:0, rowIndex:(oldRowIndex+1)};
+						}else{
+							editableGrid.editedItemPosition = {columnIndex:oldColIndex, rowIndex:oldRowIndex};
+						}
+						
+					}
+				}else if(fromclick){
+					var selectedRow:int = editableGrid.selectedIndex;
+					if(rows.length-1==selectedRow){
+						var newObj:Object = createEmptyObject();
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+						
+						rows.addItem(newObj); //add a blank record						
+						editableGrid.dataProvider = rows;		
+						if(colIdx>=0 && colIdx<editableGrid.columnCount){
+							var col:DataGridColumn = editableGrid.columns[colIdx];
+							if(col.editable){
+								editableGrid.editedItemPosition = {columnIndex:colIdx, rowIndex:selectedRow};
+							}else{
+								editableGrid.selectedIndex = selectedRow;
+							}
+						}
+					}
+				}
+			}
+			
+			private function createEmptyObject():Object{
 				var obj:Object = new Object();
-				Utils.executeFomulaFields(Database.customObject12Dao.entity,obj,new ArrayCollection([{column_name:'IndexedNumber0'},
-					{column_name:'CustomCurrency1'},
-					{column_name:'CustomCurrency2'},
-					{column_name:'Name'},
-					{column_name:'CustomCurrency0'}]));
+//				Utils.executeFomulaFields(Database.customObject12Dao.entity,obj,new ArrayCollection([{column_name:'IndexedNumber0'},
+//					{column_name:'CustomCurrency1'},
+//					{column_name:'CustomCurrency2'},
+//					{column_name:'Name'},
+//					{column_name:'CustomCurrency0'}]));
 				obj.isNew=true;
 				
 				return obj;
@@ -104,7 +156,7 @@
 						}
 					}
 					
-					items.addItem({});//add empty row
+					items.addItem(createEmptyObject());//add empty row
 					rows = items;
 					editableGrid.dataProvider = rows;
 					editableGrid.validateNow();
@@ -120,6 +172,15 @@
 				colRenderer.properties={											
 					'dataProvider':getDataProvider(),
 					'updateRelateField':function(item:Object,selectedItem:Object):void{
+						if(item['isNew']){
+							Utils.executeFomulaFields(Database.customObject12Dao.entity,item,new ArrayCollection([{column_name:'IndexedNumber0'},
+								{column_name:'CustomCurrency1'},
+								{column_name:'CustomCurrency2'},
+								{column_name:'Name'},
+								{column_name:'CustomCurrency0'}]));							
+							
+						}
+						
 						if(selectedItem!=null){
 							delete item['isNew'];
 							item.CustomObject14Name = selectedItem;
@@ -137,6 +198,7 @@
 							item.CustomObject13Id = null;
 							item.CustomObject14Id = null;
 						}
+						//addEmptyRow();
 					},
 					'labelFunction':function(item:Object):String{
 						return item.Name;
@@ -155,7 +217,7 @@
 				//deleted column
 				var deleteCol:DataGridColumn = createColumn("",5,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
-				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyRow,'postDelete':function(d:Object):void{
+				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyObject,'postDelete':function(d:Object):void{
 					if(d!=null && d.gadget_id!=null){
 						deletedItems.addItem(d);
 					}
@@ -457,7 +519,7 @@
 			
 		]]>
 	</fx:Script>
-	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%">	
+	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%" >	
 		<mx:Canvas id="headerInfo" width="100%"/>
 		<mx:HBox y="0" x="{width-100}"   id="buttonImportExport" horizontalAlign="right" paddingTop="20" width="100%">
 			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="openSaveTemplate(event)"/>

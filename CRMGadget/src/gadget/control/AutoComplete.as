@@ -500,7 +500,7 @@ public class AutoComplete extends ComboBox
 		{
 		    if(typedTextChanged)
 		    { 
-			    cursorPosition = textInput.selectionActivePosition; //textInput.selectionBeginIndex;
+			    cursorPosition = textInput.selectionAnchorPosition; //textInput.selectionBeginIndex;
 
 				updateDataProvider();
 
@@ -644,7 +644,7 @@ public class AutoComplete extends ComboBox
 		    else if(typedText){
 		    	//Sets the selection when user navigates the suggestion list through
 		    	//arrows keys.
-				textInput.selectRange(_typedText.length,textInput.text.length); //.setSelection(_typedText.length,textInput.text.length);
+				textInput.selectRange(textInput.text.length,_typedText.length); //.setSelection(_typedText.length,textInput.text.length);
 			}
 		}
  	    if(showDropdown && !dropdown.visible)

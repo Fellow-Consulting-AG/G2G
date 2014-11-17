@@ -88,7 +88,13 @@ package gadget.util {
 		public static const charLowerGermanAccents:Array =['ß','ä','ö','ü'];
 		public static const charGerman:Array =['SS','AE','OE','UE'];
 		private static var iv:ByteArray;
-	
+		/**
+		 *  @private
+		 *  Char codes for 0123456789ABCDEF
+		 */
+		private static const ALPHA_CHAR_CODES:Array = [48, 49, 50, 51, 52, 53, 54, 
+			55, 56, 57, 65, 66, 67, 68, 69, 70];
+		
 		public static const MAP_HEADER_COLOR_PDF:Object = {
 			"Dark Blue":[[44,62,80],[236,240,241]],
 			"Light Blue":[[159,175,185],[217,207,201]],
@@ -1307,8 +1313,10 @@ package gadget.util {
 					obj[field] = model[field];
 				}
 			}
-			
-			
+			if(obj.ModifiedDate==null){
+				//add field modifieddate to obj on creattion
+				obj.ModifiedDate = DateUtils.toIsoDate(new Date());//now
+			}
 			return obj;
 		}
 		
@@ -3062,5 +3070,45 @@ package gadget.util {
 		if(reload!=null) reload();
 		
 	}
+	
+	
+	public static function generateId():String
+	{
+		var uid:Array = new Array(30);
+		var index:int = 0;
+		
+		var i:int;		
+		
+		for (i = 0; i < 17; i++)
+		{
+			uid[index++] = ALPHA_CHAR_CODES[Math.floor(Math.random() *  16)];
+			
+		}
+		
+		uid[index++] = 45; // charCode for "-"
+		
+		var time:Number = new Date().getTime();
+		// Note: time is the number of milliseconds since 1970,
+		// which is currently more than one trillion.
+		// We use the low 8 hex digits of this number in the UID.
+		// Just in case the system clock has been reset to
+		// Jan 1-4, 1970 (in which case this number could have only
+		// 1-7 hex digits), we pad on the left with 7 zeros
+		// before taking the low digits.
+		var timeString:String = ("0000000" + time.toString(16).toUpperCase()).substr(-8);
+		
+		for (i = 0; i < 8; i++)
+		{
+			uid[index++] = timeString.charCodeAt(i);
+		}
+		
+		for (i = 0; i < 4; i++)
+		{
+			uid[index++] = ALPHA_CHAR_CODES[Math.floor(Math.random() *  16)];
+		}
+		
+		return String.fromCharCode.apply(null, uid);
+	}
+	
 	}
 }

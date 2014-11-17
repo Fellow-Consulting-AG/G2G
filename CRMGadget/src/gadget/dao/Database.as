@@ -3282,7 +3282,7 @@ package gadget.dao {
 						obj["entity_name"]= sub.entity_name;
 						obj["syncable"]=sub.syncable;
 						_subSyncDao.insert(obj);
-					}else{
+					}else{					
 //						if(StringUtils.isEmpty(subTransExist["entity_name"])){
 							var cri:Object = new Object();
 							cri["entity"] = subTransaction.entity;

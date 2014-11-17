@@ -381,7 +381,7 @@ package gadget.util
 		}
 		
 		private static function getItemFields():Array{
-			var tempFields:Array =['CustomObject14Name','CustomObject14ExternalSystemId','IndexedNumber0','CustomCurrency1','CustomCurrency2','CustomCurrency0'];
+			var tempFields:Array =['CustomObject14Name','CustomObject14ExternalSystemId','IndexedNumber0'];
 			var fields:Array  = new Array();
 			
 			for each(var f:String in tempFields){
@@ -790,7 +790,7 @@ package gadget.util
 			var fontNormal: Font = getUnicodeFont(11);
 			//setFont(pdf, FontFamily.HELVETICA, 9 );
 			var columns:Array = new Array();
-			var columnCount:int = 6;
+			var columnCount:int = 9;
 			for each(var objCol:Object in fields) if (!objCol.hidden) columnCount++;
 			//var columnWidth:int = columnWidth = Math.floor((pdf.getDefaultSize().mmSize[0] - (pdf.getMargins().left * 2)) / columnCount);
 			var tableGrid:PdfPTable = new PdfPTable(columnCount);
@@ -818,7 +818,7 @@ package gadget.util
 				p.alignment = Element.ALIGN_CENTER;
 				cellHeader.addElement(p);
 				if(colInd==1){
-					cellHeader.colspan=4;
+					cellHeader.colspan=8;
 				}else if(colInd<5){
 					cellHeader.colspan=2;
 				}
@@ -847,7 +847,7 @@ package gadget.util
 					var val:Paragraph = new Paragraph(data[prop.element_name],fontNormal);
 					cellValue.addElement(val);
 					if(colInd==1){
-						cellValue.colspan=4;
+						cellValue.colspan=8;
 					}else if(colInd<5){
 						cellValue.colspan=2;
 					}

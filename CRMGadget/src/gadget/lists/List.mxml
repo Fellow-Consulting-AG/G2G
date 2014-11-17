@@ -679,7 +679,14 @@
 				}
 				*/
 				if(executeFormula){
-					Utils.doFomulaField(entity,screenCreate.item,false,subtype);
+					var tempId:String = Utils.generateId();
+					screenCreate.item['Id'] = tempId;//create tempory id for execute formular
+					try{
+						Utils.doFomulaField(entity,screenCreate.item,false,subtype);
+					}finally{
+						delete screenCreate.item['Id'];
+					}
+					
 				}
 				
 				// setup a default oracle Id for embedded items.

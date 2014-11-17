@@ -10,6 +10,7 @@
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.util.FieldUtils;
+			import gadget.util.Utils;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -140,8 +141,14 @@
 				
 				if(importItems!=null){
 					var items:ArrayCollection = new ArrayCollection();
+					var newObject:Object = new Object();	
+					Utils.executeFomulaFields(Database.customObject12Dao.entity,newObject,new ArrayCollection([{column_name:'IndexedNumber0'},
+						{column_name:'CustomCurrency1'},
+						{column_name:'CustomCurrency2'},
+						{column_name:'Name'},
+						{column_name:'CustomCurrency0'}]));	
 					for each(var o:Object in obj.children){
-						var item:Object = new Object();						
+						var item:Object = Utils.copyModel(newObject);						
 						item.CustomObject14Name = o.ItemName;
 						item.CustomObject14ExternalSystemId =o.ItemNo;
 						item.IndexedNumber0 = o.Qty;

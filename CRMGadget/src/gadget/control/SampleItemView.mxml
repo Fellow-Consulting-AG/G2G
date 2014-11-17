@@ -86,16 +86,17 @@
 					if((rows.length-1== oldRowIndex+1 || rows.length==oldRowIndex+1) ){//add empty row
 						
 						var lastRow:Object = rows.getItemAt(rows.length-1);
-						if(lastRow.isNew){
-							return;
-						}
+//						if(lastRow.isNew){
+//							return;
+//						}
 						
 						var newObj:Object = createEmptyObject();
 						if(rows==null){
 							rows = new ArrayCollection();
 						}
 						
-						rows.addItem(newObj); //add a blank record						
+						rows.addItem(newObj); //add a blank record		
+						
 						editableGrid.dataProvider = rows;
 //						editableGrid.validateNow();
 						if(setSelected){
@@ -165,7 +166,7 @@
 			protected function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name', 35);				
+				var itemName:DataGridColumn =createColumn('CustomObject14Name', 50);				
 				itemName.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -208,11 +209,11 @@
 				//edit:275, 197,90,111,113,112,38
 				//new:314,202,108,86,87,104,35
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',18,false));
-				cols.push(createColumn('IndexedNumber0',10,true,'0-9'));
-				cols.push(createColumn('CustomCurrency1',10,false));
-				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
-				cols.push(createColumn('CustomCurrency0',10,false));
+				cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
+				cols.push(createColumn('IndexedNumber0',15,true,'0-9'));
+//				cols.push(createColumn('CustomCurrency1',10,false));
+//				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
+//				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
 				var deleteCol:DataGridColumn = createColumn("",5,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
@@ -222,7 +223,7 @@
 					}
 				}};
 				deleteCol.itemRenderer=deleteRender;	
-				deleteCol.minWidth=3;
+				//deleteCol.minWidth=3;
 				cols.push(deleteCol);
 				editableGrid.columns = cols;
 			}
@@ -522,7 +523,7 @@
 		]]>
 	</fx:Script>
 	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%" >	
-		<mx:Canvas id="headerInfo" width="100%"/>
+		<mx:Canvas id="headerInfo" width="100%" horizontalScrollPolicy="off"/>
 		<mx:HBox y="0" x="{width-100}"   id="buttonImportExport" horizontalAlign="right" paddingTop="20" width="100%">
 			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="openSaveTemplate(event)"/>
 			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		

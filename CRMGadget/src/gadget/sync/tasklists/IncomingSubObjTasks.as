@@ -62,7 +62,10 @@ package gadget.sync.tasklists {
 					
 //					case "Note": subSync.push(new IncomingNote(subObj.entity));	
 					default:
-						subSync.push(new IncomingSubobjects(subObj.entity,subObj.sodname));
+						if(subObj.syncable){
+							subSync.push(new IncomingSubobjects(subObj.entity,subObj.sodname));
+						}
+						
 				}
 			}
 			

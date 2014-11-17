@@ -2,6 +2,10 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	
+	import gadget.service.UserService;
+	
+	import mx.collections.ArrayCollection;
 
 	public class CustomObject12DAO extends CustomeObjectBaseDao {
 
@@ -15,6 +19,19 @@ package gadget.dao
 				index: [ 'Id' ],
 				columns: { 'TEXT' : textColumns }
 			});
+		}
+		
+		override protected function getOutgoingIgnoreFields():ArrayCollection{
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+			//need to implement in subclass
+			return new ArrayCollection(["CustomObject12Name",
+				"CustomObject13ExternalSystemId",
+				"CustomObject13Id",
+				"CustomObject13IntegrationId",
+				"CustomObject13Name"]);
+			}
+			
+			return super.getOutgoingIgnoreFields();
 		}
 
 		override public function get entity():String {

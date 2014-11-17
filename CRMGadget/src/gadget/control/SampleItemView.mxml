@@ -109,19 +109,18 @@
 				}else if(fromclick){
 					var selectedRow:int = editableGrid.selectedIndex;
 					if(rows.length-1==selectedRow){
-						var newObj:Object = createEmptyObject();
+						
 						if(rows==null){
 							rows = new ArrayCollection();
 						}
 						
-						rows.addItem(newObj); //add a blank record						
-						editableGrid.dataProvider = rows;		
+							
 						if(colIdx>=0 && colIdx<editableGrid.columnCount){
 							var col:DataGridColumn = editableGrid.columns[colIdx];
 							if(col.editable){
+								rows.addItem(createEmptyObject()); //add a blank record						
+								editableGrid.dataProvider = rows;	
 								editableGrid.editedItemPosition = {columnIndex:colIdx, rowIndex:selectedRow};
-							}else{
-								editableGrid.selectedIndex = selectedRow;
 							}
 						}
 					}
@@ -261,6 +260,9 @@
 				var ignoreCopiedFields:ArrayCollection = Database.customObject12Dao.getIgnoreCopyFields();
 				for each(var tmp:Object in editableGrid.dataProvider){
 					var t:Object = new Object;
+					if(tmp.isNew){
+						continue;
+					}
 					for(var p:String in tmp){
 						if(p=='mx_internal_uid' ||ignoreCopiedFields.contains(p) ){
 							continue;//ignore copy field
@@ -283,8 +285,8 @@
 					}
 					newDataProvider.addItem(t);
 				}
-				newDataProvider.filterFunction = isNotEmptyRow;
-				newDataProvider.refresh();
+				//newDataProvider.filterFunction = isNotEmptyRow;
+				//newDataProvider.refresh();
 				
 				return newDataProvider;
 			}

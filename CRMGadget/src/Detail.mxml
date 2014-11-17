@@ -287,8 +287,10 @@
 					if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
 						sampleView = new SampleItemView();
 						sampleView.item = this.item;
-						sampleView.rows = item.sampleItems as ArrayCollection;
-						delete item.sampleItems;
+						if(item.sampleItems!=null){
+							sampleView.rows= new ArrayCollection((item.sampleItems as ArrayCollection).source);
+							delete item.sampleItems;
+						}
 						sampleView.detailScreen = this;
 						sampleView.horizontalScrollPolicy = "off";
 						sampleView.percentWidth = 100;

@@ -284,9 +284,9 @@ package com.crmgadget.eval
 			if(upperName =="LOOKUPNAME"){
 				var field:String =replaceSpecialCh(String(nonEvaluatedParams.getItemAt(0)));
 				field = ensureField(field);
-				// if a field return val
-				if( "OCC_CUST_LOV_USER_2" == field){
-					return String(params.getItemAt(1));
+				if(params.length>1){
+					//return the value
+					return  String(params.getItemAt(1));
 				}else{
 					return "";
 				}

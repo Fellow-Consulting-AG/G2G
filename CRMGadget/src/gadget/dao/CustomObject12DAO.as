@@ -22,7 +22,7 @@ package gadget.dao
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{
-			if(UserService.getCustomerId()==UserService.COLOPLAST){
+			if(Database.preferencesDao.isEnableSampleOrder()){
 			//need to implement in subclass
 			return new ArrayCollection(["CustomObject12Name",
 				"CustomObject13ExternalSystemId",

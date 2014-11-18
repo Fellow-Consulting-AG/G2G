@@ -5,6 +5,8 @@
 		   creationComplete="init(event)">
 	<fx:Script>
 		<![CDATA[
+			import flexunit.utils.ArrayList;
+			
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
@@ -23,7 +25,6 @@
 			import mx.events.CloseEvent;
 			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
-			import mx.events.ItemClickEvent;
 			import mx.events.ListEvent;
 			import mx.utils.StringUtil;
 			[Bindable] public var item:Object;
@@ -31,6 +32,7 @@
 			public var detailScreen:Detail;
 			private var deletedItems:ArrayCollection = new ArrayCollection();
 			private var field2Label:Dictionary = new Dictionary();
+			private var templateNewItem:Object;
 			protected function init(event:FlexEvent):void
 			{
 				if(rows==null || rows.length<1){
@@ -50,7 +52,7 @@
 				
 				createHeaderForm();
 				initColumns();
-				editableGrid.addEventListener(ItemClickEvent.ITEM_CLICK,function(e:ListEvent):void{
+				editableGrid.addEventListener(DataGridEvent.ITEM_EDIT_END,function(e:DataGridEvent):void{
 					
 					addEmptyRow(false,true,e.columnIndex);
 				
@@ -66,7 +68,7 @@
 					}else if(evt.keyCode == Keyboard.TAB){
 						var oldColIndex:int = editableGrid.editedItemPosition.columnIndex;
 						var editColumn:DataGridColumn = editableGrid.columns[oldColIndex];
-						if(editColumn.dataField=='CustomCurrency2'){
+						if(editColumn.dataField=='IndexedNumber0'){
 							addEmptyRow(true);
 						}
 					}
@@ -78,6 +80,14 @@
 			}
 			
 			private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
+				
+				if(rows!=null){
+					var lastRow:Object = rows.getItemAt(rows.length-1);
+					if(lastRow.isNew){//
+						return;
+					}
+				}
+				
 				if(editableGrid.editedItemPosition){
 					
 					var oldColIndex:int = editableGrid.editedItemPosition.columnIndex;
@@ -85,7 +95,7 @@
 					var oldRowIndex:int = editableGrid.editedItemPosition.rowIndex;
 					if((rows.length-1== oldRowIndex+1 || rows.length==oldRowIndex+1) ){//add empty row
 						
-						var lastRow:Object = rows.getItemAt(rows.length-1);
+//						var lastRow:Object = rows.getItemAt(rows.length-1);
 //						if(lastRow.isNew){
 //							return;
 //						}
@@ -163,35 +173,41 @@
 				}
 			}
 			
-			protected function initColumns():void{
-				var cols:Array = new Array();				
-				//itemname
-				var itemName:DataGridColumn =createColumn('CustomObject14Name', 50);				
-				itemName.editorDataField='selectedItem';
+			
+			private function createItemColumn(colDataFied:String,width:int,colLabelFunction:Function,renderName:String,dataProviders:ArrayCollection):DataGridColumn{
+				
+				var col:DataGridColumn =createColumn(colDataFied, width);				
+				col.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
-					'dataProvider':getDataProvider(),
+					'dataProvider':dataProviders,
 					'updateRelateField':function(item:Object,selectedItem:Object):void{
 						if(item['isNew']){
-							Utils.executeFomulaFields(Database.customObject12Dao.entity,item,new ArrayCollection([{column_name:'IndexedNumber0'},
-								{column_name:'CustomCurrency1'},
-								{column_name:'CustomCurrency2'},
-								{column_name:'Name'},
-								{column_name:'CustomCurrency0'}]));							
+							if(templateNewItem==null){
+								templateNewItem = new Object();
+								Utils.executeFomulaFields(Database.customObject12Dao.entity,templateNewItem,new ArrayCollection([{column_name:'IndexedNumber0'},
+									{column_name:'CustomCurrency1'},
+									{column_name:'CustomCurrency2'},
+									{column_name:'Name'},
+									{column_name:'CustomCurrency0'}]));		
+							}
+							
+							Utils.copyObject(item,templateNewItem);
 							
 						}
 						
-						if(selectedItem!=null){
+						if(selectedItem!=null){						
 							delete item['isNew'];
-							item.CustomObject14Name = selectedItem;
-							if(!StringUtils.isEmpty(getItemName(item,null))){
-								item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
+							item.CustomObject14Name = selectedItem.Name;
+							item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
+							if(!StringUtils.isEmpty(colLabelFunction(item,col))){								
 								item.CustomCurrency1 = selectedItem.CustomCurrency0;
 								item.CustomObject13Name = selectedItem.CustomObject13Name;
 								item.CustomObject13Id = selectedItem.CustomObject13Id;
 								item.CustomObject14Id = selectedItem.Id;
 							}
 						}else{
+							item.CustomObject14Name =null;
 							item.CustomObject14ExternalSystemId = null;
 							item.CustomCurrency1 = 0;
 							item.CustomObject13Name = null;
@@ -201,15 +217,30 @@
 						//addEmptyRow();
 					},
 					'labelFunction':function(item:Object):String{
-						return item.Name;
-					}};
-				itemName.labelFunction = getItemName;				
-				itemName.itemEditor = colRenderer;				
+						return item[renderName];
+					},'labelField':renderName};
+				col.labelFunction = colLabelFunction;				
+				col.itemEditor = colRenderer;	
+				
+				return col;
+			}
+			
+			
+			
+			protected function initColumns():void{
+				
+				var cols:Array = new Array();				
+				//itemname
+				var itemName:DataGridColumn =createItemColumn('CustomObject14Name', 50,getItemName,'Name',getDataProvider());
+				var itemNo:DataGridColumn = createItemColumn('CustomObject14ExternalSystemId',25,getItemNo,'ExternalSystemId',getDataProvider());
+				
+							
 				cols.push(itemName);
+				cols.push(itemNo);
 				//edit:275, 197,90,111,113,112,38
 				//new:314,202,108,86,87,104,35
 				//item no
-				cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
+				//cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
 				cols.push(createColumn('IndexedNumber0',15,true,'0-9'));
 //				cols.push(createColumn('CustomCurrency1',10,false));
 //				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
@@ -243,7 +274,12 @@
 				return col;
 				
 			}
-			private function getItemName(item:Object, col:DataGridColumn):String {
+			
+			private function getItemNo(item:Object, col:DataGridColumn):String{
+				return getItemName(item,col,'ExternalSystemId');
+			}
+										 
+			private function getItemName(item:Object, col:DataGridColumn,name:String ='Name'):String {
 				if(item == null) return "";
 				var dataField:String = 'CustomObject14Name';
 				if(col!=null){
@@ -253,7 +289,7 @@
 				if(obj is String){
 					return obj as String;
 				}else{					
-					return obj?obj.Name:"";
+					return obj?obj[name]:"";
 				}
 			}
 			public function cloneItems():ArrayCollection{
@@ -421,9 +457,7 @@
 					
 					index++;
 					if( checkEmpty(item,"CustomObject14Name") ||
-						checkEmpty(item,"IndexedNumber0") ||						
-						checkEmpty(item,"CustomCurrency2")
-					){
+						checkEmpty(item,"IndexedNumber0") ){
 						isMissing = true;						
 						break;
 					}
@@ -500,7 +534,14 @@
 							}
 						}	
 						obj.ItemId = rec.CustomObject14Id;
-						obj.ItemNo =rec.CustomObject14ExternalSystemId;
+						var no:Object = rec.CustomObject14ExternalSystemId;
+						if(no is String){
+							obj.ItemNo = no;
+						}else{
+							if(no!=null){
+								obj.ItemNo=no.ExternalSystemId;
+							}
+						}
 						obj.Qty = rec.IndexedNumber0;
 						obj.PlantId = rec.CustomObject13Id;
 						obj.PlantName = rec.CustomObject13Name;

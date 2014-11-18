@@ -77,6 +77,22 @@ package gadget.dao
 			
 		}
 		
+		public function readAllDefaultValueFields(entity:String):Dictionary{
+			var where:String = " Where (DefaultValue is not null AND DefaultValue!='') AND  entity='" + entity + "'";
+			var result:Array = select_order("*", where, null, "DisplayName",null);
+			var dic:Dictionary = new Dictionary();
+			if(result!=null && result.length>0){
+				for each(var obj:Object in result){
+					if(entity==Database.customObject11Dao.entity && obj.Name=='CustomText54'){//bug#8825
+						obj.PostDefault='true';
+					}
+					dic[obj.Name]=obj;
+				}
+			}
+			return dic;
+			
+		}
+		
 		override public function delete_all():void {
 			del(null);
 			Database.fieldTranslationDataDao.delete_all();

@@ -284,7 +284,7 @@
 				if(sampleView!=null){
 					viewstack.addChild(sampleView);
 				}else{
-					if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+					if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 						sampleView = new SampleItemView();
 						sampleView.item = this.item;
 						if(item.sampleItems!=null){
@@ -496,7 +496,7 @@
 			
 			private function commit():Boolean {
 				
-				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 					if(sampleView!=null && sampleView.hasError()){
 						Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Item'),Alert.OK,this);
 						return false;		
@@ -805,7 +805,7 @@
 				
 				//bug8043---no relation set in sublist (while i see the contact in rel.item setcion on the right)
 				createSubObject();
-				if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 					if(sampleView!=null){
 						sampleView.save(item);
 					}
@@ -858,8 +858,10 @@
 						}
 					}
 				}
-				if(entity==Database.customObject11Dao.entity&& UserService.COLOPLAST == UserService.getCustomerId()){
-					item.sampleItems = sampleView.rows;
+				if(entity==Database.customObject11Dao.entity&& Database.preferencesDao.isEnableSampleOrder()){
+					if(sampleView!=null){
+						item.sampleItems = sampleView.rows;
+					}
 				}
 			}
 			
@@ -1121,7 +1123,7 @@
 							delete other[f];
 						}
 						
-						if(UserService.COLOPLAST == UserService.getCustomerId()){
+						if(Database.preferencesDao.isEnableSampleOrder()){
 							if(sampleView !=null){
 								//copy sample item
 								other.sampleItems = sampleView.cloneItems();
@@ -2275,7 +2277,7 @@
 										return bytes;
 										}
 										private function exportToPdfWithEpad(event:MouseEvent):void{
-											if(entity==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+											if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 												updateItemFields();
 												PDFUtil.sampleItemsToPDF(item,sampleView.cloneItems());
 											}else{

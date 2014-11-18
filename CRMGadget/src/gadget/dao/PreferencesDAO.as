@@ -126,6 +126,8 @@ package gadget.dao
 		public static const GOOGLE_MAP_DISTANCE:String = "google_map_distance";
 		public static const ENABLE_AUTO_SET_PRIMARY_CONTACT:String = "enable_set_primary_contact";
 		
+		public static const ENABLE_SAMPLE_ORDER:String = 'enable_sample_order';
+		
 		public static const LOG_FILES:String = "log_files";
 		import gadget.util.TableFactory;
 		
@@ -271,11 +273,16 @@ package gadget.dao
 			DAILY_AGENDA_NAME,
 			ENABLE_AUTO_SYNC,
 			ENABLE_DOUBLE_CLICK_NEW_CALL,
-			GOOGLE_MAP_DISTANCE
+			GOOGLE_MAP_DISTANCE,
+			ENABLE_SAMPLE_ORDER
 		];
 		
 		public function getGoolgeMapDistance():String{
 			return getStrValue(GOOGLE_MAP_DISTANCE,"metric");
+		}
+		
+		public function isEnableSampleOrder():Boolean{
+			return getBooleanValue(ENABLE_SAMPLE_ORDER);
 		}
 		
 		public function isEnableDoubleClickNewCall():Boolean{

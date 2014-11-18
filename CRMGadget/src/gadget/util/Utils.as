@@ -369,12 +369,13 @@ package gadget.util {
 		}
 		public static function executeFomulaFields(entity:String,enityObject:Object,fields:ArrayCollection ,afterSave:Boolean=false,subtype:int=0):void {
 			
-			var fieldsManagement:Dictionary = Database.fieldManagementServiceDao.readAll(entity);
+			var fieldsManagement:Dictionary = Database.fieldManagementServiceDao.readAllDefaultValueFields(entity);
 			var userData:Object = Database.allUsersDao.ownerUser();
 			var currentUser:Object = Database.userDao.read();
-			for each (var tmpField:Object in fields) { 
-				if (tmpField.custom == null) {
-					var fieldInfo:Object = FieldUtils.getField(entity, tmpField.column_name);
+//			for each (var tmpField:Object in fields) { 
+//				if (tmpField.custom == null) {
+			for(var tempField:String in fieldsManagement){//should execute all default field
+					var fieldInfo:Object = FieldUtils.getField(entity, tempField);
 					if(!fieldInfo) continue;
 					var fieldName:String = fieldInfo.element_name;
 					var fieldManagement:Object = fieldsManagement[fieldName];
@@ -443,14 +444,8 @@ package gadget.util {
 										}
 										
 									}else{
-										if(fieldManagement.ReadOnly=='true'){
-											enityObject[fieldInfo.element_name] = tempVal;
-										}else{
-											var oldVal:String = enityObject[fieldInfo.element_name];
-											if(StringUtils.isEmpty(oldVal)){
-												enityObject[fieldInfo.element_name] = tempVal;
-											}
-										}
+										//always set the value with the post default value
+										enityObject[fieldInfo.element_name] = tempVal;
 									}
 									
 									
@@ -465,7 +460,7 @@ package gadget.util {
 							
 						}
 					
-					}
+					
 					//#975 and #977 CRO
 					if(UserService.SIEMEN==UserService.getCustomerId() && entity==Database.opportunityDao.entity && enityObject['SalesStage'] == null){
 						enityObject['SalesStage'] = "0 Lead Management";
@@ -1318,6 +1313,12 @@ package gadget.util {
 				obj.ModifiedDate = DateUtils.toIsoDate(new Date());//now
 			}
 			return obj;
+		}
+		
+		public static function copyObject(source:Object,target:Object):void{
+			for(var f:String in target){
+				source[f]=target[f];
+			}
 		}
 		
 		/**

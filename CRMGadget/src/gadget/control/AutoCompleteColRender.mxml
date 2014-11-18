@@ -20,7 +20,11 @@
 				}
 			}
 
-			
+			public function set labelField(field:String):void{
+				if(field!=null){
+					this.cborender.labelField = field;
+				}
+			}
 
 			public function get updateRelateField():Function
 			{
@@ -61,7 +65,7 @@
 					if(obj is String){
 						cborender.setSelectedItemByText(obj as String);
 					}else{
-						cborender.setSelectedItemByText(obj.Name);
+						cborender.setSelectedItemByText(obj[cborender.labelField]);
 					}
 				}else{
 					cborender.selectedItem = obj;

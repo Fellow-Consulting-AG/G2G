@@ -1120,24 +1120,24 @@
 					
 					
 					
-				}else if(entity==Database.customObject11Dao.entity){
+				}else if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 					var lst:List = navigator.selectedChild as List;
 					if(lst.entity==Database.contactDao.entity){
 						newObj = new Object();
 						//copy contact
 						var itemSelected:Object = lst.list.selectedItem;
 						if(itemSelected != null){
-							var contId:String = itemSelected["ContactId"];
-							var objContact:Object = Database.contactDao.findByOracleId(contId);
-						}
+							
+							var parentobj:Object = Database.contactDao.findByOracleId(itemSelected["ContactId"]);						
 						
-						var referencers:ArrayCollection = Relation.getReferencers(Database.contactDao.entity);
-						for each (var relation:Object in referencers) {
-							if (relation.entitySrc == Database.customObject11Dao.entity && relation.entityDest == Database.contactDao.entity) {
-								newObj[relation.keySrc] = objContact[relation.keyDest];
-								for(var i:int=0; i<relation.labelDest.length; i++){
-									newObj[relation.labelSrc[i]] = objContact[relation.labelDest[i]];
-								}								
+							var referencers:ArrayCollection = Relation.getReferencers(Database.contactDao.entity);
+							for each (var relation:Object in referencers) {
+								if (relation.entitySrc == Database.customObject11Dao.entity && relation.entityDest == Database.contactDao.entity) {
+									newObj[relation.keySrc] = parentobj[relation.keyDest];
+									for(var i:int=0; i<relation.labelDest.length; i++){
+										newObj[relation.labelSrc[i]] = parentobj[relation.labelDest[i]];
+									}								
+								}
 							}
 						}
 					}

@@ -159,6 +159,18 @@ package gadget.sync.outgoing
 			
 		}
 		
+		//replace ' to empty only for ('Y' and 'N')
+		protected function ensureData(str:String):String{
+			if(str=="'Y'"){
+				return 'Y';
+			}else if(str=="'N'"){
+				return 'N';
+			}
+		
+			return str;
+		}
+		
+		
 		override protected function doRequest():void {
 			subObjects = {};
 
@@ -250,7 +262,7 @@ package gadget.sync.outgoing
 								}
 							}
 							
-							xml.appendChild(<{ws20field}>{fieldData}</{ws20field}>);
+							xml.appendChild(<{ws20field}>{ensureData(fieldData)}</{ws20field}>);
 						}
 					}
 				}
@@ -354,7 +366,8 @@ package gadget.sync.outgoing
 									continue;
 								//warningHandler(_("trying to fix NULL value in {1} subrecord {2}", entity, sub), null);
 							}
-							tmp2.appendChild(<{name}>{val}</{name}>);
+							val = ensureData(val);
+							tmp2.appendChild(<{name}>{ val}</{name}>);
 						}
 						tmp.appendChild(tmp2);
 					}

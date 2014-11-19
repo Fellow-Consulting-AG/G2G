@@ -159,7 +159,7 @@ package gadget.sync.outgoing
 						}
 						if(ingnoreFields.hasOwnProperty(name)) continue;
 						
-						tmp.appendChild(<{name}>{val}</{name}>);
+						tmp.appendChild(<{name}>{ensureData(val)}</{name}>);
 					}
 				}
 				

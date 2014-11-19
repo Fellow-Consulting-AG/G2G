@@ -72,7 +72,7 @@ package com.crmgadget.eval
 				var rightOpPos:int = getOperator(1, work, operatorPos + key.length) + 1;
 				var rightOp:String = (formula.substring(operatorPos + key.length, rightOpPos));
 				var funcKey:String = StringUtil.trim(key);
-				var alias:String=KEYS_ALIAS[funcKey]  
+				var alias:String=KEYS_ALIAS[funcKey]  ;
 				if(alias!=null){
 					funcKey=alias;
 				}

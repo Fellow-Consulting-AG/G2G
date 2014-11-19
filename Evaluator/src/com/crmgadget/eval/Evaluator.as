@@ -241,7 +241,7 @@ package com.crmgadget.eval
 			if(upperName=="OR"){
 				p1=params.getItemAt(0);
 				p2=params.getItemAt(1);
-				if("true"==p1 ||p2=="true" || p1== "1"|| p2=="1"){
+				if("true"==p1 ||p2=="true" || p1== "1"|| p2=="1" || "'Y'"==p1 ||"'Y'"==p2|| "Y"==p1 ||"Y"==p2){
 					return "true"
 				}
 				return "false"
@@ -250,7 +250,7 @@ package com.crmgadget.eval
 			if(upperName=="AND"){
 				p1=params.getItemAt(0);
 				p2=params.getItemAt(1);
-				if(("true"==p1 && p2=="true") || (p1== "1"&& p2=="1")){
+				if(("true"==p1 && p2=="true") || (p1== "1"&& p2=="1")||( "'Y'"==p1 &&"'Y'"==p2)|| ("Y"==p1 &&"Y"==p2)){
 					return "true"
 				}
 				return "false"
@@ -445,6 +445,12 @@ package com.crmgadget.eval
 					return "true";
 				}
 				
+			}
+			
+			if(upperName=="'N'" ||upperName=="N"){
+				name ='false';
+			}else if(upperName=="'Y'" ||upperName=="Y"){
+				name ='true';
 			}
 			
 			return name;
@@ -773,7 +779,7 @@ package com.crmgadget.eval
 				}else if(operator=="ADD"){
 					return (str1 == null ? "" : str1) + (str2 == null ? "" :str2);
 				}else if(operator=="EQ"){
-					return str1 == str2?"true":"false";
+					return StringUtils.equal(str1,str2)?"true":"false";
 				}
 			}catch(e:Error){
 				trace( "doCompareAndCalculate \n" + e.getStackTrace());

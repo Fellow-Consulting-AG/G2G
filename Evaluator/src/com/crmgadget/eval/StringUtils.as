@@ -159,5 +159,29 @@ package com.crmgadget.eval
 			return str;
 		}
 		
+		private static function ensureStr(str:String):String{
+			if(str=='Y' || str=="'Y'" || str=='1'){
+				str = 'true';
+			}else if(str=='N' || str=="'N'" ||str=='0'){
+				str='false'
+			}
+			
+			return str;
+		}
+		
+		public static function equal(str1:String,str2:String):Boolean{
+			
+			var result:Boolean = str1==str2;
+			if(!result){
+				str1 = ensureStr(str1);
+				str2 = ensureStr(str2);
+				result =str1==str2;
+				
+			}
+			
+			return result;
+			
+		}
+		
 	}
 }

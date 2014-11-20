@@ -1,9 +1,12 @@
 package com.crmgadget.eval
 {
+	import flash.utils.Dictionary;
+	
 	import mx.collections.ArrayCollection;
 
 	public class OptionalParams
 	{
+		protected var existExecuteField:Dictionary = new Dictionary();
 		public	var objEntity:Object=null;
 		public	var doGetPickList:Function=null;
 		public	var doGetPickListId:Function=null;
@@ -16,7 +19,15 @@ package com.crmgadget.eval
 		public var doGetOracleId:Function;
 		public function OptionalParams()
 		{
-			
+			existExecuteField=new Dictionary();
+		}
+		
+		public function isExecuting(field:String):Boolean{
+			return existExecuteField.hasOwnProperty(field);
+		}
+		
+		public function addExecuting(field:String):void{
+			existExecuteField[field]=field;
 		}
 	}
 }

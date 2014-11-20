@@ -111,6 +111,7 @@ package com.crmgadget.eval
 				optionalParam.sqlLists = sqlLists;
 				optionalParam.current_field = elment_name;
 				optionalParam.doGetOracleId = getOracleId;
+				optionalParam.addExecuting(elment_name);
 				return doEvaluate(node,owner,entity,elment_name,optionalParam);
 			} catch(e:Error){
 				if(isFiltered){ 
@@ -124,6 +125,25 @@ package com.crmgadget.eval
 				}
 				return "";
 			}
+			return "";
+		}
+		
+		private static function doExecuteRelatedField(strExp:String,owner:Object,entity:String,elment_name:String, optionalParam:OptionalParams):String{
+			if(strExp.charAt(0) == '"' && strExp.charAt(strExp.length-1) == '"'){
+				return strExp.replace(/\"/gi, '');
+			}
+			if(strExp.charAt(0) == "'" && strExp.charAt(strExp.length-1) == "'"){
+				return strExp.replace(/\'/gi, '');
+			}
+			try{
+				var formula:String=Functionalizer.functionalize(strExp);
+				var node:Node=Parser.parse(formula);
+				optionalParam.addExecuting(elment_name);
+				return doEvaluate(node,owner,entity,elment_name,optionalParam);
+			}catch(e:Error){
+				return strExp; 
+			}
+			
 			return "";
 		}
 		
@@ -148,6 +168,7 @@ package com.crmgadget.eval
 		
 		
 		private static function doEvaluate(node:Node,owner:Object,entity:String,elment_name:String,opPars:OptionalParams):String {
+			
  			var params:ArrayCollection = new ArrayCollection();
 			// non evaluated params are params, but not evaluated
 			var nonEvaluatedParams:ArrayCollection = new ArrayCollection();
@@ -888,12 +909,13 @@ package com.crmgadget.eval
 						}
 						
 					} else {
-						return null;
-						// #7204 stuck overflow to do next time
 						
-//						return evaluate(defaultValue,owner,entity,str,opPars.objEntity,opPars.doGetPickList
-//							,opPars.doGetPickListId,opPars.doGetXMLValueField,opPars.isFiltered,opPars.doGetJoinField,
-//							opPars.getFieldNameFromIntegrationTag,opPars.sqlLists);
+						if(opPars.isExecuting(fieldManagement.Name)){
+							return null;
+						}else{
+							return doExecuteRelatedField(defaultValue,owner,entity,fieldManagement.Name,opPars);
+						}						
+				
 					}
 				}
 				fieldType = fieldManagement.FieldType;

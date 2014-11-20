@@ -109,5 +109,5 @@
 		]]>
 		
 	</fx:Script>
-	<control:AutoComplete id="cborender" change="itemChange(event)" lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
+	<control:AutoComplete id="cborender" height="100%" change="itemChange(event)" lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
 </s:MXDataGridItemRenderer>

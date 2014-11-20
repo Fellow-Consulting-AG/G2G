@@ -286,7 +286,7 @@
 				}else{
 					if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 						sampleView = new SampleItemView();
-						sampleView.item = this.item;
+						sampleView.parentObject = this.item;
 						if(item.sampleItems!=null){
 							sampleView.rows= new ArrayCollection((item.sampleItems as ArrayCollection).source);
 							delete item.sampleItems;

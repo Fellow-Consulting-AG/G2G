@@ -85,21 +85,21 @@
 			private function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var col:DataGridColumn =SampleItemView.createColumn('CustomObject14Name',43,false);				
+				var col:DataGridColumn =SampleItemView.createColumn('Name',43,Database.customObject14Dao.entity,false);				
 				col.dataField="ItemName";
 				cols.push(col);
 				
 				//item no
-				col=SampleItemView.createColumn('CustomObject14ExternalSystemId',30,false);
+				col=SampleItemView.createColumn('CustomObject14ExternalSystemId',30,Database.customObject12Dao.entity,false);
 				col.dataField = 'ItemNo';
 				cols.push(col);
 				
 				//item qty
-				col=SampleItemView.createColumn('IndexedNumber0',20,false);
+				col=SampleItemView.createColumn('IndexedNumber0',20,Database.customObject12Dao.entity,false);
 				col.dataField = 'Qty';
 				cols.push(col);			
 				//deleted column
-				var deleteCol:DataGridColumn = SampleItemView.createColumn("",7,false);
+				var deleteCol:DataGridColumn = SampleItemView.createColumn("",7,Database.customObject12Dao.entity,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={parentComp:this,addEmptyRow:false};
 				deleteCol.itemRenderer=deleteRender;				

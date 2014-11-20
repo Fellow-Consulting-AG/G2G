@@ -27,27 +27,31 @@
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.utils.StringUtil;
-			[Bindable] public var item:Object;
+			[Bindable] public var parentObject:Object;
 			[Bindable] public var rows:ArrayCollection;
 			public var detailScreen:Detail;
 			private var deletedItems:ArrayCollection = new ArrayCollection();
 			private var field2Label:Dictionary = new Dictionary();
 			private var templateNewItem:Object;
+			private var itemId2CO14:Dictionary = new Dictionary();
+			private var items:ArrayCollection = null;
 			protected function init(event:FlexEvent):void
 			{
 				if(rows==null || rows.length<1){
-					if(item!=null && StringUtils.isEmpty(item['Id'])){
+					if(parentObject==null || StringUtils.isEmpty(parentObject['Id'])){
 						if(rows==null){
 							rows = new ArrayCollection();
 						}
 					}else{
 						
-						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':item['Id']}));
+						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
 						
 					}
 				}
 				
-				
+				for each(var obj:Object in getItems()){
+					itemId2CO14[obj.Id] = obj;
+				}
 				
 				
 				createHeaderForm();
@@ -151,10 +155,10 @@
 			}
 			
 			public function updateHeaderInfo(obj:Object):void{
-				this.item = obj;
+				this.parentObject = obj;
 				for(var field:String in field2Label){
 					var lbl:Label = field2Label[field] as Label;
-					lbl.text = item[field];
+					lbl.text = parentObject[field];
 				}
 			}
 			
@@ -174,9 +178,10 @@
 			}
 			
 			
-			private function createItemColumn(colDataFied:String,width:int,colLabelFunction:Function,renderName:String,dataProviders:ArrayCollection):DataGridColumn{
+			private function createItemColumn(colDataFied:String,width:int,colLabelFunction:Function,renderName:String,dataProviders:ArrayCollection,entity:String):DataGridColumn{
 				
-				var col:DataGridColumn =createColumn(colDataFied, width);				
+				var col:DataGridColumn =createColumn(renderName, width,entity);			
+				col.dataField = colDataFied;
 				col.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
 				colRenderer.properties={											
@@ -231,9 +236,9 @@
 				
 				var cols:Array = new Array();				
 				//itemname
-				var itemName:DataGridColumn =createItemColumn('CustomObject14Name', 50,getItemName,'Name',getDataProvider());
-				var itemNo:DataGridColumn = createItemColumn('CustomObject14ExternalSystemId',25,getItemNo,'ExternalSystemId',getDataProvider());
 				
+				var itemNo:DataGridColumn = createItemColumn('CustomObject14ExternalSystemId',100,getItemNo,'ExternalSystemId',getItems(),Database.customObject12Dao.entity);
+				var itemName:DataGridColumn =createItemColumn('CustomObject14Name', 250,getItemName,'Name',getItems(),Database.customObject14Dao.entity);
 							
 				cols.push(itemName);
 				cols.push(itemNo);
@@ -241,36 +246,56 @@
 				//new:314,202,108,86,87,104,35
 				//item no
 				//cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
-				cols.push(createColumn('IndexedNumber0',15,true,'0-9'));
+				cols.push(createColumn('IndexedNumber0',80,Database.customObject12Dao.entity,true,'0-9'));
+				cols.push(createColumn('CustomText31',100,Database.customObject14Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('CustomObject13Name',166,Database.customObject14Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('CustomObject13ExternalSystemId',80,Database.customObject14Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('CustomText30',130,Database.customObject14Dao.entity,false,null,defaultLabel));
 //				cols.push(createColumn('CustomCurrency1',10,false));
 //				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
 //				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",5,false);
+				var deleteCol:DataGridColumn = createColumn("",30,Database.customObject14Dao.entity,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyObject,'postDelete':function(d:Object):void{
 					if(d!=null && d.gadget_id!=null){
 						deletedItems.addItem(d);
 					}
 				}};
-				deleteCol.itemRenderer=deleteRender;	
-				//deleteCol.minWidth=3;
+				deleteCol.itemRenderer=deleteRender;
 				cols.push(deleteCol);
 				editableGrid.columns = cols;
 			}
 			
+			private function defaultLabel(obj:Object,col:DataGridColumn):String{
+				if(obj!=null){
+					var display:String = obj[col.dataField] as String;
+					if(!StringUtils.isEmpty(display)){
+						return display;
+					}
+					var item:Object = itemId2CO14[obj.CustomObject14Id];
+					if(item!=null){
+						return item[col.dataField]==null?'':item[col.dataField];
+					}
+					
+				}
+				
+				return '';
+				
+			}
 			
-			public static function createColumn(dataField:String,width:Number,editable:Boolean=true,restricNumber:String=null):DataGridColumn{
+			public static function createColumn(dataField:String,width:Number,entity:String,editable:Boolean=true,restricNumber:String=null,labelFunction:Function = null):DataGridColumn{
 				var col:DataGridColumn = new DataGridColumn();
-				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,dataField);
+				col.headerText = FieldUtils.getFieldDisplayName(entity,dataField);
 				col.dataField = dataField;
 				col.editable = editable;
 				col.width=width;
+				col.headerWordWrap=true;
 				if(restricNumber!=null){
 					var factory:ClassFactory = col.itemEditor as ClassFactory;
 					factory.properties={restrict:restricNumber,maxChars:20};
 				}
-				
+				col.labelFunction = labelFunction;
 				return col;
 				
 			}
@@ -480,12 +505,14 @@
 				
 			}
 			
-			private function getDataProvider():ArrayCollection {
-				var picklist:ArrayCollection = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0,CustomObject13Name,CustomObject13Id"}]),null,null,-1);
-				if(picklist!=null){
-					picklist.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
+			private function getItems():ArrayCollection {
+				if(items==null){
+					items = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0,CustomObject13Name,CustomObject13Id,CustomText30,CustomText31,CustomObject13ExternalSystemId"}]),null,null,-1);
+					if(items!=null){
+						items.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
+					}
 				}
-				return picklist;
+				return items;
 			}
 			
 			
@@ -507,8 +534,8 @@
 					formItem.label = field.display_name == null ? getDisplayName(field,Database.customObject11Dao.entity) : field.display_name;						
 					var columnValue:Label = new Label();
 					columnValue.setStyle("fontWeight","bold");					
-					if(item!=null){
-						columnValue.text = item[field.element_name];						
+					if(parentObject!=null){
+						columnValue.text = parentObject[field.element_name];						
 					}					
 					field2Label[field.element_name] = columnValue;
 					formItem.addChild(columnValue);
@@ -564,13 +591,18 @@
 		]]>
 	</fx:Script>
 	<mx:VBox left="8" right="8" bottom="8" width="100%" height="100%" >	
-		<mx:Canvas id="headerInfo" width="100%" horizontalScrollPolicy="off"/>
+		<mx:HBox width="100%">
+			<mx:Canvas id="headerInfo" width="100%" horizontalScrollPolicy="off"/>
+		</mx:HBox>
+		
 		<mx:HBox y="0" x="{width-100}"   id="buttonImportExport" horizontalAlign="right" paddingTop="20" width="100%">
 			<mx:LinkButton icon="@Embed(source='/assets/save_config.png')" toolTip="{i18n._('SAVE_ORDER_TEMPLATE@Save as Template')}" click="openSaveTemplate(event)"/>
 			<mx:LinkButton icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		
 		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="936" height="100%"/>
+		</mx:HBox>
 		
-		<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false"  height="100%" width="100%"/>
 		
 	</mx:VBox>
 	

@@ -93,7 +93,7 @@ package gadget.util {
 		 *  Char codes for 0123456789ABCDEF
 		 */
 		private static const ALPHA_CHAR_CODES:Array = [48, 49, 50, 51, 52, 53, 54, 
-			55, 56, 57, 65, 66, 67, 68, 69, 70];
+			55, 56, 57, 65, 66, 67, 68, 69, 70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90];
 		
 		public static const MAP_HEADER_COLOR_PDF:Object = {
 			"Dark Blue":[[44,62,80],[236,240,241]],
@@ -3075,14 +3075,14 @@ package gadget.util {
 	
 	public static function generateId():String
 	{
-		var uid:Array = new Array(30);
+		var uid:Array = new Array(13);
 		var index:int = 0;
 		
 		var i:int;		
 		
-		for (i = 0; i < 17; i++)
+		for (i = 0; i < 4; i++)
 		{
-			uid[index++] = ALPHA_CHAR_CODES[Math.floor(Math.random() *  16)];
+			uid[index++] = ALPHA_CHAR_CODES[Math.floor(Math.random() *  36)];
 			
 		}
 		
@@ -3096,16 +3096,11 @@ package gadget.util {
 		// Jan 1-4, 1970 (in which case this number could have only
 		// 1-7 hex digits), we pad on the left with 7 zeros
 		// before taking the low digits.
-		var timeString:String = ("0000000" + time.toString(16).toUpperCase()).substr(-8);
+		var timeString:String = ("0000000" + time.toString(36).toUpperCase()).substr(-8);
 		
 		for (i = 0; i < 8; i++)
 		{
 			uid[index++] = timeString.charCodeAt(i);
-		}
-		
-		for (i = 0; i < 4; i++)
-		{
-			uid[index++] = ALPHA_CHAR_CODES[Math.floor(Math.random() *  16)];
 		}
 		
 		return String.fromCharCode.apply(null, uid);

@@ -180,7 +180,7 @@
 			
 			private function createItemColumn(colDataFied:String,width:int,colLabelFunction:Function,renderName:String,dataProviders:ArrayCollection,entity:String):DataGridColumn{
 				
-				var col:DataGridColumn =createColumn(renderName, width,entity);			
+				var col:DataGridColumn =createColumn(colDataFied, width,entity);			
 				col.dataField = colDataFied;
 				col.editorDataField='selectedItem';
 				var colRenderer:ClassFactory = new ClassFactory(AutoCompleteColRender);
@@ -238,8 +238,8 @@
 				//itemname
 				
 				var itemNo:DataGridColumn = createItemColumn('CustomObject14ExternalSystemId',100,getItemNo,'ExternalSystemId',getItems(),Database.customObject12Dao.entity);
-				var itemName:DataGridColumn =createItemColumn('CustomObject14Name', 250,getItemName,'Name',getItems(),Database.customObject14Dao.entity);
-							
+				var itemName:DataGridColumn =createItemColumn('Name', 250,getItemName,'Name',getItems(),Database.customObject14Dao.entity);
+					itemName.dataField = 'CustomObject14Name';
 				cols.push(itemName);
 				cols.push(itemNo);
 				//edit:275, 197,90,111,113,112,38

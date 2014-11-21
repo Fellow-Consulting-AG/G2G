@@ -342,9 +342,15 @@ package gadget.util
 				if(field.isTitle){
 					addTitle(document,field.display_name as String,table);
 				}else{
-					var data:String = item[field.element_name] == null ? ' ' : item[field.element_name];
+					var elementname:String = field.element_name;
+					//IndexedBoolean0---use alterate address
+					if(StringUtils.isTrue(item['IndexedBoolean0'])){
+						elementname = field.element_name2;	
+					}
+					
+					var data:String = item[elementname] == null ? ' ' : item[elementname];
 					if (field.data_type == 'Picklist') {
-						data = PicklistService.getValue(entity,field.element_name,item[field.element_name],item);
+						data = PicklistService.getValue(entity,elementname,item[elementname],item);
 					}
 					addSampleField(table, field.display_name, data);
 				}
@@ -375,6 +381,7 @@ package gadget.util
 				var obj:Object = new Object();
 				obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject11Dao.entity,f.element_name);
 				obj.element_name = f.element_name;
+				obj.element_name2 = f.element_name2;
 				fields.push(obj);
 			} 
 			return fields;
@@ -383,12 +390,17 @@ package gadget.util
 		private static function getItemFields():Array{
 			var tempFields:Array =['CustomObject14Name','CustomObject14ExternalSystemId','IndexedNumber0'];
 			var fields:Array  = new Array();
-			
+			var first:Boolean = true;
 			for each(var f:String in tempFields){
 				var obj:Object = new Object();
-				obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,f);
+				if(!first){
+					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,f);
+				}else{
+					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject14Dao.entity,"Name");//user item description instead
+				}
 				obj.element_name = f;
 				fields.push(obj);
+				first = false;
 			} 
 			
 			return fields;

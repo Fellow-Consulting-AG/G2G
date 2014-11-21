@@ -35,6 +35,10 @@
 				}
 				return data.isSync;
 			}
+			
+			public function set chkEnable(enable:Boolean):void{
+				chkBox.enabled = enable;
+			}
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
@@ -42,7 +46,8 @@
 					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
 					if(list!=null){					
 						column = grid.columns[list.columnIndex];
-						chkBox.enabled = column.editable;
+//						chkBox.enabled = column.editable;
+//						column.editable = false;//only edit for checkbox
 					}
 				}
 			}

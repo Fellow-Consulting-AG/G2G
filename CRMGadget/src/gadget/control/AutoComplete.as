@@ -506,9 +506,11 @@ public class AutoComplete extends ComboBox
 
 			    //In case there are no suggestions there is no need to show the dropdown
   			    if(collection.length==0 || typedText==""|| typedText==null)
-  			    {
+  			    {	
+					
   			    	dropdownClosed=true;
-			    	showDropdown=false;
+			    	showDropdown=false;		
+					selectedIndex =-1;
   			    }
 				else
 				{

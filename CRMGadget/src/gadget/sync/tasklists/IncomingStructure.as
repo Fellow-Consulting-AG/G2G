@@ -3,6 +3,7 @@ package gadget.sync.tasklists
 	import flash.utils.Dictionary;
 	
 	import gadget.dao.Database;
+	import gadget.service.UserService;
 	import gadget.sync.incoming.IncomingObject;
 	import gadget.sync.incoming.IncomingRelationObject;
 	import gadget.util.Relation;
@@ -37,8 +38,10 @@ package gadget.sync.tasklists
 		 * */
 		public function getTaskAllLevel():ArrayCollection{
 			var result:ArrayCollection = new ArrayCollection();
-			for(var lev:int=0;;lev++){
-				var listLevel:Array = levelTask[lev] as Array;
+			var lev:int =0;
+			var listLevel:Array;
+			for(lev=0;;lev++){
+				listLevel = levelTask[lev] as Array;
 				if(listLevel==null){
 					break;
 				}else{
@@ -46,6 +49,19 @@ package gadget.sync.tasklists
 				}
 				
 			}
+			
+			//level of co2
+			for(lev=99;;lev++){
+				listLevel = levelTask[lev] as Array;
+				if(listLevel==null){
+					break;
+				}else{
+					result.addItem(listLevel);
+				}
+			}
+			
+			
+			
 			return result;
 		}
 		
@@ -70,11 +86,21 @@ package gadget.sync.tasklists
 					listDependOn.addItem(obj);
 				}
 			}
-			
+			//colplast need to wait workflow executing
+			var co11:Object = null;
 			for each(var parent:Object in listNotDepentOn){
-				var parentTask:IncomingObject = new IncomingObject(parent.entity);
-				this.addTask(parentTask);				
-				buildChildObject(mapDependOn,parentTask,parent.entity,1,dependOn);
+				if(parent.entity==Database.customObject11Dao.entity){
+					co11 = parent;
+				}else{
+					var parentTask:IncomingObject = new IncomingObject(parent.entity);
+					this.addTask(parentTask);				
+					buildChildObject(mapDependOn,parentTask,parent.entity,1,dependOn);
+				}
+			}
+			if(co11!=null){
+				var co11Task:IncomingObject = new IncomingObject(co11.entity);
+				this.addTask(co11Task,99);				
+				buildChildObject(mapDependOn,co11Task,co11.entity,100,dependOn);
 			}
 			
 		}

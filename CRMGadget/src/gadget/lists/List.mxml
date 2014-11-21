@@ -1346,7 +1346,9 @@
 						child.itemRenderer = iListRenderer;
 					}
 					if (obj.data_type == "Checkbox" ){
-						child.itemRenderer=new GridColumnRenderFactory(CheckBoxColRender);
+						var chkRenderer:ClassFactory = new ClassFactory(CheckBoxColRender);
+						chkRenderer.properties{chkEnable:editable};
+						child.itemRenderer=chkRenderer;
 						
 					}
 					
@@ -1465,8 +1467,7 @@
 						columns.push(child);
 					}
 				}
-				editableGrid(editable);
-				
+				editableGrid(editable);				
 				list.columns = columns;
 				list.validateNow();
 				computeColumnList();

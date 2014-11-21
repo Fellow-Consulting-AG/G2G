@@ -156,10 +156,20 @@
 			
 			public function updateHeaderInfo(obj:Object):void{
 				this.parentObject = obj;
-				for(var field:String in field2Label){
-					var lbl:Label = field2Label[field] as Label;
-					lbl.text = parentObject[field];
+				
+				for each(var field:Object in getHeaderField()){
+					var lbl:Label = field2Label[field.element_name] as Label;
+					if(parentObject!=null && lbl!=null){
+						//IndexedBoolean0---use alterate address
+						if(StringUtils.isTrue(parentObject['IndexedBoolean0'])){
+							lbl.text = parentObject[field.element_name2];	
+						}else{
+							lbl.text = parentObject[field.element_name];		
+						}
+						
+					}		
 				}
+				
 			}
 			
 			public function importItems(items:ArrayCollection):void{
@@ -248,14 +258,14 @@
 				//cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
 				cols.push(createColumn('IndexedNumber0',80,Database.customObject12Dao.entity,true,'0-9'));
 				cols.push(createColumn('CustomText31',100,Database.customObject14Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('CustomObject13Name',166,Database.customObject14Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('CustomObject13Name',171,Database.customObject14Dao.entity,false,null,defaultLabel));
 				cols.push(createColumn('CustomObject13ExternalSystemId',80,Database.customObject14Dao.entity,false,null,defaultLabel));
 				cols.push(createColumn('CustomText30',130,Database.customObject14Dao.entity,false,null,defaultLabel));
 //				cols.push(createColumn('CustomCurrency1',10,false));
 //				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
 //				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",30,Database.customObject14Dao.entity,false);
+				var deleteCol:DataGridColumn = createColumn("",25,Database.customObject14Dao.entity,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyObject,'postDelete':function(d:Object):void{
 					if(d!=null && d.gadget_id!=null){
@@ -338,8 +348,21 @@
 								t[p] = itemObj.Name;										
 							}else{
 								t[p] = null;
+								t.CustomObject14ExternalSystemId=null;
 								t.CustomObject14Id=null;
 							}
+						}else if(p=='CustomObject14ExternalSystemId'){
+							var itemObj:Object = tmp[p];
+							if(itemObj is String){
+								t[p]=itemObj;
+							}else if(itemObj!=null){
+								t[p] = itemObj.ExternalSystemId;										
+							}else{
+								t[p] = null;
+								t.CustomObject14Name=null;
+								t.CustomObject14Id=null;
+							}
+						
 						}else{
 							t[p] = tmp[p];
 						}
@@ -377,8 +400,21 @@
 										t[p] = itemObj.Name;										
 									}else{
 										t[p] = null;
+										t.CustomObject14ExternalSystemId = null;
 										t.CustomObject14Id=null;
 									}
+								}else if(p=='CustomObject14ExternalSystemId'){
+									var itemObj:Object = tmp[p];
+									if(itemObj is String){
+										t[p]=itemObj;
+									}else if(itemObj!=null){
+										t[p] = itemObj.ExternalSystemId;										
+									}else{
+										t[p] = null;
+										t.CustomObject14Name=null;
+										t.CustomObject14Id=null;
+									}
+									
 								}else{
 									t[p] = tmp[p];
 								}
@@ -521,8 +557,13 @@
 			}
 			
 			public static function getHeaderField():ArrayCollection{
-				return new ArrayCollection([{element_name:'ContactFullName'},{element_name:'CustomText52'},
-						{element_name:'ContactAccountName'},{element_name:'IndexedDate0'},{element_name:'CustomText33'},{element_name:'CustomText36'},{element_name:'CustomText32'}]);
+				return new ArrayCollection([{element_name:'ContactFullName',element_name2:'ContactFullName'},
+											{element_name:'CustomText52',element_name2:'CustomText52'},
+											{element_name:'ContactAccountName',element_name2:'ContactAccountName'},
+											{element_name:'IndexedDate0',element_name2:'IndexedDate0'},
+											{element_name:'CustomText33',element_name2:'CustomText41'},
+											{element_name:'CustomText36',element_name2:'CustomText45'},
+											{element_name:'CustomText32',element_name2:'CustomText40'}]);
 			}
 			
 			private function createHeaderForm():void{
@@ -535,7 +576,13 @@
 					var columnValue:Label = new Label();
 					columnValue.setStyle("fontWeight","bold");					
 					if(parentObject!=null){
-						columnValue.text = parentObject[field.element_name];						
+						//IndexedBoolean0---use alterate address
+						if(StringUtils.isTrue(parentObject['IndexedBoolean0'])){
+							columnValue.text = parentObject[field.element_name2];	
+						}else{
+							columnValue.text = parentObject[field.element_name];		
+						}
+										
 					}					
 					field2Label[field.element_name] = columnValue;
 					formItem.addChild(columnValue);

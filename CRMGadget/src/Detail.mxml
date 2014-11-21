@@ -2589,7 +2589,13 @@
 				<mx:LinkButton doubleClickEnabled="true" id="linkedinBtn" icon="{ImageUtils.linkedinIcon}" toolTip="Linkedin" click="facebookBtn_clickHandler(event)" includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}" visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"/>
 				<mx:HBox horizontalAlign="right" width="100%">
 					<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
-					<mx:ComboBox id="comboAction" width="120"  dataProvider="{getComboData()}"/>
+					<mx:ComboBox id="comboAction" width="120"   dataProvider="{getComboData()}">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label text="{data.label}" width="100%" toolTip="{data.label}" />
+							</mx:Component>
+						</mx:itemRenderer>
+						</mx:ComboBox>
 					<mx:HBox id="actionCanvas" horizontalAlign="right"/>	
 				</mx:HBox>					
 			</mx:HBox>

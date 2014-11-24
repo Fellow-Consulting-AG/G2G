@@ -9,12 +9,19 @@
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 			import mx.controls.listClasses.BaseListData;
-			public var column:AdvancedDataGridColumn;
+			private var column:AdvancedDataGridColumn;
+			private var _chkEnable:Boolean;
+			private var _onChkChange:Function;
+			
 			 private function clickFunction():void{
 				 if(column!=null){			
 					 data[column.dataField] = chkBox.selected;
 				 }else{
 					 data.isSync=!data.isSync;
+				 }
+				 
+				 if(_onChkChange!=null){
+					 _onChkChange(data,column);
 				 }
 								
 			 }			
@@ -28,16 +35,10 @@
 				 }
 					
 			 }
-			private function isEnable():Boolean{
-				if(column!=null){
-					var val:Object = data[column.dataField];
-					return (val==true || val=="true" || val==1 || val=="1");
-				}
-				return data.isSync;
-			}
+		
 			
 			public function set chkEnable(enable:Boolean):void{
-				chkBox.enabled = enable;
+				_chkEnable = enable;
 			}
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
@@ -46,11 +47,18 @@
 					var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
 					if(list!=null){					
 						column = grid.columns[list.columnIndex];
+						this.chkBox.enabled = _chkEnable;
 //						chkBox.enabled = column.editable;
 //						column.editable = false;//only edit for checkbox
 					}
 				}
 			}
+
+			public function set onChkChange(value:Function):void
+			{
+				_onChkChange = value;
+			}
+
 			
 		]]>
 		

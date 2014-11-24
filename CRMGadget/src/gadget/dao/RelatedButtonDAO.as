@@ -3,6 +3,7 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.utils.Dictionary;
 	
 	import mx.collections.ArrayCollection;
 
@@ -66,10 +67,24 @@ package gadget.dao
 			}
 		}
 		
-		public function findByParent(parent_entity):ArrayCollection{
+		public function findByParent(parent_entity:String):ArrayCollection{
 			stmtAll.parameters[":parent_entity"]=parent_entity;
 			exec(stmtAll);
 			return new ArrayCollection(stmtAll.getResult().data);
 		}
+		/**key= child entity*/
+		public function findDisableByParent(parent_entity:String):Dictionary{
+			stmtAll.parameters[":parent_entity"]=parent_entity;
+			exec(stmtAll);
+			var dic:Dictionary = new Dictionary();
+			for each(var obj:Object in new ArrayCollection(stmtAll.getResult().data)){
+				if(obj.disable){
+					var key:String = obj.enity;
+					dic[key]=obj.disable;
+				}
+			}
+			return dic;
+		}
+		
 	}
 }

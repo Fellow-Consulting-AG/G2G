@@ -59,6 +59,7 @@
 			import mx.events.IndexChangedEvent;
 			import mx.events.ItemClickEvent;
 			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
 			
 			[Bindable] private var records:ArrayCollection;
 			[Bindable] public var entity:String;
@@ -340,36 +341,37 @@
 			
 			
 			public function loadData():void{
-				if(entity == MainWindow.DAILY_AGENDA){
-					var adc:DisplayObject = boxList.getChildAt(0);
-					if(adc!=null && adc is DailyAgenda){
-						var colTitle:DataGridColumn =DailyAgenda(adc).dateSetPanel.tileList.columns[0] as DataGridColumn;
-						colTitle.headerRenderer = colTitle.headerRenderer;
-						DailyAgenda(adc).loadDataOfSelectedDate();
-					}
-				}else{
-					if( viewStack.selectedIndex==1){
-						if(calendarIlog != null){
-							calendarIlog.changeStartDayOfWeek();
-							calendarIlog.loadData();
-							
-						}	
-						if(calendar!=null){
-							calendar.loadData();
+				if(mainwindow.getSelectedList()==this){
+					if(entity == MainWindow.DAILY_AGENDA){
+						var adc:DisplayObject = boxList.getChildAt(0);
+						if(adc!=null && adc is DailyAgenda){
+							var colTitle:DataGridColumn =DailyAgenda(adc).dateSetPanel.tileList.columns[0] as DataGridColumn;
+							colTitle.headerRenderer = colTitle.headerRenderer;
+							DailyAgenda(adc).loadDataOfSelectedDate();
 						}
-						detail.loadData();	
 					}else{
-						
-						if(visibleHomeTask && homeTask.visible){
-							showHomeTasks();
-						}else{
-							filterData(); 
-							initGridColumns();
+						if( viewStack.selectedIndex==1){
+							if(calendarIlog != null){
+								calendarIlog.changeStartDayOfWeek();
+								calendarIlog.loadData();
+								
+							}	
+							if(calendar!=null){
+								calendar.loadData();
+							}
 							detail.loadData();	
+						}else{
+							
+							if(visibleHomeTask && homeTask.visible){
+								showHomeTasks();
+							}else{
+								filterData(); 
+								initGridColumns();
+								detail.loadData();	
+							}
 						}
 					}
 				}
-				
 				
 			}
 			
@@ -1299,6 +1301,19 @@
 				}
 			}
 			
+			private static function updateDataOnColumnChange(obj:Object,col:AdvancedDataGridColumn):void{
+				
+				var dao:BaseDAO = Database.getDao(obj.gadget_type,false);
+				if(dao!=null){
+					
+					obj.local_update = new Date().getTime();
+					obj.deleted = 0;
+					obj.modified = i18n._("UPD");
+					dao.updateByField([col.dataField],obj);
+				}
+				
+			}
+			
 			public static function createColumn(field:Object,dispDateTime:Function,dispPickVal:Function,editable:Boolean = false):AdvancedDataGridColumn{
 				var child:AdvancedDataGridColumn = new AdvancedDataGridColumn();
 				child.editable = editable;
@@ -1347,12 +1362,12 @@
 					}
 					if (obj.data_type == "Checkbox" ){
 						var chkRenderer:ClassFactory = new ClassFactory(CheckBoxColRender);
-						chkRenderer.properties{chkEnable:editable};
+						chkRenderer.properties={chkEnable:editable,onChkChange:updateDataOnColumnChange};
 						child.itemRenderer=chkRenderer;
 						
 					}
 					
-					if((obj.data_type != "Text (Short)" && obj.data_type != "Text (Long)") || obj.element_name == 'Activity'){
+					if((obj.data_type != "Text (Short)" && obj.data_type != "Text (Long)") || obj.element_name == 'Activity' || obj.element_name == 'CreatedBy'){
 						child.editable = false;
 					}						
 					
@@ -1426,12 +1441,23 @@
 				columns.push(child);
 				//#7694 CRO
 				var obj:Object = Database.sortColumnDao.find(entity);
+				var customReadOnlyFields:Dictionary =new Dictionary();
+				var oodReadOnlyFields:Dictionary = new Dictionary();
+				if(editable){
+					customReadOnlyFields = Database.layoutDao.getReadOnlyField(entity);
+					oodReadOnlyFields = Database.fieldManagementServiceDao.getReadOnlyField(entity);
+				}
+				
+				
 				for each (var field:Object in fieldsDB){
+					
+					var colEditable:Boolean = editable && !(customReadOnlyFields.hasOwnProperty(field.element_name)||oodReadOnlyFields.hasOwnProperty( field.element_name));
+					
 					child = createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
 						return List.displayDataTime(item,col,entity);
 					},function(item:Object,col:AdvancedDataGridColumn):String{
 						return List.displayPicklistValue(item,col,entity);
-					},editable);
+					},colEditable);
 					if (field.element_name == 'Subject') {
 						treeColumn = child;
 					}
@@ -1485,27 +1511,51 @@
 					list.removeEventListener(AdvancedDataGridEvent.ITEM_EDIT_BEGIN, itemBeginListener);
 				}
 				list.doubleClickEnabled = !editable;
-				list.editable = editable.toString();
+				list.editable= editable.toString();
 			}
 			
 			private function itemEditEndListener(e:AdvancedDataGridEvent):void{
-				if(e.reason == "newRow"){ 
-					var datagrid:AdvancedDataGrid = (e.target as AdvancedDataGrid)
-					if(datagrid){
-						var oldValue:String = (datagrid.dataProvider as ArrayCollection).getItemAt(e.rowIndex)[e.dataField];
-						var newValue:String = (datagrid.itemEditorInstance as TextInput).text;
-						var object:Object;
-						if(newValue!="" && newValue!=" " && oldValue != newValue){
-							object = e.itemRenderer.data;
-							object[e.dataField] = newValue;
-							object.local_update = new Date().getTime();
-							object.deleted = 0;
-							object.modified = i18n._("UPD");
-							Database.getDao(entity).update(object);
-							(datagrid.dataProvider as ArrayCollection).setItemAt(object, e.rowIndex);
-						}
+//				if(e.reason == "newRow"){ 
+//					var datagrid:AdvancedDataGrid = (e.target as AdvancedDataGrid)
+//					if(datagrid){
+//						
+//						
+//						
+//						var oldValue:String = (datagrid.dataProvider as ArrayCollection).getItemAt(e.rowIndex)[e.dataField];
+//						var newValue:String = (datagrid.itemEditorInstance as TextInput).text;
+//						var object:Object;
+//						if(newValue!="" && newValue!=" " && oldValue != newValue){
+//							object = e.itemRenderer.data;
+//							object[e.dataField] = newValue;
+//							object.local_update = new Date().getTime();
+//							object.deleted = 0;
+//							object.modified = i18n._("UPD");
+//							Database.getDao(entity).update(object);
+//							(datagrid.dataProvider as ArrayCollection).setItemAt(object, e.rowIndex);
+//						}
+//					}
+//				}else{
+//					
+//				}
+				
+				var component:Object  = e.currentTarget.itemEditorInstance;
+				if(component is TextInput){
+					// Get the cell editor and cast it to TextInput.
+					var myEditor:TextInput = TextInput(component);
+					
+					// Get the new value from the editor.
+					var newValue:String =StringUtil.trim(myEditor.text);
+					var data:Object = e.itemRenderer.data;
+					// Get the old value.
+					var oldValue:String = data[e.dataField];
+					if(oldValue != newValue){
+						data[e.dataField] = newValue;
+						
+						updateDataOnColumnChange(data,list.columns[e.columnIndex]);
 					}
 				}
+				
+				
 			}
 			
 			private function itemBeginListener(e:AdvancedDataGridEvent):void{

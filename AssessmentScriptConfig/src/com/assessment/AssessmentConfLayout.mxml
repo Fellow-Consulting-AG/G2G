@@ -1208,12 +1208,17 @@
 				var that:Canvas = this;
 				function alertListener(eventObj:CloseEvent):void {
 					// Check to see if the OK button was pressed.
-					if (eventObj.detail==Alert.YES) {
-						
+					if (eventObj.detail==Alert.YES) {						
 						
 						var canDelete:Boolean = true;
 						var cols:ArrayCollection = iAseesment.getMappingTableSetting(currentConfig.recordId);
-						canDelete = (cols==null || cols.length<1);
+						if(cols!=null){
+							for each(var col:DtoColumn in cols){
+								if(!col.isDefault){
+									canDelete = false;
+								}
+							}						
+						}						
 						if(canDelete){
 							//try to check with spliter
 							var spliters:ArrayCollection = iAseesment.getAllAssessmentSplitter();

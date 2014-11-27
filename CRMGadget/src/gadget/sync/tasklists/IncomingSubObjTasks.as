@@ -12,7 +12,7 @@ package gadget.sync.tasklists {
 	
 	import mx.collections.ArrayCollection;
 
-	public function IncomingSubObjTasks():Array {
+	public function IncomingSubObjTasks(fullCompare:Boolean,fullSync:Boolean):Array {
 		
 		var subSync:Array = new Array();
 		var list:ArrayCollection = Database.transactionDao.listEnabledTransaction();
@@ -70,13 +70,15 @@ package gadget.sync.tasklists {
 			}
 			
 		}		
+		var accountContact:IncomingSubContact = new IncomingSubContact("Account","Contact");
+		//if(syncContactAccount && (fullCompare||fullSync || Database.lastsyncDao.find(accountContact.getMyClassName())==null)){
+			subSync.push(accountContact);
+		//}
 		
-		if(syncContactAccount){
-			subSync.push(new IncomingSubContact("Account","Contact"));
-		}
-		if(syncContactC02){
-			subSync.push(new IncomingSubContact("Contact","Custom Object 2"));
-		}
+		var co2Contact:IncomingSubContact = new IncomingSubContact("Contact","Custom Object 2");
+		//if(syncContactC02 && (fullCompare||fullSync|| Database.lastsyncDao.find(co2Contact.getMyClassName())==null)){
+			subSync.push(co2Contact);
+		//}
 		
 		if(syncActivityUser){
 			subSync.push(new IncomingSubobjects(Database.activityDao.entity,Database.allUsersDao.entity));

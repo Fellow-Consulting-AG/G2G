@@ -127,6 +127,7 @@ package gadget.dao
 		public static const ENABLE_AUTO_SET_PRIMARY_CONTACT:String = "enable_set_primary_contact";
 		
 		public static const ENABLE_SAMPLE_ORDER:String = 'enable_sample_order';
+		public static const ENABLE_CHECKBOX_INLIST:String ='enable_checkbox_inlist';
 		
 		public static const LOG_FILES:String = "log_files";
 		import gadget.util.TableFactory;
@@ -274,11 +275,16 @@ package gadget.dao
 			ENABLE_AUTO_SYNC,
 			ENABLE_DOUBLE_CLICK_NEW_CALL,
 			GOOGLE_MAP_DISTANCE,
-			ENABLE_SAMPLE_ORDER
+			ENABLE_SAMPLE_ORDER,
+			ENABLE_CHECKBOX_INLIST
 		];
 		
 		public function getGoolgeMapDistance():String{
 			return getStrValue(GOOGLE_MAP_DISTANCE,"metric");
+		}
+		
+		public function isEnableCheckBoxInList():Boolean{
+			return getBooleanValue(ENABLE_CHECKBOX_INLIST);
 		}
 		
 		public function isEnableSampleOrder():Boolean{

@@ -11,6 +11,7 @@
 			import gadget.lists.ListDetail;
 			import gadget.util.GUIUtils;
 			import gadget.util.Relation;
+			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			import gadget.window.WindowManager;
 			
@@ -107,13 +108,16 @@
 				return item;
 			}
 			private function getItem():Object{
-				var extId:String = super.data["ShipToPrimary"];
-				var columns:ArrayCollection = Utils.getColumn("Account");
-				var filterQuery:String ="CustomText35='"+extId+"'";
-				var listItem:ArrayCollection =Database.accountDao.findAll(columns,filterQuery);
 				var item:Object = null;
-				if(listItem != null && listItem.length>0){
-					item = listItem[0];
+				var extId:String = super.data["ShipToPrimary"];
+				if(!StringUtils.isEmpty(extId)){
+					var columns:ArrayCollection = Utils.getColumn("Account");
+					var filterQuery:String ="CustomText35='"+extId+"'";
+					var listItem:ArrayCollection =Database.accountDao.findAll(columns,filterQuery);
+					
+					if(listItem != null && listItem.length>0){
+						item = listItem[0];
+					}
 				}
 				
 				return item;

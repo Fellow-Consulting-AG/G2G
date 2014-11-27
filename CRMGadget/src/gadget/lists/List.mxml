@@ -1362,6 +1362,8 @@
 					}
 					if (obj.data_type == "Checkbox" ){
 						var chkRenderer:ClassFactory = new ClassFactory(CheckBoxColRender);
+						//bug#8893---Could we trigger this by xml tag, which is N by default? "enable_checkbox_inlist" 
+						editable =(editable || Database.preferencesDao.isEnableCheckBoxInList());
 						chkRenderer.properties={chkEnable:editable,onChkChange:updateDataOnColumnChange};
 						child.itemRenderer=chkRenderer;
 						
@@ -1452,6 +1454,7 @@
 				for each (var field:Object in fieldsDB){
 					
 					var colEditable:Boolean = editable && !(customReadOnlyFields.hasOwnProperty(field.element_name)||oodReadOnlyFields.hasOwnProperty( field.element_name));
+					
 					
 					child = createColumn(field,function(item:Object,col:AdvancedDataGridColumn):String{
 						return List.displayDataTime(item,col,entity);

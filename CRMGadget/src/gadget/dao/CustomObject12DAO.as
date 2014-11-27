@@ -2,13 +2,15 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	import flash.data.SQLStatement;
 	
 	import gadget.service.UserService;
 	
 	import mx.collections.ArrayCollection;
 
 	public class CustomObject12DAO extends CustomeObjectBaseDao {
-
+		private var stmtColoPlastFindUpdated:SQLStatement;
+		private var stmtColoPlastFindCreated:SQLStatement;
 		public function CustomObject12DAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'sod_customobject12',
@@ -19,6 +21,45 @@ package gadget.dao
 				index: [ 'Id' ],
 				columns: { 'TEXT' : textColumns }
 			});
+			
+			// Find all items updated locally
+			stmtColoPlastFindUpdated = new SQLStatement();
+			stmtColoPlastFindUpdated.sqlConnection = sqlConnection;
+			stmtColoPlastFindUpdated.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12 inner join sod_customobject11 co11 on co12.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( co12.local_update is not null) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY co12.local_update LIMIT :limit OFFSET :offset";	
+			
+			// Find all items created locally
+			stmtColoPlastFindCreated = new SQLStatement();
+			stmtColoPlastFindCreated.sqlConnection = sqlConnection;
+			//VAHI the "OR ... IS NULL" is a workaround to make Expenses work
+			stmtColoPlastFindCreated.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12 inner join sod_customobject11 co11 on co12.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( (co12.Id >= '#' AND co12.Id <= '#zzzz') OR co12.Id IS NULL ) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY  co12.Id LIMIT :limit OFFSET :offset";
+		}
+		
+		
+		override public function findCreated(offset:int, limit:int):ArrayCollection {
+			
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+				stmtColoPlastFindCreated.parameters[":offset"] = offset; 
+				stmtColoPlastFindCreated.parameters[":limit"] = limit; 
+				exec(stmtColoPlastFindCreated, false);
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindCreated.getResult().data);
+				//checkBindPicklist(stmtFindCreated.text,list);
+				return list;
+			}else{
+				return super.findCreated(offset,limit);
+			}
+			
+		}
+		
+		override public function findUpdated(offset:int, limit:int):ArrayCollection {
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+				stmtColoPlastFindUpdated.parameters[":offset"] = offset; 
+				stmtColoPlastFindUpdated.parameters[":limit"] = limit; 
+				exec(stmtColoPlastFindUpdated, false);
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindUpdated.getResult().data);			
+				return list;
+			}else{
+				return super.findUpdated(offset,limit);
+			}
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{

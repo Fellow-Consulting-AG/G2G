@@ -51,11 +51,12 @@
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
-					grid = value.owner as DataGrid;					
+					grid = value.owner as DataGrid;		
+					this.btnDelete.enabled = grid.editable;
 				}
 			}
 			public final function deleteRow():void{
-				if(grid!=null){
+				if(grid!=null && grid.editable){
 				Alert.show(i18n._("GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE@Are you sure you want to delete?"), i18n._('GLOBAL_DELETE@Delete'), Alert.YES | Alert.NO, parentComp, alertListener, null, Alert.NO);
 				
 					function alertListener(eventObj:CloseEvent):void {

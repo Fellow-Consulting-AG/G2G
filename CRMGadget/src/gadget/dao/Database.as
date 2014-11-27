@@ -2867,7 +2867,7 @@ package gadget.dao {
 		}
 		
 		private function YcheckLayout(entity:String, subtype:int = 0):void {
-			if(_layoutDao.selectLayout(entity, subtype).length == 0){
+			if(!_layoutDao.existLayout(entity,subtype)){
 				//_layoutDao.deleteLayout(entity, subtype);
 				var defaultFields:Array = FieldUtils.getDefaultFields(entity);
 				if(entity == "BusinessPlan"){

@@ -74,7 +74,7 @@
 //					logInfo(log);
 //				}
 				logInfos(mainWindow.syncProcess.logs);
-				logProgress(0);
+				logProgress(mainWindow.syncProcess.progress);
 				
 			}
 			
@@ -97,7 +97,7 @@
 				toggleSpinner(false);
 				syncDataBtn.enabled = true;
 				fullSync.enabled = true;
-				processParallel.enabled=true;
+				fullCompare.enabled=true;
 				metadata.enabled = true;
 				btnStop.enabled = false;
 				btnClose.label = i18n._('GLOBAL_CLOSE');
@@ -107,7 +107,7 @@
 				// start spinner animation
 				toggleSpinner(true);
 				syncDataBtn.enabled = false;
-				processParallel.enabled=false;
+				fullCompare.enabled=false;
 				fullSync.enabled = false;
 				metadata.enabled = false;
 				btnStop.enabled = true;
@@ -132,7 +132,7 @@
 			if(isSRSyncnow){				
 				fullSync.enabled=false;		
 				metadata.enabled=false;
-				processParallel.enabled=false;
+				fullCompare.enabled=false;
 				syncDataBtn.enabled=false;
 			}
 			
@@ -178,16 +178,18 @@
 			private function dosync():void{
 					
 				if(mainWindow.syncProcess!=null && mainWindow.syncProcess.finished && !mainWindow.syncProcess.isStopped){
-					
+					var full:Boolean = fullSync.selected || mainWindow.syncProcess.full;
+					var oldLogs:ArrayCollection = mainWindow.syncProcess.logs;
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CHECK_CONFLICTS,0)){
-						mainWindow.syncProcess = new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected,false,null,checkObjects);	
+						mainWindow.syncProcess = new SyncProcess(full,metadata.selected,fullCompare.selected,false,null,checkObjects);	
 						syncProgressBar.value=0;
 						mainWindow.syncProcess.bindFunctions(logInfo, null, logCount, syncEvent, [checkConflicts,initButtons], mainWindow.fieldComplete);											
 					}else{
-						mainWindow.syncProcess = new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected,false);	
+						mainWindow.syncProcess = new SyncProcess(full,metadata.selected,fullCompare.selected,false);	
 						mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent, [mainWindow.syncEnd, initButtons], mainWindow.fieldComplete);
 						
 					}
+					mainWindow.syncProcess.logs = oldLogs;
 					mainWindow.syncProcess.start();
 				}else{
 					//sync has been stopped
@@ -197,7 +199,7 @@
 			}
 			
 			private function testConnectionSuccess(sessionId:String):void {
-				
+				initButtons();
 				mainWindow.syncProcess.start();
 			}
 			
@@ -222,7 +224,7 @@
 				}
 			}
 			private function startSyn():void{
-					mainWindow.syncProcess =  new SyncProcess(fullSync.selected,metadata.selected,processParallel.selected);
+					mainWindow.syncProcess =  new SyncProcess(fullSync.selected,metadata.selected,fullCompare.selected);
 					mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent, [mainWindow.syncEnd, initButtons], mainWindow.fieldComplete);
 					mainWindow.syncProcess.start();
 					initButtons();
@@ -256,6 +258,9 @@
 						mainWindow.syncBtn2.includeInLayout = false;				
 						checkObjects=null;
 						if(!isSRSyncnow){
+							
+							var firstSync:Boolean = Database.lastsyncDao.getLastSyncDate()==null||fullSync.selected;
+							
 							if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CHECK_CONFLICTS,0)){
 								var enableTrans:ArrayCollection = Database.transactionDao.listEnabledTransaction();
 								checkObjects=new Array();
@@ -263,13 +268,13 @@
 									checkObjects.push(new CheckConflictObject(obj.entity));
 								}							
 							}
-							mainWindow.syncProcess =new InitSyncProcess();
+							mainWindow.syncProcess =new InitSyncProcess(firstSync,fullCompare.selected);
 							mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent,null,dosync);
 						}else{
 							mainWindow.syncProcess = new SyncProcess(false,false,false,isSRSyncnow,records);
 							mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent, [mainWindow.syncEnd, initButtons],completed);
 						}
-						initButtons();				
+										
 						//reset session
 						SSOUtils.resetSession();
 						var login:LoginCRM = new LoginCRM(testConnectionSuccess, testConnectionError);
@@ -329,13 +334,13 @@
 		
 			
 		private function parallelProcessing():void {
-			if (processParallel.selected){
-				Alert.show(i18n._('GLOBAL_MESSAGE_PARALLEL_PROECESSING_IS_RECOMMENDED_FOR_SLOW_NETWORK'), i18n._('GLOBAL_MESSAGE_PARALLEL_PROCESSING'), Alert.YES|Alert.NO, this, function(event:CloseEvent):void{
-					if (event.detail!=Alert.YES){
-						processParallel.selected = false;
-					}
-				});
-			} 
+//			if (fullCompare.selected){
+//				Alert.show(i18n._('GLOBAL_MESSAGE_PARALLEL_PROECESSING_IS_RECOMMENDED_FOR_SLOW_NETWORK'), i18n._('GLOBAL_MESSAGE_PARALLEL_PROCESSING'), Alert.YES|Alert.NO, this, function(event:CloseEvent):void{
+//					if (event.detail!=Alert.YES){
+//						fullCompare.selected = false;
+//					}
+//				});
+//			} 
 		}		
 		private function synMetaData():void {
 			if(metadata.selected){
@@ -624,7 +629,7 @@
 					<mx:CheckBox id="fullSync" label="{i18n._('SYNCHRONIZE_CHECK_BOX_PERFOM_FULL_SYNCHRONIZE')}" 
 						click="fullSynData()"/>
 					<mx:CheckBox id="metadata" label="{i18n._('GLOBAL_META_DATA_ONLY')}" click="synMetaData()" />	
-					<mx:CheckBox id="processParallel" label="{i18n._('GLOBAL_PARALLEL_PROCESSING')}" click="parallelProcessing()"/>
+					<mx:CheckBox id="fullCompare" label="{i18n._('FULL_COMPARE@Full Compare')}" click="parallelProcessing()"/>
 				</mx:HBox>				
 			</mx:Canvas>
 			<mx:Canvas width="100%">

@@ -56,6 +56,11 @@ package gadget.dao {
 			return list;
 		}
 		
+		public function existLayout(entity:String, subtype:int):Boolean {
+			var result:Array = select("Count(*) AS total",null,{entity:entity, subtype:subtype});
+			return parseInt(result[0].total)>0;
+		}
+		
 		public function selectCustomFields(entity:String):ArrayCollection {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity}));
 			var customFieldlist:ArrayCollection = new ArrayCollection();

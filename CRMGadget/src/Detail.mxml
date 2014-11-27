@@ -1116,20 +1116,20 @@
 						nextSubtype = comboAction.selectedItem.subtype;
 					}
 					//bug#8424----copy opportunity
-					if(entity== data && (data==Database.opportunityDao.entity||data==Database.customObject11Dao.entity)){
+					if(entity== data && (data==Database.opportunityDao.entity)){
 						var dao:BaseDAO = Database.getDao(data);
 						other = dao.findByOracleId(item[DAOUtils.getOracleId(data)]);
 						for each(var f:String in dao.getIgnoreCopyFields()){
 							delete other[f];
 						}
-						
-						if(Database.preferencesDao.isEnableSampleOrder()){
-							if(sampleView !=null){
-								//copy sample item
-								other.sampleItems = sampleView.cloneItems();
-								
-							}
-						}
+						//bug#8922--revert to default new
+//						if(Database.preferencesDao.isEnableSampleOrder()){
+//							if(sampleView !=null){
+//								//copy sample item
+//								other.sampleItems = sampleView.cloneItems();
+//								
+//							}
+//						}
 					}
 					
 					
@@ -1217,7 +1217,7 @@
 					attachmentBtn.visible=false;
 					attachmentBtn.includeInLayout=false;
 				}
-				
+				comboAction.invalidateSize();
 				
 			}
 			
@@ -2589,12 +2589,12 @@
 				<mx:LinkButton doubleClickEnabled="true" id="linkedinBtn" icon="{ImageUtils.linkedinIcon}" toolTip="Linkedin" click="facebookBtn_clickHandler(event)" includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}" visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"/>
 				<mx:HBox horizontalAlign="right" width="100%">
 					<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
-					<mx:ComboBox id="comboAction" width="120"   dataProvider="{getComboData()}">
-						<mx:itemRenderer>
+					<mx:ComboBox id="comboAction"   dataProvider="{getComboData()}">
+					<!--	<mx:itemRenderer>
 							<mx:Component>
 								<mx:Label text="{data.label}" width="100%" toolTip="{data.label}" />
 							</mx:Component>
-						</mx:itemRenderer>
+						</mx:itemRenderer>-->
 						</mx:ComboBox>
 					<mx:HBox id="actionCanvas" horizontalAlign="right"/>	
 				</mx:HBox>					

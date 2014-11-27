@@ -766,7 +766,7 @@ package gadget.util{
 			fileName = fileName.replace(".gif","");
 			fileName = fileName.replace(".png","");
 			fileName = "icon_" + fileName;
-			trace("FileName : " + fileName);
+			//trace("FileName : " + fileName);
 			// return oodIcons_cache.get(fileName, customObjectImg) as Class;
 			return oodIcons_cache.get(fileName) as Class;
 			

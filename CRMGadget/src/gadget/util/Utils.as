@@ -1345,6 +1345,7 @@ package gadget.util {
 		
 		public static function getAllFilters(entity:String):ArrayCollection{
 			var userOwner:Object =  Database.allUsersDao.ownerUser();
+			
 			var filterList:ArrayCollection = Database.filterDao.listFiltersCriteria(entity);
 			filterList.filterFunction = function (item:Object):Boolean {
 				if(item.type == 0) return true; //show All {Entity} predefined filter
@@ -1387,6 +1388,7 @@ package gadget.util {
 			}
 			filterList.refresh();
 			var filters:ArrayCollection=new ArrayCollection();
+			var defaultFilter:Object = Database.filterDao.getDefaultFilter(entity);
 			for each (var filter:Object in filterList) {
 				var filterName:String = filter.name;
 				//CRO #1345
@@ -1402,6 +1404,11 @@ package gadget.util {
 				
 				filterName = filterName.indexOf('GLOBAL') == -1 ? filterName : i18n._(filterName);
 				filter.displayName = filterName.replace(ENTITY, Database.customLayoutDao.getPlural(entity));
+				if(filter.type==defaultFilter.type){
+					filter.isDefault=true;
+				}else{
+					filter.isDefault=false;
+				}
 				filters.addItem(filter);
 			}
 			suppressWarning(filters);

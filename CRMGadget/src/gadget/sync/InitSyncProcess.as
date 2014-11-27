@@ -1,5 +1,6 @@
 package gadget.sync
 {
+	import gadget.dao.Database;
 	import gadget.sync.group.TaskGroupBase;
 	import gadget.sync.incoming.GetConfigXml;
 	import gadget.sync.incoming.IncomingCurrentUserData;
@@ -7,17 +8,24 @@ package gadget.sync
 
 	public class InitSyncProcess extends SyncProcess
 	{
-		public function InitSyncProcess()
+		public function InitSyncProcess(first:Boolean,fullCompare:Boolean)
 		{
-			super(false, false, false, false, null, null);
+			super(first, false,fullCompare, false, null, null);
 		}
 		
 		
-		protected override function buildTask(full:Boolean,isParalleProcessing:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
+		protected override function buildTask(full:Boolean,fullCompare:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
+			if(fullCompare || full){
 			this._groups.addItem(new TaskGroupBase(
 				this,
 				[new IncomingUser(),
 					new IncomingCurrentUserData(),new GetConfigXml()],false,false));		
+			}else{
+				this._groups.addItem(new TaskGroupBase(
+					this,
+					[new IncomingUser(),
+						new IncomingCurrentUserData()],false,false));	
+			}
 		}
 		
 		

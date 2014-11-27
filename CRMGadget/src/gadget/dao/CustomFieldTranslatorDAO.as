@@ -1,6 +1,7 @@
 package gadget.dao {
 	
 	import flash.data.SQLConnection;
+	import flash.utils.Dictionary;
 	
 	import gadget.util.StringUtils;
 	
@@ -44,6 +45,19 @@ package gadget.dao {
 			if(list.length>0) return list[0];
 			return null;
 		}
+		
+		/** key is an element name*/
+		public function selectFieldsByEntity(entity:String, languageCode:String):Dictionary {
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity, languageCode:languageCode}));
+			var result:Dictionary = new Dictionary();
+			for each(var obj:Object in list){
+				result[obj.column_name] = obj;
+			}
+			
+			return result;
+		}
+		
+		
 		public function selectByFieldName(entity:String,fieldName:String,languageCode:String):Object {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity, fieldName:fieldName,languageCode:languageCode}));
 			if(list.length>0) return list[0];

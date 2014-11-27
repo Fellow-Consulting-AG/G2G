@@ -1,5 +1,7 @@
 package gadget.sync
 {
+	import avmplus.getQualifiedClassName;
+	
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
@@ -20,6 +22,7 @@ package gadget.sync
 	import gadget.sync.outgoing.JDUpdateServiceRequest;
 	import gadget.sync.outgoing.OutgoingGCalendarDelete;
 	import gadget.sync.outgoing.OutgoingGCalendarUpdate;
+	import gadget.sync.task.MetadataChangeService;
 	import gadget.sync.task.WebServiceBase;
 	import gadget.sync.tasklists.DeletionTasks;
 	import gadget.sync.tasklists.IncomingPerIdTasks;
@@ -39,7 +42,7 @@ package gadget.sync
 	
 	public class SyncProcess {
 		
-		protected var _full:Boolean;
+		private var _full:Boolean;
 		protected var _metaSyn:Boolean;
 		protected var _logInfo:Function;
 		protected var _logProgress:Function;
@@ -51,7 +54,7 @@ package gadget.sync
 		protected var _progress:int;
 		protected var _finished:Boolean;
 		protected var _showFinishMsg:Boolean=true;
-		protected var _logs:ArrayCollection;
+		private var _logs:ArrayCollection;
 		
 		protected var _groups:ArrayCollection;		// WS1.0 firstrun
 		protected var _end:Array;
@@ -62,7 +65,7 @@ package gadget.sync
 		
 		protected var _syncNow:Boolean = false;
 		
-		protected function buildTask(full:Boolean,isParalleProcessing:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
+		protected function buildTask(full:Boolean,fullCompare:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
 			this._syncNow = isSRSynNow;
 			if(!isSRSynNow){
 				
@@ -74,13 +77,15 @@ package gadget.sync
 						_full
 						,_metaSyn
 					));
-				}else{								
-					_groups.addItem(new TaskGroupBase(
-						this,
-						InitializationTasks(_metaSyn),
-						_full // true,  // VAHI changed this to always do it, which is better but incorrect as well
-						,_metaSyn
-					));					
+				}else{
+					if(_metaSyn||fullCompare || _full){
+						_groups.addItem(new TaskGroupBase(
+							this,
+							InitializationTasks(_metaSyn),
+							_full // true,  // VAHI changed this to always do it, which is better but incorrect as well
+							,_metaSyn
+						));			
+					}
 					if(_metaSyn){  // Sync only Metadata. get only a full sync on the meta data(field management,Picklist,)
 						return;
 					}	
@@ -134,42 +139,31 @@ package gadget.sync
 					addProductAndPlantTask();
 					
 					
-					var incommingStructure:IncomingStructure = IncomingTasks(full);
+					var incommingStructure:IncomingStructure = IncomingTasks(_full);
 					var incomingTasks:ArrayCollection = incommingStructure.getTaskAllLevel();
-					//				var task:Class;
-					if(!isParalleProcessing){
-						//				task=IncomingParallelTaskGroup;
-						for each(var stasks:Array in incomingTasks){
-							if(stasks!=null && stasks.length>0){
-								addSeriaTask(stasks,IncomingParallelTaskGroup);	
-							}
+					
+					
+					
+					//no parallel any more
+					for each(var stasks:Array in incomingTasks){
+						if(stasks!=null && stasks.length>0){
+							addSeriaTask(stasks,IncomingParallelTaskGroup);	
 						}
-						addSeriaTask(IncomingPerIdTasks(),IncomingParallelTaskGroup);
-						addSeriaTask(IncomingSubObjTasks(),IncomingParallelTaskGroup);
-						
-					}else{
-						
-						for each(var tasks:Array in incomingTasks){
-							if(tasks!=null && tasks.length>0){
-								addParallelTask(tasks);	
-							}
-						}
-//						if(incommingStructure.listNotDependOn.length>0){
-//							addParallelTask(incommingStructure.listNotDependOn);	
-//						}
-//						if(incommingStructure.listDependOn.length>0){
-//							addParallelTask(incommingStructure.listDependOn);	
-//						}												
-						addParallelTask(IncomingPerIdTasks());
-						addParallelTask(IncomingSubObjTasks());					
 					}
-					//retrieve missing contact
-					_groups.addItem(new TaskGroupBase(	
-						this,
-						[new IncomingContactNotExistInAccCon()],
-						_full
-						,_metaSyn
-					));
+					addSeriaTask(IncomingPerIdTasks(),IncomingParallelTaskGroup);
+					if(_full||fullCompare){
+						addSeriaTask(IncomingSubObjTasks(fullCompare,_full),IncomingParallelTaskGroup);
+						//retrieve missing contact
+						_groups.addItem(new TaskGroupBase(	
+							this,
+							[new IncomingContactNotExistInAccCon()],
+							_full
+							,_metaSyn
+						));
+					}
+					
+				
+					
 					
 				}
 				
@@ -186,7 +180,7 @@ package gadget.sync
 			}
 		}
 		
-		public function SyncProcess(full:Boolean,metaSyn:Boolean,isParalleProcessing:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null) {
+		public function SyncProcess(full:Boolean,metaSyn:Boolean,fullCompare:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null) {
 			_full = full;	
 			_metaSyn = metaSyn;
 			_hasErrors = false;
@@ -195,7 +189,7 @@ package gadget.sync
 			_progress = 0;
 			_logs = new ArrayCollection();
 			_groups = new ArrayCollection();
-			buildTask(full,isParalleProcessing,isSRSynNow,records,checkConflicts);
+			buildTask(full,fullCompare,isSRSynNow,records,checkConflicts);
 			
 		}
 		
@@ -447,6 +441,16 @@ package gadget.sync
 		
 		public function get logs():ArrayCollection {
 			return _logs;
+		}
+
+		public function get full():Boolean
+		{
+			return _full;
+		}
+
+		public function set logs(value:ArrayCollection):void
+		{
+			_logs = value;
 		}
 		
 	

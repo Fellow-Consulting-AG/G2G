@@ -201,8 +201,8 @@
 										}
 										
 										private function getText(data:Object):String{
-											var obj:Object = outerDocument.getTransactionObject();
-											if(obj.default_filter == data.type){
+											//var obj:Object = outerDocument.getTransactionObject();
+											if(data.isDefault){
 												return " "+i18n._('FILTERLIST_TEXT_DEFAULT');
 											}
 											return "";

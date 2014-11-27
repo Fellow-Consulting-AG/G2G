@@ -7,6 +7,7 @@ package gadget.dao {
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
 	import flash.errors.SQLError;
+	import flash.utils.Dictionary;
 	
 	import gadget.control.CalculatedField;
 	import gadget.service.LocaleService;
@@ -157,18 +158,21 @@ package gadget.dao {
 		}
 		
 		public function checkTranslation(resutls:ArrayCollection,languageCode:String,addKeyValue:Boolean=false):ArrayCollection{
-			for each(var objF:Object in resutls){
-				var objFTran:Object = Database.customFieldTranslatorDao.selectField(objF.entity,objF.column_name,languageCode);
-				if(objFTran!=null){				
-					if(addKeyValue){
-						objF["keyValue"] = objF["value"];
-						objF["bindKey"] = objF["bindValue"];
-					} 
-					objF["displayName"] = objFTran["displayName"];
-					objF["value"] = objFTran["value"];
-					objF["bindValue"] = Utils.checkNullValue(objFTran["bindValue"]);
-				}
-			}	
+			if(resutls!=null && resutls.length>0){
+				var dic:Dictionary = Database.customFieldTranslatorDao.selectFieldsByEntity(resutls.getItemAt(0).entity,languageCode);
+				for each(var objF:Object in resutls){
+					var objFTran:Object = dic[objF.column_name];
+					if(objFTran!=null){				
+						if(addKeyValue){
+							objF["keyValue"] = objF["value"];
+							objF["bindKey"] = objF["bindValue"];
+						} 
+						objF["displayName"] = objFTran["displayName"];
+						objF["value"] = objFTran["value"];
+						objF["bindValue"] = Utils.checkNullValue(objFTran["bindValue"]);
+					}
+				}	
+			}
 			return resutls;
 		}
 		

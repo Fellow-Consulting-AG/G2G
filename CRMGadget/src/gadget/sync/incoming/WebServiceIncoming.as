@@ -239,7 +239,7 @@ package gadget.sync.incoming {
 			if(dao.entity==Database.allUsersDao.entity){
 				xml.appendChild(new XML("<FullName/>"));
 			}
-			if(!hasActivityParent){
+			if(!hasActivityParent && entityIDour==Database.activityDao.entity){
 			    xml.appendChild(new XML("<" + ActivityDAO.PARENTSURVEYID + "/>"));
 			}
 			

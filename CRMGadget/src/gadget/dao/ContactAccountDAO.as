@@ -28,7 +28,7 @@ package gadget.dao
 			_isGetField = true;
 			stmtFindMissingContact = new SQLStatement();
 			stmtFindMissingContact.sqlConnection = sqlConnection;
-			stmtFindMissingContact.text = "select ContactId from contact_account where ContactId not in(select contactid from contact)";
+			stmtFindMissingContact.text = "select ContactId from contact_account where ContactType!='End User' and ContactId not in(select contactid from contact)";
 		}
 		
 		

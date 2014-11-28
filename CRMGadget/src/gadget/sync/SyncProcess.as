@@ -64,6 +64,7 @@ package gadget.sync
 		protected var _logCount:Function;
 		
 		protected var _syncNow:Boolean = false;
+		protected var _fullCompar:Boolean=false;
 		
 		protected function buildTask(full:Boolean,fullCompare:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
 			this._syncNow = isSRSynNow;
@@ -187,6 +188,7 @@ package gadget.sync
 			_hasWarnings = false;
 			_isStopped = false;
 			_progress = 0;
+			_fullCompar = fullCompare;
 			_logs = new ArrayCollection();
 			_groups = new ArrayCollection();
 			buildTask(full,fullCompare,isSRSynNow,records,checkConflicts);
@@ -451,6 +453,11 @@ package gadget.sync
 		public function set logs(value:ArrayCollection):void
 		{
 			_logs = value;
+		}
+
+		public function get fullCompar():Boolean
+		{
+			return _fullCompar;
 		}
 		
 	

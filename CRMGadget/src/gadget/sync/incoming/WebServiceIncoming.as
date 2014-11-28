@@ -10,6 +10,7 @@ package gadget.sync.incoming {
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.FilterDAO;
 	import gadget.dao.IncomingSyncDAO;
 	import gadget.dao.SupportDAO;
 	import gadget.dao.SupportRegistry;
@@ -19,6 +20,7 @@ package gadget.sync.incoming {
 	import gadget.service.PicklistService;
 	import gadget.service.UserService;
 	import gadget.sync.WSProps;
+	import gadget.sync.task.TaskParameterObject;
 	import gadget.sync.task.WebServiceBase;
 	import gadget.util.FieldUtils;
 	import gadget.util.OOPS;
@@ -71,6 +73,7 @@ package gadget.sync.incoming {
 		protected var ignoreFields:Array = [ "ModifiedBy" ];
 		//SEEALSO[1] Keep this in sync (field ModifiedDate)
 		protected var ignoreQueryFields:Array = [ ];
+		protected var oldIds:Dictionary = null;
 		// METHODS not to change
 		
 		
@@ -123,9 +126,22 @@ package gadget.sync.incoming {
 				
 			}
 			
+			
 
 		}
-
+		
+		override public function set param(p:TaskParameterObject):void
+		{			
+			super.param = p;
+			//bug#8928--resync if full compare=true and viewtype=defaultbook
+			if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE && p.fullCompare){
+				oldIds = dao.findAllIdsAsDictionary();				
+				Database.incomingSyncDao.unsync_one(getMyClassName());
+			}
+			
+		}
+		
+		
 		public function get entityIDour():String
 		{
 			return _entityIDour;
@@ -280,6 +296,21 @@ package gadget.sync.incoming {
 			// Request overwhelmed SoD, try a split
 			doSplit();
 			return true;
+		}
+		
+		override public function done():void{
+			if(oldIds!=null){
+				try{
+					Database.begin();				
+					for(var oraId:String in oldIds){
+						dao.deleteByOracleId(oraId);
+					}
+					Database.commit();
+				}catch(e:SQLError){
+					Database.rollback();
+					//nothing todo
+				}
+			}
 		}
 
 		protected function nextPage(lastPage:Boolean):void {
@@ -545,7 +576,9 @@ package gadget.sync.incoming {
 			
 			var info:Object = getInfo(data,tmpOb);
 			var localRecord:Object = dao.findByOracleId(info.rowid);
-			
+			if(oldIds!=null){
+				delete oldIds[info.rowid];//romove the visibal one
+			}
 			if(isChangeOwner(localRecord,tmpOb) && UserService.DIVERSEY==UserService.getCustomerId()){				
 				dao.deleteByOracleId(info.rowid);
 				_nbItems ++;

@@ -541,12 +541,14 @@
 			
 			private function userActiveHandler(e:Event):void
 			{
-				var fRate:int = Database.preferencesDao.getIntValue(PreferencesDAO.FRAME_RATE,0);
-				if(fRate>0){
-					stage.frameRate = fRate;
-				}else{
-					stage.frameRate = 10;
-				}				
+				if(stage!=null){
+					var fRate:int = Database.preferencesDao.getIntValue(PreferencesDAO.FRAME_RATE,0);
+					if(fRate>0){
+						stage.frameRate = fRate;
+					}else{
+						stage.frameRate = 10;
+					}		
+				}
 				//trace("User came back.");
 			}
 			

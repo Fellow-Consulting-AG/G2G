@@ -16,14 +16,14 @@ package gadget.sync.group
 			p.range				= null;
 			p.maximumTime		= null;
 		}
-		
-		override protected function doStart():void {
-			if (isFull()) {
-				for each (var task2:WebServiceBase in allTasks()) {
-					Database.incomingSyncDao.unsync_one(task2.getEntityName());
-				}
-			}
-		}
+//		history sync clear in syncprocess class if full sync=true.
+//		override protected function doStart():void {
+//			if (isFull()) {
+//				for each (var task2:WebServiceBase in allTasks()) {
+//					Database.incomingSyncDao.unsync_one(task2.getEntityName());
+//				}
+//			}
+//		}
 		
 		protected function standardSplits(task:WebServiceBase):void {
 			Database.incomingSyncDao.repairSodRanges(task.getEntityName());

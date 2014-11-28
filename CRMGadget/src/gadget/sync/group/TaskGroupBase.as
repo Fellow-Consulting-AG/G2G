@@ -105,6 +105,7 @@ package gadget.sync.group
 				p.setEventHandler	= myTaskEventHandler;
 				p.full				= _full;
 				p.metaSyn 				= _metaSyn;
+				p.fullCompare = _syncProcess.fullCompar;
 				p.preferences		= _preferences;
 				p.setSuccessHandler	= myTaskSuccess;
 				p.setWarningHandler	= myTaskWarning;
@@ -346,6 +347,7 @@ package gadget.sync.group
 			if (task.getFailed()) {
 				info(i18n._('Not successful: {1}', task.getName()));
 			} else {
+				task.done();//done for only task no error
 				var count:String = task.getRecordCount();
 				if (count!=null) {
 					info(i18n._("Successful, {1} records: {2}", count, task.getName()));

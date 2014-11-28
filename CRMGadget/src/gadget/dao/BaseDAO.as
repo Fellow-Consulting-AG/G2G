@@ -452,7 +452,7 @@ package gadget.dao
 		}
 		// return list of oracle id	
 		public function findAllIds():ArrayCollection{
-			var oracleId:String = DAOUtils.getOracleId(entity);
+			var oracleId:String = fieldOracleId;
 			var result:ArrayCollection = new ArrayCollection();
 			stmtFindAll.text = "SELECT "+oracleId + " FROM "+tableName;
 			exec(stmtFindAll);
@@ -462,6 +462,25 @@ package gadget.dao
 					var id:String = o[oracleId];
 					if(id!=null && id.indexOf("#")==-1){
 						result.addItem(id);	
+					}
+					
+				}
+				
+			}
+			return result;
+		}
+		
+		public function findAllIdsAsDictionary():Dictionary{
+			var oracleId:String = fieldOracleId;
+			var result:Dictionary = new Dictionary();
+			stmtFindAll.text = "SELECT "+oracleId + " FROM "+tableName;
+			exec(stmtFindAll);
+			var items:ArrayCollection = new ArrayCollection(stmtFindAll.getResult().data);
+			if(items.length>0){
+				for each(var o:Object in items){
+					var id:String = o[oracleId];
+					if(id!=null && id.indexOf("#")==-1){
+						result[id]=id;
 					}
 					
 				}

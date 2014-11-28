@@ -113,6 +113,15 @@ package gadget.sync.incoming
 			}
 		}
 		
+		override public function stop():void
+		{
+			if(_dependOnParent){
+				//keep the dependon as true when user cancel while syncing
+				Database.incomingSyncDao.unsync_one(getMyClassName());
+			}
+			super.stop();
+		}
+		
 		
 		protected override function generateSearchSpec(byModiDate:Boolean=true):String{		
 			

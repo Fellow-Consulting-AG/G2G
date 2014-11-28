@@ -37,6 +37,7 @@ package gadget.sync.task {
 		// runtime input
 		public var full:Boolean = false;
 		public var metaSyn:Boolean = false;
+		public var fullCompare:Boolean=false;
 
 		//VAHI additional parameters for sync.incoming,
 		// perhaps move this into some child class in future

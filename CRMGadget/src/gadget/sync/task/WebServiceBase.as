@@ -847,6 +847,10 @@ package gadget.sync.task {
 		public function stop():void {
 			failErrorHandler(i18n._('Sync process for "{1}" aborted by user, last request at {2}', getEntityName(), (new Date(nextRequest)).toUTCString()));
         }
+		
+		public function done():void{
+			//nothing to do, implement in the subclass
+		}
 
 		
 		/**

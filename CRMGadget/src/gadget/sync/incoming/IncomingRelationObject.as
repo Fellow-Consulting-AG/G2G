@@ -117,7 +117,7 @@ package gadget.sync.incoming
 		{
 			if(_dependOnParent){
 				//keep the dependon as true when user cancel while syncing
-				Database.incomingSyncDao.unsync_one(getMyClassName());
+				Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
 			}
 			super.stop();
 		}

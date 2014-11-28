@@ -134,9 +134,9 @@ package gadget.sync.incoming {
 		{			
 			super.param = p;
 			//bug#8928--resync if full compare=true and viewtype=defaultbook
-			if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE && p.fullCompare){
+			if(oldIds==null && viewType == TransactionDAO.DEFAULT_BOOK_TYPE && p.fullCompare && !(this is IncomingObjectPerId) ){
 				oldIds = dao.findAllIdsAsDictionary();				
-				Database.incomingSyncDao.unsync_one(getMyClassName());
+				Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
 			}
 			
 		}

@@ -9,6 +9,7 @@ package gadget.dao
 	
 	import gadget.util.DateUtils;
 	import gadget.util.OOPS;
+	import gadget.util.StringUtils;
 
 	public class IncomingSyncDAO extends BaseSQL {
 
@@ -72,9 +73,13 @@ package gadget.dao
 			Database.lastsyncDao.unsync_all();
 		}
 
-		public function unsync_one(task:String):void {
+		public function unsync_one(task:String,lastSyncName:String=null):void {
 			runSQL("DELETE FROM incoming_sync where task=:task;", {task:task});
-			Database.lastsyncDao.unsync(task);
+			if(StringUtils.isEmpty(lastSyncName)){
+				Database.lastsyncDao.unsync(task);
+			}else{
+				Database.lastsyncDao.unsync(lastSyncName);
+			}
 		}
 		
 		public function is_unsynced(task:String):Boolean {

@@ -23,6 +23,7 @@ package gadget.sync.outgoing
 	import gadget.sync.WSProps;
 	import gadget.sync.task.ReferenceUpdater;
 	import gadget.sync.task.WebServiceBase;
+	import gadget.util.DateUtils;
 	import gadget.util.OOPS;
 	import gadget.util.ObjectUtils;
 	import gadget.util.Relation;
@@ -160,11 +161,27 @@ package gadget.sync.outgoing
 		}
 		
 		//replace ' to empty only for ('Y' and 'N')
-		protected function ensureData(str:String):String{
-			if(str=="'Y'"){
-				return 'Y';
-			}else if(str=="'N'"){
-				return 'N';
+		protected function ensureData(str:String,dataType:String='Text (short)'):String{
+			if(!StringUtils.isEmpty(str)){
+				if(dataType=="Date"){
+					var dateObj:Date = DateUtils.guessAndParse(str);
+					if(dateObj!=null){
+						str = DateUtils.format(dateObj,DateUtils.DATABASE_DATE_FORMAT);
+					}else{
+						str = null;
+					}
+				}else if(dataType=="Number"||"Integer"){
+					str = str.replace(/\'/gi, '');//remove ' to empty
+				
+				}else{
+					if(str=="'Y'"){
+						return 'true';
+					}else if(str=="'N'"){
+						return 'false';
+					}
+				}
+			}else{
+				str='';//value cannot be null
 			}
 		
 			return str;
@@ -222,52 +239,36 @@ package gadget.sync.outgoing
 				var outgoingIgnoreFields:Dictionary = dao.outgoingIgnoreFields;
 				var hasOracleId:Boolean = false;
 				for each (var field:Object in field_list) {
-					//if(ignoreFields.indexOf(field.element_name)>=0) continue;
-					if (field.element_name == SodID
-						? updated	//VAHI when not updating, the ID need not be sent with WS2.0
-						: (records[i][field.element_name]!=null)) {
-						if (records[i][field.element_name] != "No Match Row Id") {
-							//VAHI the switch is an ugly hack
-//							switch (entity) {
-//								case "Contact":
-//								case "Opportunity":
-//									if (field.element_name == 'AccountLocation') continue;
-//									break;
-//								case "Activity":
-//									if (field.element_name == 'Owner'||field.element_name=='OpportunityName' ) continue;
-//									break;
-//								case "Service Request":
-//									if (field.element_name == 'AccountName') continue;
-//									break;
-//								case "Lead": // Bug #122
-//									if (field.element_name == 'SalesPersonFullName' || field.element_name == 'LeadOwner') continue;
-//									break;
-//							}
-							
-							if(outgoingIgnoreFields.hasOwnProperty(field.element_name)){
-								continue;
-							}
-							
-						
-							
-							if(field.element_name == ActivityDAO.PARENTSURVEYID || entity!=Database.activityDao.entity){
-								hasActivityParent = true;
-							}
-							var ws20field:String = WSProps.ws10to20(entity,field.element_name);
-							var fieldData:String = records[i][field.element_name];
-							if (field.element_name == SodID) {
-								hasOracleId = true;
-								if (!updated) {
-									fieldData="";
-								} else if (fieldData=="") {
-									warn(i18n._("trying to fix NULL value in {1} record", entity));
-									fieldData="#dummy";
-								}
-							}
-							
-							xml.appendChild(<{ws20field}>{ensureData(fieldData)}</{ws20field}>);
-						}
+					var fieldData:String = records[i][field.element_name];
+					if(fieldData==null ||((field.element_name == SodID || StringUtils.isEmpty(fieldData)) && !updated)){
+						continue;//when not updating, the ID need not be sent with WS2.0
 					}
+					if (fieldData != "No Match Row Id") {
+						
+						if(outgoingIgnoreFields.hasOwnProperty(field.element_name)){
+							continue;
+						}
+						
+					
+						
+						if(field.element_name == ActivityDAO.PARENTSURVEYID || entity!=Database.activityDao.entity){
+							hasActivityParent = true;
+						}
+						var ws20field:String = WSProps.ws10to20(entity,field.element_name);
+						//var fieldData:String = records[i][field.element_name];
+						if (field.element_name == SodID) {
+							hasOracleId = true;
+							if (!updated) {
+								fieldData="";
+							} else if (fieldData=="") {
+								warn(i18n._("trying to fix NULL value in {1} record", entity));
+								fieldData="#dummy";
+							}
+						}
+						
+						xml.appendChild(<{ws20field}>{ensureData(fieldData,field.data_type)}</{ws20field}>);
+					}
+					
 				}
 				if(!hasOracleId && updated){
 					var realId:String = WSProps.ws10to20(entity,SodID);
@@ -662,12 +663,25 @@ package gadget.sync.outgoing
 //				failErrorHandler("BUG CHECK",event);
 				return false;
 			}
+			
+			var showWarning:Boolean = true;
 			var currentRecords:Object = getCurrentRecordError();
-			warn(i18n._(oops, getDao().entity, currentRecords[SodID], ObjectUtils.joinFields(currentRecords, getNameCols()), getOperation(), short, XmlUtils.XMLcleanString(faultString)));
-			notify(ObjectUtils.joinFields(currentRecords, getNameCols()), i18n._(short));
-			faulted++;
-			dao.setErrorGid(currentRecords.gadget_id, true);
-			trace(faultString.toString());
+			if(faultString.indexOf("(SBL-DAT-00357)")>0 && faultString.indexOf("'Activity_Contact'")>0){
+				if(getOperation()=='create' || getOperation()=='Created'){
+					showWarning = false;
+					currentRecords.DummySiebelRowId = currentRecords.gadget_id;
+					currentRecords.local_update=null;
+					currentRecords.error = false;
+					getDao().update(currentRecords);
+				}
+			}
+			if(showWarning){
+				warn(i18n._(oops, getDao().entity, currentRecords[SodID], ObjectUtils.joinFields(currentRecords, getNameCols()), getOperation(), short, XmlUtils.XMLcleanString(faultString)));
+				notify(ObjectUtils.joinFields(currentRecords, getNameCols()), i18n._(short));
+				faulted++;
+				getDao().setErrorGid(currentRecords.gadget_id, true);
+				trace(faultString.toString());
+			}
 			doRequest();
 			return true;
 		}
@@ -691,13 +705,17 @@ package gadget.sync.outgoing
 			if(records==null) return null;
 			if(this is OutgoingAttachment){
 				var att:Object = records[0];
-				return dao.findByGadgetId(att.gadget_id);
+				return getDao().findByGadgetId(att.gadget_id);
 			}
 			if(this is OutgoingSubObject){
-				return dao.findByOracleId(records[0][SodID]);	
+				return getDao().findByOracleId(records[0][getOracleIdField()]);	
 			}
 			
 			return records[0];
+		}
+		
+		protected function getOracleIdField():String{
+			return SodID;
 		}
 		
 		override public function getEntityName():String {

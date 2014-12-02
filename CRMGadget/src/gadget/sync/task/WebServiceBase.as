@@ -660,14 +660,14 @@ package gadget.sync.task {
 		protected function slowdown(soapAction:String, request:XML, detail:XMLList):void {
 			// slowdown = 15 sec
 			var waitMs:int = 5000;//int(detail[0].RequestWait[0].toString());
-			trace("slowing down (remote)",waitMs,"---------------------------------------------------------------------------");
-			if (waitMs<1)
-				waitMs = 5;
-			
-			SOD_RATE_LIMIT += waitMs>5000 ? 5000 : waitMs;
-			if (SOD_RATE_LIMIT>5000)
-				SOD_RATE_LIMIT=5000;
-			optWarn(i18n._("sending too fast, waiting {1}ms, adjusting limit to {2}ms", waitMs, SOD_RATE_LIMIT));
+//			trace("slowing down (remote)",waitMs,"---------------------------------------------------------------------------");
+//			if (waitMs<1)
+//				waitMs = 5;
+//			
+//			SOD_RATE_LIMIT += waitMs>5000 ? 5000 : waitMs;
+//			if (SOD_RATE_LIMIT>5000)
+//				SOD_RATE_LIMIT=5000;
+//			optWarn(i18n._("sending too fast, waiting {1}ms, adjusting limit to {2}ms", waitMs, SOD_RATE_LIMIT));
 			retry(soapAction,request,waitMs);
 		}
 

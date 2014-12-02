@@ -57,7 +57,7 @@ package gadget.sync.incoming {
 				var localSalesProc:Object = Database.salesProcDao.find(tmpSalesProc);
 				if (localSalesProc == null) {
 					Database.salesProcDao.insert(tmpSalesProc);
-					notifyCreation(false, tmpSalesProc.Name);
+					notifyCreation(false, tmpSalesProc.name);
 				} else {
 					var changed:Boolean = false;
 					for each (var field2:String in ['id','name','description','default_stage']) {
@@ -68,7 +68,7 @@ package gadget.sync.incoming {
 					}
 					if (changed) {
 						Database.salesProcDao.update(tmpSalesProc);
-						notifyUpdate(false, tmpSalesProc.Name);
+						notifyUpdate(false, tmpSalesProc.name);
 					}
 				}
 				cnt++;

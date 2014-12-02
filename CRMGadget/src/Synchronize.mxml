@@ -110,6 +110,9 @@
 				fullCompare.enabled=false;
 				fullSync.enabled = false;
 				metadata.enabled = false;
+				fullCompare.selected = mainWindow.syncProcess.fullCompar;
+				fullSync.selected = mainWindow.syncProcess.full;
+				metadata.selected = mainWindow.syncProcess.metaSyn;
 				btnStop.enabled = true;
 				btnClose.label = i18n._('SYNCHRONIZE_BUTTON_RUN_IN_BACKGROUND');	
 				//accetp cannot run as background
@@ -249,7 +252,8 @@
 					if (mainWindow.syncProcess == null || mainWindow.syncProcess.finished) {
 						clearLog();					
 						Database.syncNumberDao.increaseSyncNumber();
-						logInfo(new LogEvent(LogEvent.INFO, i18n._('SYNCHRONIZE_SYNCHRONIZATION_STARTED')));					
+						var logStart:LogEvent = new LogEvent(LogEvent.INFO, i18n._('SYNCHRONIZE_SYNCHRONIZATION_STARTED'));
+						logInfo(logStart);					
 						localReport = new ArrayCollection();
 						serverReport = new ArrayCollection();	
 						mainWindow.syncBtn1.visible = true;
@@ -268,12 +272,13 @@
 									checkObjects.push(new CheckConflictObject(obj.entity));
 								}							
 							}
-							mainWindow.syncProcess =new InitSyncProcess(firstSync,fullCompare.selected);
+							mainWindow.syncProcess =new InitSyncProcess(firstSync,metadata.selected,fullCompare.selected);
 							mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent,null,dosync);
 						}else{
 							mainWindow.syncProcess = new SyncProcess(false,false,false,isSRSyncnow,records);
 							mainWindow.syncProcess.bindFunctions(logInfo, logProgress, logCount, syncEvent, [mainWindow.syncEnd, initButtons],completed);
 						}
+						mainWindow.syncProcess.logs.addItem(logStart);
 										
 						//reset session
 						SSOUtils.resetSession();

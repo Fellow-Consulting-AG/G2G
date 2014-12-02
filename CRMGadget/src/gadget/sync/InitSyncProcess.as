@@ -8,14 +8,14 @@ package gadget.sync
 
 	public class InitSyncProcess extends SyncProcess
 	{
-		public function InitSyncProcess(first:Boolean,fullCompare:Boolean)
+		public function InitSyncProcess(first:Boolean,metaData:Boolean,fullCompare:Boolean)
 		{
-			super(first, false,fullCompare, false, null, null);
+			super(first, metaData,fullCompare, false, null, null);
 		}
 		
 		
 		protected override function buildTask(full:Boolean,fullCompare:Boolean=false,isSRSynNow:Boolean=false,records:Array=null,checkConflicts:Array=null):void{
-			if(fullCompare || full){
+			if(fullCompare || full||metaSyn){
 			this._groups.addItem(new TaskGroupBase(
 				this,
 				[new IncomingUser(),

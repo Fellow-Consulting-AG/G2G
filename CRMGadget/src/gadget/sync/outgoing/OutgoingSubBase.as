@@ -132,7 +132,7 @@ package gadget.sync.outgoing
 					xml.appendChild(
 						<{pf}>{StringUtils.unNull(records[i][SodID])}</{pf}>
 					);
-					if("DummySiebelRowId" == subIDId &&  subDao.entity == Database.customObject2ContactDao.entity){
+					if("DummySiebelRowId" == subIDId){
 						subIDId = "Id";
 					}
 					tmp.appendChild(<{subIDId}>{StringUtils.unNull(records[i][subIDId])}</{subIDId}>);
@@ -176,6 +176,10 @@ package gadget.sync.outgoing
 		
 		override protected function getOperation():String{
 			return oper=="insert"?"Created":oper=="update"?"Updated":"deleted";
+		}
+		
+		override protected function getOracleIdField():String{
+			return subIDId;
 		}
 		
 		override protected function handleResponse(request:XML, result:XML):int{

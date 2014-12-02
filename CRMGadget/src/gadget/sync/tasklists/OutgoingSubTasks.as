@@ -50,12 +50,15 @@ package gadget.sync.tasklists {
 					case "Objectives":
 					case "Lead":
 					//case "Product":
-					case "Contact":
+					
 					case "Address":
 					case "Service Request":
 					case "Asset":
 						break;					
-						
+					case "Contact":
+						if(obj.entity!=Database.activityDao.entity){
+							break;
+						}
 					default:
 						var supportDao:SupportDAO = Database.getDao(subObj.entity_name,false) as SupportDAO;
 						if(supportDao!=null && !supportDao.isSyncWithParent){

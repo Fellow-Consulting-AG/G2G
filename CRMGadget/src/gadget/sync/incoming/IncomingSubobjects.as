@@ -22,6 +22,7 @@ package gadget.sync.incoming
 	{
 		protected var deletedAlready:Dictionary = new Dictionary();
 		protected var subDao:SupportDAO = null;		
+		protected var listField:ArrayCollection = null;
 		public function IncomingSubobjects(ID:String, _subID:String) {
 			var daoName:String = null;
 			var sodDao:SodUtilsTAO = SodUtils.transactionProperty(_subID);
@@ -38,6 +39,7 @@ package gadget.sync.incoming
 			super(ID, _subID, daoName);
 			if(subDao!=null){
 				isUsedLastModified = !subDao.isSelectAll;
+				listField = FieldUtils.allFields(subDao.entity,true);
 			}
 			
 			
@@ -157,7 +159,7 @@ package gadget.sync.incoming
 			var rec:Object = {};
 			
 			
-			for each (var colObj:Object in FieldUtils.allFields(subDao.entity,true)) {
+			for each (var colObj:Object in listField) {
 				var col:String=colObj.element_name;
 				var xmldata:XMLList = data.child(new QName(ns2.uri,WSProps.ws10to20(subDao.entity,colObj.element_name)));
 				if (xmldata.length()>1)

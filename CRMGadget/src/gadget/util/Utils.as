@@ -415,6 +415,13 @@ package gadget.util {
 										}
 									}
 									
+								}else if(fieldInfo.data_type == "Date"){
+									if(!StringUtils.isEmpty(val)){
+										var dateObj:Date = DateUtils.guessAndParse(val);	
+										if(dateObj!=null){											
+											val = DateUtils.format(dateObj, DateUtils.DATABASE_DATE_FORMAT);
+										}
+									}
 								}
 								if(val=='-1' && entity==Database.customObject1Dao.entity && fieldInfo.element_name=='CustomInteger0'){
 									val="";

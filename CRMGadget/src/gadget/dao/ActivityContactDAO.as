@@ -20,6 +20,8 @@ package gadget.dao
 	
 	import gadget.util.StringUtils;
 	
+	import mx.collections.ArrayCollection;
+	
 	public class ActivityContactDAO extends SupportDAO {
 		
 		public function ActivityContactDAO(sqlConnection:SQLConnection, work:Function) {
@@ -36,7 +38,7 @@ package gadget.dao
 				oracle_id:"DummySiebelRowId",		//VAHI's not so evil kludge
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 			});
-			
+			_isSyncWithParent = false;
 		}
 		public override function getLinkFields():Dictionary{
 			var fields:Dictionary = new Dictionary();
@@ -61,6 +63,49 @@ package gadget.dao
 		override public final function fix_sync_outgoing(ob:Object):Boolean {
 			ob.DummySiebelRowId = ob.gadget_id;
 			return true;
+		}
+		
+		override protected function getOutgoingIgnoreFields():ArrayCollection{
+			return new ArrayCollection([
+			
+				"ActivityId",				
+				"Subject",
+				"ContactEmail",
+				"ContactFirstName",
+				"ContactFullName",
+				"ContactLastName",
+				
+				"AccountName",	
+				
+				"CreatedByAlias",
+				"CreatedByEMailAddr",
+				"CreatedByExternalSystemId",
+				"CreatedByFirstName",
+				"CreatedByFullName",
+				"CreatedById",
+				"CreatedByIntegrationId",
+				"CreatedByLastName",
+				"CreatedByUserSignInId",
+				"CreatedDate",
+				
+				"ExternalSystemId",		
+				"IntegrationId",	
+				
+				"ModId",
+				"ModifiedById",
+				"ModifiedDate",
+				
+				"UpdatedByAlias",
+				"UpdatedByEMailAddr",
+				"UpdatedByExternalSystemId",
+				"UpdatedByFirstName",
+				"UpdatedByFullName",
+				"UpdatedByIntegrationId",
+				"UpdatedByLastName",
+				"UpdatedByUserSignInId",
+			
+			]);
+			
 		}
 
 		private const TEXTCOLUMNS:Array = [

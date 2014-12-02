@@ -31,6 +31,7 @@ package gadget.sync.incoming
 			this._dependOnParent = dependOnParent;
 			this._parentRelationField = parentFieldIds;
 			_existRetrieved = new Dictionary();
+			_readParentIds = Database.incomingSyncDao.is_unsynced(getEntityName());
 		}
 		
 		

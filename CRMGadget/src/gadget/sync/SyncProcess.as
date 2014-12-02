@@ -43,7 +43,7 @@ package gadget.sync
 	public class SyncProcess {
 		
 		private var _full:Boolean;
-		protected var _metaSyn:Boolean;
+		private var _metaSyn:Boolean;
 		protected var _logInfo:Function;
 		protected var _logProgress:Function;
 		protected var _eventHandler:Function;
@@ -298,7 +298,7 @@ package gadget.sync
 				Database.lastsyncDao.unsync("gadget.sync.incoming::AccessAssessmentScriptService");
 			}else if (_full) {
 				// Clear out old records which perhaps disturb the GUI
-				Database.lastsyncDao.unsync_all();
+				Database.incomingSyncDao.unsync_all();
 			}
 			_groups[0].start();
  		}
@@ -458,6 +458,11 @@ package gadget.sync
 		public function get fullCompar():Boolean
 		{
 			return _fullCompar;
+		}
+
+		public function get metaSyn():Boolean
+		{
+			return _metaSyn;
 		}
 		
 	

@@ -1798,19 +1798,12 @@
 							}else if(childObj is CheckBox){
 								// for only sieme user //
 								var chkBox:CheckBox = childObj as CheckBox;
+								if(selectedAccountType != null){
+									chkBox.selected = selectedAccountType.selected=="true"?true:false;
+								}
 								// disable field record type
-								if(create && subtypeActivity ==0){
-									if(selectedAccountType != null){
-										chkBox.selected = selectedAccountType.selected=="true"?true:false;
-									}
-								}else if(!create){
-									
-									if(chkBox.selected){
-										chkBox.enabled = false;
-									}else if(selectedAccountType != null){
-										chkBox.selected = selectedAccountType.selected=="true"?true:false;
-										chkBox.enabled = false;
-									}
+								if(!create && chkBox.selected){
+									chkBox.enabled = false;
 								}
 								chkBox.addEventListener(Event.CHANGE,function(e:Event):void{
 									if(!isNew){

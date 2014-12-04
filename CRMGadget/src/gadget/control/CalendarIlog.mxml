@@ -35,6 +35,7 @@
 			import mx.events.ItemClickEvent;
 			import mx.formatters.DateFormatter;
 			import mx.resources.IResourceBundle;
+			import mx.resources.Locale;
 			import mx.utils.StringUtil;
 			
 			public var refreshFunction:Function;
@@ -89,7 +90,7 @@
 					resourceBundle.content["header.month.mode.short.format"]= "EEE"
 					resourceBundle.content["header.month.mode.long.format"]="EEE";
 					resourceBundle.content["header.week.mode.long.format"]="EEE, MMMM DD";
-					resourceBundle.content["header.week.mode.regular.format"]="EEE, MMM DD";
+					resourceBundle.content["header.week.mode.regular.format"]="EEE, MM DD";
 					resourceBundle.content["range.format.sameday.date1"]="EEE, MMMM D";
 					resourceBundle.content["range.format.sameday.time.date1"]="EEE, MMMM D, L:NN A";
 				}
@@ -263,6 +264,7 @@
 				} 
 			}
 			
+			
 			public function loadData():void {
 				if (cal == null) return;
 				var data:Array = new Array();
@@ -414,7 +416,6 @@
 				}
 				return tooltip
 			}
-				
 		    private function createCall(e:MouseEvent):void{
 				var selectedDate:Date =  (e.currentTarget as Calendar).getTime(e.stageX,e.stageY,true);
 				var rang:Array = (e.currentTarget as Calendar).timeRangeSelection;

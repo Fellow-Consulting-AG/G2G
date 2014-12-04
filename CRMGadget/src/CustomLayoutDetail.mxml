@@ -27,6 +27,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
+			import mx.controls.CheckBox;
 			import mx.validators.StringValidator;
 			import mx.validators.Validator;
 			
@@ -158,27 +159,46 @@
 					this.close();
 				}
 			}
+			private function getField(listField:ArrayCollection,colname:String):Object{
+				var obj:Object = new Object();
+				for(var i:int=0;i<listField.length;i++){
+					var objField:Object = listField[i];
+					if(objField.column == colname){
+						obj = objField;
+						break;
+					}
+				}
+				return obj;
+			}
 			private function loadConditionData(entity:String, i:int):void {
 				var fields:Object = getConditionFields()[i];
 				var condition:Object = Database.customLayoutConditionDAO.find(customLayout.entity, String(customLayout.subtype), String(i+1));
 				
 				// Get All Fields by Entity
-				fields.field.dataProvider = Utils.getColumns(entity);
+				var listFields:ArrayCollection =  Utils.getColumns(entity);
+				fields.field.dataProvider =listFields;
 				if (condition != null) {
 					fields.field.selectedIndex = Utils.getComboColIndex(condition.column_name, condition.entity);
 					// Get data to Combobox Operator
 					fields.operator.selectedItem = getSelectedItem(condition.operator, operatorData, "data");
+					
+					var fieldInfo:Object = getField(listFields,condition.column_name);
 					// Get data to Combobox Value if field is picklist
-					var picklist:ArrayCollection = PicklistService.getPicklist(condition.entity, condition.column_name);
-					var visibleCombo:Boolean = picklist.length > 1 ? true : false;
-					fields.combo.visible = visibleCombo;
-					fields.value.visible = !visibleCombo;
-					if (visibleCombo) {
+					
+					
+					if (fieldInfo.type=="Picklist") {
+						var picklist:ArrayCollection = PicklistService.getPicklist(condition.entity, condition.column_name);
+						fields.combo.visible = true;
 						fields.combo.dataProvider = picklist;
 						fields.combo.selectedIndex = Utils.getComboParamIndex(condition.column_name, condition.entity, condition.params);
 						disabledButtonAddPicklist(layoutOperator1.selectedItem);
 						findConditonValue(condition.params);
 						layoutValue1.text = getConditonValue("label");
+						fields.value.visible = false;
+					}else if(fieldInfo.type=="Checkbox"){
+						fields.checkbox.visible = true;
+						fields.value.visible = false;
+						fields.checkbox.selected = StringUtils.isTrue(condition.params);
 					} else {
 						fields.value.text = condition.params;
 					}					
@@ -195,7 +215,7 @@
 				
 					data = Utils.getColumns(entity, true, false);
 					for each (var picklist:Object in data){
-						if(picklist.type=='Picklist'){
+						if(picklist.type=='Picklist' || picklist.type=='Checkbox'){
 							allPicklist.addItem(picklist);
 						}
 					}
@@ -336,10 +356,10 @@
 			
 			private function getConditionFields():Array {
 				return [
-					{field:layoutField1, operator:layoutOperator1, combo:cbolayoutValue1, value:layoutValue1},
-					{field:layoutField2, operator:layoutOperator2, combo:cbolayoutValue2, value:layoutValue2},
-					{field:layoutField3, operator:layoutOperator3, combo:cbolayoutValue3, value:layoutValue3},
-					{field:layoutField4, operator:layoutOperator4, combo:cbolayoutValue4, value:layoutValue4}];
+					{field:layoutField1, operator:layoutOperator1, combo:cbolayoutValue1, value:layoutValue1,checkbox:chklayoutValue1},
+					{field:layoutField2, operator:layoutOperator2, combo:cbolayoutValue2, value:layoutValue2,checkbox:chklayoutValue2},
+					{field:layoutField3, operator:layoutOperator3, combo:cbolayoutValue3, value:layoutValue3,checkbox:chklayoutValue3},
+					{field:layoutField4, operator:layoutOperator4, combo:cbolayoutValue4, value:layoutValue4,checkbox:chklayoutValue4}];
 			} 
 			
 			private function catchConditionError():Object{
@@ -349,7 +369,7 @@
 				
 				var count:int = 1;
 				for each (var field:Object in getConditionFields()) {
-					var objectCondition:Object = checkCondition(customLayout.entity, customLayout.subtype, count, field.field, field.operator, field.combo, field.value);
+					var objectCondition:Object = checkCondition(customLayout.entity, customLayout.subtype, count, field.field, field.operator, field.combo, field.value,field.checkbox);
 					if (!StringUtils.isEmpty(objectCondition.column_name)) {
 						error += objectCondition.missing;
 						array.push(objectCondition);
@@ -362,7 +382,7 @@
 				return object;
 			}
 			
-			private function checkCondition(entity:String, subtype:String, num:int, layoutField:ComboBox, layoutOperator:ComboBox, cbolayoutValue:ComboBox, layoutValue:TextInput):Object{
+			private function checkCondition(entity:String, subtype:String, num:int, layoutField:ComboBox, layoutOperator:ComboBox, cbolayoutValue:ComboBox, layoutValue:TextInput,checkbox:CheckBox):Object{
 				var objectCondition:Object = new Object();
 				objectCondition.entity = entity;
 				objectCondition.subtype = subtype;
@@ -371,6 +391,8 @@
 				var params:String;
 				if(layoutValue.visible)
 					params = layoutValue.text;
+				else if (checkbox.visible)
+					params = checkbox.selected.toString();
 				else
 					params = cbolayoutValue.selectedItem.data;
 				
@@ -436,28 +458,36 @@
 						disabledButtonAddPicklist(layoutOperator1.selectedItem);
 					}else{
 						btnOp1.visible = false;
-						modifiedFieldAndLoadValue(layoutValue1, cbolayoutValue1, objectField);
+						modifiedFieldAndLoadValue(layoutValue1, cbolayoutValue1, objectField,chklayoutValue1);
 					}
 					
 					
 				}else if(StringUtils.endsWith(lyoutField.id, "2")){
-					modifiedFieldAndLoadValue(layoutValue2, cbolayoutValue2, objectField);
+					modifiedFieldAndLoadValue(layoutValue2, cbolayoutValue2, objectField,chklayoutValue2);
 				}else if(StringUtils.endsWith(lyoutField.id, "3")){
-					modifiedFieldAndLoadValue(layoutValue3, cbolayoutValue3, objectField);
+					modifiedFieldAndLoadValue(layoutValue3, cbolayoutValue3, objectField,chklayoutValue3);
 				}else if(StringUtils.endsWith(lyoutField.id, "4")){
-					modifiedFieldAndLoadValue(layoutValue4, cbolayoutValue4, objectField);
+					modifiedFieldAndLoadValue(layoutValue4, cbolayoutValue4, objectField,chklayoutValue4);
 				}
 			}
 			
-			private function modifiedFieldAndLoadValue(layoutValue:TextInput, cbolayoutValue:ComboBox, objectField:Object):void{
+			private function modifiedFieldAndLoadValue(layoutValue:TextInput, cbolayoutValue:ComboBox, objectField:Object,chkBoxValue:CheckBox):void{
 				var datasource:ArrayCollection = PicklistService.getPicklist(objectField.entity, objectField.column);
-				var visibleCombo:Boolean = objectField.type == "Picklist" && datasource.length > 1 ? true : false;
-				cbolayoutValue.visible = visibleCombo;
-				layoutValue.visible = !visibleCombo;
-				layoutValue.text = "";
-				if(visibleCombo){
-					cbolayoutValue.dataProvider = datasource;
+				if(objectField.type == "Checkbox"){
+					chkBoxValue.visible = true;
+					layoutValue.visible = false;
+					cbolayoutValue.visible = false;
+				}else{
+					chkBoxValue.visible = false;
+					var visibleCombo:Boolean = objectField.type == "Picklist" && datasource.length > 1 ? true : false;
+					cbolayoutValue.visible = visibleCombo;
+					layoutValue.visible = !visibleCombo;
+					layoutValue.text = "";
+					if(visibleCombo){
+						cbolayoutValue.dataProvider = datasource;
+					}
 				}
+				
 			}
 			private function onOkMultiPicklist(list:ArrayCollection):void{
 				listValues = list;
@@ -529,6 +559,11 @@
 					for each(var tmp:Object in dataPicklist){
 						objMap[tmp.data] = tmp;
 					}
+				}else if(obj.type == "Checkbox"){
+					cbolayoutValue1.visible = false;
+					chklayoutValue1.visible = true;
+					btnOp1.visible = false;			
+					layoutValue1.visible = false;;
 				}else{
 					cbolayoutValue1.visible = visibleCombo;
 					btnOp1.visible = false;			
@@ -561,7 +596,7 @@
 						disabledButtonAddPicklist(layoutOperator1.selectedItem);
 					}else{
 						btnOp1.visible = false;
-						modifiedFieldAndLoadValue(layoutValue1, cbolayoutValue1, objectField);
+						modifiedFieldAndLoadValue(layoutValue1, cbolayoutValue1, objectField,chklayoutValue1);
 					}
 					
 			}
@@ -621,6 +656,7 @@
 						<mx:ComboBox id="layoutField1" width="160" change="changeFieldAction(event)" />
 						<mx:ComboBox id="layoutOperator1" dataProvider="{operatorData}" change="onChangeOperator(event)" width="110" />
 						<mx:ComboBox id="cbolayoutValue1" visible = "false" includeInLayout="false" width="150"  />
+						<mx:CheckBox id="chklayoutValue1" visible = "false" includeInLayout="false"/>
 						<mx:HBox>
 							<mx:TextInput id="layoutValue1" visible = "true" width="150" />
 							<mx:Button id="btnOp1" click="openMultiPicklistPopup()" label="Add" visible="false" />							
@@ -633,6 +669,7 @@
 						<mx:ComboBox id="layoutOperator2" dataProvider="{operatorData}" width="110" />
 						<mx:TextInput id="layoutValue2" visible = "true" includeInLayout="false" width="150" />
 						<mx:ComboBox id="cbolayoutValue2" visible = "false" includeInLayout="false" width="150"  />
+						<mx:CheckBox id="chklayoutValue2" visible = "false" includeInLayout="false"/>
 					</mx:HBox>
 				</mx:FormItem>
 				<mx:FormItem label="{i18n._(CUSTOMLAYOUTDETAIL_FORMITEM_LABEL_CONDITION)} 3">
@@ -641,6 +678,7 @@
 						<mx:ComboBox id="layoutOperator3" dataProvider="{operatorData}" width="110" />
 						<mx:TextInput id="layoutValue3" visible = "true" includeInLayout="false" width="150" />
 						<mx:ComboBox id="cbolayoutValue3" visible = "false" includeInLayout="false" width="150"  />
+						<mx:CheckBox id="chklayoutValue3" visible = "false" includeInLayout="false"/>
 					</mx:HBox>
 				</mx:FormItem>
 				<mx:FormItem label="{i18n._(CUSTOMLAYOUTDETAIL_FORMITEM_LABEL_CONDITION)} 4">
@@ -649,6 +687,7 @@
 						<mx:ComboBox id="layoutOperator4" dataProvider="{operatorData}" width="110" />
 						<mx:TextInput id="layoutValue4" visible = "true" includeInLayout="false" width="150" />
 						<mx:ComboBox id="cbolayoutValue4" visible = "false" includeInLayout="false" width="150"  />
+						<mx:CheckBox id="chklayoutValue4" visible = "false" includeInLayout="false"/>
 					</mx:HBox>
 				</mx:FormItem>
 			</mx:Form>

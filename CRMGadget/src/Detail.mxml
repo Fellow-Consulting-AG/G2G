@@ -1380,8 +1380,21 @@
 				}
 				return s;
 			}
-			private function fireEventRecordTypeChange(cbo:ComboBox):void{
-				selectedAccountType = cbo.selectedItem;
+			private function fireEventRecordTypeChange(cbo:Object):void{
+				var data:String = "";
+				if(cbo is ComboBox){
+					selectedAccountType = cbo.selectedItem;
+					data = selectedAccountType.data;
+					selectedAccountType.selected = "false";
+				}else{
+					if(selectedAccountType == null){
+						selectedAccountType = new Object();
+					}
+					data = cbo.selected + "";
+					selectedAccountType.selected = data;
+					selectedAccountType.data = "";
+				}
+				
 				
 				/*
 				var b:Boolean = false;
@@ -1414,18 +1427,18 @@
 				}
 				*/
 				subtype = 0;
-				var cond:ArrayCollection =  Database.customLayoutConditionDAO.findByParam(entity,selectedAccountType.data);
+				var cond:ArrayCollection =  Database.customLayoutConditionDAO.findByParam(entity,data);
 				if(cond != null && cond.length >1){
 					//subtype = -1;
 				}else if(cond != null && cond.length ==1){
 					var cusLayout:Object = cond.getItemAt(0);
 					subtype = cusLayout.subtype;
-					item[cusLayout.column_name] = selectedAccountType.data;
+					item[cusLayout.column_name] = data;
 				}else{
-					var contaain:int = checkContains(selectedAccountType.data);
+					var contaain:int = checkContains(data);
 					if(contaain != -1){
 						subtype = contaain;
-						item[cond] = selectedAccountType.data;
+						item[cond] = data;
 					}
 				}
 				
@@ -1738,49 +1751,74 @@
 						
 						var isAcction:Boolean =mapLayoutDependOn[fieldInfo.element_name]!=null;
 						// action combo RecordType 
-						if( isAcction && childObj is ComboBox){
-							// for only sieme user //
-							var combo:ComboBox = childObj as ComboBox;
-							// disable field record type
-							
-							if(create && subtypeActivity ==0){
-								if(selectedAccountType != null){
-									//combo.enabled = false;
-									combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
-								}
-								//								combo.addEventListener(Event.CHANGE,function(e:Event):void{
-								//									if(!isNew){
-								//										fireEventRecordTypeChange(e.target as ComboBox);
-								//									}
-								//									
-								//								});
+						if( isAcction){
+							if(childObj is ComboBox){
+								// for only sieme user //
+								var combo:ComboBox = childObj as ComboBox;
+								// disable field record type
 								
-							}else if(!create){
-								var obj2:Object = combo.selectedItem;
-								if(obj2 != null && !StringUtils.isEmpty(obj2.data)){
+								if(create && subtypeActivity ==0){
+									if(selectedAccountType != null){
+										//combo.enabled = false;
+										combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
+									}
+									//								combo.addEventListener(Event.CHANGE,function(e:Event):void{
+									//									if(!isNew){
+									//										fireEventRecordTypeChange(e.target as ComboBox);
+									//									}
+									//									
+									//								});
+									
+								}else if(!create){
+									var obj2:Object = combo.selectedItem;
+									if(obj2 != null && !StringUtils.isEmpty(obj2.data)){
+										combo.enabled = false;
+									}else if(selectedAccountType != null){
+										combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
+										combo.enabled = false;
+									}
+									/*
+									if(type=='Task' || entity == "Account"){
+									var obj2:Object = combo.selectedItem;
+									if(obj2 != null && !StringUtils.isEmpty(obj2.data)){
 									combo.enabled = false;
-								}else if(selectedAccountType != null){
+									}else if(selectedAccountType != null){
 									combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
 									combo.enabled = false;
+									}
+									
+									}
+									*/
 								}
-								/*
-								if(type=='Task' || entity == "Account"){
-								var obj2:Object = combo.selectedItem;
-								if(obj2 != null && !StringUtils.isEmpty(obj2.data)){
-								combo.enabled = false;
-								}else if(selectedAccountType != null){
-								combo.selectedIndex = CalculatedField.getComboSelectedIndex(combo,selectedAccountType.data);
-								combo.enabled = false;
+								combo.addEventListener(Event.CHANGE,function(e:Event):void{
+									if(!isNew){
+										fireEventRecordTypeChange(e.target as ComboBox);
+									}
+								});
+							}else if(childObj is CheckBox){
+								// for only sieme user //
+								var chkBox:CheckBox = childObj as CheckBox;
+								// disable field record type
+								if(create && subtypeActivity ==0){
+									if(selectedAccountType != null){
+										chkBox.selected = selectedAccountType.selected=="true"?true:false;
+									}
+								}else if(!create){
+									
+									if(chkBox.selected){
+										chkBox.enabled = false;
+									}else if(selectedAccountType != null){
+										chkBox.selected = selectedAccountType.selected=="true"?true:false;
+										chkBox.enabled = false;
+									}
 								}
-								
-								}
-								*/
+								chkBox.addEventListener(Event.CHANGE,function(e:Event):void{
+									if(!isNew){
+										fireEventRecordTypeChange(e.target as CheckBox);
+									}
+								});
 							}
-							combo.addEventListener(Event.CHANGE,function(e:Event):void{
-								if(!isNew){
-									fireEventRecordTypeChange(e.target as ComboBox);
-								}
-							});
+							
 						} 
 						
 						

@@ -42,11 +42,12 @@ package gadget.dao {
 		public function selectLayout(entity:String, subtype:int):ArrayCollection {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity, subtype:subtype}));
 			var languageCode:String = LocaleService.getLanguageInfo().LanguageCode;
+			var customTrans:Dictionary = Database.customFieldDao.selectCustomFieldWithSubTypeAsDic(entity,subtype,languageCode);
 			for each(var obj:Object in list){
 				var col_name:String = obj.column_name;
 				if (col_name.indexOf(CustomLayout.CALCULATED_CODE) > -1 || col_name.indexOf("#") > -1){
 					// if(col_name.indexOf("#") > -1) col_name += "_" + obj.col;
-					var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType(obj.entity, col_name,subtype,languageCode);
+					var objCustomField:Object = customTrans[col_name];
 					obj["customField"] = objCustomField;
 				}if (obj.column_name.indexOf(CustomLayout.SQLLIST_CODE) > -1){
 					var criterias:ArrayCollection = Database.sqlListDAO._select(obj.entity, obj.column_name);

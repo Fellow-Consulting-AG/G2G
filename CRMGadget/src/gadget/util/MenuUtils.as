@@ -312,6 +312,10 @@ package gadget.util {
 		private static function disabledContextMenu(myMenu:Menu,entity:String,obj:Object):void{
 			
 			var menu:XMLListCollection = myMenu.dataProvider as XMLListCollection;
+			if(obj!=null){
+				obj=Database.getDao(entity).findByGadgetId(obj.gadget_id);
+			}
+			
 			for each(var menuItem:XML in menu){
 				if(entity == "Activity"){
 					for each(var sub:XML in menuItem.children()){
@@ -328,7 +332,7 @@ package gadget.util {
 					var oidName:String = DAOUtils.getOracleId(entity);
 					
 					var currentUser:Object = Database.userDao.read();
-					obj=Database.getDao(entity).findByGadgetId(obj.gadget_id);
+					
 					var oracleId:String = obj[oidName];
 					var isOwner:Boolean = (oracleId!=null && oracleId.indexOf("#")!=-1)||currentUser.id==obj.OwnerId;
 					

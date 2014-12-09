@@ -107,6 +107,18 @@ package gadget.dao {
 			return null;
 		}
 		
+		public function selectCustomFieldWithSubTypeAsDic(entity:String, subtype:int,languageCode:String=DEFAULT_LANGUAGE_CODE,addKeyValue:Boolean=false):Dictionary {
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity,subtype:subtype}));
+			var result:ArrayCollection = checkTranslation(list,languageCode,addKeyValue);
+			var dic:Dictionary = new Dictionary();
+			for each(var obj:Object in result){
+				dic[obj.column_name] = obj;
+			}
+			
+			return dic;
+		}
+		
+		
 		public function selectCustomFieldWithSubType(entity:String, column_name:String,subtype:int,languageCode:String=DEFAULT_LANGUAGE_CODE,addKeyValue:Boolean=false):Object {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity, column_name:column_name, subtype:subtype}));
 			if(list.length>0){

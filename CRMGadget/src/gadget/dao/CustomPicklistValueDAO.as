@@ -1,6 +1,7 @@
 package gadget.dao {
 	
 	import flash.data.SQLConnection;
+	import flash.utils.Dictionary;
 	
 	import gadget.util.StringUtils;
 	
@@ -63,8 +64,21 @@ package gadget.dao {
 			delete_({entity: item.gadget_type, gadgetId: item.gadget_id});
 		}
 		
+		/**
+		 *key is the fieldname+tntity 
+		 */
+		public function selectByEntityAsDic(entity:String):Dictionary{
+			var result:ArrayCollection = selectAll(entity);
+			var dic:Dictionary = new Dictionary();
+			for each(var obj:Object in result){
+				var key:String = obj['fieldName']+obj['gadgetId'];
+				dic[key]=obj;
+			}
+			return dic;
+		}
+		
 		public function selectAll(entity:String):ArrayCollection {
-			return new ArrayCollection(select_order(vars,null, {entity: entity}, "translateValue", null));
+			return new ArrayCollection(select_order(vars,null, {entity: entity}, null, null));
 		}
 	
 		public function update_(item:Object):void {

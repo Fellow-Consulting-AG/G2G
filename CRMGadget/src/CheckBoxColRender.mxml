@@ -5,6 +5,8 @@
 								  focusEnabled="true">
 	<fx:Script>
 		<![CDATA[
+			import gadget.dao.Database;
+			
 			import mx.controls.AdvancedDataGrid;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
@@ -32,6 +34,9 @@
 					 chkBox.selected=(val==true || val=="true" || val==1 || val=="1");
 				 }else{
 					 chkBox.selected = false;
+				 }
+				 if(Database.preferencesDao.isChkReadonlyWhenTrue()){
+					 chkBox.enabled = !chkBox.selected;
 				 }
 					
 			 }

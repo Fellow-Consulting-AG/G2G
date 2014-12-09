@@ -128,6 +128,7 @@ package gadget.dao
 		
 		public static const ENABLE_SAMPLE_ORDER:String = 'enable_sample_order';
 		public static const ENABLE_CHECKBOX_INLIST:String ='enable_checkbox_inlist';
+		public static const CHECKBOX_READONLY_WHEN_TRUE:String = 'checkbox_readonly_when_true';
 		
 		public static const LOG_FILES:String = "log_files";
 		import gadget.util.TableFactory;
@@ -276,7 +277,8 @@ package gadget.dao
 			ENABLE_DOUBLE_CLICK_NEW_CALL,
 			GOOGLE_MAP_DISTANCE,
 			ENABLE_SAMPLE_ORDER,
-			ENABLE_CHECKBOX_INLIST
+			ENABLE_CHECKBOX_INLIST,
+			CHECKBOX_READONLY_WHEN_TRUE
 		];
 		
 		public function getGoolgeMapDistance():String{
@@ -285,6 +287,10 @@ package gadget.dao
 		
 		public function isEnableCheckBoxInList():Boolean{
 			return getBooleanValue(ENABLE_CHECKBOX_INLIST);
+		}
+		
+		public function isChkReadonlyWhenTrue():Boolean{
+			return getBooleanValue(CHECKBOX_READONLY_WHEN_TRUE);
 		}
 		
 		public function isEnableSampleOrder():Boolean{

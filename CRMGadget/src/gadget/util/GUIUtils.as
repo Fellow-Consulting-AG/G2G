@@ -21,6 +21,7 @@ package gadget.util
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
 	
 	import flexunit.utils.ArrayList;
 	
@@ -158,12 +159,13 @@ package gadget.util
 		}
 		
 		public static function checkCustomPicklistValue(item:Object,fields:ArrayCollection,entity:String,this_:Window):void{
+			var customPickList:Dictionary = Database.customPicklistValueDAO.selectByEntityAsDic(entity);
 			for (var i:int = 0; i < fields.length; i++) {
 				var columnName:String = fields[i].column_name!=null?fields[i].column_name:fields[i].element_name;
 				var fieldInfo:Object = FieldUtils.getField(entity, columnName);
 				if (fieldInfo && fieldInfo.data_type=='Picklist') {
-					var customPicklistValue:Object = Database.customPicklistValueDAO.selectByFieldName(entity,columnName,item.gadget_id);
-					if(customPicklistValue){
+					var customPicklistValue:Object = customPickList[(columnName+item.gadget_id)];
+					if(customPicklistValue!=null){
 						var customCode:String = customPicklistValue.crmCode;
 						if(customCode.indexOf('$$')<0) customCode = customCode.replace("/","$$"); 
 						item[columnName] = customCode;

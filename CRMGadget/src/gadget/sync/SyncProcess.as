@@ -132,9 +132,9 @@ package gadget.sync
 					
 					_groups.addItem(new IncomingParallelTaskGroup( // Modification tracking
 						this,
-						[new ModificationTracking(),new IncomingObject(Database.bookDao.entity)],
+						[new IncomingObject(Database.bookDao.entity)],
 						_full
-						,_metaSyn,true
+						,_metaSyn,false
 					));
 					//for jd user only
 					addProductAndPlantTask();
@@ -151,7 +151,8 @@ package gadget.sync
 							addSeriaTask(stasks,IncomingParallelTaskGroup);	
 						}
 					}
-					addSeriaTask(IncomingPerIdTasks(),IncomingParallelTaskGroup);
+					//bug#9045---remove tracking no reading by ids too 
+					//addSeriaTask(IncomingPerIdTasks(),IncomingParallelTaskGroup);
 					if(_full||fullCompare){
 						addSeriaTask(IncomingSubObjTasks(fullCompare,_full),IncomingParallelTaskGroup);
 						//retrieve missing contact

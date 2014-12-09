@@ -11,6 +11,7 @@ package gadget.dao
 	import flash.events.Event;
 	
 	import gadget.sync.SyncProcess;
+	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 
 	public class ErrorLoggingDAO extends SimpleTable {
@@ -64,6 +65,14 @@ package gadget.dao
 					insert_err(args);	
 				}
 				
+			}
+		}
+		
+		public function addSqlError(sqlError:String):void{
+			date = new Date().toUTCString();
+			nr	= parseInt(select_one("ifnull(max(nr),0)+1").toString());
+			if(!StringUtils.isEmpty(sqlError)){
+				insert_err({'error': 'Error while executing: '+sqlError});
 			}
 		}
 		

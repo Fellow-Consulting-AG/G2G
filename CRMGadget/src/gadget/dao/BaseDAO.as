@@ -780,7 +780,13 @@ package gadget.dao
 		
 		private function fieldList(updateFF:Boolean=true):ArrayCollection {
 			var allFields:ArrayCollection = new ArrayCollection();
-			allFields.addAll(FieldUtils.allFields(entity));
+			//allFields.addAll(FieldUtils.allFields(entity));
+			for each(var f:Object in FieldUtils.allFields(entity)){
+				if(!StringUtils.isEmpty(f.element_name)){//hope it can solved the pb parameters not match!
+					allFields.addItem(f);
+				}
+			}
+			
 		
 			// check if the Oracle ID is in the list
 			var found:Boolean = false;

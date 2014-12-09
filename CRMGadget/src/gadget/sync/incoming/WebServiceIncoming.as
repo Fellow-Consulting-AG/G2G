@@ -24,6 +24,7 @@ package gadget.sync.incoming {
 	import gadget.sync.task.WebServiceBase;
 	import gadget.util.FieldUtils;
 	import gadget.util.OOPS;
+	import gadget.util.OOPSthrow;
 	import gadget.util.ObjectUtils;
 	import gadget.util.ServerTime;
 	import gadget.util.SodUtils;
@@ -734,8 +735,11 @@ package gadget.sync.incoming {
 					var result:String = Utils.doEvaluate(customField.value,Database.allUsersDao.ownerUser(), customField.entity, customField.fieldName, curentSave,null);
 					curentSave[customField.fieldName] = result;
 				}
-				
-				dao.updateByField(updateFields,curentSave,DAOUtils.getOracleId(entityIDour));
+				try{
+					dao.updateByField(updateFields,curentSave,DAOUtils.getOracleId(entityIDour));
+				}catch(e:SQLError){
+					OOPS(e.getStackTrace());
+				}
 			
 			}
 			//update language info

@@ -152,7 +152,7 @@ package gadget.dao {
 		
 		public function selectCustomFormularFields(entity:String):ArrayCollection {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity,fieldType:'Formula'}));
-			var customFieldlist:ArrayCollection = list;//new ArrayCollection();
+			var customFieldlist:ArrayCollection = new ArrayCollection();
 			for each(var obj:Object in list){
 				
 				if(!StringUtils.isEmpty(obj.fieldName)){

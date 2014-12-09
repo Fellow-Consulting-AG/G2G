@@ -703,6 +703,7 @@ package gadget.dao
 		public function insert(object:Object, useCustomfield:Boolean=true):void {
 			object.deleted = false;
 			var fields:ArrayCollection = fieldList(useCustomfield);
+			stmtInsert.clearParameters();
 			stmtInsert.text = insertQuery(fields);
 			execStatement(stmtInsert, object,fields,useCustomfield);
 		}

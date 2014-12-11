@@ -1372,7 +1372,8 @@ package gadget.dao {
 			if (params.isNewDB) {
 				XcreateDatabase(_sqlConnection);
 			}
-			
+			//it is must be first
+			_errorLoggingDao = new ErrorLoggingDAO(_sqlConnection, _work);
 			// we need user dao from the beginning for locale stuff.
 			// support DAOs needs this one.
 			// the fact that DAOs constructors references themselves is annoying
@@ -1398,8 +1399,7 @@ package gadget.dao {
 			
 			_addressDao = new AddressDAO(_sqlConnection,_work);
 			
-			//VAHI BEGIN refactored
-			_errorLoggingDao = new ErrorLoggingDAO(_sqlConnection, _work);
+			
 			_incomingSyncDao = new IncomingSyncDAO(_sqlConnection);
 			_syncNumberDAO = new SyncNumberDAO(_sqlConnection, _work);
 			_accountDao = new AccountDAO(_sqlConnection, _work);

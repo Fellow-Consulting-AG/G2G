@@ -1516,12 +1516,18 @@
 				//					}
 				//				}
 				//== SIEMEN Only ==//
+				
+				
+				if(!create){
+					subtype = getSubtypeLayout(item);
+					subtypeActivity = subtype;
+				}
+				
 				if(!create && (entity == Database.accountDao.entity || (entity == Database.activityDao.entity && type =='Task') )){
 					//customLayoutBtn.visible = false;
-					//customLayoutBtn.includeInLayout = false;
+					//customLayoutBtn.includeInLayout = false;			
 					
 					
-					subtype = getSubtypeLayout(item);
 					if(subtype != -1){
 						item.subtype = subtype;
 					}
@@ -1529,9 +1535,6 @@
 						subtype = LayoutUtils.getSubtypeIndex(item);
 						subtypeActivity = subtype;
 					}
-				}else if(!create) {
-					subtype = LayoutUtils.getSubtypeIndex(item);
-					subtypeActivity = subtype;
 				}
 				//set header label
 				for(var p:int=0;p<numOfPage;p++){

@@ -82,16 +82,18 @@ package gadget.dao
 			var e:Error = catchError(run);
 			if (e==null)
 				return;
-			if (e is SQLError && e.errorID==3115 && stmt.text!=null ) {
-				Database.errorLoggingDao.addSqlError(stmt.text);
+			
+			trace(e.getStackTrace());
+			trace(e);
+			if (e is SQLError && e.errorID==3115 && stmt.text!=null ) {				
 				if(stmt.text.toLowerCase().indexOf("index") != -1){
+					Database.errorLoggingDao.addSqlError(stmt.text);
 					Database.errorLoggingDao.add(e,null);
 				}
 				// "normal" error that occurs when trying to delete old indexes
 				throw e;
 			}
-			trace(e.getStackTrace());
-			trace(e);
+			
 			throw e;
 		}
 

@@ -6,6 +6,7 @@ package gadget.sync.incoming
 	
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.ObjectUtils;
 	import gadget.util.StringUtils;
 	
@@ -34,7 +35,16 @@ package gadget.sync.incoming
 			_readParentIds = Database.incomingSyncDao.is_unsynced(getEntityName());
 		}
 		
-		
+		override public function set param(p:TaskParameterObject):void
+		{			
+			super.param = p;
+			//bug#8990
+			if(p.fullCompare && entityIDour==Database.accountDao.entity){
+				_readParentIds = true;
+				_dependOnParent = true;
+			}
+			
+		}
 	
 		public function get dependOnParent():Boolean
 		{

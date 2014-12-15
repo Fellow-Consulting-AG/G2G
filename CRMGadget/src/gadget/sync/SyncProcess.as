@@ -132,7 +132,7 @@ package gadget.sync
 					
 					_groups.addItem(new IncomingParallelTaskGroup( // Modification tracking
 						this,
-						[new IncomingObject(Database.bookDao.entity)],
+						[new ModificationTracking(),new IncomingObject(Database.bookDao.entity)],
 						_full
 						,_metaSyn,false
 					));

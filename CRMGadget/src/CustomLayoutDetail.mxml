@@ -184,10 +184,11 @@
 					
 					var fieldInfo:Object = getField(listFields,condition.column_name);
 					// Get data to Combobox Value if field is picklist
+					var picklist:ArrayCollection = PicklistService.getPicklist(condition.entity, condition.column_name);
+					var visibleCombo:Boolean = fieldInfo.type == "Picklist" && picklist.length > 1;
 					
-					
-					if (fieldInfo.type=="Picklist") {
-						var picklist:ArrayCollection = PicklistService.getPicklist(condition.entity, condition.column_name);
+					if (fieldInfo.type=="Picklist" && visibleCombo) {
+						
 						fields.combo.visible = true;
 						fields.combo.dataProvider = picklist;
 						fields.combo.selectedIndex = Utils.getComboParamIndex(condition.column_name, condition.entity, condition.params);

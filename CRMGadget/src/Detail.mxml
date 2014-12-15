@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Window 
-	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns:control="gadget.control.*"
-	resizable="false"
-	width="960" height="240"
-	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
-	initialize="initial()"
-	creationComplete="init();"
-	close="closeDetail();"  
-	keyDown="keyDown(event);"
-	>
+<mx:Window xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:control="gadget.control.*"
+		   xmlns:form="gadget.form.*"
+		   width="960" height="240" close="closeDetail();" creationComplete="init();"
+		   initialize="initial()" keyDown="keyDown(event);" resizable="false" showFlexChrome="false"
+		   systemChrome="none" transparent="true">
 	
 	<mx:Script>
 		<![CDATA[
@@ -1236,6 +1231,9 @@
 			
 			private function setIcon(isBlackWhite:Boolean = false):void {
 				var customLayout:Object = Database.customLayoutDao.readSubtype(entity, subtype);
+				if(customLayout==null){
+					customLayout = Database.customLayoutDao.readSubtype(entity,0);//try to get default layout
+				}
 				var iconName:String = isBlackWhite ? customLayout.custom_layout_icon + "BW" : customLayout.custom_layout_icon;
 				titlebar.icon = ImageUtils.getIconByName(iconName);
 				
@@ -1340,7 +1338,11 @@
 							break;
 						}
 					}
-					var cond:ArrayCollection = Database.customLayoutConditionDAO.findByParam(entity,item[depend]);
+					var key:String = item[depend];
+					if(StringUtils.isEmpty(key)){
+						key="NULL";
+					}
+					var cond:ArrayCollection = Database.customLayoutConditionDAO.findByParam(entity,key);
 					if(cond.length>1){
 						return 0;
 					}else if(cond.length == 1){
@@ -1348,14 +1350,14 @@
 							return cond.getItemAt(0).subtype;
 						}
 					}else{
-						return checkContains(item[depend]);
+						return checkContains(key);
 					}
 				}
 				return s;
 			}
 			private var selectedAccountType:Object;
 			private function checkContains(key:String):int{
-				var s:int;
+				var s:int=-1;
 				var lstContains:ArrayCollection = Database.customLayoutConditionDAO.findByContain(entity);
 				var tmp:Object = null;
 				for each(var con:Object in lstContains){
@@ -1372,10 +1374,30 @@
 					
 				}
 				if(tmp==null){
-					// subtype = 0 is default layout
-					s = -1;
-					
-				}else{
+					var diffrents:ArrayCollection = Database.customLayoutConditionDAO.findByDifferent(entity);
+					if(diffrents !=null && diffrents.length>0){
+						for each(var dif:Object in diffrents){
+							var realVal:String = dif.params;
+							if(realVal==key){
+								continue;
+							}
+							if(realVal=='NULL' || StringUtils.isEmpty(realVal)){
+								if(!StringUtils.isEmpty(key)){
+									tmp = dif;
+									break;
+								}
+							}else if(realVal!=key){
+								tmp = dif;
+								break;
+							}
+						}
+						
+						
+					}
+				}
+				
+				
+				if(tmp!=null){
 					s = tmp.subtype;
 				}
 				return s;
@@ -1386,6 +1408,13 @@
 					selectedAccountType = cbo.selectedItem;
 					data = selectedAccountType.data;
 					selectedAccountType.selected = "false";
+				}else if(cbo is ImageTextInput){
+					if(selectedAccountType == null){
+						selectedAccountType = new Object();
+					}
+					data = (cbo as ImageTextInput).text;
+					selectedAccountType.selected = data;
+					selectedAccountType.data = "";
 				}else{
 					if(selectedAccountType == null){
 						selectedAccountType = new Object();
@@ -1535,6 +1564,11 @@
 						subtype = LayoutUtils.getSubtypeIndex(item);
 						subtypeActivity = subtype;
 					}
+				}
+				if(subtype==-1){
+					//reset subtype to default when no found
+					subtype=0;
+					subtypeActivity=0;
 				}
 				//set header label
 				for(var p:int=0;p<numOfPage;p++){
@@ -1802,7 +1836,7 @@
 								// for only sieme user //
 								var chkBox:CheckBox = childObj as CheckBox;
 								if(selectedAccountType != null){
-									chkBox.selected = selectedAccountType.selected=="true"?true:false;
+									chkBox.selected = selectedAccountType.selected=="true";
 								}
 								// disable field record type
 								if(!create && chkBox.selected){
@@ -1813,6 +1847,16 @@
 										fireEventRecordTypeChange(e.target as CheckBox);
 									}
 								});
+							}else if(childObj is ImageTextInput){
+								var imageText:ImageTextInput = childObj as ImageTextInput;
+								if(!create && !StringUtils.isEmpty(imageText.text)){
+									imageText.enabled = false;
+								}
+								imageText.textchange = function(text:String):void{
+									if(!isNew){
+										fireEventRecordTypeChange(imageText);
+									}
+								}
 							}
 							
 						} 
@@ -2594,36 +2638,84 @@
 	</mx:Script>
 	
 	<mx:Style source="styles.css"/>
-	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="980" height="240" right="0" bottom="0">
-		<control:TitleBar id="titlebar" y="2" x="25"/>		
-		<mx:VBox width="100%" height="100%" paddingTop="35" paddingLeft="10" paddingRight="10" paddingBottom="50">
+	<mx:Canvas id="detailCanvas" left="0" right="0" top="0" bottom="0" width="980" height="240"
+			   horizontalScrollPolicy="off" styleName="main">
+		<control:TitleBar id="titlebar" x="25" y="2"/>		
+		<mx:VBox width="100%" height="100%" paddingBottom="50" paddingLeft="10" paddingRight="10"
+				 paddingTop="35">
 			<mx:HBox width="100%">
 				<mx:CheckBox id="chkFeed" label="Enable Feed" click="chkFeed_clickHandler(event)"/>
 				<mx:TextInput id="txtComment" width="100%" keyDown="txtComment_keyDownHandler(event)"/>
-				<mx:Button doubleClickEnabled="true" id="btnComment" label="Post Comment" click="btnComment_clickHandler(event)"/>
+				<mx:Button id="btnComment" label="Post Comment"
+						   click="btnComment_clickHandler(event)" doubleClickEnabled="true"/>
 			</mx:HBox>
-			<mx:TabNavigator id="viewstack" width="100%" height="100%" tabHeight="24" creationPolicy="all" top="0" bottom="0" change="changeTabListener(event)"/>
+			<mx:TabNavigator id="viewstack" top="0" bottom="0" width="100%" height="100%"
+							 change="changeTabListener(event)" creationPolicy="all" tabHeight="24"/>
 		</mx:VBox>
 		<mx:Canvas id="buttonCanvas" left="8" right="8" bottom="8" height="30">
 			<mx:HBox left="8" right="8" horizontalGap="0">
-				<mx:LinkButton doubleClickEnabled="true" id="customLayoutBtn" icon="@Embed('/assets/customize.png')" toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_CUSTOMIZE_LAYOUT')}" click="editLayout()"/>
-				<mx:LinkButton doubleClickEnabled="true" id="attachmentBtn" icon="@Embed('/assets/attachment.png')" click="openAttachmentFileLayout()" visible="{!create}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="validationBtn" icon="@Embed('/assets/validation_rules.png')" toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_VALIDATION_RULE')}" click="openValidationList();" visible="{!create}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="pdfExportBtn" icon="{ImageUtils.pdfIcon}" toolTip="{i18n._('GLOBAL_PDF_EXPORT')}" click="  exportToPdfWithEpad(event)" visible="{!create}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="groupingPDF" icon="{ImageUtils.reportIcon}" toolTip="{i18n._('GLOBAL_GROUPING_PDF')}" click="printServiceRequest(false)" includeInLayout="{showGroupingPDFBtn}" visible="{showGroupingPDFBtn}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="groupPDFPreview" icon="{ImageUtils.previewIcon}" toolTip="{i18n._('GLOBAL_GROUPING_PDF_PREVIEW')}" click="printServiceRequest(true)" includeInLayout="{showGroupingPDFBtn}" visible="{showGroupingPDFBtn}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="kitchenReport" icon="{ImageUtils.kitchenReportIcon}" toolTip="TCS Kitchen Report" click="diplayKitchenReport()" includeInLayout="{showKitchenReport}" visible="{showKitchenReport}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="startInspect"  toolTip="{i18n._('GLOBAL_START_INSPECTION@Start Inspection')}" label="{i18n._('GLOBAL_START_INSPECTION@Start Inspection')}" includeInLayout="{visibleInspect}" visible="{visibleInspect}" click="openSurvey()" />
-				<mx:LinkButton doubleClickEnabled="true" id="inspectionPDF" icon="{ImageUtils.excelIcon}" toolTip="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}" click="exportSurvey();" includeInLayout="{visibleInspect}" visible="{visibleInspect}" label="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}"/>
-				<mx:Button doubleClickEnabled="true" id="btnAP" label="AP" click="setOrderUserStatus('AP')" includeInLayout="{showOrderUserStatusBtn}" visible="{showOrderUserStatusBtn}"/>
-				<mx:Button doubleClickEnabled="true" id="btnSU" label="SU" click="setOrderUserStatus('SU')" includeInLayout="{showOrderUserStatusBtn}" visible="{showOrderUserStatusBtn}"/>
-				<mx:Button doubleClickEnabled="true" id="btnTC" label="TC" click="setOrderUserStatus('TC')" includeInLayout="{showOrderUserStatusBtn}" visible="{showOrderUserStatusBtn}"/>
-				<mx:Button doubleClickEnabled="true" id="btnLeadConvert" label="Convert" click="openConvertLead()" visible="false"/>
-				<mx:LinkButton doubleClickEnabled="true" id="facebookBtn" icon="{ImageUtils.facebookIcon}" toolTip="Facekook" click="facebookBtn_clickHandler(event)" includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_FACEBOOK)}" visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_FACEBOOK)}"/>
-				<mx:LinkButton doubleClickEnabled="true" id="linkedinBtn" icon="{ImageUtils.linkedinIcon}" toolTip="Linkedin" click="facebookBtn_clickHandler(event)" includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}" visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"/>
-				<mx:HBox horizontalAlign="right" width="100%">
+				<mx:LinkButton id="customLayoutBtn" click="editLayout()" doubleClickEnabled="true"
+							   icon="@Embed('/assets/customize.png')"
+							   toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_CUSTOMIZE_LAYOUT')}"/>
+				<mx:LinkButton id="attachmentBtn" visible="{!create}"
+							   click="openAttachmentFileLayout()" doubleClickEnabled="true"
+							   icon="@Embed('/assets/attachment.png')"/>
+				<mx:LinkButton id="validationBtn" visible="{!create}" click="openValidationList();"
+							   doubleClickEnabled="true"
+							   icon="@Embed('/assets/validation_rules.png')"
+							   toolTip="{i18n._('DETAIL_LINKBUTTON_TOOLTIP_VALIDATION_RULE')}"/>
+				<mx:LinkButton id="pdfExportBtn" visible="{!create}"
+							   click="  exportToPdfWithEpad(event)" doubleClickEnabled="true"
+							   icon="{ImageUtils.pdfIcon}" toolTip="{i18n._('GLOBAL_PDF_EXPORT')}"/>
+				<mx:LinkButton id="groupingPDF" visible="{showGroupingPDFBtn}"
+							   click="printServiceRequest(false)" doubleClickEnabled="true"
+							   icon="{ImageUtils.reportIcon}" includeInLayout="{showGroupingPDFBtn}"
+							   toolTip="{i18n._('GLOBAL_GROUPING_PDF')}"/>
+				<mx:LinkButton id="groupPDFPreview" visible="{showGroupingPDFBtn}"
+							   click="printServiceRequest(true)" doubleClickEnabled="true"
+							   icon="{ImageUtils.previewIcon}"
+							   includeInLayout="{showGroupingPDFBtn}"
+							   toolTip="{i18n._('GLOBAL_GROUPING_PDF_PREVIEW')}"/>
+				<mx:LinkButton id="kitchenReport" visible="{showKitchenReport}"
+							   click="diplayKitchenReport()" doubleClickEnabled="true"
+							   icon="{ImageUtils.kitchenReportIcon}"
+							   includeInLayout="{showKitchenReport}" toolTip="TCS Kitchen Report"/>
+				<mx:LinkButton id="startInspect" visible="{visibleInspect}"
+							   label="{i18n._('GLOBAL_START_INSPECTION@Start Inspection')}"
+							   click="openSurvey()" doubleClickEnabled="true"
+							   includeInLayout="{visibleInspect}"
+							   toolTip="{i18n._('GLOBAL_START_INSPECTION@Start Inspection')}"/>
+				<mx:LinkButton id="inspectionPDF" visible="{visibleInspect}"
+							   label="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}"
+							   click="exportSurvey();" doubleClickEnabled="true"
+							   icon="{ImageUtils.excelIcon}" includeInLayout="{visibleInspect}"
+							   toolTip="{i18n._('GLOBAL_OPEN_END_FINISH_BASICALLY')}"/>
+				<mx:Button id="btnAP" visible="{showOrderUserStatusBtn}" label="AP"
+						   click="setOrderUserStatus('AP')" doubleClickEnabled="true"
+						   includeInLayout="{showOrderUserStatusBtn}"/>
+				<mx:Button id="btnSU" visible="{showOrderUserStatusBtn}" label="SU"
+						   click="setOrderUserStatus('SU')" doubleClickEnabled="true"
+						   includeInLayout="{showOrderUserStatusBtn}"/>
+				<mx:Button id="btnTC" visible="{showOrderUserStatusBtn}" label="TC"
+						   click="setOrderUserStatus('TC')" doubleClickEnabled="true"
+						   includeInLayout="{showOrderUserStatusBtn}"/>
+				<mx:Button id="btnLeadConvert" visible="false" label="Convert"
+						   click="openConvertLead()" doubleClickEnabled="true"/>
+				<mx:LinkButton id="facebookBtn"
+							   visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_FACEBOOK)}"
+							   click="facebookBtn_clickHandler(event)" doubleClickEnabled="true"
+							   icon="{ImageUtils.facebookIcon}"
+							   includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_FACEBOOK)}"
+							   toolTip="Facekook"/>
+				<mx:LinkButton id="linkedinBtn"
+							   visible="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"
+							   click="facebookBtn_clickHandler(event)" doubleClickEnabled="true"
+							   icon="{ImageUtils.linkedinIcon}"
+							   includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"
+							   toolTip="Linkedin"/>
+				<mx:HBox width="100%" horizontalAlign="right">
 					<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
-					<mx:ComboBox id="comboAction"   dataProvider="{getComboData()}">
+					<mx:ComboBox id="comboAction" dataProvider="{getComboData()}">
 					<!--	<mx:itemRenderer>
 							<mx:Component>
 								<mx:Label text="{data.label}" width="100%" toolTip="{data.label}" />
@@ -2634,10 +2726,10 @@
 				</mx:HBox>					
 			</mx:HBox>
 		</mx:Canvas>
-		<control:BarCodeReader id="barcodeReader" height="0" width="0" visible="false"/>
-		<mx:Canvas id="signCanvas" >
+		<control:BarCodeReader id="barcodeReader" visible="false" width="0" height="0"/>
+		<mx:Canvas id="signCanvas">
 			<mx:HBox paddingLeft="100">
-				<control:EpadSignPDF id="epadPanel" height="0" width="100" />
+				<control:EpadSignPDF id="epadPanel" width="100" height="0"/>
 			</mx:HBox>
 		</mx:Canvas>	
 	</mx:Canvas>

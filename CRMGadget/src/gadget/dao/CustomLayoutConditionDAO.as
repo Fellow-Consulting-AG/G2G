@@ -17,6 +17,7 @@ package gadget.dao
 		private var stmtCurrenctDelete:SQLStatement;
 		private var stmtCheckExisted:SQLStatement;
 		private var stmtFindByParam:SQLStatement;
+		private var stmtFindDifferent:SQLStatement;
 		private var stmtContainsParam:SQLStatement;
 		
 		public function CustomLayoutConditionDAO(sqlConnection:SQLConnection,work:Function){
@@ -36,7 +37,11 @@ package gadget.dao
 			
 			stmtFindByParam = new SQLStatement();
 			stmtFindByParam.sqlConnection = sqlConnection;
-			stmtFindByParam.text = "SELECT * FROM custom_layout_condition WHERE entity=:entity and params=:params and operator='='";	
+			stmtFindByParam.text = "SELECT * FROM custom_layout_condition WHERE entity=:entity and params=:params and operator='='";
+			
+			stmtFindDifferent = new SQLStatement();
+			stmtFindDifferent.sqlConnection = sqlConnection;
+			stmtFindDifferent.text = "SELECT * FROM custom_layout_condition WHERE entity=:entity and operator='!=' order by subtype asc";
 			
 			stmtContainsParam = new SQLStatement();
 			stmtContainsParam.sqlConnection = sqlConnection;
@@ -99,6 +104,12 @@ package gadget.dao
 			stmtContainsParam.parameters[":entity"] = entity;
 			stmtContainsParam.execute();
 			return new ArrayCollection(stmtContainsParam.getResult().data);
+		}
+		
+		public function findByDifferent(entity:String):ArrayCollection{
+			stmtFindDifferent.parameters[":entity"] = entity;
+			stmtFindDifferent.execute();
+			return new ArrayCollection(stmtFindDifferent.getResult().data);
 		}
 		
 		public function checkExisted(entity:String, column_name:String, subtype:String):Object{

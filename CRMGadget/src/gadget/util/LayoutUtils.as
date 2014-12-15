@@ -1,6 +1,6 @@
 package gadget.util
 {
-	import com.adobe.coreUI.util.StringUtils;
+	
 	
 	import gadget.dao.Database;
 	
@@ -41,15 +41,23 @@ package gadget.util
 				var condition4:Boolean = false;
 				for each(var codition:Object in Database.customLayoutConditionDAO.list(layout.entity, layout.subtype)){
 					var checkCondition:Boolean = false;
-					if(codition.operator == "!="){
-						if(item[codition.column_name] != codition.params){
-							//subtype = layout.subtype;
+					var key:String = item[codition.column_name];
+					if(codition.operator == "!="){												
+						var realVal:String = codition.params;
+						if(realVal=='NULL' || StringUtils.isEmpty(realVal)){
+							if(!StringUtils.isEmpty(key)){
+								checkCondition = true;
+							}
+						}else if(realVal!=key){
 							checkCondition = true;
 						}
 					}
 					//CRO #1274 toUpperCase
 					if(codition.operator == "="){
-						if(item[codition.column_name] != null && codition.params != null && item[codition.column_name].toString().toLowerCase() == (codition.params as String).toLowerCase()){
+						if(StringUtils.isEmpty(key)){
+							key="NULL";//empty mean null
+						}
+						if(key != null && codition.params != null && key.toLowerCase() == (codition.params as String).toLowerCase()){
 							//subtype = layout.subtype;
 							checkCondition = true;
 						}

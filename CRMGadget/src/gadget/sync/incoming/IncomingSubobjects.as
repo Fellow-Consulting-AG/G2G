@@ -4,12 +4,14 @@ package gadget.sync.incoming
 	
 	import flexunit.utils.ArrayList;
 	
+	import gadget.dao.AccountTeamDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
 	import gadget.dao.SupportRegistry;
 	import gadget.i18n.i18n;
 	import gadget.sync.WSProps;
+	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.FieldUtils;
 	import gadget.util.ObjectUtils;
 	import gadget.util.SodUtils;
@@ -46,7 +48,15 @@ package gadget.sync.incoming
 		}
 		
 		
-		
+		override public function set param(p:TaskParameterObject):void
+		{			
+			super.param = p;
+			
+			if( p.fullCompare && (subDao is AccountTeamDAO)){
+				isUsedLastModified = false;
+			}
+			
+		}
 		
 		
 //		override protected function importRecords(entitySod:String, list:XMLList, googleListUpdate:ArrayCollection=null):int{

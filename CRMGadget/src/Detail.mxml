@@ -1328,32 +1328,34 @@
 			}
 			
 			private function getSubtypeLayout(item:Object):int{
-				var s:int = -1;
-				var data:ArrayCollection = Database.customLayoutDao.read(entity);
-				if(data != null && data.length >0){
-					var depend:String = "";
-					for each (var obj:Object in data){
-						depend = obj.layout_depend_on;
-						if(!StringUtils.isEmpty(depend)){
-							break;
-						}
-					}
-					var key:String = item[depend];
-					if(StringUtils.isEmpty(key)){
-						key="NULL";
-					}
-					var cond:ArrayCollection = Database.customLayoutConditionDAO.findByParam(entity,key);
-					if(cond.length>1){
-						return 0;
-					}else if(cond.length == 1){
-						if(cond.getItemAt(0) != null){
-							return cond.getItemAt(0).subtype;
-						}
-					}else{
-						return checkContains(key);
-					}
-				}
-				return s;
+				
+//				var data:ArrayCollection = Database.customLayoutDao.read(entity);
+//				if(data != null && data.length >0){
+//					var depend:String = "";
+//					for each (var obj:Object in data){
+//						depend = obj.layout_depend_on;
+//						if(!StringUtils.isEmpty(depend)){
+//							break;
+//						}
+//					}
+//					var key:String = item[depend];
+//					if(StringUtils.isEmpty(key)){
+//						key="NULL";
+//					}
+//					var cond:ArrayCollection = Database.customLayoutConditionDAO.findByParam(entity,key);
+//					if(cond.length>1){
+//						return 0;
+//					}else if(cond.length == 1){
+//						if(cond.getItemAt(0) != null){
+//							return cond.getItemAt(0).subtype;
+//						}
+//					}else{
+//						return checkContains(key);
+//					}
+//				}
+//				return s;
+				
+				return LayoutUtils.getSubtypeIndex(item);
 			}
 			private var selectedAccountType:Object;
 			private function checkContains(key:String):int{

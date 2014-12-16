@@ -405,7 +405,15 @@ package gadget.util {
 								var val:String = doEvaluate( defaultValue,userData,entity ,fieldInfo.element_name,enityObject,null);
 								if (fieldInfo.data_type == "Picklist") {
 									var v:String = PicklistService.getId(entity,fieldInfo.element_name,val,userData==null?"":userData.LanguageCode);
-									val = v == null ? val : v;									
+									if(v==null){
+										v = PicklistService.getValue(entity,fieldInfo.element_nam,val);
+										if(v==null){
+											val = null;
+										}
+									}else{
+										val = v;
+									}
+																		
 								}else if (fieldInfo.data_type == "Date/Time") {
 									if(!StringUtils.isEmpty(val)){
 										var dateTimeObject:Date = DateUtils.guessAndParse(val);	

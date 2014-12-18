@@ -435,7 +435,7 @@ package gadget.util {
 									val="";
 								}
 								if(afterSave){
-									var tempVal:String = val;
+									var tempVal:String = val==null?'':val;
 									while(tempVal.charAt(tempVal.length-1)=='-'){
 										tempVal = tempVal.substr(0,tempVal.length-1);
 									}

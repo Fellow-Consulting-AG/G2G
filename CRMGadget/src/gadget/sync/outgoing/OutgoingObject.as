@@ -225,7 +225,7 @@ package gadget.sync.outgoing
 			}
 			for (var i:int = 0; i < records.length; i++) {
 				var oracleId:String =records[i][SodID];
-				if(updated && oracleId.indexOf("#")!=-1){
+				if(updated &&( oracleId.indexOf("#")!=-1||StringUtils.isEmpty(oracleId))){
 					faulted++;
 					doRequest();
 					return;

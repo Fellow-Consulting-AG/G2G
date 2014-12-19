@@ -2406,7 +2406,7 @@
 							entity	= entity.replace(/ /g,"");
 							var defaulticon:String = entity.replace("object","");
 							var defaultModerm:String = entity;
-							if(StringUtils.startsWith(entity,'')){
+							if(StringUtils.startsWith(entity,'customobject')){
 								defaultModerm= "customobject";
 							}
 							customLayout.custom_layout_icon = bDefault ? defaulticon: (modernIcon?'mod_'+defaultModerm+'_25':defaulticon+'Default');

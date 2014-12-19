@@ -2400,22 +2400,34 @@
 						}
 					}else{
 						if(customLayout.subtype == 0){
-							switch(customLayout.entity){
-								case "Account" : customLayout.custom_layout_icon = bDefault ? 'account' : (modernIcon?'mod_account_25':'accountDefault'); break;
-								case "Asset" : customLayout.custom_layout_icon = bDefault ? 'asset' : (modernIcon?'mod_assets_25':'assetDefault'); break;
-								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contact_25':'contactDefault'); break;
-								case "Opportunity" : customLayout.custom_layout_icon = bDefault ? 'opportunity' : (modernIcon?'mod_opportunity_25':'opportunityDefault'); break;
-								case "Product" : customLayout.custom_layout_icon = bDefault ? 'product' : (modernIcon?'mod_product_25':'productDefault'); break;
-								case "Service Request" : customLayout.custom_layout_icon = bDefault ? 'service' : (modernIcon?'mod_servicerequest_25':'serviceDefault'); break;
-								case "Campaign" : customLayout.custom_layout_icon = bDefault ? 'campaign' : (modernIcon?'mod_campaign_25':'campaignDefault'); break;
-								case "Custom Object 1" : customLayout.custom_layout_icon = bDefault ? 'custom' : (modernIcon?'mod_customobject_25':'customDefault'); break;
-								case "Lead" : customLayout.custom_layout_icon = bDefault ? 'lead' : (modernIcon?'mod_lead_25':'leadDefault'); break;
-								case "Custom Object 2" : customLayout.custom_layout_icon = bDefault ? 'custom2' : (modernIcon?'mod_customobject_25':'custom2Default'); break;
-								case "Custom Object 3" : customLayout.custom_layout_icon = bDefault ? 'custom3' : (modernIcon?'mod_customobject_25':'custom3Default'); break;
-								case "CustomObject7" : customLayout.custom_layout_icon = bDefault ? 'custom7' : (modernIcon?'mod_customobject_25':'custom7Default'); break;
-								case "CustomObject14" : customLayout.custom_layout_icon = bDefault ? 'custom14' : (modernIcon?'mod_customobject_25':'custom14Default'); break;
-								case "Territory" : customLayout.custom_layout_icon = bDefault ? 'territory' : (modernIcon?'mod_territory_25':'territoryDefault'); break;
+							
+							var entity:String = customLayout.entity;
+							entity = entity.toLocaleLowerCase();
+							entity	= entity.replace(/ /g,"");
+							var defaulticon:String = entity.replace("object","");
+							var defaultModerm:String = entity;
+							if(StringUtils.startsWith(entity,'')){
+								defaultModerm= "customobject";
 							}
+							customLayout.custom_layout_icon = bDefault ? defaulticon: (modernIcon?'mod_'+defaultModerm+'_25':defaulticon+'Default');
+							
+							
+//							switch(customLayout.entity){
+//								case "Account" : customLayout.custom_layout_icon = bDefault ? 'account' : (modernIcon?'mod_account_25':'accountDefault'); break;
+//								case "Asset" : customLayout.custom_layout_icon = bDefault ? 'asset' : (modernIcon?'mod_assets_25':'assetDefault'); break;
+//								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contact_25':'contactDefault'); break;
+//								case "Opportunity" : customLayout.custom_layout_icon = bDefault ? 'opportunity' : (modernIcon?'mod_opportunity_25':'opportunityDefault'); break;
+//								case "Product" : customLayout.custom_layout_icon = bDefault ? 'product' : (modernIcon?'mod_product_25':'productDefault'); break;
+//								case "Service Request" : customLayout.custom_layout_icon = bDefault ? 'service' : (modernIcon?'mod_servicerequest_25':'serviceDefault'); break;
+//								case "Campaign" : customLayout.custom_layout_icon = bDefault ? 'campaign' : (modernIcon?'mod_campaign_25':'campaignDefault'); break;
+//								case "Custom Object 1" : customLayout.custom_layout_icon = bDefault ? 'custom' : (modernIcon?'mod_customobject_25':'customDefault'); break;
+//								case "Lead" : customLayout.custom_layout_icon = bDefault ? 'lead' : (modernIcon?'mod_lead_25':'leadDefault'); break;
+//								case "Custom Object 2" : customLayout.custom_layout_icon = bDefault ? 'custom2' : (modernIcon?'mod_customobject_25':'custom2Default'); break;
+//								case "Custom Object 3" : customLayout.custom_layout_icon = bDefault ? 'custom3' : (modernIcon?'mod_customobject_25':'custom3Default'); break;
+//								case "CustomObject7" : customLayout.custom_layout_icon = bDefault ? 'custom7' : (modernIcon?'mod_customobject_25':'custom7Default'); break;
+//								case "CustomObject14" : customLayout.custom_layout_icon = bDefault ? 'custom14' : (modernIcon?'mod_customobject_25':'custom14Default'); break;
+//								case "Territory" : customLayout.custom_layout_icon = bDefault ? 'territory' : (modernIcon?'mod_territory_25':'territoryDefault'); break;
+//							}
 						}
 					}
 					Database.customLayoutDao.update(customLayout);

@@ -469,6 +469,7 @@ package gadget.util{
 		[Embed(source='/assets/custom/oracleModernIcons/mod_contact_25.png')] [Bindable] private static var mod_contact_25:Class;
 		[Embed(source='/assets/custom/oracleModernIcons/mod_contactbesttime_25.png')] [Bindable] private static var mod_contactbesttime_25:Class;
 		[Embed(source='/assets/custom/oracleModernIcons/mod_contactbesttime_25Big.png')] [Bindable] private static var mod_contactbesttime_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_contact_25Big.png')] [Bindable] private static var mod_contact_25Big:Class;
 		[Embed(source='/assets/custom/oracleModernIcons/mod_contactstatelicense_25.png')] [Bindable] private static var mod_contactstatelicense_25:Class;
 		[Embed(source='/assets/custom/oracleModernIcons/mod_course_25.png')] [Bindable] private static var mod_course_25:Class;
 		[Embed(source='/assets/custom/oracleModernIcons/mod_courseenrollment_25.png')] [Bindable] private static var mod_courseenrollment_25:Class;
@@ -735,6 +736,7 @@ package gadget.util{
 				case 'mod_calendar_25' : return mod_calendar_25;
 				case 'mod_account_25' : return mod_account_25;
 				case 'mod_assets_25' : return mod_assets_25;
+				case 'mod_contact_25' : return mod_contact_25;
 				case 'mod_contactbesttime_25' : return mod_contactbesttime_25;
 				case 'mod_opportunity_25' : return mod_opportunity_25;
 				case 'mod_product_25' : return mod_product_25;
@@ -1185,6 +1187,7 @@ package gadget.util{
 				case 'mod_account_25' : return mod_account_25Big;
 				case 'mod_assets_25' : return mod_assets_25Big;
 				case 'mod_contactbesttime_25' : return mod_contactbesttime_25Big;
+				case 'mod_contact_25' : return mod_contact_25Big;
 				case 'mod_opportunity_25' : return mod_opportunity_25Big;
 				case 'mod_product_25' : return mod_product_25Big;
 				case 'mod_servicerequest_25' : return mod_servicerequest_25Big;

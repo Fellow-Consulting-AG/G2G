@@ -2403,7 +2403,7 @@
 							switch(customLayout.entity){
 								case "Account" : customLayout.custom_layout_icon = bDefault ? 'account' : (modernIcon?'mod_account_25':'accountDefault'); break;
 								case "Asset" : customLayout.custom_layout_icon = bDefault ? 'asset' : (modernIcon?'mod_assets_25':'assetDefault'); break;
-								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contactbesttime_25':'contactDefault'); break;
+								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contact_25':'contactDefault'); break;
 								case "Opportunity" : customLayout.custom_layout_icon = bDefault ? 'opportunity' : (modernIcon?'mod_opportunity_25':'opportunityDefault'); break;
 								case "Product" : customLayout.custom_layout_icon = bDefault ? 'product' : (modernIcon?'mod_product_25':'productDefault'); break;
 								case "Service Request" : customLayout.custom_layout_icon = bDefault ? 'service' : (modernIcon?'mod_servicerequest_25':'serviceDefault'); break;

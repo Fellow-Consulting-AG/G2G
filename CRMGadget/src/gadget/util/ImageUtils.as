@@ -6,6 +6,7 @@ package gadget.util{
 	import gadget.dao.PreferencesDAO;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Image;
 	import mx.utils.Base64Decoder;
 
 	public class ImageUtils{
@@ -435,6 +436,149 @@ package gadget.util{
 		[Embed(source='/assets/Miljö_header_pic.png')] [Bindable] public static var Miljo_header_pic:Class;
 		
 		
+		//--- modern icons
+		[Embed(source='/assets/custom/oracleModernIcons/mod_account_25.png')] [Bindable] private static var mod_account_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_account_25Big.png')] [Bindable] private static var mod_account_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_account_25_001.png')] [Bindable] private static var mod_account_25_001:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_accountpartners_25.png')] [Bindable] private static var mod_accountpartners_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_accreditation_25.png')] [Bindable] private static var mod_accreditation_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_accreditationrequest_25.png')] [Bindable] private static var mod_accreditationrequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_address_25.png')] [Bindable] private static var mod_address_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_allocation_25.png')] [Bindable] private static var mod_allocation_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_application_25.png')] [Bindable] private static var mod_application_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_assets_25.png')] [Bindable] private static var mod_assets_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_assets_25Big.png')] [Bindable] private static var mod_assets_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_attachment_25.png')] [Bindable] private static var mod_attachment_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_availableproductsfordetailing_25.png')] [Bindable] private static var mod_availableproductsfordetailing_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_blockedproduct_25.png')] [Bindable] private static var mod_blockedproduct_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_books_25.png')] [Bindable] private static var mod_books_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_brokerprofile_25.png')] [Bindable] private static var mod_brokerprofile_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_businessplan_25.png')] [Bindable] private static var mod_businessplan_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_calendar_25.png')] [Bindable] private static var mod_calendar_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_calendar_25Big.png')] [Bindable] private static var mod_calendar_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_callactivityhistory_25.png')] [Bindable] private static var mod_callactivityhistory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_calls_25.png')] [Bindable] private static var mod_calls_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_campaign_25.png')] [Bindable] private static var mod_campaign_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_campaign_25Big.png')] [Bindable] private static var mod_campaign_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_category_25.png')] [Bindable] private static var mod_category_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_certification_25.png')] [Bindable] private static var mod_certification_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_certificationrequest_25.png')] [Bindable] private static var mod_certificationrequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_claim_25.png')] [Bindable] private static var mod_claim_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_communications_25.png')] [Bindable] private static var mod_communications_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_competitors_25.png')] [Bindable] private static var mod_competitors_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_contact_25.png')] [Bindable] private static var mod_contact_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_contactbesttime_25.png')] [Bindable] private static var mod_contactbesttime_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_contactbesttime_25Big.png')] [Bindable] private static var mod_contactbesttime_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_contactstatelicense_25.png')] [Bindable] private static var mod_contactstatelicense_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_course_25.png')] [Bindable] private static var mod_course_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_courseenrollment_25.png')] [Bindable] private static var mod_courseenrollment_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_coverage_25.png')] [Bindable] private static var mod_coverage_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_customobject_25.png')] [Bindable] private static var mod_customobject_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_customobject_25Big.png')] [Bindable] private static var mod_customobject_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_customwebtab_25.png')] [Bindable] private static var mod_customwebtab_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_damage_25.png')] [Bindable] private static var mod_damage_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_dashboard_25.png')] [Bindable] private static var mod_dashboard_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_dealer_25.png')] [Bindable] private static var mod_dealer_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_dealregistration_25.png')] [Bindable] private static var mod_dealregistration_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_dealregistrationproductrevenue_25.png')] [Bindable] private static var mod_dealregistrationproductrevenue_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_directory_25.png')] [Bindable] private static var mod_directory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_division_25.png')] [Bindable] private static var mod_division_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_event_25.png')] [Bindable] private static var mod_event_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_exam_25.png')] [Bindable] private static var mod_exam_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_exam_registration_25.png')] [Bindable] private static var mod_exam_registration_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialaccount_25.png')] [Bindable] private static var mod_financialaccount_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialaccountholder_25.png')] [Bindable] private static var mod_financialaccountholder_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialaccountholding_25.png')] [Bindable] private static var mod_financialaccountholding_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialplan_25.png')] [Bindable] private static var mod_financialplan_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialproduct_25.png')] [Bindable] private static var mod_financialproduct_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_financialtransaction_25.png')] [Bindable] private static var mod_financialtransaction_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_forecast_25.png')] [Bindable] private static var mod_forecast_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_fund_25.png')] [Bindable] private static var mod_fund_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_fundcredit_25.png')] [Bindable] private static var mod_fundcredit_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_funddebit_25.png')] [Bindable] private static var mod_funddebit_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_fundrequest_25.png')] [Bindable] private static var mod_fundrequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_group_25.png')] [Bindable] private static var mod_group_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_hash_25.png')] [Bindable] private static var mod_hash_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_hcpcontactallocation_25.png')] [Bindable] private static var mod_hcpcontactallocation_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_home_25.png')] [Bindable] private static var mod_home_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_household_25.png')] [Bindable] private static var mod_household_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_insuranceproperty_25.png')] [Bindable] private static var mod_insuranceproperty_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_interests_25.png')] [Bindable] private static var mod_interests_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_inventoryauditreport_25.png')] [Bindable] private static var mod_inventoryauditreport_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_inventoryperiod_25.png')] [Bindable] private static var mod_inventoryperiod_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_involvedparty_25.png')] [Bindable] private static var mod_involvedparty_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_lead_25.png')] [Bindable] private static var mod_lead_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_lead_25Big.png')] [Bindable] private static var mod_lead_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_makes_25.png')] [Bindable] private static var mod_makes_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_map_25.png')] [Bindable] private static var mod_map_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_mdfrequest_25.png')] [Bindable] private static var mod_mdfrequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_messageresponse_25.png')] [Bindable] private static var mod_messageresponse_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_messagingplan_25.png')] [Bindable] private static var mod_messagingplan_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_messagingplanitem_25.png')] [Bindable] private static var mod_messagingplanitem_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_messagingplanitemrelations_25.png')] [Bindable] private static var mod_messagingplanitemrelations_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_modificationtracking_25.png')] [Bindable] private static var mod_modificationtracking_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_notes_25.png')] [Bindable] private static var mod_notes_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_objective_25.png')] [Bindable] private static var mod_objective_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_opportunity_25.png')] [Bindable] private static var mod_opportunity_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_opportunity_25Big.png')] [Bindable] private static var mod_opportunity_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_oraclesocialnetwork_25.png')] [Bindable] private static var mod_oraclesocialnetwork_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_order_25.png')] [Bindable] private static var mod_order_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_orderitem_25.png')] [Bindable] private static var mod_orderitem_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_partnermembers_25.png')] [Bindable] private static var mod_partnermembers_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_partnertype_25.png')] [Bindable] private static var mod_partnertype_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_patient_25.png')] [Bindable] private static var mod_patient_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_period_25.png')] [Bindable] private static var mod_period_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_personalinfo_25.png')] [Bindable] private static var mod_personalinfo_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_planaccount_25.png')] [Bindable] private static var mod_planaccount_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_planopportunity_25.png')] [Bindable] private static var mod_planopportunity_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_plans_25.png')] [Bindable] private static var mod_plans_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_policy_25.png')] [Bindable] private static var mod_policy_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_policyholder_25.png')] [Bindable] private static var mod_policyholder_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_portfolio_25.png')] [Bindable] private static var mod_portfolio_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_pricelist_25.png')] [Bindable] private static var mod_pricelist_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_pricelistlineitem_25.png')] [Bindable] private static var mod_pricelistlineitem_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_product_25.png')] [Bindable] private static var mod_product_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_product_25Big.png')] [Bindable] private static var mod_product_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_productindication_25.png')] [Bindable] private static var mod_productindication_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_products_detailed_25.png')] [Bindable] private static var mod_products_detailed_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_referrals_25.png')] [Bindable] private static var mod_referrals_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedaccreditation_25.png')] [Bindable] private static var mod_relatedaccreditation_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedcertification_25.png')] [Bindable] private static var mod_relatedcertification_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedcourse_25.png')] [Bindable] private static var mod_relatedcourse_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedcourses_25.png')] [Bindable] private static var mod_relatedcourses_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedexam_25.png')] [Bindable] private static var mod_relatedexam_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relatedsolutions_25.png')] [Bindable] private static var mod_relatedsolutions_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_relationship_25.png')] [Bindable] private static var mod_relationship_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_reports_25.png')] [Bindable] private static var mod_reports_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_revenues_25.png')] [Bindable] private static var mod_revenues_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_saleshistory_25.png')] [Bindable] private static var mod_saleshistory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_saleshours_25.png')] [Bindable] private static var mod_saleshours_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_sampledisclaimer_25.png')] [Bindable] private static var mod_sampledisclaimer_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_sampleinventory_25.png')] [Bindable] private static var mod_sampleinventory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_samplelot_25.png')] [Bindable] private static var mod_samplelot_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_samplerequest_25.png')] [Bindable] private static var mod_samplerequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_samplerequestitem_25.png')] [Bindable] private static var mod_samplerequestitem_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_samplesdropped_25.png')] [Bindable] private static var mod_samplesdropped_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_sampletransaction_25.png')] [Bindable] private static var mod_sampletransaction_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_servicehistory_25.png')] [Bindable] private static var mod_servicehistory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_servicehours_25.png')] [Bindable] private static var mod_servicehours_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_servicerequest_25.png')] [Bindable] private static var mod_servicerequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_servicerequest_25Big.png')] [Bindable] private static var mod_servicerequest_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_signature_25.png')] [Bindable] private static var mod_signature_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_social_25.png')] [Bindable] private static var mod_social_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_socialprofile_25.png')] [Bindable] private static var mod_socialprofile_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_solution_25.png')] [Bindable] private static var mod_solution_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_specialpricingproduct_25.png')] [Bindable] private static var mod_specialpricingproduct_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_specialpricingrequest_25.png')] [Bindable] private static var mod_specialpricingrequest_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_team_25.png')] [Bindable] private static var mod_team_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_territory_25.png')] [Bindable] private static var mod_territory_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_territory_25Big.png')] [Bindable] private static var mod_territory_25Big:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_transactionitem_25.png')] [Bindable] private static var mod_transactionitem_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_unknown_25.png')] [Bindable] private static var mod_unknown_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_user_25.png')] [Bindable] private static var mod_user_25:Class;
+		[Embed(source='/assets/custom/oracleModernIcons/mod_vehicle_25.png')] [Bindable] private static var mod_vehicle_25:Class;
+
+		
 		public static function getColorIcon():Object{
 			return {"/assets/red.gif":red,
 				"/assets/green.gif":green,
@@ -586,6 +730,19 @@ package gadget.util{
 				case "objectivesBW": return objectivesBWImg;	
 				case "ObjectivesDefault": return objectivesDefaultImg;	
 				case "objectivesDefaultBW": return objectivesDefaultBWImg;			
+					
+
+				case 'mod_calendar_25' : return mod_calendar_25;
+				case 'mod_account_25' : return mod_account_25;
+				case 'mod_assets_25' : return mod_assets_25;
+				case 'mod_contactbesttime_25' : return mod_contactbesttime_25;
+				case 'mod_opportunity_25' : return mod_opportunity_25;
+				case 'mod_product_25' : return mod_product_25;
+				case 'mod_servicerequest_25' : return mod_servicerequest_25;
+				case 'mod_campaign_25' : return mod_campaign_25;
+				case 'mod_lead_25' : return mod_lead_25;
+				case 'mod_customobject_25' : return mod_customobject_25;
+				case 'mod_territory_25' : return mod_territory_25;
 					
 				default: return null;
 			}
@@ -762,7 +919,9 @@ package gadget.util{
 			if(!oodIcons_cache){
 				loadOODIcons_Cache();
 			}
-				
+			if(fileName == null){
+				return null;
+			}
 			fileName = fileName.replace(".gif","");
 			fileName = fileName.replace(".png","");
 			fileName = "icon_" + fileName;
@@ -797,7 +956,7 @@ package gadget.util{
 //			}
 			//MOny--hack title....
 			
-			if(CustomRecordTypeServiceDAO.isCustomObject(entity)){
+			if(CustomRecordTypeServiceDAO.isCustomObject(entity) || Database.preferencesDao.isModernIcon()){
 				var oodIcon:Class = Database.customRecordTypeServiceDao.readIcon(entity);
 				if(oodIcon){
 					return oodIcon;
@@ -858,6 +1017,7 @@ package gadget.util{
 				return null;
 			}
 			return getIconByName(customLayout.custom_layout_icon); 
+			
 		}
 
 		public static function getImageBW(entity:String, subtype:int = 0):Class{
@@ -1020,6 +1180,19 @@ package gadget.util{
 				case "noteDefault": return noteDefaultBigImg;
 				case "menEd": return medEdBigImg;
 				case "medEdDefault": return medEdDefaultBigImg;	
+					
+				case 'mod_calendar_25' : return mod_calendar_25Big;
+				case 'mod_account_25' : return mod_account_25Big;
+				case 'mod_assets_25' : return mod_assets_25Big;
+				case 'mod_contactbesttime_25' : return mod_contactbesttime_25Big;
+				case 'mod_opportunity_25' : return mod_opportunity_25Big;
+				case 'mod_product_25' : return mod_product_25Big;
+				case 'mod_servicerequest_25' : return mod_servicerequest_25Big;
+				case 'mod_campaign_25' : return mod_campaign_25Big;
+				case 'mod_lead_25' : return mod_lead_25Big;
+				case 'mod_customobject_25' : return mod_customobject_25Big;
+				case 'mod_territory_25' : return mod_territory_25Big;
+					
 				default: return null;
 			}
 			
@@ -1223,6 +1396,135 @@ package gadget.util{
 			oodIcons_cache.put("icon_world", icon_world);
 			oodIcons_cache.put("icon_zoom", icon_zoom);
 
+			oodIcons_cache.put("icon_mod_account_25",mod_account_25);
+			oodIcons_cache.put("icon_mod_account_25_001",mod_account_25_001);
+			oodIcons_cache.put("icon_mod_accountpartners_25",mod_accountpartners_25);
+			oodIcons_cache.put("icon_mod_accreditation_25",mod_accreditation_25);
+			oodIcons_cache.put("icon_mod_accreditationrequest_25",mod_accreditationrequest_25);
+			oodIcons_cache.put("icon_mod_address_25",mod_address_25);
+			oodIcons_cache.put("icon_mod_allocation_25",mod_allocation_25);
+			oodIcons_cache.put("icon_mod_application_25",mod_application_25);
+			oodIcons_cache.put("icon_mod_assets_25",mod_assets_25);
+			oodIcons_cache.put("icon_mod_attachment_25",mod_attachment_25);
+			oodIcons_cache.put("icon_mod_availableproductsfordetailing_25",mod_availableproductsfordetailing_25);
+			oodIcons_cache.put("icon_mod_blockedproduct_25",mod_blockedproduct_25);
+			oodIcons_cache.put("icon_mod_books_25",mod_books_25);
+			oodIcons_cache.put("icon_mod_brokerprofile_25",mod_brokerprofile_25);
+			oodIcons_cache.put("icon_mod_businessplan_25",mod_businessplan_25);
+			oodIcons_cache.put("icon_mod_calendar_25",mod_calendar_25);
+			oodIcons_cache.put("icon_mod_callactivityhistory_25",mod_callactivityhistory_25);
+			oodIcons_cache.put("icon_mod_calls_25",mod_calls_25);
+			oodIcons_cache.put("icon_mod_campaign_25",mod_campaign_25);
+			oodIcons_cache.put("icon_mod_category_25",mod_category_25);
+			oodIcons_cache.put("icon_mod_certification_25",mod_certification_25);
+			oodIcons_cache.put("icon_mod_certificationrequest_25",mod_certificationrequest_25);
+			oodIcons_cache.put("icon_mod_claim_25",mod_claim_25);
+			oodIcons_cache.put("icon_mod_communications_25",mod_communications_25);
+			oodIcons_cache.put("icon_mod_competitors_25",mod_competitors_25);
+			oodIcons_cache.put("icon_mod_contact_25",mod_contact_25);
+			oodIcons_cache.put("icon_mod_contactbesttime_25",mod_contactbesttime_25);
+			oodIcons_cache.put("icon_mod_contactstatelicense_25",mod_contactstatelicense_25);
+			oodIcons_cache.put("icon_mod_course_25",mod_course_25);
+			oodIcons_cache.put("icon_mod_courseenrollment_25",mod_courseenrollment_25);
+			oodIcons_cache.put("icon_mod_coverage_25",mod_coverage_25);
+			oodIcons_cache.put("icon_mod_customobject_25",mod_customobject_25);
+			oodIcons_cache.put("icon_mod_customwebtab_25",mod_customwebtab_25);
+			oodIcons_cache.put("icon_mod_damage_25",mod_damage_25);
+			oodIcons_cache.put("icon_mod_dashboard_25",mod_dashboard_25);
+			oodIcons_cache.put("icon_mod_dealer_25",mod_dealer_25);
+			oodIcons_cache.put("icon_mod_dealregistration_25",mod_dealregistration_25);
+			oodIcons_cache.put("icon_mod_dealregistrationproductrevenue_25",mod_dealregistrationproductrevenue_25);
+			oodIcons_cache.put("icon_mod_directory_25",mod_directory_25);
+			oodIcons_cache.put("icon_mod_division_25",mod_division_25);
+			oodIcons_cache.put("icon_mod_event_25",mod_event_25);
+			oodIcons_cache.put("icon_mod_exam_25",mod_exam_25);
+			oodIcons_cache.put("icon_mod_exam_registration_25",mod_exam_registration_25);
+			oodIcons_cache.put("icon_mod_financialaccount_25",mod_financialaccount_25);
+			oodIcons_cache.put("icon_mod_financialaccountholder_25",mod_financialaccountholder_25);
+			oodIcons_cache.put("icon_mod_financialaccountholding_25",mod_financialaccountholding_25);
+			oodIcons_cache.put("icon_mod_financialplan_25",mod_financialplan_25);
+			oodIcons_cache.put("icon_mod_financialproduct_25",mod_financialproduct_25);
+			oodIcons_cache.put("icon_mod_financialtransaction_25",mod_financialtransaction_25);
+			oodIcons_cache.put("icon_mod_forecast_25",mod_forecast_25);
+			oodIcons_cache.put("icon_mod_fund_25",mod_fund_25);
+			oodIcons_cache.put("icon_mod_fundcredit_25",mod_fundcredit_25);
+			oodIcons_cache.put("icon_mod_funddebit_25",mod_funddebit_25);
+			oodIcons_cache.put("icon_mod_fundrequest_25",mod_fundrequest_25);
+			oodIcons_cache.put("icon_mod_group_25",mod_group_25);
+			oodIcons_cache.put("icon_mod_hash_25",mod_hash_25);
+			oodIcons_cache.put("icon_mod_hcpcontactallocation_25",mod_hcpcontactallocation_25);
+			oodIcons_cache.put("icon_mod_home_25",mod_home_25);
+			oodIcons_cache.put("icon_mod_household_25",mod_household_25);
+			oodIcons_cache.put("icon_mod_insuranceproperty_25",mod_insuranceproperty_25);
+			oodIcons_cache.put("icon_mod_interests_25",mod_interests_25);
+			oodIcons_cache.put("icon_mod_inventoryauditreport_25",mod_inventoryauditreport_25);
+			oodIcons_cache.put("icon_mod_inventoryperiod_25",mod_inventoryperiod_25);
+			oodIcons_cache.put("icon_mod_involvedparty_25",mod_involvedparty_25);
+			oodIcons_cache.put("icon_mod_lead_25",mod_lead_25);
+			oodIcons_cache.put("icon_mod_makes_25",mod_makes_25);
+			oodIcons_cache.put("icon_mod_map_25",mod_map_25);
+			oodIcons_cache.put("icon_mod_mdfrequest_25",mod_mdfrequest_25);
+			oodIcons_cache.put("icon_mod_messageresponse_25",mod_messageresponse_25);
+			oodIcons_cache.put("icon_mod_messagingplan_25",mod_messagingplan_25);
+			oodIcons_cache.put("icon_mod_messagingplanitem_25",mod_messagingplanitem_25);
+			oodIcons_cache.put("icon_mod_messagingplanitemrelations_25",mod_messagingplanitemrelations_25);
+			oodIcons_cache.put("icon_mod_modificationtracking_25",mod_modificationtracking_25);
+			oodIcons_cache.put("icon_mod_notes_25",mod_notes_25);
+			oodIcons_cache.put("icon_mod_objective_25",mod_objective_25);
+			oodIcons_cache.put("icon_mod_opportunity_25",mod_opportunity_25);
+			oodIcons_cache.put("icon_mod_oraclesocialnetwork_25",mod_oraclesocialnetwork_25);
+			oodIcons_cache.put("icon_mod_order_25",mod_order_25);
+			oodIcons_cache.put("icon_mod_orderitem_25",mod_orderitem_25);
+			oodIcons_cache.put("icon_mod_partnermembers_25",mod_partnermembers_25);
+			oodIcons_cache.put("icon_mod_partnertype_25",mod_partnertype_25);
+			oodIcons_cache.put("icon_mod_patient_25",mod_patient_25);
+			oodIcons_cache.put("icon_mod_period_25",mod_period_25);
+			oodIcons_cache.put("icon_mod_personalinfo_25",mod_personalinfo_25);
+			oodIcons_cache.put("icon_mod_planaccount_25",mod_planaccount_25);
+			oodIcons_cache.put("icon_mod_planopportunity_25",mod_planopportunity_25);
+			oodIcons_cache.put("icon_mod_plans_25",mod_plans_25);
+			oodIcons_cache.put("icon_mod_policy_25",mod_policy_25);
+			oodIcons_cache.put("icon_mod_policyholder_25",mod_policyholder_25);
+			oodIcons_cache.put("icon_mod_portfolio_25",mod_portfolio_25);
+			oodIcons_cache.put("icon_mod_pricelist_25",mod_pricelist_25);
+			oodIcons_cache.put("icon_mod_pricelistlineitem_25",mod_pricelistlineitem_25);
+			oodIcons_cache.put("icon_mod_product_25",mod_product_25);
+			oodIcons_cache.put("icon_mod_productindication_25",mod_productindication_25);
+			oodIcons_cache.put("icon_mod_products_detailed_25",mod_products_detailed_25);
+			oodIcons_cache.put("icon_mod_referrals_25",mod_referrals_25);
+			oodIcons_cache.put("icon_mod_relatedaccreditation_25",mod_relatedaccreditation_25);
+			oodIcons_cache.put("icon_mod_relatedcertification_25",mod_relatedcertification_25);
+			oodIcons_cache.put("icon_mod_relatedcourse_25",mod_relatedcourse_25);
+			oodIcons_cache.put("icon_mod_relatedcourses_25",mod_relatedcourses_25);
+			oodIcons_cache.put("icon_mod_relatedexam_25",mod_relatedexam_25);
+			oodIcons_cache.put("icon_mod_relatedsolutions_25",mod_relatedsolutions_25);
+			oodIcons_cache.put("icon_mod_relationship_25",mod_relationship_25);
+			oodIcons_cache.put("icon_mod_reports_25",mod_reports_25);
+			oodIcons_cache.put("icon_mod_revenues_25",mod_revenues_25);
+			oodIcons_cache.put("icon_mod_saleshistory_25",mod_saleshistory_25);
+			oodIcons_cache.put("icon_mod_saleshours_25",mod_saleshours_25);
+			oodIcons_cache.put("icon_mod_sampledisclaimer_25",mod_sampledisclaimer_25);
+			oodIcons_cache.put("icon_mod_sampleinventory_25",mod_sampleinventory_25);
+			oodIcons_cache.put("icon_mod_samplelot_25",mod_samplelot_25);
+			oodIcons_cache.put("icon_mod_samplerequest_25",mod_samplerequest_25);
+			oodIcons_cache.put("icon_mod_samplerequestitem_25",mod_samplerequestitem_25);
+			oodIcons_cache.put("icon_mod_samplesdropped_25",mod_samplesdropped_25);
+			oodIcons_cache.put("icon_mod_sampletransaction_25",mod_sampletransaction_25);
+			oodIcons_cache.put("icon_mod_servicehistory_25",mod_servicehistory_25);
+			oodIcons_cache.put("icon_mod_servicehours_25",mod_servicehours_25);
+			oodIcons_cache.put("icon_mod_servicerequest_25",mod_servicerequest_25);
+			oodIcons_cache.put("icon_mod_signature_25",mod_signature_25);
+			oodIcons_cache.put("icon_mod_social_25",mod_social_25);
+			oodIcons_cache.put("icon_mod_socialprofile_25",mod_socialprofile_25);
+			oodIcons_cache.put("icon_mod_solution_25",mod_solution_25);
+			oodIcons_cache.put("icon_mod_specialpricingproduct_25",mod_specialpricingproduct_25);
+			oodIcons_cache.put("icon_mod_specialpricingrequest_25",mod_specialpricingrequest_25);
+			oodIcons_cache.put("icon_mod_team_25",mod_team_25);
+			oodIcons_cache.put("icon_mod_territory_25",mod_territory_25);
+			oodIcons_cache.put("icon_mod_transactionitem_25",mod_transactionitem_25);
+			oodIcons_cache.put("icon_mod_unknown_25",mod_unknown_25);
+			oodIcons_cache.put("icon_mod_user_25",mod_user_25);
+			oodIcons_cache.put("icon_mod_vehicle_25",mod_vehicle_25);
 		}
 		
 	}	

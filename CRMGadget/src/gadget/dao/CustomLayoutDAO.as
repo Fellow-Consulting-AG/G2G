@@ -304,7 +304,7 @@ package gadget.dao
 				return iconCache[key];
 			}
 			
-			if(CustomRecordTypeServiceDAO.isCustomObject(entity)){
+			if(CustomRecordTypeServiceDAO.isCustomObject(entity) || Database.preferencesDao.isModernIcon()){
 				var oodIcon:Class =  Database.customRecordTypeServiceDao.readIcon(entity);
 				if(oodIcon){
 					iconCache[key] = oodIcon;

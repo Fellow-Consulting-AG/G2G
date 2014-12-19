@@ -1237,7 +1237,7 @@
 				var iconName:String = isBlackWhite ? customLayout.custom_layout_icon + "BW" : customLayout.custom_layout_icon;
 				titlebar.icon = ImageUtils.getIconByName(iconName);
 				
-				if(CustomRecordTypeServiceDAO.isCustomObject(entity)){
+				if(CustomRecordTypeServiceDAO.isCustomObject(entity) || Database.preferencesDao.isModernIcon()){
 					var oodIcon:Class =  Database.customRecordTypeServiceDao.readIcon(entity);
 					if(oodIcon){
 						titlebar.icon = oodIcon;

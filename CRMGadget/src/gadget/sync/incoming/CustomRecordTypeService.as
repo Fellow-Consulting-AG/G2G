@@ -2,28 +2,53 @@ package gadget.sync.incoming {
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	
+	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.SupportDAO;
+	import gadget.dao.SupportRegistry;
 	import gadget.lists.List;
+	import gadget.sync.task.SyncTask;
 	import gadget.util.FieldUtils;
 	
 	import mx.collections.ArrayCollection;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.soap.WebService;
-	import gadget.sync.task.SyncTask;
 	
 	public class CustomRecordTypeService extends SyncTask {
 		
-		private var ns1:Namespace = new Namespace("urn:crmondemand/ws/odesabs/customrecordtype/");
+		private var ns1:Namespace = new Namespace("urn:crmondemand/ws/odesabs/customrecordtype/query");
 		private var ns2:Namespace = new Namespace("urn:/crmondemand/xml/customrecordtype/data");
-
+		private var currentTransaction:int = 0;
+		private var allTransactions:ArrayCollection = null;	
 		override protected function doRequest():void {
  			if (getLastSync() != NO_LAST_SYNC_DATE){
 				successHandler(null);
 				return;
 			}
-			
-			sendRequest("\"document/urn:crmondemand/ws/odesabs/CustomRecordType/:CustomRecordTypeReadAll\"",
-				<CustomRecordTypeReadAll_Input xmlns="urn:crmondemand/ws/odesabs/customrecordtype/"/>,
+			if (allTransactions == null) {
+				var tmpTransaction:ArrayCollection = Database.transactionDao.listTransaction();
+				allTransactions = new ArrayCollection() ;
+				for each(var transaction:Object in tmpTransaction) {
+					if (transaction.enabled) {
+						var entityTran:String = transaction.entity;
+						if(entityTran==Database.medEdDao.entity){
+							entityTran = "MedEdEvent";
+						}else if(entityTran==Database.businessPlanDao.entity){
+							entityTran = "CRMODLS_BusinessPlan";
+						}else if(entityTran==Database.objectivesDao.entity){
+							entityTran = "CRMODLS_OBJECTIVE";
+						}
+						allTransactions.addItem(entityTran);						
+						
+					}
+				}
+				
+			}
+			var xmlCustomRecordType:XML = <CustomRecordTypeRead_Input xmlns="urn:crmondemand/ws/odesabs/customrecordtype/"><CustomRecordType xmlns="urn:/crmondemand/xml/customrecordtype/query">
+								<Name>{allTransactions[currentTransaction]}</Name>              
+							</CustomRecordType></CustomRecordTypeRead_Input>;
+			sendRequest("\"document/urn:crmondemand/ws/odesabs/CustomRecordType/:CustomRecordTypeRead\"",
+				xmlCustomRecordType,
 				"admin",
 				"Services/cte/CustomRecordTypeService"
 			);
@@ -51,7 +76,10 @@ package gadget.sync.incoming {
 			var cnt:int = 0;
 			
 			Database.begin();
-			Database.customRecordTypeServiceDao.delete_all();
+			if(isClearData){
+				Database.customRecordTypeServiceDao.delete_all();
+				isClearData=false;
+			}
 			for each (var rec:XML in result.ns2::ListOfCustomRecordType[0].ns2::CustomRecordType) {
 
 				var fieldRec:Object = populate(rec, Database.customRecordTypeServiceDao.getColumns());
@@ -66,7 +94,9 @@ package gadget.sync.incoming {
 			}
 			Database.commit();
 			
-			nextPage(true);
+			// nextPage(true);
+			currentTransaction++;
+			nextPage(currentTransaction == allTransactions.length);
 			return cnt;
 		}
 
@@ -82,7 +112,9 @@ package gadget.sync.incoming {
 			if (str=="")
 				return false;
 			trace("no CustomRecordTypeService in this login");
-			nextPage(true);
+//			nextPage(true);
+			currentTransaction++;
+			nextPage(currentTransaction == allTransactions.length);
 			return true;
 		}
 		

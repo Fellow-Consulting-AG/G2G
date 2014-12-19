@@ -72,7 +72,12 @@ package gadget.dao
 			var iconName:String = "";
 			var custom:Object = Database.customRecordTypeServiceDao.readByEntity(entity);
 			if(custom){
-				iconName = custom.IconName;
+				if(Database.preferencesDao.isModernIcon()){
+					iconName = custom.ModernIconName;
+				}else{
+					iconName = custom.IconName;
+				}
+				
 			}
 			return iconName;
 			
@@ -85,6 +90,7 @@ package gadget.dao
 				'PluralName', 
 				'ShortName', 
 				'IconName',
+				'ModernIconName',
 			];
 		}
 	}

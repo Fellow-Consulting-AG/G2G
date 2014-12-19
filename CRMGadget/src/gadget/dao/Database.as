@@ -2563,6 +2563,8 @@ package gadget.dao {
 			XcheckColumn(sqlConnection, 'picklist_service','Order3_','INTEGER');
 			
 			
+			XcheckColumn(sqlConnection, 'custom_record_type','ModernIconName','TEXT');
+			
 			// Add column sync_ws20 in table transactions
 			XcheckColumn(sqlConnection, 'transactions','sync_ws20','BOOLEAN');
 			XcheckColumn(sqlConnection, 'transactions','sync_activities','BOOLEAN');

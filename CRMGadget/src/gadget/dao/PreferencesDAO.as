@@ -24,6 +24,7 @@ package gadget.dao
 		public static const ENABLE_CALL_COPY_SUBJECT:String = "enable_call_copy_subject";
 		public static const BACK_GROUND_COLOR_PDF:String = "back_ground_color_pdf";
 		public static const HEADER_COLOR_PDF:String = "header_color_pdf";
+		public static const MODERN_ICON:String = "modern_icon";
 		public static const HIDE_ACTIVITY_TYPE:String = "hide_activity_type";
 		public static const BEGIN_OF_WEEK:String = "begin_of_week";
 		public static const TIME_FORMAT:String = "time_format";
@@ -278,13 +279,17 @@ package gadget.dao
 			GOOGLE_MAP_DISTANCE,
 			ENABLE_SAMPLE_ORDER,
 			ENABLE_CHECKBOX_INLIST,
-			CHECKBOX_READONLY_WHEN_TRUE
+			CHECKBOX_READONLY_WHEN_TRUE,
+			MODERN_ICON
 		];
 		
 		public function getGoolgeMapDistance():String{
 			return getStrValue(GOOGLE_MAP_DISTANCE,"metric");
 		}
 		
+		public function isModernIcon():Boolean{
+			return getBooleanValue(MODERN_ICON) as Boolean;
+		}
 		public function isEnableCheckBoxInList():Boolean{
 			return getBooleanValue(ENABLE_CHECKBOX_INLIST);
 		}

@@ -2181,6 +2181,7 @@ package gadget.util {
 			
 			dao = Database.customLayoutDao;
 			dao.delete_all();
+			new CacheUtils("Custom_Layout").clear();
 			commitObjects(dao,xml.elements("custom_layouts").children());
 			//clear cache
 			new CacheUtils("cascading_crm").clear();

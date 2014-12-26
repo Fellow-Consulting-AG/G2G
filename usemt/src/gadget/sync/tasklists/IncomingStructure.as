@@ -13,12 +13,15 @@ package gadget.sync.tasklists
 
 	public class IncomingStructure
 	{
-		private var levelTask:Dictionary = new Dictionary();
+		protected var levelTask:Dictionary = new Dictionary();
 		//private var _listNotDependOn:Array=new Array();
 		
-		public function IncomingStructure()
-		{  //always read users
-			addTask(new IncomingObject(Database.allUsersDao.entity));
+		public function IncomingStructure(addUser:Boolean=true)
+		{  
+			if(addUser){
+				//always read users
+				addTask(createParentProcess(Database.allUsersDao.entity));
+			}
 		}
 
 		
@@ -92,17 +95,24 @@ package gadget.sync.tasklists
 				if(parent.entity==Database.customObject11Dao.entity){
 					co11 = parent;
 				}else{
-					var parentTask:IncomingObject = new IncomingObject(parent.entity);
+					var parentTask:IncomingObject = createParentProcess(parent.entity);
 					this.addTask(parentTask);				
 					buildChildObject(mapDependOn,parentTask,parent.entity,1,dependOn);
 				}
 			}
 			if(co11!=null){
-				var co11Task:IncomingObject = new IncomingObject(co11.entity);
+				var co11Task:IncomingObject = createParentProcess(co11.entity);
 				this.addTask(co11Task,99);				
 				buildChildObject(mapDependOn,co11Task,co11.entity,100,dependOn);
 			}
 			
+		}
+		
+		protected function createParentProcess(entity:String):IncomingObject{
+			return new IncomingObject(entity);
+		}
+		protected function createProcess(entity:String,parentTask:IncomingObject,pFields:Object,dependOn:Boolean=true):IncomingRelationObject{
+			return new IncomingRelationObject(entity,parentTask,pFields,dependOn)
 		}
 		
 		protected function buildChildObject(mapDependOn:Object,parentTask:IncomingObject,parentEntity:String,level:int,dependOn:Boolean):void{
@@ -123,12 +133,12 @@ package gadget.sync.tasklists
 					if(!dependOn){
 						var lastSyncObj:Object = Database.lastsyncDao.find(parentTask.getMyClassName());
 						if(lastSyncObj!=null && lastSyncObj.sync_date!='01/01/1970 00:00:00'){
-							childTask = new IncomingRelationObject(child.entity,parentTask,objParentField,false);							
+							childTask = createProcess(child.entity,parentTask,objParentField,false);							
 						}else{
-							childTask = new IncomingRelationObject(child.entity,parentTask,objParentField,true);							
+							childTask = createProcess(child.entity,parentTask,objParentField,true);							
 						}
 					}else{
-						childTask = new IncomingRelationObject(child.entity,parentTask,objParentField,true);
+						childTask = createProcess(child.entity,parentTask,objParentField,true);
 						
 					}
 					this.addTask(childTask,level);

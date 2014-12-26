@@ -150,7 +150,9 @@ package gadget.dao
 		}
 
 
-
+		protected function exec_cmd(cmd:String):void{
+			q_exec(cmd,null,null,null,null);
+		}
 
 		protected function b_exec(cmd:String, rest:String=""):void {
 			q_exec(cmd+" "+m_struct.table+" "+rest, null, null, null, null);

@@ -15,11 +15,11 @@ package gadget.sync.incoming
 	public class IncomingRelationObject extends IncomingObject
 	{
 		
-		private var _parentTask:IncomingObject;
-		private var _parentRelationField:Object;
-		private var _dependOnParent:Boolean = false;
+		protected var _parentTask:IncomingObject;
+		protected var _parentRelationField:Object;
+		protected var _dependOnParent:Boolean = false;
 		
-		private var _currentRequestIds:ArrayCollection;
+		protected var _currentRequestIds:ArrayCollection;
 		protected var _readParentIds:Boolean = true;
 		protected var _existRetrieved:Dictionary = null;
 		/**
@@ -74,25 +74,28 @@ package gadget.sync.incoming
 		
 		
 		protected override function canSave(incomingObject:Object):Boolean{
-			
-			var parentId:String=incomingObject[parentRelationField.ParentRelationId];
-			var issave:Boolean = false;
-			if(StringUtils.isEmpty(parentId)){
-				if(parentRelationField.hasOwnProperty('ChildRelationId')){
-					var criteria:Object = new Object();
-					criteria[parentRelationField.ChildRelationId] = incomingObject[DAOUtils.getOracleId(entityIDour)];
-					var parentObject:Object = parentTask.dao.getByParentId(criteria);				
-					issave = parentObject!=null;
+			if(parentTask!=null && parentRelationField!=null){
+				var parentId:String=incomingObject[parentRelationField.ParentRelationId];
+				var issave:Boolean = false;
+				if(StringUtils.isEmpty(parentId)){
+					if(parentRelationField.hasOwnProperty('ChildRelationId')){
+						var criteria:Object = new Object();
+						criteria[parentRelationField.ChildRelationId] = incomingObject[DAOUtils.getOracleId(entityIDour)];
+						var parentObject:Object = parentTask.dao.getByParentId(criteria);				
+						issave = parentObject!=null;
+					}
+				}else{
+					var parentObject1:Object = parentTask.dao.findByOracleId(parentId);
+					issave = parentObject1!=null;			
 				}
-			}else{
-				var parentObject1:Object = parentTask.dao.findByOracleId(parentId);
-				issave = parentObject1!=null;			
-			}
-			if(issave){
-				listRetrieveId.addItem(incomingObject);
+				if(issave){
+					listRetrieveId.addItem(incomingObject);
+				}
+				
+				return issave;
 			}
 			
-			return issave;
+			return super.canSave(incomingObject);
 		}
 		
 		

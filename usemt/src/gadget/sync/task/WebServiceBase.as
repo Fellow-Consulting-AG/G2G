@@ -608,9 +608,7 @@ package gadget.sync.task {
 			} catch (e:Error) {				
 				_iscompress=false;
 				try {
-					Database.rollback();
-					Database.rollback();
-					Database.rollback();
+					Database.rollback();					
 				} catch (e:Error) {}
 				if (xml==null) {
 					retryFailErrorHandler2(soapAction, request, e, i18n._("in {1.entity} request handler ({1.step}): while decoding XML: received {1.bytes} bytes: {1.message}", { entity:getEntityName(), step:step, bytes:event.target.bytesTotal, message:e.message} ));

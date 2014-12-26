@@ -763,6 +763,11 @@ package gadget.dao
 			stmtDelete.parameters[":gadget_id"] = object.gadget_id;
 			exec(stmtDelete);
 		}
+		
+		public function deleteAll():void{
+			exec_cmd("DELETE FROM "+tableName);
+		}
+		
 
 		public function deleteTemporary(object:Object):void	{
 			stmtDeleteTemporary.parameters[":gadget_id"] = object.gadget_id;

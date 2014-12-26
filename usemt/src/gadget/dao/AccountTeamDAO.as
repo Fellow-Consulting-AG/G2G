@@ -5,7 +5,7 @@ package gadget.dao
 	
 	import mx.collections.ArrayCollection;
 
-	public class AccountTeamDAO extends SupportDAO	{
+	public class AccountTeamDAO extends SupportDAO implements ITeam	{
 
 		public function AccountTeamDAO(sqlConnection:SQLConnection, workerFunction:Function) {
 			super( workerFunction,sqlConnection,

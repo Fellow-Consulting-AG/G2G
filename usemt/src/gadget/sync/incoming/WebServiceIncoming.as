@@ -764,7 +764,7 @@ package gadget.sync.incoming {
 		 */
 		protected function updateTracking(entity:String, id:String):void {
 			if (!(this is ModificationTracking)) {
-				Database.modificationTrackingDao.process(IncomingObjectPerId.translateEntity(entity), id);
+				Database.modificationTrackingDao.process(entity, id);
 			}			
 		}
 

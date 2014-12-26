@@ -227,6 +227,12 @@ package gadget.dao
 
 			super(work, conn, struct);
 		}
+		
+		
+		
+		public function deleteByChildId(parentId:String,childId:String):void{
+			deleteByOracleId(childId);
+		}
 
 		///////////////////////////////////////////////////////////////
 		// BaseDAO overrides

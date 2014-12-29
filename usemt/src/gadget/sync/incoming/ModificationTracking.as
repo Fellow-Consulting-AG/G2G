@@ -20,6 +20,7 @@ package gadget.sync.incoming {
 	
 	public class ModificationTracking extends WebServiceIncoming {
 		
+		private var readMt:Boolean = false;
 		
 		private var ood2LocalEntity:Object={
 			Account:Database.accountDao.entity,
@@ -81,11 +82,12 @@ package gadget.sync.incoming {
 			this.pageSize = 100;
 			Database.modificationTrackingDao.deleteAll();
 			dao = Database.modificationTrackingDao;
+			readMt = (Database.lastsyncDao.find(getMyClassName())!=null);
 		}
 		
 		
 		override protected function doRequest():void{
-			if(param.full || param.fullCompare || Database.lastsyncDao.find(getMyClassName())==null){
+			if(param.full || param.fullCompare || !readMt){
 				nextPage(true);
 				return;
 			}

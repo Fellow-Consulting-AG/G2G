@@ -957,7 +957,7 @@
 				Utils.suppressWarning(new ArrayCollection([preferences]));
 				Database.begin();
 				try{
-					preferences[PreferencesDAO.MODERN_ICON] = Database.preferencesDao.isModernIcon();
+					preferences[PreferencesDAO.MODERN_ICON] = Database.preferencesDao.isModernIcon()?  1 : 0;
 					Database.preferencesDao.update(preferences);
 					Database.preferencesDao.setValue(PreferencesDAO.PDF_HEADER,pdfHeaderText.text);
 					Database.preferencesDao.setValue(PreferencesDAO.PREDEFINED_FILTERS,showPredefinedFilters.selected);
@@ -2433,7 +2433,7 @@
 					}
 					Database.customLayoutDao.update(customLayout);
 				}
-				Database.preferencesDao.setValue(PreferencesDAO.MODERN_ICON,modernIcon?"1":"0");
+				Database.preferencesDao.setValue(PreferencesDAO.MODERN_ICON,modernIcon?1:0);
 				Database.customLayoutDao.clearIconCache();
 				mainWindow.navigator.removeAllChildren();
 				mainWindow.updateTransactions();

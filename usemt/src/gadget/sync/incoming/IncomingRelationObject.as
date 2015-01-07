@@ -1,5 +1,7 @@
 package gadget.sync.incoming
 {
+	
+	
 	import flash.errors.SQLError;
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
@@ -9,6 +11,7 @@ package gadget.sync.incoming
 	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.ObjectUtils;
 	import gadget.util.StringUtils;
+	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -77,7 +80,7 @@ package gadget.sync.incoming
 			if(parentTask!=null && parentRelationField!=null){
 				var parentId:String=incomingObject[parentRelationField.ParentRelationId];
 				var issave:Boolean = false;
-				if(StringUtils.isEmpty(parentId)){
+				if(StringUtils.isEmpty(parentId) || parentId=='No Match Row Id'){
 					if(parentRelationField.hasOwnProperty('ChildRelationId')){
 						var criteria:Object = new Object();
 						criteria[parentRelationField.ChildRelationId] = incomingObject[DAOUtils.getOracleId(entityIDour)];
@@ -90,6 +93,15 @@ package gadget.sync.incoming
 				}
 				if(issave){
 					listRetrieveId.addItem(incomingObject);
+				}else{
+					var item:Object = dao.findByOracleId(incomingObject[DAOUtils.getOracleId(entityIDour)]);
+					if(item!=null){
+						//delete child obj
+						Utils.deleteChild(item,entityIDour);
+						Utils.removeRelation(item,entityIDour,false);
+						dao.deleteByOracleId(item[DAOUtils.getOracleId(entityIDour)]);
+					}
+					
 				}
 				
 				return issave;

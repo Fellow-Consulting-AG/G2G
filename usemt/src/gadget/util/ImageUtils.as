@@ -736,8 +736,14 @@ package gadget.util{
 				case 'mod_calendar_25' : return mod_calendar_25;
 				case 'mod_account_25' : return mod_account_25;
 				case 'mod_assets_25' : return mod_assets_25;
+				case 'mod_asset_25' : return mod_assets_25;
+				case 'mod_notes_25' : return mod_notes_25;
+				case 'mod_note_25' : return mod_notes_25;
 				case 'mod_contact_25' : return mod_contact_25;
 				case 'mod_contactbesttime_25' : return mod_contactbesttime_25;
+				case 'mod_objective_25' : return mod_objective_25;
+				case 'mod_objectives_25' : return mod_objective_25;
+					
 				case 'mod_opportunity_25' : return mod_opportunity_25;
 				case 'mod_product_25' : return mod_product_25;
 				case 'mod_servicerequest_25' : return mod_servicerequest_25;
@@ -1186,6 +1192,7 @@ package gadget.util{
 				case 'mod_calendar_25' : return mod_calendar_25Big;
 				case 'mod_account_25' : return mod_account_25Big;
 				case 'mod_assets_25' : return mod_assets_25Big;
+				case 'mod_asset_25' : return mod_assets_25Big;
 				case 'mod_contactbesttime_25' : return mod_contactbesttime_25Big;
 				case 'mod_contact_25' : return mod_contact_25Big;
 				case 'mod_opportunity_25' : return mod_opportunity_25Big;
@@ -1408,6 +1415,7 @@ package gadget.util{
 			oodIcons_cache.put("icon_mod_allocation_25",mod_allocation_25);
 			oodIcons_cache.put("icon_mod_application_25",mod_application_25);
 			oodIcons_cache.put("icon_mod_assets_25",mod_assets_25);
+			oodIcons_cache.put("icon_mod_asset_25",mod_assets_25);
 			oodIcons_cache.put("icon_mod_attachment_25",mod_attachment_25);
 			oodIcons_cache.put("icon_mod_availableproductsfordetailing_25",mod_availableproductsfordetailing_25);
 			oodIcons_cache.put("icon_mod_blockedproduct_25",mod_blockedproduct_25);
@@ -1473,7 +1481,9 @@ package gadget.util{
 			oodIcons_cache.put("icon_mod_messagingplanitemrelations_25",mod_messagingplanitemrelations_25);
 			oodIcons_cache.put("icon_mod_modificationtracking_25",mod_modificationtracking_25);
 			oodIcons_cache.put("icon_mod_notes_25",mod_notes_25);
+			oodIcons_cache.put("icon_mod_note_25",mod_notes_25);
 			oodIcons_cache.put("icon_mod_objective_25",mod_objective_25);
+			oodIcons_cache.put("icon_mod_objectives_25",mod_objective_25);
 			oodIcons_cache.put("icon_mod_opportunity_25",mod_opportunity_25);
 			oodIcons_cache.put("icon_mod_oraclesocialnetwork_25",mod_oraclesocialnetwork_25);
 			oodIcons_cache.put("icon_mod_order_25",mod_order_25);

@@ -207,9 +207,7 @@ package gadget.sync.incoming {
 								 if(tmpdao!=null){
 									 tmpdao.deleteByOracleId(tmpOb['ObjectId']);
 								 } 
-								 if(!(tmpdao is ITeam)){
-									 return 0;//we need to save only team object for test user has right to see the db
-								 }
+								 return 0;
 							 }else{								
 								 tmpdao = Database.getDao(childEntityName,false);
 								 if(tmpdao!=null){
@@ -219,7 +217,10 @@ package gadget.sync.incoming {
 										 tmpdao.deleteByOracleId(tmpOb['ChildId']);
 									 }
 								 } 
-								 return 0;
+								 if(!(tmpdao is ITeam)){
+									 return 0;//we need to save only team object for test user has right to see the db
+								 }
+								 
 							 }
 						 }						
 					}

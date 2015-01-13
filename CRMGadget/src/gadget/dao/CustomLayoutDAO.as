@@ -200,15 +200,27 @@ package gadget.dao
 			}
 			return int(result.data[0].max_num) + 1;
 		}
-		
+		public function getCustomTranslateField(entity:String,col_name:String,subtype:int=0):String{
+			var objCustomField:Object  = Database.customFieldDao.selectCustomFieldWithSubType(entity,col_name ,subtype,LocaleService.getLanguageInfo().LanguageCode);
+			if(objCustomField!=null && objCustomField.value){
+				var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+				if(!StringUtils.isEmpty(headerValue)){
+					return headerValue;
+				}		
+			}
+			return "";
+		}
 		public function getDisplayName(entity:String, subtype:int=0):String {
 			//bug #1679 CRO add new tab
 			if(MainWindow.mapCustomTab[entity] != null) return  i18n._("GLOBAL_" +entity.toUpperCase());
 			var objName:String;
 			var customLayout:Object = readSubtype(entity, subtype);
 			if (customLayout != null) {
+				var col_name:String = CustomLayoutDetail.getColumnName(false,entity,subtype);
+				var cusDis:String = getCustomTranslateField(entity,col_name,subtype);
+				var display_name:String = cusDis=="" ? customLayout.display_name : cusDis;
 				//CRO Bug fixing 84 19.01.2011
-				if (customLayout.display_name == null || customLayout.display_name == '') {
+				if (display_name == null || display_name == '') {
 					objName = entity;
 					if(entity == 'Activity'){
 						if(subtype == 0){
@@ -242,8 +254,11 @@ package gadget.dao
 			var objName:String;
 			var customLayout:Object = readSubtype(entity, subtype);
 			if (customLayout != null) {
+				var col_name:String = CustomLayoutDetail.getColumnName(true,entity,subtype);
+				var cus_plural:String = getCustomTranslateField(entity,col_name,subtype);
+				var plural_display:String = cus_plural==""? customLayout.plural_display : cus_plural;
 				//CRO Bug fixing 84 19.01.2011
-				if (customLayout.display_name_plural == null || customLayout.display_name_plural == '') {
+				if (plural_display == null || plural_display == '') {
 					objName = entity;
 					if(entity == 'Activity'){
 						if(subtype == 0){
@@ -288,7 +303,7 @@ package gadget.dao
 					return objName;
 				}
 
-				return customLayout.display_name_plural;
+				return plural_display;
 			}
 			return i18n._("GLOBAL_" + entity.replace(/\s/gi,"_").toUpperCase()+"_PLURAL@"+entity);
 		}

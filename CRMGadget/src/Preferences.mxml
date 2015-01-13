@@ -14,12 +14,14 @@
 			import gadget.chatclient.CRMXAMPPConnection;
 			import gadget.control.CalculatedField;
 			import gadget.control.DisabledComboBox;
+			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.CustomLayoutDAO;
 			import gadget.dao.Database;
 			import gadget.dao.PreferencesDAO;
 			import gadget.dao.SimpleTable;
 			import gadget.i18n.i18n;
 			import gadget.lists.List;
+			import gadget.service.LocaleService;
 			import gadget.service.PicklistService;
 			import gadget.service.RightService;
 			import gadget.service.UserService;
@@ -174,7 +176,7 @@
 						});
 					}
 				});
-				
+				loadDailyAgendaHeader();
 				initDataReportAdmin();
 				loadDataCalendarSettings();
 			}
@@ -2641,11 +2643,65 @@
 					});
 				}
 			}
+			private var objFieldTranslate:Object = null;
+			public static var col_name:String = "#preferent_daily_agenda_header";
+			public static var subtype:int = 0;
+			private function loadDailyAgendaHeader():void{
+				objFieldTranslate = getCustomTranslate();
+				dailyAgendaHeaderText.text = Database.preferencesDao.getDailyAgendaHeader();
+			}
 			
+			private function getCustomValue():String{			
+				var objCustomField:Object = null;
+				objCustomField = objFieldTranslate?objFieldTranslate.customField:null;
+				if(objCustomField==null){
+					//try to get it from db
+					objCustomField  = Database.customFieldDao.selectCustomFieldWithSubType("preferent",col_name ,subtype,LocaleService.getLanguageInfo().LanguageCode);
+				}
+				if(objCustomField!=null && objCustomField.value){
+					var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+					if(!StringUtils.isEmpty(headerValue)){
+						return headerValue;
+					}		
+				}
+				return "";
+			}
+			
+			protected function getCustomTranslate():Object{
+
+				var obj:Object = new Object();
+				obj.column_name = col_name;
+				obj.entity="preferent";
+				obj.custom=getCustomValue();
+				obj.languageCode=LocaleService.getLanguageInfo().LanguageCode;
+				var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType("preferent",col_name ,subtype,obj.languageCode);			
+				obj["customField"] = objCustomField;
+				
+				return obj;
+			}
+		
 			protected function txtHeight_focusOutHandler(event:FocusEvent):void{
 				setDimension("height", event);
 			}
-			
+			private function onTextDoubleClick(event:Event,isPlural:Boolean=false):void{
+
+				var calculatedField:CalculatedField = new CalculatedField();
+				calculatedField.dataField = objFieldTranslate;
+				calculatedField.postSave =function(newLbl:String):void{
+					if(objFieldTranslate != null && objFieldTranslate["customField"] != null){
+						var objCusTrans:Object = objFieldTranslate["customField"];
+						objCusTrans.subtype= subtype;
+						Database.customFieldDao.delete_({entity:"preferent", subtype:subtype, column_name:col_name});
+						Database.customFieldDao.insert(objCusTrans);
+					}
+					dailyAgendaHeaderText.text = newLbl;
+					editStatus = true;
+				};
+				calculatedField.tempHeaderVal = event.target.text;
+				WindowManager.openModal(calculatedField);
+				
+				
+			}
 		]]>
 	</mx:Script>
 	
@@ -2773,6 +2829,14 @@
 								<mx:Button label="{i18n._('PREFERENCES_BUTTON_LABEL_SET_DEFAULT_ICONS')}" click="setDefaultIcons()"/>
 								<mx:Button label="{i18n._('PREFERENCES_BUTTON_LABEL_SET_ORACLE_ICONS')}" click="setOracleIcons()"/>
 								<mx:Button label="{i18n._('PREFERENCES_BUTTON_LABEL_SET_ORACLE_MODERN_ICONS')}" click="setOracleModernIcons()"/>
+							</mx:HBox>
+						</mx:VBox>
+						<mx:HRule width="100%"/>
+						<mx:VBox paddingTop="7" paddingBottom="10">
+							<mx:HBox paddingBottom="8">
+								<mx:Label width="150" text="{i18n._('GLOBAL_DAILY_AGENDA_HEADER')}" fontWeight="bold" fontSize="14"/>
+								<mx:Label text="{i18n._('PREFERENCES_LABEL_TEXT_HEADER_TEXT')}"/>
+								<mx:TextInput id="dailyAgendaHeaderText" doubleClick="onTextDoubleClick(event)" editable="false" doubleClickEnabled="true"/>
 							</mx:HBox>
 						</mx:VBox>
 						<mx:HRule width="100%"/>

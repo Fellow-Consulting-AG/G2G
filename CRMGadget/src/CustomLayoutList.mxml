@@ -193,7 +193,7 @@
 											}
 										]]>
 									</mx:Script>
-									<mx:Label width="100%" text="{data.display_name}" fontWeight="{setToBold(data)}"/>
+									<mx:Label width="100%" text="{CustomLayoutDetail.getDisplayName(data)}" fontWeight="{setToBold(data)}"/>
 								</mx:HBox>
 							</mx:Component>
 						</mx:itemRenderer>

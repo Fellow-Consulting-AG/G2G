@@ -631,6 +631,8 @@
 							}
 							if(customField.fieldType=='Formula') refreshFormulaField(customField);
 						}else{		
+							
+							dataField["customField"] = customField;		
 							// create header field.
 							if(Utils.checkNullValue(dataField.column_name).indexOf("#")>-1){
 								customField["column_name"] = dataField.column_name;
@@ -656,7 +658,7 @@
 							if(txtEntity.text == Database.businessPlanDao.entity){
 								customField["column_name"] = txtFieldName.text;
 							}
-							dataField["customField"] = customField;		
+							//dataField["customField"] = customField;		
 							
 						}
 						_cache_customField.del(txtEntity.text);

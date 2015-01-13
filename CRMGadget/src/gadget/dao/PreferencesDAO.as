@@ -6,6 +6,7 @@ package gadget.dao
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
 	
+	import gadget.service.LocaleService;
 	import gadget.service.UserService;
 	import gadget.util.CacheUtils;
 	import gadget.util.StringUtils;
@@ -544,7 +545,18 @@ package gadget.dao
 		public function isEnableFavorite():Boolean{
 			return getBooleanValue(ENABLE_FAVORITE);
 		}
-		
+		public function getDailyAgendaHeader():String{
+			var	objCustomField:Object  = Database.customFieldDao.selectCustomFieldWithSubType("preferent",Preferences.col_name ,Preferences.subtype,LocaleService.getLanguageInfo().LanguageCode);
+			if(objCustomField!=null && objCustomField.value){
+				var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+				if(!StringUtils.isEmpty(headerValue)){
+					return headerValue;
+				}		
+			}
+			var name:String = Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME);
+			name = StringUtils.isEmpty(name) ? MainWindow.LABEL_DAILY_AGENDA : name;
+			return name;
+		}
 		public function isEanableImportant():Boolean{
 			return getBooleanValue(ENABLE_IMPORTANT);
 		}

@@ -829,8 +829,7 @@
 				}
 				//#1728 CRO
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_DAILY_AGENDA)){
-					var name:String = Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME);
-					name = StringUtils.isEmpty(name) ? LABEL_DAILY_AGENDA : name;
+					var name:String = Database.preferencesDao.getDailyAgendaHeader();
 					createTabCustom(DAILY_AGENDA,navTabsData,name);
 				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_VISITIT_CUSTOMER)){

@@ -32,6 +32,10 @@ package gadget.dao
 		}
 		
 		
+		override public function deleteByChildId(parentId:String,childId:String):void{
+			exec_cmd("DELETE FROM contact_account WHERE AccountId='"+parentId+"' AND ContactId='"+childId+"'");
+		}
+		
 		public function findMissingContact():ArrayCollection{
 			exec(stmtFindMissingContact);
 			var items:ArrayCollection = new ArrayCollection(stmtFindMissingContact.getResult().data);

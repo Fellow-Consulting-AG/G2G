@@ -27,7 +27,9 @@ package gadget.sync
 	import gadget.sync.tasklists.DeletionTasks;
 	import gadget.sync.tasklists.IncomingPerIdTasks;
 	import gadget.sync.tasklists.IncomingStructure;
+	import gadget.sync.tasklists.IncomingStructureByIds;
 	import gadget.sync.tasklists.IncomingSubObjTasks;
+	import gadget.sync.tasklists.IncomingSubObjTasksPerIds;
 	import gadget.sync.tasklists.IncomingTasks;
 	import gadget.sync.tasklists.InitializationTasks;
 	import gadget.sync.tasklists.JDIncomingChangeOwnerTasks;
@@ -151,19 +153,28 @@ package gadget.sync
 							addSeriaTask(stasks,IncomingParallelTaskGroup);	
 						}
 					}
-					//bug#9045---remove tracking no reading by ids too 
-					//addSeriaTask(IncomingPerIdTasks(),IncomingParallelTaskGroup);
-					if(_full||fullCompare){
-						addSeriaTask(IncomingSubObjTasks(fullCompare,_full),IncomingParallelTaskGroup);
-						//retrieve missing contact
-						_groups.addItem(new TaskGroupBase(	
-							this,
-							[new IncomingContactNotExistInAccCon()],
-							_full
-							,_metaSyn
-						));
+					
+					var incomingIds:IncomingStructureByIds = IncomingPerIdTasks();					
+					for each(var idTasks:Array in incomingIds.getTaskAllLevel()){
+						if(idTasks!=null && idTasks.length>0){
+							addSeriaTask(idTasks,TaskGroupBase);	
+						}
 					}
 					
+					
+					if(_full||fullCompare){
+						addSeriaTask(IncomingSubObjTasks(fullCompare,_full),IncomingParallelTaskGroup);
+						
+					}else{
+						addSeriaTask(IncomingSubObjTasksPerIds(),IncomingParallelTaskGroup);
+					}
+					//retrieve missing contact
+					_groups.addItem(new TaskGroupBase(	
+						this,
+						[new IncomingContactNotExistInAccCon()],
+						_full
+						,_metaSyn
+					));
 				
 					
 					

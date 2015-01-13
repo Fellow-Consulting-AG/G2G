@@ -1,4 +1,6 @@
 package gadget.sync.incoming {
+	import flash.errors.SQLError;
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
 	import gadget.dao.DAOUtils;
@@ -7,27 +9,33 @@ package gadget.sync.incoming {
 	
 	import mx.collections.ArrayCollection;
 
-	public class IncomingObjectPerId extends WebServiceIncoming {
+	public class IncomingObjectPerId extends IncomingRelationObject {
 		
 		private var _ids:Array;
+		private var mapIds:Dictionary;
 		
-		public function IncomingObjectPerId(entity:String) {
-			super(entity);
+		public function IncomingObjectPerId(entity:String, parentTask:IncomingObject=null, parentFieldIds:Object=null) {
+			super(entity,parentTask,parentFieldIds,false);
 			if (entity == "Contact") {
 				ignoreFields.push("CurrencyCode", "ContactFullName");
 			}
+			this._dependOnParent = false;
 
 		}
-
-		override protected function getInfo(xml:XML, ob:Object):Object {
-			if (entityIDour == "Contact") {
-				ob.picture = null;
-			}
-			return {
-				rowid:ob[DAOUtils.getOracleId(entityIDour)],
-				name:ObjectUtils.joinFields(ob, DAOUtils.getNameColumns(entityIDour))
-			};
+		override protected function canSave(incomingObject:Object):Boolean{
+			var save:Boolean = super.canSave(incomingObject);
+			delete mapIds[incomingObject[DAOUtils.getOracleId(entityIDour)]];
+			return save;
 		}
+//		override protected function getInfo(xml:XML, ob:Object):Object {
+//			if (entityIDour == "Contact") {
+//				ob.picture = null;
+//			}
+//			return {
+//				rowid:ob[DAOUtils.getOracleId(entityIDour)],
+//				name:ObjectUtils.joinFields(ob, DAOUtils.getNameColumns(entityIDour))
+//			};
+//		}
 		
 		override protected function tweak_vars():void {
 			if (entityIDour == "User") {
@@ -66,22 +74,32 @@ package gadget.sync.incoming {
 		
 		override protected function initOnce():void {
 			initXML(stdXML);
-			_ids = [];
-			var idArray:ArrayCollection = Database.modificationTrackingDao.findAll(
-				new ArrayCollection([{element_name:"ObjectId"}]),
-				"ObjectName = '" + translateEntity(entityIDour) + "' AND processed IS NULL");
-			for each (var record:Object in idArray) {
-				if (_ids.indexOf(record.ObjectId) == -1) {
-					_ids = _ids.concat(record.ObjectId);
+			mapIds = Database.modificationTrackingDao.getTestIdsByEntity(entityIDour);
+			_ids=[];
+			for(var id:String in mapIds) {
+				if (_ids.indexOf(id) == -1) {
+					_ids = _ids.concat(id);
 				}
 			}
 		}
 		
-		public static function translateEntity(entity:String):String {
-			if (entity == "Activity")  {
-				return "Action";
+		
+		
+		override public function done():void{
+			if(mapIds!=null){
+				try{
+					Database.begin();				
+					for(var oraId:String in mapIds){
+						dao.deleteByOracleId(oraId);
+						//delete record not exist in the g2g
+						Database.modificationTrackingDao.deleteByParentId({'ObjectId':oraId,'ObjectName':entityIDour});
+					}
+					Database.commit();
+				}catch(e:SQLError){
+					Database.rollback();
+					//nothing todo
+				}
 			}
-			return entity;
 		}
 	}
 }

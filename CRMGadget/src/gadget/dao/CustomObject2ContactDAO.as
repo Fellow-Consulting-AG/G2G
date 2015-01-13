@@ -54,6 +54,11 @@ package gadget.dao
 			ob.DummySiebelRowId = ob.gadget_id;
 			return true;
 		}
+		
+		override public function deleteByChildId(parentId:String,childId:String):void{
+			exec_cmd("DELETE FROM contact_account WHERE ContactId='"+parentId+"' AND Id='"+childId+"'");
+		}
+		
 		private const TEXTCOLUMNS:Array = [
 			//ignore ContactId
 			"ContactId",

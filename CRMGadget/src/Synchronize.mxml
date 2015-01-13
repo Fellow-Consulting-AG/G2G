@@ -11,10 +11,17 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.rtc.core.messaging_internal;
 			import com.fellow.license.Credential;
 			import com.fellow.license.DtoMail;
 			import com.fellow.license.LicenseManager;
 			import com.fellow.license.SendMail;
+			import com.panurge.google.GoogleOAuth2;
+			import com.panurge.google.GoogleOAuth2Event;
+			import com.panurge.google.drive.events.GoogleDriveEvent;
+			import com.panurge.google.drive.model.GoogleDriveFile;
+			import com.panurge.google.drive.model.GoogleDriveParent;
+			import com.panurge.google.drive.services.GoogleDriveClient;
 			
 			import flash.net.dns.SRVRecord;
 			
@@ -28,6 +35,7 @@
 			import gadget.sync.incoming.CheckConflictObject;
 			import gadget.sync.task.LoginCRM;
 			import gadget.util.CacheUtils;
+			import gadget.util.DateUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.PreferenceUtils;
 			import gadget.util.SSOUtils;
@@ -54,6 +62,10 @@
 		public var mainWindow:MainWindow;
 		private var checkObjects:Array = null;	
 		private var dateFormatter:DateFormatter = new DateFormatter();
+		private var stageWebView:URLLoader;
+		private var driveClient:GoogleDriveClient;
+		private var oAuth:GoogleOAuth2;	
+		private var delayStageWebViewID:uint;	
 		private function init():void{
 			this.systemManager.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDown);
 			lastSyncDate = Database.lastsyncDao.isSynced() ? " - Last Synchronize Date : " + Database.lastsyncDao.getLastSyncDate() : "";
@@ -125,10 +137,14 @@
 			if (mainWindow.syncProcess != null && mainWindow.syncProcess.hasErrors) {
         		sendMailButton.includeInLayout = true;
         		sendMailButton.visible = true;
+				sendDB.includeInLayout = true;
+				sendDB.visible=true;
 				mainWindow.syncBtn2.setStyle("icon", ImageUtils.synErrorIcon);
         	} else {
         		sendMailButton.includeInLayout = false;
         		sendMailButton.visible = false;
+				sendDB.includeInLayout = false;
+				sendDB.visible=false;
 				mainWindow.syncBtn2.setStyle("icon", ImageUtils.synOkIcon);
         	}
 			//syncnow cannot do full sync
@@ -507,6 +523,173 @@
 			WindowManager.openModal(loggingDetail);
 		}
 		
+
+			protected function sendDB_clickHandler(event:MouseEvent):void
+			{
+				uploadCompleted=false;
+				oAuth = new GoogleOAuth2();
+				var window:Window = this;
+				Utils.showLoadingProgressWindow(function():void{				
+				
+					oAuth.CLIENT_ID = "267663819664-6olpjmua10ipq7gpptcrj83e3up1mo31.apps.googleusercontent.com"
+					oAuth.CLIENT_SECRET = "qaa-vKafnS-zkbxl_UwCM9l9";
+					oAuth.REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+					oAuth.SCOPES = "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";					
+					// we want to delegate to the framework the management of session and tokens
+					oAuth.manageSession = true;					
+					// instantiates the Drive Client
+					driveClient = new GoogleDriveClient(oAuth);
+					driveClient.addEventListener(GoogleDriveEvent.ERROR_EVENT, onApiError);
+					driveClient.addEventListener(GoogleDriveEvent.UPLOAD_ERROR, onApiError);
+					
+					GoogleDriveClient.auto_detect_mimetype = true;
+					
+					// creates a StageWebView to host Login/Auth page prompted by Google Auth
+					stageWebView = new URLLoader();
+					//stageWebView.viewPort = new Rectangle(0,0,400,400);
+					
+					// initilize the OAth2 process
+					oAuth.stageWebView = stageWebView; // note that in this moment we don't need to display the StageWebView (see: onAuthRequestInit)
+					
+					oAuth.addEventListener(GoogleOAuth2Event.AUTH_REQUEST_INIT, onAuthRequestInit);
+					oAuth.addEventListener(GoogleOAuth2Event.AUTH_FAULT, onAuthFault);
+					oAuth.addEventListener(GoogleOAuth2Event.AUTH_SUCCESS, onAuthSuccess);
+					
+					oAuth.init();
+				
+				
+				},i18n._("UPLOADING_TILEL@Uploading..."),i18n._("SEND_DB_TITLE@Send DB"),200,function(progress:Window):void{
+					var loadTimer:Timer = new Timer(10, 0); 
+					loadTimer.addEventListener(TimerEvent.TIMER, function():void{
+						if(uploadCompleted){
+							loadTimer.stop();
+							progress.close();
+							if(!StringUtils.isEmpty(uploadMessage)){
+								Alert.show(uploadMessage,i18n._("SEND_DB_TITLE@Send DB"),4,window);
+							}
+						}
+						
+						
+					}); 
+					loadTimer.start();
+				});
+				
+			}
+			protected function onAuthFault(event:GoogleOAuth2Event):void
+			{
+				Alert.show("onAuthFault\nerror code: " + event.code + "\nerror message: " + event.message,i18n._("SEND_DB_TITLE@Send DB"),4,this);
+			}
+			
+			protected function onUploadFileComplete(event:GoogleDriveEvent):void
+			{
+				uploadCompleted = true;
+				uploadMessage = "DB was sucessfully sent!";
+				
+			}
+			
+			protected function onUploadFileError(event:GoogleDriveEvent):void
+			{
+				uploadCompleted = true;
+				uploadMessage = "Error sending Database!";
+			}
+			protected var uploadMessage:String = '';
+			protected var uploadCompleted:Boolean = false;
+			protected function onUploadingProgress(e:ProgressEvent):void{
+				//TODO later
+			}
+			protected function onAuthSuccess(event:GoogleOAuth2Event):void
+			{
+				var fileRef:File = File.applicationDirectory.resolvePath(Database.getCustomDatabasePathFromFile() + "/" + Database.ENCRYPTED_DB_NAME);
+				clearTimeout(delayStageWebViewID);
+				
+				oAuth.removeEventListener(GoogleOAuth2Event.AUTH_SUCCESS, onAuthSuccess);
+				
+				// the auth was succefull so we can dispose the stageWebView				
+				stageWebView = null;
+				
+				var ba:ByteArray = new ByteArray();
+				var fileStream:FileStream = new FileStream();
+				fileStream.open(fileRef,FileMode.READ);
+				fileStream.readBytes(ba);
+				fileStream.close();
+				//fileRef.load();
+				
+				var fileName:String = Database.allUsersDao.ownerUser().Alias + "_"+DateUtils.format(new Date(), "DDMMYYYYTJJNN")+"_gadget2gox.db";
+				driveClient.files.addEventListener(GoogleDriveEvent.FILE_INSERT, onUploadFileComplete);
+				//TODO progress
+				driveClient.files.addEventListener(GoogleDriveEvent.UPLOAD_ERROR, onUploadFileError);
+				driveClient.files.onUploadingProgress = onUploadingProgress;
+				var fileDrive:GoogleDriveFile = new GoogleDriveFile();
+				fileDrive.title = fileName;
+				fileDrive.description = "DB SYNC. ERROR";
+				// if you have erro in uploading text files, force the mimetype 
+				//fileDrive.mimeType = "application/x-shockwave-flash";
+				var parent:GoogleDriveParent = new GoogleDriveParent();
+				parent.id = "0B1HZtRGEF87cM1c1eDJ3cTA2bkE";
+				fileDrive.parents = [parent];
+				
+				driveClient.files.file_insert(fileDrive, ba);
+			}
+			
+			protected function onAuthRequestInit(GoogleOAuth2Event:Event):void
+			{
+				//cannot init cause we have token already
+				
+//				trace("onAuthRequestInit");
+//				// we have access_token, but we haven't refreshToken: 
+//				// this shouldn't happen, but anyway we can have another change to authenticate without any valid refreshToken, having a valid access_token
+//				if (oAuth.accessToken != "" && (oAuth.refreshToken == "" || oAuth.refreshToken == null)){
+//					
+//					stageWebView.addEventListener(LocationChangeEvent.LOCATION_CHANGING, onLocationChanging);
+//					stageWebView.addEventListener(LocationChangeEvent.LOCATION_CHANGE, onLocationChanging);
+//					
+//					clearTimeout(delayStageWebViewID);
+//					delayStageWebViewID = setTimeout(function():void{
+//						trace("Timeout, no URL redirect detected, we need the stageWebView, to grant the app");
+//						stageWebView.viewPort = new Rectangle(0,0,stage.stageWidth,stage.stageHeight);
+//						stageWebView.stage = stage;
+//					}, 2000); // or time you need
+//					
+//					function onLocationChanging(locationChangeEvent:LocationChangeEvent):void
+//					{
+//						if (locationChangeEvent.location.indexOf(oAuth.REDIRECT_URI) == 0)
+//						{
+//							stageWebView.removeEventListener(LocationChangeEvent.LOCATION_CHANGING, onLocationChanging);
+//							stageWebView.removeEventListener(LocationChangeEvent.LOCATION_CHANGE, onLocationChanging);
+//							
+//							trace("success in AUTH so we can cancel the stagewebview timeout");
+//							clearTimeout(delayStageWebViewID);
+//							// onAuthSuccess we'll dispose the stageWebView
+//						}
+//					}
+//				}
+//				else{
+//					// display directly the html page to let the user grant the app
+//					stageWebView.viewPort = new Rectangle(0,0,stage.stageWidth,stage.stageHeight);
+//					stageWebView.stage = stage;
+//				}
+				
+			}
+			protected function onApiError(event:GoogleDriveEvent):void
+			{
+				if (event.data){
+					if (event.data is String){
+						Alert.show("onAPIError\nerror code: " + event.data);
+					}
+					else{
+						if (event.data.code && event.data.message){
+							Alert.show("onAPIError\nerror code: " + event.data.code + "\nerror message: " + event.data.message);
+						}
+						else{
+							Alert.show("onAPIError");
+						}
+					}
+				}
+				else{
+					Alert.show("onAPIError\n: " + event.toString());
+				}
+			}
+
 		]]>
 	</mx:Script>
 	
@@ -566,12 +749,12 @@
 						<mx:HBox width="100%">
 							<control:Spinner id="spinner" tickColor="#66aaff"/>
 							<mx:Text id="ItemSyncInfo"/>
+							<mx:HBox width="100%" horizontalAlign="right">
+								<mx:LinkButton includeInLayout="false" icon="@Embed('/assets/mail_icon.png')" label="{i18n._('SYNCHRONIZE_LINK_BUTTON_EMAIL_ERROR_REPORT')}" id="sendMailButton" visible="false" click="handleErrorAction()" />
+								<mx:LinkButton includeInLayout="false" icon="@Embed('/assets/drillup.png')" label="{i18n._('SYNCHRONIZE_SEND_DB@Send DB')}" id="sendDB" visible="false" click="sendDB_clickHandler(event)" />
+							</mx:HBox>	
 						</mx:HBox>
 					</mx:VBox>
-
-					<mx:HBox width="100%" horizontalAlign="right">
-						<mx:LinkButton includeInLayout="false" icon="@Embed('/assets/mail_icon.png')" label="{i18n._('SYNCHRONIZE_LINK_BUTTON_EMAIL_ERROR_REPORT')}" id="sendMailButton" visible="false" click="handleErrorAction()" />
-					</mx:HBox>					
 				</mx:VBox>
 			</mx:Panel>	
 

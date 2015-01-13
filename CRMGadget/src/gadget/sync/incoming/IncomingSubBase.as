@@ -42,7 +42,7 @@ package gadget.sync.incoming
 		protected var SUB_PAGE_SIZE:int=25;	
 	//	protected var parentSearchSpec:String;
 		
-		private var _listParents:ArrayCollection;
+		protected var _listParents:ArrayCollection;
 		private var _currentRequestIds:ArrayCollection;
 		
 		public function IncomingSubBase(ID:String, subId:String, _dao:String=null) {
@@ -228,13 +228,13 @@ package gadget.sync.incoming
 			if(!StringUtils.isEmpty(filterSearch)){			
 				parentcriteria+=filterSearch;
 			}
-			
+			var searchByParentCriteria:String = generateSearchByParentId();
 			//parent ids cannot empty
-			if(parentcriteria!=''){
+			if(parentcriteria!='' && searchByParentCriteria!=''){
 				parentcriteria+=' AND ';
-				parentcriteria+=("("+generateSearchByParentId()+")");			
+				parentcriteria+=("("+searchByParentCriteria+")");			
 			}else{
-				parentcriteria = generateSearchByParentId();
+				parentcriteria = searchByParentCriteria;
 			}
 			var subCirteria:String = getSubSerachSpec();
 			

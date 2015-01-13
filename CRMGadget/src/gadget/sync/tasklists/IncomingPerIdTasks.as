@@ -6,20 +6,18 @@ package gadget.sync.tasklists {
 	import gadget.sync.incoming.WebServiceIncoming;
 	import gadget.util.SodUtils;
 	import gadget.util.SodUtilsTAO;
+	
+	import mx.collections.ArrayCollection;
 
-	public function IncomingPerIdTasks():Array {
+	public function IncomingPerIdTasks():IncomingStructureByIds {
 
-		function transactionFilter(t:SodUtilsTAO, index:int, arr:Array):Boolean {
-			var transaction:Object = Database.transactionDao.find(t.sod_name);
-			return transaction!=null && transaction.enabled == 1;
-		}
+		var enablesTrans:ArrayCollection=Database.transactionDao.listEnabledTransaction();
 		
-		return [].concat(
-			SodUtils.transactionsTAOif("top_level")
-			.filter(transactionFilter)
-			.map(function (t:SodUtilsTAO, i:int,a:Array):WebServiceIncoming {
-				return new IncomingObjectPerId(t.our_name);
-			})
-		);
+		
+		
+		var incomings:IncomingStructureByIds =new IncomingStructureByIds();
+		
+		incomings.buildStructure(enablesTrans,false);
+		return incomings;
 	}
 }

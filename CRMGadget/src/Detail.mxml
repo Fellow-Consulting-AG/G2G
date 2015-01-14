@@ -117,7 +117,7 @@
 			private var isShowFeed:Boolean;
 			private var currentUser:Object; 
 			private var sampleView:SampleItemView;
-			private const CALL:int =2;
+			public static const CALL:int =2;
 			public static const APPOINTMENT:int=1;
 			private const TASK:int=0;
 			private var numOfPage:int = 4;

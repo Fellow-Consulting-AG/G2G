@@ -91,6 +91,7 @@ package gadget.util
 	public class GUIUtils{
 		private static const SMALL_FIELDS:Array = ["CreatedBy", "ModifiedBy"];
 		public static const millisecondsPerHour:int = 1000 * 60 * 60;
+		private static const TIME_DURATION_HALF_HOUR:int = 500 * 60 * 60;
 		public static const MONDAY:uint = 1;
 
 		private static const API_KEY:Object = {
@@ -1803,6 +1804,14 @@ package gadget.util
 			return 23;
 		}
 		
+		private static function getTimeDuration(item:Object):int{
+			if(item.subtype==Detail.CALL){
+				return TIME_DURATION_HALF_HOUR;
+			}
+			
+			return millisecondsPerHour;
+		}
+		
 		/**
 		 * getInputField method is used to get any controls depended on the field's data_type.
 		 * 
@@ -1918,7 +1927,7 @@ package gadget.util
 							if(fieldInfo.element_name == "StartTime"){
 								var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
 								var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
-								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item))), DateUtils.DATABASE_DATETIME_FORMAT);;
 								setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
 							}
 							
@@ -1952,7 +1961,9 @@ package gadget.util
 					}
 					//Bug #5859 CRO
 					if(item[fieldInfo.element_name] == null && create && entity == Database.activityDao.entity && fieldInfo.element_name == "EndTime"){
-						dateTimeObject=new Date(dateTimeObject.getTime() + ( 3600 *1000 ));
+						if(item.subtype!=Detail.CALL){
+							dateTimeObject=new Date(dateTimeObject.getTime() + ( getTimeDuration(item) ));
+						}
 					}else if(create && dateTimeObject == null){
 						//dateTimeObject = DateUtils.guessAndParse(DateUtils.format(new Date(), DateUtils.DATABASE_DATETIME_FORMAT) as String) ;
 					}
@@ -1980,7 +1991,7 @@ package gadget.util
 						if(fieldInfo.element_name == "StartTime"){
 							var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
 							var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
-							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item) )), DateUtils.DATABASE_DATETIME_FORMAT);;
 							setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
 						}
 						
@@ -1994,7 +2005,12 @@ package gadget.util
 					if(!create){
 						mm.value = intMM;
 					}else{
-						mm.value =0;//bug#8419
+						//bug#9430---Call - default duration
+						if(item.subtype==Detail.CALL && entity == Database.activityDao.entity && fieldInfo.element_name == "EndTime" ){
+							mm.value =30;
+						}else{
+							mm.value =0;//bug#8419
+						}
 					}
 					//bug#8372
 					mm.valueFormatFunction = function(value:Number):String{
@@ -2009,7 +2025,7 @@ package gadget.util
 						if(fieldInfo.element_name == "StartTime"){
 							var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("EndTime") as BetterFormItem;
 							var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);
-							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000 )), DateUtils.DATABASE_DATETIME_FORMAT);;
+							item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item) )), DateUtils.DATABASE_DATETIME_FORMAT);;
 							setInputFieldValue(endDisplay.getChildByName("EndTime"),fieldInfo,item.EndTime,null,null);
 						}
 						
@@ -2049,7 +2065,7 @@ package gadget.util
 								var dd:DDStepper = endDate.getChildAt(3) as DDStepper;
 								dd.value = DDStepper(e.target).value;			
 								var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATETIME_FORMAT);															
-								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( 3600 *1000)), DateUtils.DATABASE_DATETIME_FORMAT);;
+								item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item))), DateUtils.DATABASE_DATETIME_FORMAT);;
 								setInputFieldValue(endDate,fieldInfo,item.EndTime,null,null);
 								
 							}

@@ -546,12 +546,9 @@ package gadget.dao
 			return getBooleanValue(ENABLE_FAVORITE);
 		}
 		public function getDailyAgendaHeader():String{
-			var	objCustomField:Object  = Database.customFieldDao.selectCustomFieldWithSubType("preferent",Preferences.col_name ,Preferences.subtype,LocaleService.getLanguageInfo().LanguageCode);
-			if(objCustomField!=null && objCustomField.value){
-				var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
-				if(!StringUtils.isEmpty(headerValue)){
-					return headerValue;
-				}		
+			var header:String =CustomLayoutDetail.getHeaderValue(Preferences.PRE_ENTITY,Preferences.subtype,Preferences.getColumnName(0))
+			if(!StringUtils.isEmpty(header)){
+				return header;
 			}
 			var name:String = Database.preferencesDao.getStrValue(PreferencesDAO.DAILY_AGENDA_NAME);
 			name = StringUtils.isEmpty(name) ? MainWindow.LABEL_DAILY_AGENDA : name;

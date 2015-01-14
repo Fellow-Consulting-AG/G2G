@@ -821,7 +821,11 @@
 					createTabCustom(DASHBOARD,navTabsData,LABEL_DASHBORD);
 				}
 				if(Database.preferencesDao.isEnableRevenueReport()){
-					createTabCustom(REVENUE_REPORT,navTabsData,LABEL_REVENUE_REPORT);
+					var revHeader:String = CustomLayoutDetail.getHeaderValue(Preferences.PRE_ENTITY,Preferences.subtype,Preferences.getColumnName(Preferences.REVENUE_REPORT));
+					if(StringUtils.isEmpty(revHeader)){
+						revHeader = LABEL_REVENUE_REPORT;
+					}
+					createTabCustom(REVENUE_REPORT,navTabsData,revHeader);
 					
 				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){

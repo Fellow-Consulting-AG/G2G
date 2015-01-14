@@ -679,7 +679,7 @@
 				var cusHeader:String = getHeaderValue(data.entity,data.subtype,getColumnName(true,data.entity,data.subtype));
 				return cusHeader ==""?data.display_name_plural : cusHeader;
 			}
-			private static function getHeaderValue(entity:String,subtype:int,col_name:String):String{
+			public static function getHeaderValue(entity:String,subtype:int,col_name:String):String{
 				var objCustomField:Object  = Database.customFieldDao.selectCustomFieldWithSubType(entity,col_name ,subtype,LocaleService.getLanguageInfo().LanguageCode);
 				
 				if(objCustomField!=null && objCustomField.value){

@@ -374,11 +374,12 @@
 						}
 						customLayout.custom_layout_title = layoutTitlebar.selectedItem.column==null?'':layoutTitlebar.selectedItem.column; // Change Request #747
 						Database.customLayoutDao.update(customLayout);
+						saveCustomTranslate(customLayout);
 						customLayoutList.refreshList();
 						mainWindow.navigator.removeAllChildren();
 						mainWindow.updateTransactions();
 						mainWindow.selectList();
-						saveCustomTranslate(customLayout);
+						
 						return true;
 					}
 				}

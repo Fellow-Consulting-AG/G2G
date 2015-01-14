@@ -242,7 +242,7 @@ package gadget.dao
 					return objName;
 				
 				}
-				return customLayout.display_name;
+				return display_name;
 			}
 			return entity;
 		}

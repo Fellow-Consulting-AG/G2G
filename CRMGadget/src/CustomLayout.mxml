@@ -64,6 +64,7 @@
   			[Bindable] public var detail:Detail;
 			
 			public static const SQLLIST_CODE:String = "SQLLIST";
+			public static const BLOCK_DYNAMIC_CODE:String = "BLOCK_DYNAMIC";
 			public static const SQLFIELD_CODE:String = "SQLFIELD";
 			public static const HTMLFIELD_CODE:String = "HTMLFIELD";
 			public static const GOOGLEMAP_CODE:String = "GOOGLEMAP";
@@ -177,6 +178,11 @@
 					if (dropObject.column_name.indexOf(SQLLIST_CODE) > -1){
 						dropObject.column_name = "{" + SQLLIST_CODE + countFields(SQLLIST_CODE) + "}";
 					}
+					
+					if (dropObject.column_name.indexOf(BLOCK_DYNAMIC_CODE) > -1){
+						dropObject.column_name = "{" + BLOCK_DYNAMIC_CODE + countFields(BLOCK_DYNAMIC_CODE) + "}";
+					}
+					
 					if (dropObject.column_name.indexOf(SQLFIELD_CODE) > -1){
 						dropObject.column_name = "{" + SQLFIELD_CODE + countFields(SQLFIELD_CODE) + "}";
 					}
@@ -393,6 +399,12 @@
 									}
 								}
 							}
+							
+							if(layout.column_name.indexOf(BLOCK_DYNAMIC_CODE) > -1) {//BLOCK LAYOUT
+								
+							}
+								
+							
 							if (layout.column_name.indexOf(CALCULATED_CODE) > -1 || layout.column_name.indexOf("#") > -1){ 
 								var customField:Object = (j ==0 ? leftPanel[i].customField : rightPanel[i].customField);
 								if(customField){
@@ -445,6 +457,13 @@
 				sqlList.custom = "";
 				sqlList.column_name = '{' + SQLLIST_CODE + '}';
 				fields.addItem(sqlList);
+				
+				
+				var blockDynamic:Object = new Object();
+				blockDynamic.label = i18n._("BLOCK_DYNAMIC_CODE@Dynamic Block");
+				blockDynamic.custom = "";
+				blockDynamic.column_name = '{' + BLOCK_DYNAMIC_CODE + '}';
+				fields.addItem(blockDynamic);
 				
 				var sqlField:Object = new Object();
 				sqlField.label = i18n._("GLOBAL_SQL_FIELD");
@@ -702,6 +721,7 @@
 											if(data.column_name == '#') return 0xCCCCFF;
 											if(data.column_name == '{' + CustomLayout.GOOGLEMAP_CODE + '}' || data.column_name == 'picture') return 0xFF9900;
 											if(data.column_name == '{' + CustomLayout.SQLLIST_CODE + '}') return 0xE7F98D;
+											if(data.column_name == '{' + CustomLayout.BLOCK_DYNAMIC_CODE + '}') return 0xFFB3DC;
 											if(data.column_name == '{' + CustomLayout.SQLFIELD_CODE + '}') return 0xE7F98D;
 											if(data.column_name == '{' + CustomLayout.HTMLFIELD_CODE + '}') return 0x70B0F9;
 											if(data.column_name == '{' + CustomLayout.NEWS_CODE + '}') return 0x70B0F9;

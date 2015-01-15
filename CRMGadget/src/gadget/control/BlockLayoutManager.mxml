@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Window xmlns:mx="http://www.adobe.com/2006/mxml"		   
+		   resizable="false"
+		   width="480" height="500"
+		   title="{i18n._('BLOCK_LAYOUT_CONFIG@Block Layout Config.')}"
+		   showFlexChrome="false" transparent="true" systemChrome="none" xmlns:control="gadget.control.*"
+		   creationComplete="init(event)"
+		   >
+	
+	<mx:Script>
+		<![CDATA[
+			import gadget.dao.Database;
+			import gadget.i18n.i18n;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			[Bindable]
+			private var _selectedItems:ArrayCollection;
+			[Bindable]
+			private var _availableItems:ArrayCollection;
+			private function up_clickHandler(event:MouseEvent):void{
+				var i:int = 0;
+				var o:Object = null;
+				var arr:ArrayCollection = new ArrayCollection(listSplitterSelected.selectedItems);
+					i = listSplitterSelected.selectedIndex;
+					if(arr==null || arr.length < 1 || i<1){
+						return;
+					}
+					
+					_selectedItems.removeItemAt(i);
+					for each(o in arr){
+						_selectedItems.addItemAt(o,i-1);
+						listSplitterSelected.selectedIndex = i;
+					}
+				
+				
+			}
+			private function addAll(arr:ArrayCollection, src:ArrayCollection):void
+			{
+				for each(var o:Object in src)
+				{
+					arr.addItem(o);
+				}
+			}
+			//all hadlers 
+			protected function aList_doubleClickHandler(event:MouseEvent):void
+			{ 
+				
+					addAll(_selectedItems, new ArrayCollection(listSplitterField.selectedItems));
+					removeAvailableItems(listSplitterField.selectedItems);
+				
+				
+			}
+			protected function sList_doubleClickHandler(event:MouseEvent):void
+			{
+				
+					addAll(_availableItems, new ArrayCollection(listSplitterSelected.selectedItems));
+					removeSelectedItems(listSplitterSelected.selectedItems);
+				
+			}
+			
+			private function oneLeftBtn_clickHandler(event:MouseEvent):void
+			{
+				
+					addAll(_availableItems, new ArrayCollection(listSplitterSelected.selectedItems));
+					removeSelectedItems(listSplitterSelected.selectedItems);
+				
+				
+			}
+			
+			private function removeSelectedItems(items:Array):void
+			{
+				for each(var o:Object in items)
+				{
+					
+						_selectedItems.removeItemAt(_selectedItems.getItemIndex(o));
+					
+					
+				}
+			}
+			private function allLeftBtn_clickHandler(event:MouseEvent):void
+			{
+				
+					addAll(_availableItems, _selectedItems);
+					_selectedItems.removeAll();
+				
+				
+			}
+			private function allRightBtn_clickHandler(event:MouseEvent):void
+			{
+				
+					addAll(_selectedItems, _availableItems);
+					_availableItems.removeAll();
+				
+				
+			}
+			private function removeAvailableItems(items:Array):void
+			{
+				for each(var o:Object in items)
+				{
+					
+						if (_availableItems.getItemIndex(o) > -1){
+							_availableItems.removeItemAt(_availableItems.getItemIndex(o));
+						}
+					
+					
+				}
+			}
+			private function oneRightBtn_clickHandler(event:MouseEvent):void
+			{
+				
+					addAll(_selectedItems, new ArrayCollection(listSplitterField.selectedItems));
+					removeAvailableItems(listSplitterField.selectedItems);
+				
+				
+			}
+			private function down_clickHandler(event:MouseEvent):void{
+				var i:int = 0;
+				var o:Object = null;
+				var arr:ArrayCollection =  new ArrayCollection(listSplitterSelected.selectedItems);
+					i = listSplitterSelected.selectedIndex;
+					if(arr==null || arr.length < 1 || i == _selectedItems.length - 1){
+						return;
+					}
+					
+					_selectedItems.removeItemAt(i);
+					for each(o in arr){
+						_selectedItems.addItemAt(o,i+1);
+						listSplitterSelected.selectedIndex = i;
+					}
+				
+				
+				
+			}
+			private function switchBtn_clickHandler(event:MouseEvent):void
+			{
+				var t:ArrayCollection =  _selectedItems;
+					_selectedItems = _availableItems;
+					_availableItems = t;
+				
+				
+			}
+
+			protected function init(event:FlexEvent):void
+			{
+				Database.blockLayoutDao.f
+			}
+
+		]]>
+	</mx:Script>		
+	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
+		<control:TitleBar title="{i18n._('BLOCK_LAYOUT_CONFIG@Block Layout Config.')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
+		<mx:TabNavigator top="30" left="0"  width="100%" height="100%" right="00" bottom="00" change="onChangeTab(event)" id="tabstrip">
+			<mx:VBox label="{i18n._('GLOBAL_AVAILABLE@Available')}">
+				<mx:Form>
+					
+					<mx:FormItem required="true" width="100%" paddingBottom="10">						
+						<mx:Label width="180" text="{i18n._('GLOBAL_NAME@Name')}"/>
+						<mx:ComboBox width="200" id="cboAvailable" labelField="Name" />
+						<mx:HBox width="100%" horizontalAlign="right" paddingBottom="5" paddingRight="20">
+							<mx:Button name="cancel"  label="{i18n._('GLOBAL_CANCEL@Cancel')}" />
+							<mx:Button name="save"  label="{i18n._('GLOBAL_OK@Ok')}" />
+						</mx:HBox>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+			<mx:VBox top="0" left="0" right="0" bottom="0" label="{i18n._('GLOBAL_CREATE_NEW@Create New')}">
+				<mx:Form>
+					
+					<mx:FormItem required="true" width="100%" paddingBottom="10">
+						<mx:HBox width="100%">
+							<mx:Label width="180" text="{i18n._('GLOBAL_NAME@Name')}"/>
+							<mx:TextInput id="txtName" width="200"/>
+						</mx:HBox>					
+					</mx:FormItem>		
+					<mx:FormItem required="true" width="100%" paddingBottom="10">
+						<mx:HBox width="100%">
+							<mx:Label width="180" text="{i18n._('DRIVING_PICKLIST@Driving Picklist')}"/>
+							<mx:ComboBox width="200" id="cboDriving" labelField="displayName" />
+						</mx:HBox>					
+					</mx:FormItem>				
+					<mx:FormItem required="true" width="100%" paddingBottom="10">
+						<mx:HBox width="100%">
+							<mx:Label width="180" text="{i18n._('GLOBAL_TYPE@Type')}"/>
+							<mx:ComboBox width="200" id="cboValue" />
+						</mx:HBox>
+					</mx:FormItem>				
+					<mx:FormItem width="100%">
+						<mx:HBox width="100%"  verticalAlign="middle">
+							<mx:VBox width="100%">
+								<mx:Label text="{i18n._('GLOBAL_AVAILABLE_FIELD@Available Fields')}"/>
+								<mx:List id="listSplitterField"  doubleClickEnabled="true" height="180" allowMultipleSelection="true" width="{(this.width-155)/2}" dataProvider="{_availableItems}"  doubleClick="aList_doubleClickHandler(event)"  />
+							</mx:VBox>
+							<mx:VBox id="boxSplitterMove" width="15">
+								<mx:LinkButton icon="@Embed('/assets/all-right.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_RIGHT')}" click="allRightBtn_clickHandler(event)" />  
+								<mx:LinkButton icon="@Embed('/assets/one-right.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_RIGHT')}" click="oneRightBtn_clickHandler(event)" /> 	
+								<mx:Spacer height="2" />
+								<mx:LinkButton icon="@Embed('/assets/switch-h.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_SWITCH_SELECTION_ITEMS')}" click="switchBtn_clickHandler(event)" /> 
+								<mx:Spacer height="2" /> 
+								<mx:LinkButton icon="@Embed('/assets/one-left.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_LEFT')}" click="oneLeftBtn_clickHandler(event)" />
+								<mx:LinkButton icon="@Embed('/assets/all-left.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_LEFT')}" click="allLeftBtn_clickHandler(event)" />
+							</mx:VBox> 
+							<mx:VBox width="100%">
+								<mx:Label text="{i18n._('GLOBAL_SELECTED_FIELD@Selected Fields')}"/>
+								<mx:List doubleClick="sList_doubleClickHandler(event)"  dataProvider="{_selectedItems}" doubleClickEnabled="true" height="180" allowMultipleSelection="true"  width="{(this.width-155)/2}" id="listSplitterSelected"/>
+							</mx:VBox>
+							<mx:VBox id="boxSplitterUpDown" width="100%">
+								<mx:LinkButton  icon="@Embed('/assets/triangle-up.gif')" width="16" height="16" toolTip="{'Up'}" click="up_clickHandler(event)" />  
+								<mx:Spacer height="2" />
+								<mx:LinkButton icon="@Embed('/assets/triangle-down.gif')" width="16" height="16" toolTip="{'Down'}" click="down_clickHandler(event)" />
+							</mx:VBox>
+						</mx:HBox>
+						<mx:HBox width="100%" horizontalAlign="right" paddingBottom="5" paddingRight="20">
+							<mx:Button name="cancel"  label="{i18n._('GLOBAL_CANCEL@Cancel')}" />
+							<mx:Button name="save"  label="{i18n._('GLOBAL_SAVE@Save')}" />
+						</mx:HBox>
+					</mx:FormItem>
+				</mx:Form>
+				
+			</mx:VBox>
+			
+			
+		</mx:TabNavigator>
+		
+	</mx:Canvas>
+</mx:Window>

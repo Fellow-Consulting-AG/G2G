@@ -20,6 +20,7 @@ package gadget.dao
 		{
 			super(sqlConnection,work,  {
 				table: 'revenue',
+				index: ["importedDate",	"Month","ProductFamily",],
 				columns: { 'TEXT' : textColumns }
 			});
 			this.work = work;

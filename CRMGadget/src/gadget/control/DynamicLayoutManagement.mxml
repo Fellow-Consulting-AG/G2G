@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Window xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:control="gadget.control.*"
+		   resizable="false"
+		   width="800" height="400"
+		   title="{i18n._('DYNAMIC_LAYOUT_MANAGMENT@Dynamic layout management')}"
+		   showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*">
+	<Script>
+		<![CDATA[
+			import gadget.i18n.i18n;
+			
+		
+		private function refreshListDataGrid():void{
+			btnImportExcel.enabled = (CalculatedField.getComboDataField(cboEntitys)=="Service Request");
+			var listAll:ArrayCollection = Database.customFieldDao.selectAll(CalculatedField.getComboDataField(cboEntitys),CalculatedField.getComboDataField(cbolanguageCodes));
+			var listCustomFields:ArrayCollection = new ArrayCollection();
+			for each(var tmp:Object in listAll){
+			if(tmp.fieldType!='HeaderText'){
+			listCustomFields.addItem(tmp);
+			}
+			tmp["display_value"] = StringUtils.reduceTextLength(tmp.value, 30);	
+			}
+			fieldsGrid.dataProvider = listCustomFields;
+		}
+		]]>
+	</Script>
+	
+	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="800" height="400" right="0" bottom="0">
+		<control:TitleBar title="{i18n._('DYNAMIC_LAYOUT_MANAGMENT@Dynamic layout management')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
+		<!--mx:VBox top="40" left="0" right="0" bottom="0"-->
+		<!-- mx:Canvas width="100%" -->
+		<mx:VBox top="40" left="0" right="0" bottom="0">
+			<mx:Form paddingTop="5" paddingLeft="0" width="100%">	
+				<mx:FormItem>
+					<mx:HBox>
+						<mx:Label text="{i18n._('GLOBAL_ENTITY')}" textAlign="right" width="100" fontWeight="bold" />
+						<mx:ComboBox id="cboEntitys" dataProvider="{entityList}" labelFunction="{FieldManagmentWindow.getEntityDisplayName}" change="refreshListDataGrid()" width="160" />
+						
+					</mx:HBox>
+				</mx:FormItem>
+				<mx:FormItem paddingTop="10">
+					<mx:VBox>							
+						<mx:HBox paddingLeft="10">
+							<mx:DataGrid id="fieldsGrid" width="760"  doubleClickEnabled="true" height="230">
+								<mx:columns>
+									<mx:DataGridColumn sortable="false" width="30" dataField="batchUpdate" headerText="{i18n._('check Delete')}" itemRenderer="CheckBoxRenderer" headerRenderer="CheckBoxRenderer" rendererIsEditor="true" />
+									<mx:DataGridColumn dataField="fieldName" headerText="{i18n._('GLOBAL_FIELD_NAME')}"/>
+									<mx:DataGridColumn dataField="displayName" headerText="{i18n._('GLOBAL_DISPLAY_NAME')}"/>
+									<mx:DataGridColumn dataField="fieldType" headerText="{i18n._('GLOBAL_FIELD_TYPE')}"/>
+									<mx:DataGridColumn dataField="value" headerText="{i18n._('GLOBAL_VALUE')}">
+										<mx:itemRenderer>
+											<mx:Component>
+												<mx:HBox verticalAlign="middle" horizontalScrollPolicy="off">
+													<s:Label textAlign="left" text="{data.display_value} "/>
+												</mx:HBox>
+											</mx:Component>
+										</mx:itemRenderer>
+									</mx:DataGridColumn>
+								</mx:columns>
+							</mx:DataGrid>
+						</mx:HBox>
+						<mx:HBox paddingLeft="20">
+							<mx:Button id="btnNewField" label="{i18n._('GLOBAL_CREATE')}" click="openWindow_clickHanler(event)" right="0"/>
+							<mx:Button id="btndeleteField" label="{i18n._('GLOBAL_DELETE')}" click="btnDelete_clickHanler(event)" right="0"/>
+							<mx:Button id="btnImportExcel" label="{i18n._('GLOBAL_IMPORT_CSV')}" click="browseAndUpload()" enabled="false"/>
+						</mx:HBox>
+					</mx:VBox>						
+				</mx:FormItem>				
+			</mx:Form>
+			<mx:HBox width="95%" horizontalAlign="right">
+				<mx:Button id="closeBtn" label="{i18n._('GLOBAL_CLOSE')}" click="close()" right="0" icon="{ImageUtils.cancelIcon}"/>
+				<!-- mx:Button id="createBtn" label="{i18n._('GLOBAL_SAVE')}" click="update_clickHanler(event)" right="0" icon="{ImageUtils.acceptIcon}"/ -->
+			</mx:HBox>
+		</mx:VBox>	
+		<!--/mx:Canvas -->
+		<!--/mx:VBox -->
+	</mx:Canvas>
+</mx:Window>

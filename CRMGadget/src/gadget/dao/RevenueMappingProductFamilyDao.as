@@ -9,6 +9,7 @@ package gadget.dao
 		{
 			super(conn,work,  {
 				table: 'revenue_mapping_product_family',
+				index: ["ProductFamily"],
 				columns: { 'TEXT' : textColumns }
 			});
 		}

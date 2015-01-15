@@ -1552,6 +1552,7 @@
 				if(!create){
 					subtype = getSubtypeLayout(item);
 					subtypeActivity = subtype;
+					item.subtype = subtypeActivity;
 				}
 				
 				if(!create && (entity == Database.accountDao.entity || (entity == Database.activityDao.entity && type =='Task') )){

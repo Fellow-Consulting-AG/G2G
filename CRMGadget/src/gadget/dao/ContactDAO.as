@@ -776,6 +776,8 @@ package gadget.dao
 			"CustomText98", 
 			"CustomText99", 
 			"CustomerId", 
+			"CreatedByExt",
+			"ModifiedByExt",
 			"IndexedBoolean0", 
 			"IndexedCurrency0",
 			"IndexedDate0", 

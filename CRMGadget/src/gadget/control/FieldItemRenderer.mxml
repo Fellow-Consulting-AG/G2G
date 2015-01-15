@@ -24,6 +24,8 @@
             	if (data.custom != null) {
 					if(data.column_name.indexOf(CustomLayout.SQLLIST_CODE)>-1){
 						return 7;
+					}else if(data.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+						return 15;					
 					} else if(data.column_name.indexOf(CustomLayout.SQLFIELD_CODE)>-1){
 						return 8;
 					} else if(data.column_name.indexOf(CustomLayout.HTMLFIELD_CODE)>-1){
@@ -111,6 +113,13 @@
 				calculatedField.tempHeaderVal = textInput.text;
 				calculatedField.dataField = data;
 				WindowManager.openModal(calculatedField);
+			}
+			
+			
+			private function dynamicBlockChange(e:MouseEvent):void{
+				var blockLayout:BlockLayoutManager = new BlockLayoutManager();
+				
+				WindowManager.openModal(blockLayout);
 			}
 			
 			private function getCalculatedValue():String {
@@ -308,6 +317,11 @@
 		<mx:Canvas width="100%" height="100%">
 			<mx:HBox width="100%">
 				<mx:TextInput id='headerField' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true" editable="false" text="{getHeaderValue()}" doubleClick="initCalculatedField(event)" />
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<mx:HBox width="100%" id="dynamicblock">
+				<mx:TextInput id='block' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true" editable="false" text="{getHeaderValue()}" doubleClick="dynamicBlockChange(event)" />
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:ViewStack>

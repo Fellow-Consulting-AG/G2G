@@ -185,6 +185,7 @@ package gadget.dao {
 		private  var _sortColumnDao:SortColumnDAO;
 		private  var _revenueDao:RevenueDao;
 		private  var _revenueMappingProductFamilyDao:RevenueMappingProductFamilyDao;
+		private var _blockLayoutDao:BlockLayoutDAO;
 		
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
@@ -1651,6 +1652,7 @@ package gadget.dao {
 			_revenueMappingProductFamilyDao = new RevenueMappingProductFamilyDao(_sqlConnection, _work);
 			_templateDao=new OrderTemplate(_sqlConnection,_work);
 			_templateItemDao=new OrderTemplateItem(_sqlConnection,_work);
+			_blockLayoutDao = new BlockLayoutDAO(_sqlConnection,_work);
 			
 		}
 		
@@ -3347,5 +3349,11 @@ package gadget.dao {
 				}
 			}
 		}
+
+		public static function get blockLayoutDao():BlockLayoutDAO
+		{
+			return database._blockLayoutDao;
+		}
+
 	}
 }

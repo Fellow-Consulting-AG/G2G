@@ -186,6 +186,7 @@ package gadget.dao {
 		private  var _revenueDao:RevenueDao;
 		private  var _revenueMappingProductFamilyDao:RevenueMappingProductFamilyDao;
 		private var _blockLayoutDao:BlockLayoutDAO;
+		private var _blockDependField:BlockDependFieldDAO;
 		
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
@@ -1653,6 +1654,7 @@ package gadget.dao {
 			_templateDao=new OrderTemplate(_sqlConnection,_work);
 			_templateItemDao=new OrderTemplateItem(_sqlConnection,_work);
 			_blockLayoutDao = new BlockLayoutDAO(_sqlConnection,_work);
+			_blockDependField = new BlockDependFieldDAO(_sqlConnection,_work);
 			
 		}
 		
@@ -3354,6 +3356,12 @@ package gadget.dao {
 		{
 			return database._blockLayoutDao;
 		}
+
+		public static function get blockDependField():BlockDependFieldDAO
+		{
+			return database._blockDependField;
+		}
+
 
 	}
 }

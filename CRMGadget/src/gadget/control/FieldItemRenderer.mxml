@@ -5,6 +5,7 @@
 	    <![CDATA[
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.DAOUtils;
+			import gadget.dao.Database;
 			import gadget.dao.SQLListDAO;
 			import gadget.i18n.i18n;
 			import gadget.service.LocaleService;
@@ -24,8 +25,6 @@
             	if (data.custom != null) {
 					if(data.column_name.indexOf(CustomLayout.SQLLIST_CODE)>-1){
 						return 7;
-					}else if(data.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
-						return 15;					
 					} else if(data.column_name.indexOf(CustomLayout.SQLFIELD_CODE)>-1){
 						return 8;
 					} else if(data.column_name.indexOf(CustomLayout.HTMLFIELD_CODE)>-1){
@@ -40,7 +39,9 @@
 						return 14;
 					}
             		return 0;
-            	}
+            	}else if(data.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+					return 15;					
+				}
             	return FieldUtils.getIndexFieldItemRenderer(data);
             }
             
@@ -125,7 +126,7 @@
 			private function getCalculatedValue():String {
 				return data==null?"":data.customField==null?"":data.customField.value;
 			}
-			private function getHeaderValue():String {
+			private function getHeaderValue():String {				
 				if(data!=null && data.customField!=null){
 					var headerValue:String = CustomFieldDAO.getHeaderValue(data.customField.value);
 					if(!StringUtils.isEmpty(headerValue)){
@@ -136,6 +137,24 @@
 				return data==null?"":data.custom;
 			}
 			
+			
+			private function getBlockValue():String{
+				
+				var label:String = "";
+				if(data!=null){
+					label = data.label;
+					if(StringUtils.isEmpty(label)){
+						var gadget_id:String = data.column_name;
+						var obj:Object = Database.blockLayoutDao.getByGadgetId(gadget_id.split('_')[1]);
+						if(obj!=null){
+							label = obj.Name;
+						}
+					}
+				}
+				
+				return label;
+				
+			}
 			
 			private function dataChanged(value:Object):void {
 				if(datetimeFieldLockImage){
@@ -161,6 +180,8 @@
 					sqlField.text = data.custom;
 				}else if(sqlListField){
 					sqlListField.text = data.custom;
+				}else if(block){
+					block.text = data.label;
 				}
 			}
 			
@@ -321,7 +342,7 @@
 		</mx:Canvas>
 		<mx:Canvas width="100%" height="100%">
 			<mx:HBox width="100%" id="dynamicblock">
-				<mx:TextInput id='block' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true" editable="false" text="{getHeaderValue()}" doubleClick="dynamicBlockChange(event)" />
+				<mx:TextInput editable="false" id='block' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true"   text="{getBlockValue()}" />
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:ViewStack>

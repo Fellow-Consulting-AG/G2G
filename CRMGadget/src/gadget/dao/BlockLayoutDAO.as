@@ -17,14 +17,14 @@ package gadget.dao
 		public function BlockLayoutDAO(sqlConnection:SQLConnection, work:Function) {
 			super(sqlConnection, work, {
 				table: 'block_layout',
-				index: ["entity", "parent_field","parent_field_value","Name"],
-				unique : ["entity, parent_field, parent_field_value,Name"],
-				columns: { 'TEXT' : textColumns,'BOOLEAN':'isdefault'}
+				index: ["entity", "parent_field","Name"],
+				unique : ["entity, parent_field,Name"],
+				columns: {gadget_id: "INTEGER PRIMARY KEY AUTOINCREMENT", 'TEXT' : textColumns}
 			});
 			
 			stmtGetNameByEntity = new SQLStatement();
 			stmtGetNameByEntity.sqlConnection = sqlConnection;
-			stmtGetNameByEntity.text = "Select entity,parent_field,entity,Name from block_layout where entity=:entity group by Name";
+			stmtGetNameByEntity.text = "Select * from block_layout where entity=:entity group by Name";
 		}
 		
 		
@@ -44,13 +44,18 @@ package gadget.dao
 			exec(stmtGetNameByEntity);
 			return new ArrayCollection(stmtGetNameByEntity.getResult().data);
 		}
+		
+		public function getByGadgetId(gadget_id:String):Object{
+			var result:Array = fetch({'gadget_id':gadget_id});
+			if(result!=null && result.length>0){
+				return result[0];
+			}
+			return null;
+		}
 		private var textColumns:Array = [
 			"entity", 
 			"Name",
-			"parent_field",
-			"parent_field_value", 
-			"subfields"
-			
+			"parent_field"
 		];
 		
 	}

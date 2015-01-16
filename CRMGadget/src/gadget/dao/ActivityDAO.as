@@ -1026,8 +1026,6 @@ package gadget.dao
 			"Status",
 			"SubType",
 			"Subject",
-			"CreatedByExt",
-			"ModifiedByExt",
 			"TotalHoldTime",
 			"Type",
 			"WrapUpBeginTime",

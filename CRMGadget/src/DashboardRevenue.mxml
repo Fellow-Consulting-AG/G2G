@@ -23,6 +23,7 @@
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.lists.List;
+			import gadget.service.PicklistService;
 			import gadget.util.CurrencyUtils;
 			import gadget.util.DashboardUtils;
 			import gadget.util.DateUtils;
@@ -656,12 +657,20 @@
 					var clWon:int = 0;
 					var clLost:int = 0;
 					var open:int = 0;
+					var strClosedWon:String = "Closed/Won";
+					var strClosedLost:String = "Closed/Lost";
 					if(ls != null && ls.length>0){
+						var lngCode:String = Database.allUsersDao.ownerUser().LanguageCode;
+						if("DEU" == lngCode){
+							strClosedWon = "Abgeschlossen/Gewonnen";
+							strClosedLost = "Abgeschlossen/Verloren";
+						}
 						for each(var obj:Object in ls){
 							var val:String= obj["Revenue"];
-							if("Closed/Won" == obj["SalesStage"]){
+							var stage:String = obj["SalesStage"];//PicklistService.getValue(Database.opportunityDao.entity,"SalesStage",obj["SalesStage"],obj);
+							if(strClosedWon == stage){
 								clWon = clWon + Number(val);
-							}else if("Closed/Lost" == obj["SalesStage"]){
+							}else if(strClosedLost == stage){
 								clLost=clLost+ Number(val);
 							}else{
 								open = open + Number(val);

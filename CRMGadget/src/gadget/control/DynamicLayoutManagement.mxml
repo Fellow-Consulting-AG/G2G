@@ -2,31 +2,92 @@
 <mx:Window xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:control="gadget.control.*"
 		   resizable="false"
-		   width="800" height="400"
-		   title="{i18n._('DYNAMIC_LAYOUT_MANAGMENT@Dynamic layout management')}"
-		   showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*">
-	<Script>
-		<![CDATA[
-			import gadget.i18n.i18n;
-			
-		
-		private function refreshListDataGrid():void{
-			btnImportExcel.enabled = (CalculatedField.getComboDataField(cboEntitys)=="Service Request");
-			var listAll:ArrayCollection = Database.customFieldDao.selectAll(CalculatedField.getComboDataField(cboEntitys),CalculatedField.getComboDataField(cbolanguageCodes));
-			var listCustomFields:ArrayCollection = new ArrayCollection();
-			for each(var tmp:Object in listAll){
-			if(tmp.fieldType!='HeaderText'){
-			listCustomFields.addItem(tmp);
-			}
-			tmp["display_value"] = StringUtils.reduceTextLength(tmp.value, 30);	
-			}
-			fieldsGrid.dataProvider = listCustomFields;
-		}
-		]]>
-	</Script>
+		   width="400" height="400"
+		   title="{i18n._('DYNAMIC_BLOCK_MANAGMENT@Dynamic block management')}"
+		   showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
+		   creationComplete="init(event)"
+		   >
 	
-	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="800" height="400" right="0" bottom="0">
-		<control:TitleBar title="{i18n._('DYNAMIC_LAYOUT_MANAGMENT@Dynamic layout management')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
+	<mx:Script>
+		<![CDATA[
+			import gadget.dao.Database;
+			import gadget.i18n.i18n;
+			import gadget.service.PicklistService;
+			import gadget.sync.incoming.FieldManagementService;
+			import gadget.util.ImageUtils;
+			import gadget.util.StringUtils;
+			import gadget.window.WindowManager;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			private function refreshListDataGrid():void{
+				
+				
+				fieldsGrid.dataProvider = Database.blockLayoutDao.getAvailableName(getEntity());
+			}
+			
+			protected function init(event:FlexEvent):void
+			{
+				
+				cboEntitys.setFocus();
+				
+			}
+			
+			private function getEntity():String{
+				return CalculatedField.getComboDataField(cboEntitys);
+			}
+			
+			protected function btnCreate_clickHandler(event:MouseEvent):void
+			{
+				var blockLayout:BlockLayoutManager = new BlockLayoutManager();
+				blockLayout.item = {entity:getEntity()};
+				WindowManager.openModal(blockLayout);
+				
+			}
+			private function checkUsingField(list:ArrayCollection):Boolean{
+				var customfields:ArrayCollection = Database.layoutDao.selectCustomFields(list[0].entity);
+				for each (var cusField:Object in customfields) {
+					for each(var objDeleteF:Object in list){
+						if(cusField.element_name==objDeleteF.fieldName){
+							Alert.show(i18n._("FIELDMANAGMENTWINDOW_CAN_NOT_DELETE_THIS_FIELD") + "<" + objDeleteF.displayName + ">." + i18n._("FIELDMANAGMENTWINDOW_IT_IS_USING_IN_THE_PROJECT"),titlebar.title, Alert.OK, this);
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+			protected function btndelete_clickHandler(event:MouseEvent):void
+			{
+				var selectedList:ArrayCollection = FieldManagmentWindow.getListSelectedData(fieldsGrid);
+				if(selectedList.length>0){
+					if(checkUsingField(selectedList)) return;
+					Alert.show(i18n._('GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE'),titlebar.title, Alert.YES|Alert.NO, this, function(event:CloseEvent):void{
+						if (event.detail==Alert.YES){
+							for each(var obj:Object in selectedList){
+								Database.customFieldTranslatorDao.deleteFieldByColumnName(obj.entity,obj.column_name);
+								Database.customFieldDao.deleteCustomField(obj);
+								Database.territoryTreeDAO._delete(obj);
+								Database.depthStructureTreeDAO._delete(obj);
+								if((obj.column_name as String).indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
+									PicklistService.getPicklist(obj.entity,obj.fieldName,true,true,true);
+									PicklistService.getBindPicklist(obj.entity,obj.fieldName,true,true);
+								}
+							}
+							refreshListDataGrid();
+						}    	 
+					});
+				}else{
+					Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_RECORD'), "", Alert.OK, this);
+				}	
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
+		<control:TitleBar title="{i18n._('DYNAMIC_BLOCK_MANAGMENT@Dynamic block management')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
 		<!--mx:VBox top="40" left="0" right="0" bottom="0"-->
 		<!-- mx:Canvas width="100%" -->
 		<mx:VBox top="40" left="0" right="0" bottom="0">
@@ -34,45 +95,33 @@
 				<mx:FormItem>
 					<mx:HBox>
 						<mx:Label text="{i18n._('GLOBAL_ENTITY')}" textAlign="right" width="100" fontWeight="bold" />
-						<mx:ComboBox id="cboEntitys" dataProvider="{entityList}" labelFunction="{FieldManagmentWindow.getEntityDisplayName}" change="refreshListDataGrid()" width="160" />
+						<mx:ComboBox id="cboEntitys" dataProvider="{FieldManagmentWindow.entityList}" labelFunction="{FieldManagmentWindow.getEntityDisplayName}" change="refreshListDataGrid()" width="160" />
 						
 					</mx:HBox>
 				</mx:FormItem>
 				<mx:FormItem paddingTop="10">
 					<mx:VBox>							
 						<mx:HBox paddingLeft="10">
-							<mx:DataGrid id="fieldsGrid" width="760"  doubleClickEnabled="true" height="230">
+							<mx:DataGrid id="fieldsGrid" width="100%"  doubleClickEnabled="true" height="230">
 								<mx:columns>
 									<mx:DataGridColumn sortable="false" width="30" dataField="batchUpdate" headerText="{i18n._('check Delete')}" itemRenderer="CheckBoxRenderer" headerRenderer="CheckBoxRenderer" rendererIsEditor="true" />
-									<mx:DataGridColumn dataField="fieldName" headerText="{i18n._('GLOBAL_FIELD_NAME')}"/>
-									<mx:DataGridColumn dataField="displayName" headerText="{i18n._('GLOBAL_DISPLAY_NAME')}"/>
-									<mx:DataGridColumn dataField="fieldType" headerText="{i18n._('GLOBAL_FIELD_TYPE')}"/>
-									<mx:DataGridColumn dataField="value" headerText="{i18n._('GLOBAL_VALUE')}">
-										<mx:itemRenderer>
-											<mx:Component>
-												<mx:HBox verticalAlign="middle" horizontalScrollPolicy="off">
-													<s:Label textAlign="left" text="{data.display_value} "/>
-												</mx:HBox>
-											</mx:Component>
-										</mx:itemRenderer>
-									</mx:DataGridColumn>
+									<mx:DataGridColumn dataField="Name" width="320" headerText="{i18n._('GLOBAL_NAME@Name')}"/>									
 								</mx:columns>
 							</mx:DataGrid>
 						</mx:HBox>
-						<mx:HBox paddingLeft="20">
-							<mx:Button id="btnNewField" label="{i18n._('GLOBAL_CREATE')}" click="openWindow_clickHanler(event)" right="0"/>
-							<mx:Button id="btndeleteField" label="{i18n._('GLOBAL_DELETE')}" click="btnDelete_clickHanler(event)" right="0"/>
-							<mx:Button id="btnImportExcel" label="{i18n._('GLOBAL_IMPORT_CSV')}" click="browseAndUpload()" enabled="false"/>
+						<mx:HBox paddingLeft="20" width="100%">
+							<mx:Button id="btnNewField" label="{i18n._('GLOBAL_CREATE')}" click="btnCreate_clickHandler(event)" right="0"/>
+							<mx:Button id="btndeleteField" label="{i18n._('GLOBAL_DELETE')}" click="btndelete_clickHandler(event)" right="0"/>	
+							
+						</mx:HBox>
+						<mx:HBox width="95%" horizontalAlign="right">
+							<mx:Button id="closeBtn" label="{i18n._('GLOBAL_CLOSE')}" click="close()" right="0" icon="{ImageUtils.cancelIcon}"/>
 						</mx:HBox>
 					</mx:VBox>						
 				</mx:FormItem>				
 			</mx:Form>
-			<mx:HBox width="95%" horizontalAlign="right">
-				<mx:Button id="closeBtn" label="{i18n._('GLOBAL_CLOSE')}" click="close()" right="0" icon="{ImageUtils.cancelIcon}"/>
-				<!-- mx:Button id="createBtn" label="{i18n._('GLOBAL_SAVE')}" click="update_clickHanler(event)" right="0" icon="{ImageUtils.acceptIcon}"/ -->
-			</mx:HBox>
+			
 		</mx:VBox>	
-		<!--/mx:Canvas -->
-		<!--/mx:VBox -->
+		
 	</mx:Canvas>
 </mx:Window>

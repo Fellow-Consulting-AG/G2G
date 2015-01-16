@@ -31,6 +31,7 @@
 			import flashx.textLayout.formats.Float;
 			
 			import gadget.control.CloseableToolTip;
+			import gadget.control.DynamicLayoutManagement;
 			import gadget.dao.Database;
 			import gadget.dao.PreferencesDAO;
 			import gadget.i18n.i18n;
@@ -168,6 +169,7 @@
 			private const MAINWINDOW_SUBMENU_SIGNATURE:String = 'GLOBAL_SIGNATURE';
 			private const MAINWINDOW_SUBMENU_INITIALIZENEWDB:String = 'Initialize New DB';
 			public static const MAINWINDOW_SUBMENU_FIELDMANAGMENT:String = 'GLOBAL_CUSTOM_FIELDS_MANAGEMENT';
+			public static const DYNAMIC_BLOCK_MANAGMENT:String = 'DYNAMIC_BLOCK_MANAGMENT';
 			public static const MAINWINDOW_SUBMENU_VALIDATION_RULE:String = 'GLOBAL_VALIDATION_RULE';
 			private const MAINWINDOW_SUBMENU_REPORTS:String = 'MAINWINDOW_SUBMENU_REPORTS';
 			private const MAINWINDOW_SUBMENU_REPORTS_GROUPING_PDF:String = 'MAINWINDOW_SUBMENU_REPORTS_GROUPING_PDF';
@@ -626,6 +628,8 @@
 				
 				var fieldManagementMenuITem:Object = {data: MAINWINDOW_SUBMENU_FIELDMANAGMENT ,label:i18n._(MAINWINDOW_SUBMENU_FIELDMANAGMENT), icon:fieldManagentIcon };	
 				toolsMenuData.push(fieldManagementMenuITem);
+				var dynamicblock:Object = {data: DYNAMIC_BLOCK_MANAGMENT ,label:i18n._('DYNAMIC_BLOCK_MANAGMENT@Dynamic Block Management'), icon:fieldManagentIcon };	
+				toolsMenuData.push(dynamicblock);
 				
 				var validationRuleMenuITem:Object = {data:MAINWINDOW_SUBMENU_VALIDATION_RULE , label:i18n._(MAINWINDOW_SUBMENU_VALIDATION_RULE),icon:fieldManagentIcon};	
 				toolsMenuData.push(validationRuleMenuITem);
@@ -1867,6 +1871,7 @@
 						case MAINWINDOW_SUBMENU_VIEW_LAYOUT : openViewLayout(); break
 						//case MAINWINDOW_SUBMENU_DAILY_AGENDA : openDailyAgenda(); break;
 						case MAINWINDOW_SUBMENU_REPORT_BUILDER : openReportBuilder(); break;
+						case DYNAMIC_BLOCK_MANAGMENT : openDynamicBlockWindow(); break;
 						case GLOBAL_BIRTHDAY_LIST : openReportBirthdayList(); break;
 						case MAINWINDOW_SUBMENU_TREE_MAP : openTreeMapWindow(); break;
 						case MAINWINDOW_SUBMENU_TREE_MAP : openTreeMapWindow(); break;
@@ -1881,6 +1886,11 @@
 						case MAINWINDOW_SUBMENU_ASSESSMENT_CONFIGURATION : assessmentConfiguration(); break;
 					}
 				}
+			}
+			
+			private function openDynamicBlockWindow():void{
+				var dynamicBlock:DynamicLayoutManagement = new DynamicLayoutManagement();
+				WindowManager.openModal(dynamicBlock);
 			}
 			private function openGroupingWindow():void{
 				var goupingWindow:GroupingPDF = new GroupingPDF();

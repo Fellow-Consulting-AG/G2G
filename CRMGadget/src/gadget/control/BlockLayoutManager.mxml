@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Window xmlns:mx="http://www.adobe.com/2006/mxml"		   
 		   resizable="false"
-		   width="480" height="500"
+		   width="450" height="430"
 		   title="{i18n._('BLOCK_LAYOUT_CONFIG@Block Layout Config.')}"
 		   showFlexChrome="false" transparent="true" systemChrome="none" xmlns:control="gadget.control.*"
 		   creationComplete="init(event)"
@@ -11,14 +11,21 @@
 		<![CDATA[
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
+			import gadget.service.PicklistService;
+			import gadget.util.Utils;
+			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
 
 			[Bindable]
 			private var _selectedItems:ArrayCollection;
 			[Bindable]
 			private var _availableItems:ArrayCollection;
+			
+			public var item:Object;
+			
 			private function up_clickHandler(event:MouseEvent):void{
 				var i:int = 0;
 				var o:Object = null;
@@ -133,6 +140,21 @@
 				
 				
 			}
+			
+			private function getOnlyPicklist(entity:String):ArrayCollection{
+				var allPicklist:ArrayCollection = new ArrayCollection();
+				var data:ArrayCollection = new ArrayCollection();
+				allPicklist.addItem({label:'',data:''});
+				
+				data = Utils.getColumns(entity, true, false);
+				for each (var picklist:Object in data){
+					if(picklist.type=='Picklist' || picklist.type=='Checkbox'){
+						allPicklist.addItem(picklist);
+					}
+				}
+				
+				return allPicklist;
+			}
 			private function switchBtn_clickHandler(event:MouseEvent):void
 			{
 				var t:ArrayCollection =  _selectedItems;
@@ -144,46 +166,60 @@
 
 			protected function init(event:FlexEvent):void
 			{
-				Database.blockLayoutDao.f
+				var entity:String = item.entity;
+				var listField:ArrayCollection = getOnlyPicklist(entity);
+				cboDriving.dataProvider = listField;
+				
+				
+				txtName.setFocus();
 			}
 
+			protected function changePickList(event:ListEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			private function openMultiPicklistPopup():void{
+				var entity:String = item.entity;
+				var obj:Object = cboDriving.selectedItem;
+				var multiPicklist:Object = PicklistService.getMultiSelectPicklist(entity, obj, obj.column);
+				multiPicklist.selectedItems = listValues;
+				var multi:CustomMultiPickListPopup = new CustomMultiPickListPopup();
+				multi.picklist = multiPicklist;
+				multi.onOkMultiPicklist = onOkMultiPicklist;
+				WindowManager.openModal(multi);
+				
+			}
+			
 		]]>
 	</mx:Script>		
 	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
 		<control:TitleBar title="{i18n._('BLOCK_LAYOUT_CONFIG@Block Layout Config.')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
-		<mx:TabNavigator top="30" left="0"  width="100%" height="100%" right="00" bottom="00" change="onChangeTab(event)" id="tabstrip">
-			<mx:VBox label="{i18n._('GLOBAL_AVAILABLE@Available')}">
-				<mx:Form>
-					
-					<mx:FormItem required="true" width="100%" paddingBottom="10">						
-						<mx:Label width="180" text="{i18n._('GLOBAL_NAME@Name')}"/>
-						<mx:ComboBox width="200" id="cboAvailable" labelField="Name" />
-						<mx:HBox width="100%" horizontalAlign="right" paddingBottom="5" paddingRight="20">
-							<mx:Button name="cancel"  label="{i18n._('GLOBAL_CANCEL@Cancel')}" />
-							<mx:Button name="save"  label="{i18n._('GLOBAL_OK@Ok')}" />
-						</mx:HBox>
-					</mx:FormItem>
-				</mx:Form>
-			</mx:VBox>
-			<mx:VBox top="0" left="0" right="0" bottom="0" label="{i18n._('GLOBAL_CREATE_NEW@Create New')}">
+		
+			<mx:VBox top="30" left="0" right="0" bottom="0" label="{i18n._('GLOBAL_CREATE_NEW@Create New')}">
 				<mx:Form>
 					
 					<mx:FormItem required="true" width="100%" paddingBottom="10">
 						<mx:HBox width="100%">
-							<mx:Label width="180" text="{i18n._('GLOBAL_NAME@Name')}"/>
+							<mx:Label width="150" text="{i18n._('GLOBAL_NAME@Name')}"/>
 							<mx:TextInput id="txtName" width="200"/>
 						</mx:HBox>					
 					</mx:FormItem>		
 					<mx:FormItem required="true" width="100%" paddingBottom="10">
 						<mx:HBox width="100%">
-							<mx:Label width="180" text="{i18n._('DRIVING_PICKLIST@Driving Picklist')}"/>
-							<mx:ComboBox width="200" id="cboDriving" labelField="displayName" />
+							<mx:Label width="150" text="{i18n._('DRIVING_PICKLIST@Driving Picklist')}"/>
+							<mx:ComboBox width="200" id="cboDriving" labelField="displayName" change="changePickList(event)"/>
 						</mx:HBox>					
 					</mx:FormItem>				
 					<mx:FormItem required="true" width="100%" paddingBottom="10">
 						<mx:HBox width="100%">
-							<mx:Label width="180" text="{i18n._('GLOBAL_TYPE@Type')}"/>
+							<mx:Label width="150" text="{i18n._('GLOBAL_TYPE@Type')}"/>
 							<mx:ComboBox width="200" id="cboValue" />
+							<mx:HBox>
+								<mx:TextInput id="txtValue" visible = "true" width="150" />
+								<mx:Button id="btnOp1" click="openMultiPicklistPopup()" label="Add" visible="false" />							
+							</mx:HBox>
 						</mx:HBox>
 					</mx:FormItem>				
 					<mx:FormItem width="100%">
@@ -220,8 +256,6 @@
 				
 			</mx:VBox>
 			
-			
-		</mx:TabNavigator>
 		
 	</mx:Canvas>
 </mx:Window>

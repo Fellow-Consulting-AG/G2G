@@ -111,11 +111,11 @@
 			
 			//@TODO
 			private function checkUsingField(list:ArrayCollection):Boolean{
-				var customfields:ArrayCollection = Database.layoutDao.selectCustomFields(list[0].entity);
+				var customfields:ArrayCollection = Database.layoutDao.selectDynamicBlock(list[0].entity);
 				for each (var cusField:Object in customfields) {
 					for each(var objDeleteF:Object in list){
-						if(cusField.element_name==objDeleteF.fieldName){
-							Alert.show(i18n._("FIELDMANAGMENTWINDOW_CAN_NOT_DELETE_THIS_FIELD") + "<" + objDeleteF.displayName + ">." + i18n._("FIELDMANAGMENTWINDOW_IT_IS_USING_IN_THE_PROJECT"),titlebar.title, Alert.OK, this);
+						if(cusField.column_name==(CustomLayout.BLOCK_DYNAMIC_CODE +'_'+objDeleteF.gadget_id)){
+							Alert.show(i18n._("FIELDMANAGMENTWINDOW_CAN_NOT_DELETE_THIS_FIELD") + "<" + objDeleteF.Name + ">." + i18n._("FIELDMANAGMENTWINDOW_IT_IS_USING_IN_THE_PROJECT"),titlebar.title, Alert.OK, this);
 							return true;
 						}
 					}
@@ -136,21 +136,21 @@
 					if(checkUsingField(selectedList)) return;
 					Alert.show(i18n._('GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE'),titlebar.title, Alert.YES|Alert.NO, this, function(event:CloseEvent):void{
 						if (event.detail==Alert.YES){
-							for each(var obj:Object in selectedList){
-								Database.customFieldTranslatorDao.deleteFieldByColumnName(obj.entity,obj.column_name);
-								Database.customFieldDao.deleteCustomField(obj);
-								Database.territoryTreeDAO._delete(obj);
-								Database.depthStructureTreeDAO._delete(obj);
-								if((obj.column_name as String).indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
-									PicklistService.getPicklist(obj.entity,obj.fieldName,true,true,true);
-									PicklistService.getBindPicklist(obj.entity,obj.fieldName,true,true);
+							Database.begin();
+							try{
+								for each(var obj:Object in selectedList){
+									Database.blockLayoutDao.delete_({'gadget_id':obj.gadget_id});
+									Database.blockDependField.delete_({'parent_id':obj.gadget_id});
 								}
+								Database.commit();
+							}catch(e:Error){
+								Database.rollback();
 							}
 							refreshListDataGrid();
 						}    	 
 					});
 				}else{
-					Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_RECORD'), "", Alert.OK, this);
+					Alert.show(i18n._('GLOBAL_PLEASE_SELECtT_A_RECORD@Please select a record.'), "", Alert.OK, this);
 				}	
 				
 			}

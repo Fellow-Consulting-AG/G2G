@@ -1351,6 +1351,8 @@
 						<sql_filter_criterias/>
 						<conditions/>
 						<dailyAgendaLayouts/>
+						<layoutblocks/>
+						<blockLyoutFields/>
 					</configuration>;
 				
 				for each(var obj:Object in Database.industryDAO.getDifferenceLanguage()) {
@@ -1802,6 +1804,13 @@
 				exportReportAdmin(configXml);
 				
 				exportAssessmentScript(configXml);
+				
+				var blocklayout:Array = Database.blockLayoutDao.fetch();
+				generateXML(configXml.elements("layoutblocks"),"layoutblock",blocklayout);
+				var blockLayoutFields:Array = Database.blockDependField.fetch();
+				generateXML(configXml.elements("blockLyoutFields"),"blockLyoutField",blockLayoutFields);
+			
+					
 				
 				//export custom layout
 				if(chkListLayout.selected){		

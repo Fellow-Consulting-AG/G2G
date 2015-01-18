@@ -8,6 +8,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.protocols.dict.Dict;
 			import com.google.maps.interfaces.INavigationControl;
 			
 			import gadget.control.AutoComplete;
@@ -75,7 +76,9 @@
 			import mx.core.INavigatorContent;
 			import mx.core.UIComponent;
 			import mx.events.CalendarLayoutChangeEvent;
+			import mx.events.DropdownEvent;
 			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
 			import mx.events.NumericStepperEvent;
 			import mx.managers.DragManager;
 			import mx.managers.IFocusManagerComponent;
@@ -489,6 +492,18 @@
 				}
 			}
 			
+			
+			private function setFieldValue(newVal:String,elementName:String,rec:Object,existValue:Dictionary):void{
+				if(existValue.hasOwnProperty(elementName)){
+					if(!StringUtils.isEmpty(newVal)){
+						rec[elementName] =newVal;
+					}
+				}else{
+					rec[elementName] =newVal; 
+					existValue[elementName] = item[elementName];
+				}
+			}
+			
 			private function commit():Boolean {
 				
 				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
@@ -500,6 +515,7 @@
 				}
 				var strCreateOrUpdate:String = create ? "Create" : "Update";
 				var msgObj:Object = null;
+				var duplicateField:Dictionary = new Dictionary();
 				
 				if(isShowFeed){
 					msgObj = new Object();
@@ -513,7 +529,7 @@
 				var validatorErrorArray:Array = Validator.validateAll(validators);
 				var validatorMap:Dictionary = Database.validationDao.selectByEntityAsMap(entity);
 				for (var i:int = 0; i < fields.length; i++) {
-					if (!StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
+					if (fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE) < 0 && !StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
 						if(!fields[i].readonly){
 							FieldUtils.readValidationRule(validatorErrorArray, fields[i], entity,validatorMap);	
 						}						
@@ -529,14 +545,39 @@
 								}
 								
 							}
-							item[fieldInfo.element_name] = GUIUtils.getInputFieldValue(fields[i].component, fieldInfo);
+							var value:String = GUIUtils.getInputFieldValue(fields[i].component, fieldInfo);
+							
+							setFieldValue(value,fieldInfo.element_name,item,duplicateField);							
+							
+							
 							
 						}
 					}else if(fields[i].column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE) > -1){
 						var objCusField:Object = Database.customFieldDao.selectCustomField(entity,fields[i].column_name,LocaleService.getLanguageInfo().LanguageCode);
 						var cusFieldInfo:Object = FieldUtils.getField(entity, fields[i].column_name);	
-						if(cusFieldInfo){
-							item[objCusField.fieldName] = GUIUtils.getInputFieldValue(fields[i].component, cusFieldInfo);	
+						if(cusFieldInfo){						
+							
+							var value1:String = GUIUtils.getInputFieldValue(fields[i].component, cusFieldInfo);
+							
+							setFieldValue(value1,objCusField.fieldName,item,duplicateField);								
+							
+							
+						}
+					}else if(fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE) > -1){	//work only for standard field					
+						var column_name:String = fields[i].column_name;
+						var dynamicId:String = column_name.split('_')[1];
+						var dic:ArrayCollection = listBlock[dynamicId];
+						for each(var o:Object in dic){							
+							var objF:Object = o.fieldInfo;
+							var objC:DisplayObject = o.childObj;
+							var value2:String = GUIUtils.getInputFieldValue(objC, objF);
+							if(objF.element_name.indexOf(CustomLayout.CUSTOMFIELD_CODE) > -1){
+								var ocf:Object = Database.customFieldDao.selectCustomField(entity,objF.element_name,LocaleService.getLanguageInfo().LanguageCode);
+								setFieldValue(value2,ocf.fieldName,item,duplicateField);		
+							}else{
+								setFieldValue(value2,objF.element_name,item,duplicateField);	
+							}
+							
 						}
 					}
 				}
@@ -562,7 +603,7 @@
 				GUIUtils.calculateTotalHours(item,entity);
 				
 				
-				if(!checkAutoComplete(true)) return false;
+				if(!checkAutoComplete(true,duplicateField)) return false;
 				
 				// updateItemFields();
 				
@@ -845,11 +886,20 @@
 			public function updateItemFields():void { 
 				for (var i:int = 0; i < fields.length; i++) {
 					// if(fields[i].col>1) continue;
-					if (!StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
+					if (fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE) < 0&& !StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
 						var fieldInfo:Object = FieldUtils.getField(entity, fields[i].column_name);
 						// item[fieldInfo.element_name] = GUIUtils.getInputFieldValue(fields[i].component, fieldInfo);
 						if(fieldInfo && fieldInfo.element_name!="picture"){
 							item[fieldInfo.element_name] = GUIUtils.getInputFieldValue(fields[i].component, fieldInfo);
+						}
+					}else if(fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE) > -1){
+						var column_name:String = fields[i].column_name;
+						var dynamicId:String = column_name.split('_')[1];
+						var dic:ArrayCollection = listBlock[dynamicId];
+						for each(var o:Object in dic){							
+							var objF:Object = o.fieldInfo;
+							var objC:DisplayObject = o.childObj;
+							item[objF.element_name] = GUIUtils.getInputFieldValue(objC, objF);
 						}
 					}
 				}
@@ -860,7 +910,7 @@
 				}
 			}
 			
-			public function checkAutoComplete(alertMessage:Boolean=false):Boolean {
+			public function checkAutoComplete(alertMessage:Boolean=false,existValue:Dictionary=null):Boolean {
 				for (var i:int = 0; i < fields.length; i++) {
 					if (fields[i].component is AutoComplete) {
 						var fieldInfo:Object = FieldUtils.getField(entity, fields[i].column_name);
@@ -870,7 +920,11 @@
 						for each (var pickValue:Object in picklist) {
 							if (value.toLowerCase() == pickValue.label.toLowerCase()) {
 								(fields[i].component as AutoComplete).typedText = pickValue.label;
-								item[fieldInfo.element_name] = pickValue.data;
+								if(existValue!=null){
+									setFieldValue(pickValue.data,fieldInfo.element_name,item,existValue);
+								}else{
+									item[fieldInfo.element_name] = pickValue.data;
+								}
 								found = true; break;
 							}
 						}
@@ -1293,21 +1347,26 @@
 					innerCanvas.setStyle('bottom', 48);
 					innerCanvas.horizontalScrollPolicy = "off";
 					innerCanvas.percentHeight = 100;
+					innerCanvas.autoLayout=true;
 					var hbox:HBox = new HBox();
-					hbox.percentWidth=100;
+					hbox.percentWidth=99;
 					hbox.percentHeight=100;
+					
 					var leftForm:Form = new Form();
 					leftForm.width = 460;
 					leftForm.setStyle('paddingTop', 0);
 					leftForm.setStyle('verticalGap', 4);
+					leftForm.autoLayout=true;
 					var vRule:VRule = new VRule();
 					var rightForm:Form = new Form();
 					rightForm.width = 460;
 					rightForm.setStyle('paddingTop', 0);
 					rightForm.setStyle('verticalGap', 4);
-					
+					rightForm.autoLayout=true;
 					hbox.addChild(leftForm);
 					hbox.addChild(vRule);
+					vRule.percentHeight=99;
+					
 					hbox.addChild(rightForm);
 					innerCanvas.addChild(hbox);
 					//CRO 05.01.2011
@@ -1735,8 +1794,9 @@
 								customFields.addItem(objectCustomField2.fieldName);
 							}
 						}else if(fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
-							displayObj =createBlockLayout(fields[i]);									
-							createFieldLayout(displayObj,objHeight,i,pageIndex);
+							displayObj =createBlockLayout(fields[i]);	
+							fields[i].component= displayObj;
+							createFieldLayout(displayObj,-1,i,pageIndex);
 							
 							continue;
 						}	
@@ -1902,35 +1962,7 @@
 							(childObj as Text).text = "GBP";
 						}
 						if(childObj is HBox) {
-							var hBoxChilds:Array = (childObj as HBox).getChildren();
-							var linkButtonExclude:Array =["Website", "Send mail"];
-							for each(var o:Object in hBoxChilds) {
-								if(o is DateField) {
-									(o as DateField).addEventListener(CalendarLayoutChangeEvent.CHANGE, function(e:Event):void {
-										setTitleAsEdit();
-									});
-									if(create && item.gadget_type=="Activity" && (item.Activity=="Appointment" || item.Activity=="Call")){
-										//Bug #6021 CRO
-										//if((o as DateField).selectedDate == null)
-										//(o as DateField).selectedDate = new Date();
-									}
-								}else if(o is NumericStepper) {
-									(o as NumericStepper).addEventListener(NumericStepperEvent.CHANGE, function(e:Event):void {
-										setTitleAsEdit();
-									});
-								}else if(o is LinkButton) {
-									var linkButton:LinkButton = (o as LinkButton);
-									// don't add event mouse click on link button webstie and send mail otherwise we added
-									if(!(linkButtonExclude.indexOf(linkButton.toolTip) > -1 ? true : false))
-										linkButton.addEventListener(MouseEvent.CLICK, function(e:Event):void {
-											setTitleAsEdit();
-										});
-								}else if(o is TextInput) {
-									(o as TextInput).addEventListener(Event.CHANGE, function(e:Event):void {
-										setTitleAsEdit();
-									});
-								}
-							}
+							setModifyTitleForHBChildren(HBox(childObj));
 						}
 						
 						
@@ -2023,8 +2055,8 @@
 					if (heightMax < 70) {
 						heightMax = 70;
 					}
-					innerCanvasL[p].height = heightMax + 15;
-					vruleL[p].height = heightMax;
+//					innerCanvasL[p].height = heightMax + 15;
+//					vruleL[p].height = heightMax;
 					heightMax += 138;
 					height = heightMax>height?heightMax:height; 
 					
@@ -2052,6 +2084,38 @@
 				
 				}
 				
+				private function setModifyTitleForHBChildren(hb:HBox):void{
+					var hBoxChilds:Array = hb.getChildren();
+					var linkButtonExclude:Array =["Website", "Send mail"];
+					for each(var o:Object in hBoxChilds) {
+						if(o is DateField) {
+							(o as DateField).addEventListener(CalendarLayoutChangeEvent.CHANGE, function(e:Event):void {
+								setTitleAsEdit();
+							});
+							if(create && item.gadget_type=="Activity" && (item.Activity=="Appointment" || item.Activity=="Call")){
+								//Bug #6021 CRO
+								//if((o as DateField).selectedDate == null)
+								//(o as DateField).selectedDate = new Date();
+							}
+						}else if(o is NumericStepper) {
+							(o as NumericStepper).addEventListener(NumericStepperEvent.CHANGE, function(e:Event):void {
+								setTitleAsEdit();
+							});
+						}else if(o is LinkButton) {
+							var linkButton:LinkButton = (o as LinkButton);
+							// don't add event mouse click on link button webstie and send mail otherwise we added
+							if(!(linkButtonExclude.indexOf(linkButton.toolTip) > -1 ? true : false))
+								linkButton.addEventListener(MouseEvent.CLICK, function(e:Event):void {
+									setTitleAsEdit();
+								});
+						}else if(o is TextInput) {
+							(o as TextInput).addEventListener(Event.CHANGE, function(e:Event):void {
+								setTitleAsEdit();
+							});
+						}
+					}
+					
+				}
 				
 				private function updateFieldCopy(field_copy:String):void{
 				
@@ -2067,18 +2131,45 @@
 				
 				}
 			
-				
-				private function createDisplayObject(column_name:String):DisplayObject{
-					
+				private var listBlock:Dictionary = new Dictionary();
+				private function createDisplayObject(column_name:String,dic:ArrayCollection):DisplayObject{
+					var objHeight:int = 26;
+					var displayObject:DisplayObject =null;
 					if(column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
 						var ocf:Object = Database.customFieldDao.selectCustomField(entity,column_name,LocaleService.getLanguageInfo().LanguageCode);
 						if(ocf){
-							if(ocf.fieldType=="Formula"){//right now work only for formula field
-								return GUIUtils.getFormulaField(ocf,item,null);
+							if(ocf.fieldType=="Formula"){								
+								displayObject = GUIUtils.getFormulaField(ocf,item,null);
+								if(displayObject!=null){
+									displayObject.height = objHeight;
+								}
+								return displayObject;
+							}else if(ocf.fieldType=="Sum"){
+								var objSum:Object = new Object();								
+								objSum.sql = ocf.value;
+								objSum["entityId"] = ocf.relation_id;
+								objSum[ocf.relation_id] = item[ocf.relation_id];
+								var v:Number = Database.getDao(entity).sumFields(objSum).sumFields;							
+								
+								if(ocf.field_copy != null){  // only update field copy if no field not update
+									
+									item[ocf.field_copy] = v;
+									
+								}
+								displayObject =  GUIUtils.getSumFields(ocf.displayName, v + "" );
+								if(displayObject!=null){
+									displayObject.height = objHeight;
+								}
+								return displayObject;
+							}else{
+								item[column_name] = item[ocf.fieldName];
 							}
+							if(ocf.fieldType=="Related Picklist"){
+								ocf.fieldType ="Picklist";
+							}	
 							
 						}
-					}else{
+					}
 						var fieldInfo:Object = FieldUtils.getField(entity, column_name);
 						if(fieldInfo!=null){
 							var displayObj:BetterFormItem = new BetterFormItem();
@@ -2099,44 +2190,168 @@
 							functions._finderTreeClick = finderTreeClick;
 							functions._refreshData = refreshData;
 							var childObj:DisplayObject = GUIUtils.getInputField(create, functions, entity, item, fieldInfo,false,false,new ArrayCollection());
-							displayObj.addChild(childObj);
+							if(childObj!=null){
+								if(childObj is UIComponent){ 
+									if(childObj is HBox) {
+										setModifyTitleForHBChildren(HBox(childObj));
+									}else{
+										(childObj as UIComponent).addEventListener(Event.CHANGE, function(event:Event):void {
+											setTitleAsEdit();
+										});
+									}
+								}
+								childObj.width = 264;
+								childObj.name = column_name;
+								dic.addItem({ 'fieldInfo':fieldInfo,'childObj':childObj});
+								displayObj.addChild(childObj);
+							}
+							
+							if (childObj is TextArea) {
+								objHeight = 104;
+							}
+							if (fieldInfo.data_type == 'Picture' || fieldInfo.data_type == '{' + CustomLayout.GOOGLEMAP_CODE + '}' || fieldInfo.data_type == 'Multi-Select Picklist') {
+								objHeight = 190;
+							}
+							displayObj.height = objHeight;
 							return displayObj;
 						}
-					}
+				
 					
 					return null;
 				}
 			
-				private function createBlockLayout(field:Object):DisplayObject{
-					var column_name:String = field.column_name;
-					var dynamicId:String = column_name.split('_')[1];
-					var vbox:VBox = new VBox();
-					vbox.percentWidth = 100;
-					var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
-					var column_name:String = blockObj.parent_field;
-					var displayObj:DisplayObject = createDisplayObject(column_name);
-					if(displayObj!=null){
-						vbox.addChild(displayObj);	
-					}	
-					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 
+				public static function getListFields(dependFieldObj:Object):Array{
+					if(dependFieldObj!=null){
+						var strfField:String = dependFieldObj.fields;
+						if(!StringUtils.isEmpty(strfField)){
+							return strfField.split(',');
+						}
+					}
+					return null;
+				}
+				public static function getDefaultDependField(dependField:Object,type:String=null):Array{
+					
 					if(dependField!=null){
+						
+						var defaultObj:Array =getListFields(dependField[type]);
+						if(defaultObj!=null){
+							return defaultObj;
+						}
 						for(var v:String in dependField){
 							var dependf:Object = dependField[v];
-							if(dependf!=null && dependf.isdefault){
+							
+							if(dependf!=null){
 								var strfField:String = dependf.fields;
-								if(!StringUtils.isEmpty(strfField)){
-									for each(var f:String in strfField.split(',')){
-										displayObj = createDisplayObject(f);
-										if(displayObj!=null){
-											vbox.addChild(displayObj);	
-										}	
+								if( dependf.isdefault){
+									if(!StringUtils.isEmpty(strfField)){
+										return strfField.split(',');
+									}
+								}else{
+									if(defaultObj==null && !StringUtils.isEmpty(strfField)){
+										defaultObj = strfField.split(',');
 									}
 								}
 							}	
 						}
+						return defaultObj;
 					}
+					return new Array();
+				}
+				private function createBlockLayout(field:Object):DisplayObject{
+					var column_name:String = field.column_name;
 					
+					var dynamicId:String = column_name.split('_')[1];
+					var vbox:VBox = new VBox();
+					vbox.percentWidth = 100;
+					var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
+					var dicB:ArrayCollection = new ArrayCollection();
+					listBlock[dynamicId] = dicB;
+					column_name = blockObj.parent_field;
+					var displayObj:DisplayObject = createDisplayObject(column_name,dicB) as FormItem;
+					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 					
+					if(displayObj!=null){
+						vbox.addChild(displayObj);	
+						var childObj:DisplayObject = FormItem(displayObj).getChildAt(0);
+
+						if(childObj is ComboBox){
+							var cbo:ComboBox = childObj as ComboBox;
+							cbo.addEventListener(DropdownEvent.CLOSE,function(e:DropdownEvent):void{
+								var obj:Object = cbo.selectedItem;
+								if(obj!=null){
+									for each(var o:Object in dicB){							
+										var objF:Object = o.fieldInfo;
+										var objC:DisplayObject = o.childObj;
+										item[objF.element_name] = GUIUtils.getInputFieldValue(objC, objF);
+									}
+									var df:Object = dependField[obj.data];
+									var newfield:Array=null;
+									if(df==null){
+										newfield = getDefaultDependField(dependField,item[blockObj.parent_field]);
+									}else{
+										var strfField:String = df.fields;
+										if(!StringUtils.isEmpty(strfField)){
+											newfield =  strfField.split(',');
+										}	
+									}
+									if(newfield!=null){
+										
+											for( var i:int=vbox.getChildren().length-1;i>0;i--){
+												if(dicB.length>1){
+													dicB.removeItemAt(1);
+												}
+												vbox.removeChildAt(1);
+												//vbox.height = vbox.height-27;
+											}
+											for each(var newf:String in newfield){
+												var ndisplayObj:DisplayObject = createDisplayObject(newf,dicB);
+												if(ndisplayObj!=null){
+													//vbox.height = vbox.height+27;
+													vbox.addChild(ndisplayObj);	
+												}	
+											}
+										
+										
+										
+									}
+								}
+							});
+						}
+						
+						
+//						}else{
+//							//@TODO later
+//						}
+					}	
+					//var heightBlock:int = 27;
 					
+					if(dependField!=null){
+						var dfields:Array = getDefaultDependField(dependField,item[blockObj.parent_field]);
+						if(dfields!=null){
+							for each(var f:String in dfields){
+								displayObj = createDisplayObject(f,dicB);
+								if(displayObj!=null){
+									//heightBlock+=27;
+									vbox.addChild(displayObj);	
+								}	
+							}
+						}
+//						for(var v:String in dependField){
+//							var dependf:Object = dependField[v];
+//							if(dependf!=null && dependf.isdefault){
+//								var strfField:String = dependf.fields;
+//								if(!StringUtils.isEmpty(strfField)){
+//									for each(var f:String in strfField.split(',')){
+//										displayObj = createDisplayObject(f);
+//										if(displayObj!=null){
+//											vbox.addChild(displayObj);	
+//										}	
+//									}
+//								}
+//							}	
+//						}
+					}
+//					vbox.minHeight =heightBlock; 
+					vbox.autoLayout=true;
 					return vbox;
 				}
 				

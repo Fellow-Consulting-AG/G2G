@@ -284,7 +284,7 @@
 					}
 				}
 				var targetData:ArrayCollection = list.dataProvider as ArrayCollection;
-				for(var p:int=0;p<mainPage.length;p++){
+				for(var p:int=0;p<mainPage.getChildren().length;p++){
 					var leftPanel:ArrayCollection = leftPanelList[p];
 					var rightPanel:ArrayCollection = rightPanelList[p];					
 					// var srcData:ArrayCollection = (event.dragInitiator.owner as ListBase).dataProvider as ArrayCollection;
@@ -484,6 +484,7 @@
 						var dynamicBlockObj:Object = new Object();
 						dynamicBlockObj.label = obj.Name;
 						dynamicBlockObj.custom = null;
+						dynamicBlockObj.entity=entity;
 						dynamicBlockObj.column_name =  BLOCK_DYNAMIC_CODE+'_'+obj.gadget_id;
 						fields.addItem(dynamicBlockObj);
 					}
@@ -583,7 +584,7 @@
 			private function countFields(code:String):int {
 				code = "{"+code;	//VAHI count bugfix
 				var num:int = 0;
-				for (var p:int = 0; p < mainPage.length; p++) {
+				for (var p:int = 0; p < mainPage.getChildren().length; p++) {
 					for (var j:int = 0; j < 2; j++) {
 						var panel:ArrayCollection = (j == 0 ? leftPanelList[p] : rightPanelList[[p]]);
 						for (var i:int = 0; i < panel.length; i++) {

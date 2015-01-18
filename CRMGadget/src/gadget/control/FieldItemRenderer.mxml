@@ -48,32 +48,103 @@
             private function getValue(data:Object):String {
 				return (parentApplication as CustomLayout).item[data.column_name];            	
             }
-			
+			private function getSampleValue(field:String):String {
+				return (parentApplication as CustomLayout).item[field];            
+			}
 
             
 			private function init():void {
-				if(datetimeField && data){
-					var df:DateField = new DateField();
-					var objField:Object = FieldUtils.getField(data.entity, data.column_name);
-					if(objField){
-						df.text = objField.display_name;
-						var hr:NumericStepper = new NumericStepper();
-						var mm:NumericStepper = new NumericStepper();
-						df.enabled = false;
-						hr.enabled = false;
-						mm.enabled = false;
-						dataChanged(null);
-						datetimeField.addChild(df);
-						datetimeField.addChild(hr);
-						datetimeField.addChild(mm);
+				if( data){
+					if(datetimeField){
+						var df:DateField = new DateField();
+						var objField:Object = FieldUtils.getField(data.entity, data.column_name);
+						if(objField){
+							df.text = objField.display_name;
+							var hr:NumericStepper = new NumericStepper();
+							var mm:NumericStepper = new NumericStepper();
+							df.enabled = false;
+							hr.enabled = false;
+							mm.enabled = false;
+							dataChanged(null);
+							datetimeField.addChild(df);
+							datetimeField.addChild(hr);
+							datetimeField.addChild(mm);
+						}
+					}else if(dynamicblock && data.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+						dynamicblock.text = getBlockValue();
+//						var column_name:String = data.column_name;						
+//						var dynamicId:String = column_name.split('_')[1];
+//						var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
+//						dynamicblock.addChild(createSampleItem(blockObj.parent_field,data.entity));
+//						var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 
+//						if(dependField!=null){
+//							var dfields:Array = Detail.getDefaultDependField(dependField);
+//							if(dfields!=null){
+//								for each(var f:String in dfields){
+//									dynamicblock.addChild(createSampleItem(f,data.entity));
+//								}
+//							}
+//						}
 					}
-					
 				}
+					
+				
 				
 				this.addEventListener(FlexEvent.DATA_CHANGE, dataChanged);
 
 				
 				
+			}
+			
+			
+			private function createSampleItem(colName:String,entity:String):HBox{
+				var fieldInfo:Object = FieldUtils.getField(entity, colName);
+				var row:HBox = new HBox();
+				row.percentWidth=100;
+				row.autoLayout=true;
+				var lbl:Label;
+				if(fieldInfo==null){
+					lbl = new Label();
+					lbl.text = getSampleValue(fieldInfo.element_name);
+					row.addChild(lbl);
+					
+				}else{
+					lbl = new Label();
+					lbl.text = fieldInfo.display_name; 
+					lbl.percentWidth=30;
+					row.addChild(lbl);
+					switch (fieldInfo.data_type) {
+						case "Text (Short)":
+						case "Text (Long)":
+						case "Phone":
+						case "Number":
+						case "Currency":
+						case "Integer":
+						case "Date/Time":
+							var txt:TextInput = new TextInput();
+							txt.percentWidth=70;
+							txt.text = getSampleValue(fieldInfo.element_name);
+							txt.enabled=false;
+							row.addChild(txt);
+							break;					
+						case 'Picklist': 
+							var cbo:ComboBox = new ComboBox();
+							cbo.percentWidth=70;
+							cbo.text = getSampleValue(fieldInfo.element_name);
+							cbo.enabled=false;
+							row.addChild(cbo);
+							break;
+						case 'Checkbox': 
+							var chk:CheckBox = new CheckBox();
+							chk.enabled = false;
+							chk.percentWidth=70;
+							chk.selected = StringUtils.isTrue(getSampleValue(fieldInfo.element_name));
+							row.addChild(chk);
+							break;
+						
+					}
+				}
+				return  row;
 			}
 			
 			private function initComboRelation():void {
@@ -117,12 +188,7 @@
 			}
 			
 			
-			private function dynamicBlockChange(e:MouseEvent):void{
-				var blockLayout:BlockLayoutManager = new BlockLayoutManager();
-				
-				WindowManager.openModal(blockLayout);
-			}
-			
+		
 			private function getCalculatedValue():String {
 				return data==null?"":data.customField==null?"":data.customField.value;
 			}
@@ -180,8 +246,8 @@
 					sqlField.text = data.custom;
 				}else if(sqlListField){
 					sqlListField.text = data.custom;
-				}else if(block){
-					block.text = data.label;
+				}else if(dynamicblock){
+					dynamicblock.text = getBlockValue();
 				}
 			}
 			
@@ -341,9 +407,7 @@
 			</mx:HBox>
 		</mx:Canvas>
 		<mx:Canvas width="100%" height="100%">
-			<mx:HBox width="100%" id="dynamicblock">
-				<mx:TextInput editable="false" id='block' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true"   text="{getBlockValue()}" />
-			</mx:HBox>
+			<mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" />
 		</mx:Canvas>
 	</mx:ViewStack>
 </mx:HBox>

@@ -16,20 +16,24 @@
 			import gadget.service.PicklistService;
 			import gadget.util.FieldUtils;
 			import gadget.util.GUIUtils;
+			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
+			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			import mx.validators.StringValidator;
+			import mx.validators.Validator;
 
 			[Bindable]
 			private var _selectedItems:ArrayCollection;
 			[Bindable]
 			private var _availableItems:ArrayCollection;
-			
+			private var validators:Array =new Array();
 			public var item:Object;
 			public var posSave:Function;
 			public var isCreate:Boolean = true;
@@ -114,14 +118,33 @@
 			{
 				for each(var o:Object in items)
 				{
-					
-						if (_availableItems.getItemIndex(o) > -1){
-							_availableItems.removeItemAt(_availableItems.getItemIndex(o));
-						}
-					
+					var removeIdx:int = getIndex(o,_availableItems);
+					if (removeIdx > -1){
+						_availableItems.removeItemAt(removeIdx);
+					}
+				
 					
 				}
 			}
+			
+			private function getIndex(field:Object, listField:ArrayCollection):int {
+				for(var i:int=0;i<listField.length;i++){
+					var obj:Object = listField.getItemAt(i);
+					if(field.data==obj.data){
+						return i;
+					}else{
+						if(obj.orignal_colname!=null){
+							if(obj.orignal_colname==field.orignal_colname){
+								return i;
+							}
+						}
+					}
+				}
+				
+				return -1;
+			}
+			
+			
 			private function oneRightBtn_clickHandler(event:MouseEvent):void
 			{
 				
@@ -163,15 +186,27 @@
 			protected function refreshAvailableItems():void{
 				if(item!=null){
 					_availableItems =  Utils.getColumns(item.entity, false, true);
+					
 					var s:Sort = new Sort();
 					s.fields=[new SortField("label")];
 					_availableItems.sort= s;
+					_availableItems.filterFunction = function(element:*):Boolean{
+						return element.data != item.parent_field;
+					};
 					_availableItems.refresh();
 				}
 			}
 
 			protected function init(event:FlexEvent):void
-			{	
+			{	var stringValidator:StringValidator = new StringValidator();
+				stringValidator.property = "text";
+				stringValidator.source = txtName;
+				validators.push(stringValidator);
+				stringValidator = new StringValidator();
+				stringValidator.property = "text";
+				stringValidator.source = cboValue;
+				validators.push(stringValidator);
+				
 				loadPickListValue();
 				refreshAvailableItems();
 				if(!isCreate){
@@ -188,7 +223,11 @@
 				var result:Object = Database.blockDependField.getDependFields(parentId);
 				for each(var rec:Object in result){
 					var fields:String = rec.fields;
-					rec.fields=string2Fields(fields.split(','));
+					if(!StringUtils.isEmpty(fields)){
+						rec.fields=string2Fields(fields.split(','));
+					}else{
+						rec.fields=new ArrayCollection();
+					}
 				}
 				
 				return result;
@@ -210,8 +249,16 @@
 
 			protected function loadPickListValue():void
 			{
-				var datasource:ArrayCollection = PicklistService.getPicklist(item.entity, item.parent_field);				
+				var pick:ArrayCollection = PicklistService.getPicklist(item.entity, item.parent_field,false);				
+					var datasource:ArrayCollection = new ArrayCollection();
+					if(pick!=null && pick.length>0){
+						var firstObj:Object = pick.getItemAt(0);
+						if(firstObj.data!=''&& firstObj.label!=''){
+							datasource.addItem({data:'',label:''});
+						}
+					}
 					
+					datasource.addAll(pick);
 					var visibleCombo:Boolean = datasource.length > 1 ? true : false;
 					cboValue.visible = visibleCombo;
 					cboValue.includeInLayout=visibleCombo;
@@ -242,31 +289,54 @@
 			{
 				var parentObj:Object = null;
 				var dynamicGroup:Object = item['dynamicGroup'];
-				
-				Database.begin();
-				if(!isCreate){	
-					parentObj = item;
-					Database.blockLayoutDao.update({'Name':txtName.text},{'gadget_id':item.gadget_id});
-					Database.blockDependField.delete_({'parent_id':item.gadget_id});
-				}else{
-					Database.blockLayoutDao.insert({'entity':item.entity,'Name':txtName.text,'parent_field':item.parent_field});
-					parentObj = Database.blockLayoutDao.selectLastRecord();
-				}
-				if(dynamicGroup!=null){
-					for(var v:String in dynamicGroup){
-						var obj:Object = dynamicGroup[v];
-						if(obj!=null){
-							var objSave:Object = {'parent_field_value':v,'entity':item.entity,'isdefault':obj.isdefault,'parent_id':parentObj.gadget_id};
-							objSave.fields = fields2String(obj.fields);
-							Database.blockDependField.insert(objSave);
+				var validatorErrorArray:Array = Validator.validateAll(validators);
+				if(validatorErrorArray==null || validatorErrorArray.length<1){
+					Database.begin();
+					try{
+						if(!isCreate){	
+							parentObj = item;
+							Database.blockLayoutDao.update({'Name':txtName.text},{'gadget_id':item.gadget_id});
+							Database.blockDependField.delete_({'parent_id':item.gadget_id});
+						}else{
+							Database.blockLayoutDao.insert({'entity':item.entity,'Name':txtName.text,'parent_field':item.parent_field});
+							parentObj = Database.blockLayoutDao.selectLastRecord();
 						}
-					}	
+						if(dynamicGroup!=null){
+							for(var v:String in dynamicGroup){
+								var obj:Object = dynamicGroup[v];
+								if(obj!=null){
+									var objSave:Object = {'parent_field_value':v,'entity':item.entity,'isdefault':obj.isdefault,'parent_id':parentObj.gadget_id};
+									objSave.fields = fields2String(obj.fields);
+									Database.blockDependField.insert(objSave);
+								}
+							}	
+						}
+						Database.commit();
+					}catch(e:SQLError){
+						Database.rollback();
+					}
+					if(posSave!=null){
+						posSave(item);
+					}
+					this.close();
+				}else{
+					var errorMessageArray:Array = [];
+					for each (var err:Object in validatorErrorArray) {
+						var errField:String = ''; 
+						if (err.currentTarget) {
+							var parent:DisplayObject = err.currentTarget.source.parent; 
+							if( err.currentTarget.source is TextInput){
+								errField =i18n._('GLOBAL_NAME@Name')+ " : ";
+							}else if( err.currentTarget.source is ComboBox){
+								errField = i18n._('GLOBAL_TYPE@Type') + " : ";
+							} 
+							//							errField = FormItem(err.currentTarget.source.parent).label + " : ";
+						}
+						errorMessageArray.push(errField +Utils.getTranslatedValidation(err.message));
+					}
+				
+					Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_INVALID_FORM'), Alert.OK, this);
 				}
-				Database.commit();
-				if(posSave!=null){
-					posSave(item);
-				}
-				this.close();
 			}
 			
 			protected function fields2String(fields:ArrayCollection):String{
@@ -278,7 +348,11 @@
 						if(!first){
 							result+=',';	
 						}
-						result+=f.data;
+						if(!StringUtils.isEmpty(f.orignal_colname)){
+							result+=f.orignal_colname;
+						}else{
+							result+=f.data;
+						}
 						first = false;
 					}
 				}
@@ -291,6 +365,10 @@
 				var fields:Dictionary = new Dictionary();
 				for each(var f:Object in _availableItems){
 					fields[f.data] = f;
+					if(!StringUtils.isEmpty(f.orignal_colname)){
+						fields[f.orignal_colname] = f;
+					}
+					
 				}
 				
 				for each(var strF:String in strFields){

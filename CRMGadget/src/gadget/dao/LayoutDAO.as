@@ -77,6 +77,18 @@ package gadget.dao {
 			return customFieldlist;
 		}
 		
+		public function selectDynamicBlock(entity:String):ArrayCollection{
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity}));
+			var result:ArrayCollection = new ArrayCollection();
+			for each(var obj:Object in list){
+				if (obj.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE) > -1){
+					result.addItem(obj);
+				}
+			}
+			
+			return result;
+		}
+		
 		public function deleteLayout(entity:String, subtype:int):void{
 			Database.customFieldDao.deleteLayout(entity, subtype);
 			Database.sqlListDAO.delete_({entity_src: entity});

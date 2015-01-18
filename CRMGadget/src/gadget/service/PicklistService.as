@@ -70,11 +70,12 @@ package gadget.service
 				// CustomFieldDAO.checkBindPicklist(picklist);
 				picklist = CustomFieldDAO.checkBindPicklist(entity,field,picklist);
 			} 
-			
-			if(emptyValue) picklist.addItemAt({data:'',label:''},0);
 			cache.put(entity+ "/" + field, picklist);
+			var picks:ArrayCollection = new ArrayCollection(picklist.source);
+			if(emptyValue) picks.addItemAt({data:'',label:''},0);
 			
-			return picklist;
+			
+			return picks;
 		}
 		
 		public static function getBindPicklist(entity:String, field:String,emptyValue:Boolean=true,resetPicklist:Boolean=false):ArrayCollection {	

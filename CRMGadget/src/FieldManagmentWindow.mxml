@@ -239,7 +239,7 @@
 						}    	 
 					});
 				}else{
-					Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_RECORD'), "", Alert.OK, this);
+					Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_RECORD@Please select a record.'), "", Alert.OK, this);
 				}	
 				
 			}

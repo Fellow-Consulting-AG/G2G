@@ -836,7 +836,7 @@ package gadget.util {
 			columns.addItem({entity:field.entity, label:field.display_name, column:field.element_name, type:field.data_type });
 			}*/
 			for each( var field:Object in FieldUtils.allFields(entity,false,customField) ){
-				columns.addItem({entity:field.entity, label:field.display_name, column:field.element_name, type:field.data_type, data:field.element_name });
+				columns.addItem({entity:field.entity, label:field.display_name,orignal_colname:field.real_element_name, column:field.element_name, type:field.data_type, data:field.element_name });
 			}
 			return columns;
 		}		
@@ -2216,6 +2216,13 @@ package gadget.util {
 			dao = Database.dailyAgendaColumnLayoutDao;
 			dao.delete_all();
 			commitObjects(dao,xml.elements("dailyAgendaLayouts").children());
+			dao = Database.blockLayoutDao;
+			dao.delete_all();
+			commitObjects(dao,xml.elements("layoutblocks").children());
+			dao = Database.blockDependField;
+			dao.delete_all();
+			commitObjects(dao,xml.elements("blockLyoutFields").children());
+				
 				
 			if(reload!=null) reload();
 			

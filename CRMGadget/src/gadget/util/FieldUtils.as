@@ -819,6 +819,7 @@ package gadget.util {
 					field = new Object();
 					field.entity = tmp.entity;
 					field.element_name = changeElementName?tmp.fieldName:elementName;
+					field.real_element_name = column_name;
 					field.display_name = isCustomField?tmp.displayName:tmp.display_name;
 					field.data_type = isCustomField?tmp.fieldType:tmp.data_type;
 					if(field.data_type != null){

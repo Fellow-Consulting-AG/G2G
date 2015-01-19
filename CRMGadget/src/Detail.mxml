@@ -2245,6 +2245,8 @@
 								if( dependf.isdefault){
 									if(!StringUtils.isEmpty(strfField)){
 										return strfField.split(',');
+									}else{
+										return null;
 									}
 								}else{
 									if(defaultObj==null && !StringUtils.isEmpty(strfField)){
@@ -2293,15 +2295,18 @@
 											newfield =  strfField.split(',');
 										}	
 									}
-									if(newfield!=null){
-										
-											for( var i:int=vbox.getChildren().length-1;i>0;i--){
-												if(dicB.length>1){
-													dicB.removeItemAt(1);
-												}
-												vbox.removeChildAt(1);
-												//vbox.height = vbox.height-27;
-											}
+									
+									//remove old layout
+									for( var i:int=vbox.getChildren().length-1;i>0;i--){
+										if(dicB.length>1){
+											dicB.removeItemAt(1);
+										}
+										vbox.removeChildAt(1);
+										//vbox.height = vbox.height-27;
+									}
+									
+									if(newfield!=null){										
+										//draw new layout
 											for each(var newf:String in newfield){
 												var ndisplayObj:DisplayObject = createDisplayObject(newf,dicB);
 												if(ndisplayObj!=null){

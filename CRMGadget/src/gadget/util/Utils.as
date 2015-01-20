@@ -1086,6 +1086,15 @@ package gadget.util {
 			return 0;
 		}
 		
+		public static function getCboSelectedIndex(value:String,list:ArrayCollection):int{
+			for (var i: int = 0; i < list.length; i++) {
+				if (value == list[i].data) {
+					return i;
+				}    
+			}
+			return 0;
+		}
+		
 		public static function isCriteriaCompleted(filterCol:ComboBox, filterOper:ComboBox, filterParam:TextInput, cboFilterParam:ComboBox):Boolean {
 			var colName:String = filterCol.selectedItem.column;
 			var operator:String = filterOper.selectedItem.data;

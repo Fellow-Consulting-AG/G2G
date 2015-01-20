@@ -658,9 +658,20 @@
 				
 			}
 			
+			public function getMenuItem(id:String,menuItems:Array):Object{
+				for each(var m:Object in menuItems){
+					if(id ==m.data){
+						return m;
+					}	
+				}
+				
+				return null;
+				
+			}
+			
 			public function refreshAssessmentScript():void{
 				var enable_ass:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_ASSESSMENT_SCRIPT);
-				var lstTool:Object = toolsMenuData[10];
+				var lstTool:Object = getMenuItem(MAINWINDOW_SUBMENU_ASSESSMENT_CONFIGURATION,toolsMenuData);
 				lstTool.enabled = enable_ass;
 			}
 			
@@ -1809,9 +1820,9 @@
 			
 			private function getToolsMenuData():Array {
 				var right:Object = getRight();
-				var insertBatchItemXML:Object = toolsMenuData[5];
+				var insertBatchItemXML:Object = getMenuItem(MAINWINDOW_SUBMENU_BATCH_INSERT,toolsMenuData);//toolsMenuData[5];
 				insertBatchItemXML.enabled = right.canCreate;
-				var editBatchItemXML:Object = toolsMenuData[6];
+				var editBatchItemXML:Object = getMenuItem(MAINWINDOW_SUBMENU_BATCH_UPDATE,toolsMenuData);//toolsMenuData[6];
 				editBatchItemXML.enabled = right.canUpdate;
 				return toolsMenuData;
 			}

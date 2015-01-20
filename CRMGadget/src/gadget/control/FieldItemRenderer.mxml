@@ -408,6 +408,7 @@
 		</mx:Canvas>
 		<mx:Canvas width="100%" height="100%">
 			<mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" />
+			<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
 		</mx:Canvas>
 	</mx:ViewStack>
 </mx:HBox>

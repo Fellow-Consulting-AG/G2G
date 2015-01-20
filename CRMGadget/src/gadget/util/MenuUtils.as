@@ -472,6 +472,10 @@ package gadget.util {
 						// 1 = text input
 						if(FieldUtils.getIndexFieldItemRenderer(obj)==1){
 							maxCharMenu.@enabled = true;
+						}else if(obj.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+							maxCharMenu.@enabled = false;
+							mandatoryMenu.@enabled = false;
+							
 						}else{
 							maxCharMenu.@enabled = false;
 						}

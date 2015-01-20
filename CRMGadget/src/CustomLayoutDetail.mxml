@@ -5,6 +5,7 @@
 	width="660" height="480" resizable="false"
 	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
 	initialize="init()"
+	creationComplete="window1_creationCompleteHandler(event)"
 	>
 	
 	<mx:Script>
@@ -26,6 +27,7 @@
 			import mx.containers.FormItem;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
+			import mx.events.FlexEvent;
 			import mx.validators.StringValidator;
 			import mx.validators.Validator;
 			
@@ -202,13 +204,20 @@
 					var fieldInfo:Object = getField(listFields,condition.column_name);
 					// Get data to Combobox Value if field is picklist
 					var picklist:ArrayCollection = PicklistService.getPicklist(condition.entity, condition.column_name);
+					
+					if(condition.entity==Database.opportunityDao.entity){
+						if (condition.column_name == "SalesStage") {							
+							picklist = Utils.getSalesStage();
+						}
+					}
+					
 					var visibleCombo:Boolean = fieldInfo.type == "Picklist" && picklist.length > 1;
 					
 					if (fieldInfo.type=="Picklist" && visibleCombo) {
 						
 						fields.combo.visible = true;
 						fields.combo.dataProvider = picklist;
-						fields.combo.selectedIndex = Utils.getComboParamIndex(condition.column_name, condition.entity, condition.params);
+						fields.combo.selectedIndex = Utils.getCboSelectedIndex(condition.params,picklist);//Utils.getComboParamIndex(condition.column_name, condition.entity, condition.params);
 						disabledButtonAddPicklist(layoutOperator1.selectedItem);
 						findConditonValue(condition.params);
 						layoutValue1.text = getConditonValue("label");
@@ -524,6 +533,11 @@
 			
 			private function modifiedFieldAndLoadValue(layoutValue:TextInput, cbolayoutValue:ComboBox, objectField:Object,chkBoxValue:CheckBox):void{
 				var datasource:ArrayCollection = PicklistService.getPicklist(objectField.entity, objectField.column);
+				if(objectField.entity==Database.opportunityDao.entity){
+					if (objectField.column == "SalesStage") {							
+						datasource = Utils.getSalesStage();
+					}
+				}
 				if(objectField.type == "Checkbox"){
 					chkBoxValue.visible = true;
 					layoutValue.visible = false;
@@ -575,6 +589,11 @@
 			
 			public static function findConditonValue1(keys:String,entity:String,field:String):void{
 				var list:ArrayCollection = PicklistService.getPicklist(entity, field);
+				if(obj.entity==Database.opportunityDao.entity){
+					if (obj.column == "SalesStage") {							
+						list = Utils.getSalesStage();
+					}
+				}
 				var arr:Array = keys.split(";");
 				var map:Object = new Map();
 				for each (var tmp:Object in list){
@@ -600,6 +619,13 @@
 			private function disabledButtonAddPicklist(objSelectedOperator:Object):void{
 				var obj:Object = layoutField1.selectedItem;
 				var dataPicklist:ArrayCollection = PicklistService.getPicklist(obj.entity, obj.column);
+				
+				if(obj.entity==Database.opportunityDao.entity){
+					if (obj.column == "SalesStage") {							
+						dataPicklist = Utils.getSalesStage();
+					}
+				}
+				
 				var visibleCombo:Boolean = obj.type == "Picklist" && dataPicklist.length > 1 ? true : false;
 				if(objSelectedOperator.data=='contains' && visibleCombo){
 					cbolayoutValue1.visible = false;
@@ -748,6 +774,12 @@
 				
 				
 			}
+
+			protected function window1_creationCompleteHandler(event:FlexEvent):void
+			{
+				displayName.setFocus();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Style source="styles.css"/>

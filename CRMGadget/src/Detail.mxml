@@ -2132,7 +2132,7 @@
 				}
 			
 				private var listBlock:Dictionary = new Dictionary();
-				private function createDisplayObject(column_name:String,dic:ArrayCollection):DisplayObject{
+				private function createDisplayObject(column_name:String,readonly:Boolean,dic:ArrayCollection):DisplayObject{
 					var objHeight:int = 26;
 					var displayObject:DisplayObject =null;
 					if(column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
@@ -2189,7 +2189,7 @@
 							functions._finderAddressClick = finderAddressClick;
 							functions._finderTreeClick = finderTreeClick;
 							functions._refreshData = refreshData;
-							var childObj:DisplayObject = GUIUtils.getInputField(create, functions, entity, item, fieldInfo,false,false,new ArrayCollection());
+							var childObj:DisplayObject = GUIUtils.getInputField(create, functions, entity, item, fieldInfo,readonly);
 							if(childObj!=null){
 								if(childObj is UIComponent){ 
 									if(childObj is HBox) {
@@ -2269,7 +2269,7 @@
 					var dicB:ArrayCollection = new ArrayCollection();
 					listBlock[dynamicId] = dicB;
 					column_name = blockObj.parent_field;
-					var displayObj:DisplayObject = createDisplayObject(column_name,dicB) as FormItem;
+					var displayObj:DisplayObject = createDisplayObject(column_name,field.readonly,dicB) as FormItem;
 					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 					
 					if(displayObj!=null){
 						vbox.addChild(displayObj);	
@@ -2308,7 +2308,7 @@
 									if(newfield!=null){										
 										//draw new layout
 											for each(var newf:String in newfield){
-												var ndisplayObj:DisplayObject = createDisplayObject(newf,dicB);
+												var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB);
 												if(ndisplayObj!=null){
 													//vbox.height = vbox.height+27;
 													vbox.addChild(ndisplayObj);	
@@ -2333,7 +2333,7 @@
 						var dfields:Array = getDefaultDependField(dependField,item[blockObj.parent_field]);
 						if(dfields!=null){
 							for each(var f:String in dfields){
-								displayObj = createDisplayObject(f,dicB);
+								displayObj = createDisplayObject(f,field.readonly,dicB);
 								if(displayObj!=null){
 									//heightBlock+=27;
 									vbox.addChild(displayObj);	

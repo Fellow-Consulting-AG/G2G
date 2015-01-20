@@ -3,7 +3,8 @@
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:control="gadget.control.*"
 	resizable="false"
-	width="880" height="600"
+	width="940" height="600"
+	autoLayout="true"
 	title="{i18n._('GLOBAL_VALIDATION_RULE')}"
 	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
 	initialize="init()"
@@ -217,6 +218,11 @@
 
 			protected function window1_creationCompleteHandler(event:FlexEvent):void
 			{
+				if(Database.allUsersDao.ownerUser().LanguageCode=='DEU'){
+					this.width = 940;
+				}else{
+					this.width = 880;
+				}
 				txtRuleName.setFocus();
 			}
 
@@ -224,7 +230,7 @@
 	</mx:Script>
 	
 	<mx:Style source="styles.css"/>
-	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="880" height="595" right="0" bottom="0">
+	<mx:Canvas id="detailCanvas" horizontalScrollPolicy="off" styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0" autoLayout="true">
 		<control:TitleBar title="{i18n._('GLOBAL_VALIDATION_RULE')}" icon="@Embed(source='/assets/customize.png')" id="titlebar" y="2" x="25"/>
 		<mx:VBox top="30" left="0" right="0" bottom="0">
 			<mx:Canvas width="100%">
@@ -260,7 +266,7 @@
 								
 							</mx:VBox>
 						</mx:FormItem>						
-						<mx:FormItem paddingTop="5" id="inputExpressionITem" >
+						<mx:FormItem paddingTop="5" id="inputExpressionITem" width="100%" >
 							<mx:HBox>
 								<mx:Label text="{i18n._('GLOBAL_FIELDS')}" textAlign="right" width="100" fontWeight="bold" />
 								<mx:ComboBox id="cboEntityFields" dataProvider="{entityFeildList}" width="160" enabled="{isEditable()}"/>
@@ -268,12 +274,15 @@
 								<mx:Label text="{i18n._('GLOBAL_OPERATORS')}" textAlign="right" fontWeight="bold" />
 								<mx:ComboBox id="cboOperators" width="100" dataProvider="{CalculatedField.operatorData}" change="changeOperatorAction(event)" enabled="{isEditable()}" />
 							</mx:HBox>
-							<mx:HBox>
+							<mx:HBox width="100%">
+								<mx:HBox width="620">
+								
 								<mx:Label text="{i18n._('GLOBAL_SQL_LIST')}" textAlign="right" width="100" fontWeight="bold" />
 								<mx:ComboBox id="cboSQLList" dataProvider="{sqlFeildList}" change="changeSQLListAction(event)" width="325" enabled="{isEditable()}"/>
 								<mx:Button id="btnInsertSQLList" width="70" label="{i18n._('GLOBAL_INSERT')}" click="insertSQLList_clickHanler(event)" right="0" enabled="{isEditable()}"/>
-								<mx:Label text="{i18n._('GLOBAL_FUNCTIONS')}" fontWeight="bold" width="100" textAlign="right"/>
-								<mx:ComboBox id="cboFunctions" dataProvider="{CalculatedField.functionsData}" width="160" change="changeFunctionAction(event)" right="0" enabled="{isEditable()}"/>
+								<mx:Label text="{i18n._('GLOBAL_FUNCTIONS')}" fontWeight="bold" width="100%" textAlign="right"/>									
+								</mx:HBox>
+								<mx:ComboBox id="cboFunctions" dataProvider="{CalculatedField.functionsData}" width="100%" change="changeFunctionAction(event)" right="0" enabled="{isEditable()}"/>
 							</mx:HBox>
 						</mx:FormItem>
 						<mx:FormItem width="100%" id="expressionITem">
@@ -283,7 +292,7 @@
 										<mx:TextArea id="txtArFormula" height="200" width="520" enabled="{isEditable()}"/>
 										<mx:VBox>
 											<mx:Button id="btnInsertfunction" label="{i18n._('GLOBAL_INSERT_SELECTED_FUNCTION')}" click="insertFunction_clickHanler(event)" right="0" enabled="{isEditable()}"/>
-											<mx:TextArea id="txtArFunctionDesc" height="175" width="185" editable="false" enabled="{isEditable()}"/>
+											<mx:TextArea id="txtArFunctionDesc" height="175" width="100%" editable="false" enabled="{isEditable()}"/>
 										</mx:VBox>
 									</mx:HBox>
 									<mx:HBox paddingTop="0" paddingLeft="120">

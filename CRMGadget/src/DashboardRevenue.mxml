@@ -4,7 +4,7 @@
 	xmlns:control="gadget.control.*"
 	width="100%" height="100%" 
 	xmlns:form="gadget.form.*" 
-	initialize="initial()"
+	initialize="init()"
 	>
 	
 	<mx:Script>
@@ -153,14 +153,15 @@
 				{element_name:"lost",label:"Closed/Lost"}
 			]);
 			
-		
+			private var colDP4:ArrayCollection = null;
+			/*
 			private var colDP4:ArrayCollection = new ArrayCollection([
 				{element_name:"OwnerFullName",label:"Opportunity Owner"},{element_name:"SalesStage",label:"Sales Stage"},
 				{element_name:"CloseDate",label:"Close Date"},{element_name:"AccountName",label:"Account Name"},
 				{element_name:"OpportunityName",label:"Opportunity Name"},{element_name:"Description",label:"Opportunity Description"},
 				{element_name:"Revenue",label:"Revenue"}
 			]);
-
+			*/
 			private var labelTitle1:Label = null;
 			private var labelTitle2:Label = null;
 			private function getListButtons():ArrayCollection {
@@ -169,8 +170,22 @@
 				return buttons;
 			}
 			
-			private function initial():void {
-				layoutImportButton.setStyle("horizontalAlign","right");;
+			private function init():void {
+				layoutImportButton.setStyle("horizontalAlign","right");
+				var oppOwner:String = getDisplayName("OwnerFullName","Opportunity Owner");
+				var salesStage:String = getDisplayName("SalesStage","Sales Stage");
+				var closeDate:String = getDisplayName("CloseDate","Close Date");
+				var accountName:String = getDisplayName("AccountName","Account Name");
+				var opportunityName:String = getDisplayName("OpportunityName","Opportunity Name");
+				var description:String = getDisplayName("Description","Opportunity Description");
+				var revenue:String = getDisplayName("Revenue","Revenue");
+				colDP4 = new ArrayCollection([
+					{element_name:"OwnerFullName",label:oppOwner},{element_name:"SalesStage",label:salesStage},
+					{element_name:"CloseDate",label:closeDate},{element_name:"AccountName",label:accountName},
+					{element_name:"OpportunityName",label:opportunityName},{element_name:"Description",label:description},
+					{element_name:"Revenue",label:revenue}
+				]);
+				
 				initTab();
 				//initForm();
 			}
@@ -316,7 +331,13 @@
 				grid.percentHeight = 100;
 				return grid;
 			}
-			
+			private function getDisplayName(fieldName:String,display:String=""):String{
+				var dis:String = FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,fieldName);
+				if(dis != fieldName){
+					return dis;
+				}
+				return display;
+			}
 			private function getGridTab4():AdvancedDataGrid{
 				var grid:AdvancedDataGrid = new AdvancedDataGrid();
 				grid.percentWidth = 100;
@@ -325,13 +346,21 @@
 				renderer.properties = new Object();
 				renderer.properties["list"]= list;
 				
-				columns.push(createColumn("Opportunity Owner","OwnerFullName"));
-				columns.push(createColumn("Sales Stage","SalesStage"));
-				columns.push(createColumn("Close Date","CloseDate"));
-				columns.push(createColumn("Account Name","AccountName",renderer));
-				columns.push(createColumn("Opportunity Name","OpportunityName",renderer));
-				columns.push(createColumn("Opportunity Description","Description"));
-				columns.push(createColumnCurrency("Revenue","Revenue"));
+				var oppOwner:String = getDisplayName("OwnerFullName","Opportunity Owner");
+				var salesStage:String = getDisplayName("SalesStage","Sales Stage");
+				var closeDate:String = getDisplayName("CloseDate","Close Date");
+				var accountName:String = getDisplayName("AccountName","Account Name");
+				var opportunityName:String = getDisplayName("OpportunityName","Opportunity Name");
+				var description:String = getDisplayName("Description","Opportunity Description");
+				var revenue:String = getDisplayName("Revenue","Revenue");
+
+				columns.push(createColumn(oppOwner,"OwnerFullName"));
+				columns.push(createColumn(salesStage,"SalesStage"));
+				columns.push(createColumn(closeDate,"CloseDate"));
+				columns.push(createColumn(accountName,"AccountName",renderer));
+				columns.push(createColumn(opportunityName,"OpportunityName",renderer));
+				columns.push(createColumn(description,"Description"));
+				columns.push(createColumnCurrency(revenue,"Revenue"));
 				grid.columns = columns;
 				
 				grid.percentHeight = 100;

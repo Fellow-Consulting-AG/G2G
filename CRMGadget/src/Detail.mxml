@@ -2314,7 +2314,7 @@
 												if(addrFields!=null && newIdx<addrFields.length){
 													displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
 												}
-												var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB);
+												var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB,displayName);
 												if(ndisplayObj!=null){
 													//vbox.height = vbox.height+27;
 													vbox.addChild(ndisplayObj);	

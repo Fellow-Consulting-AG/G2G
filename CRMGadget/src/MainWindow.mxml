@@ -628,8 +628,8 @@
 				
 				var fieldManagementMenuITem:Object = {data: MAINWINDOW_SUBMENU_FIELDMANAGMENT ,label:i18n._(MAINWINDOW_SUBMENU_FIELDMANAGMENT), icon:fieldManagentIcon };	
 				toolsMenuData.push(fieldManagementMenuITem);
-				var dynamicblock:Object = {data: DYNAMIC_BLOCK_MANAGMENT ,label:i18n._('DYNAMIC_BLOCK_MANAGMENT@Dynamic Block Management'), icon:fieldManagentIcon };	
-				toolsMenuData.push(dynamicblock);
+//				var dynamicblock:Object = {data: DYNAMIC_BLOCK_MANAGMENT ,label:i18n._('DYNAMIC_BLOCK_MANAGMENT@Dynamic Block Management'), icon:fieldManagentIcon };	
+//				toolsMenuData.push(dynamicblock);
 				
 				var validationRuleMenuITem:Object = {data:MAINWINDOW_SUBMENU_VALIDATION_RULE , label:i18n._(MAINWINDOW_SUBMENU_VALIDATION_RULE),icon:fieldManagentIcon};	
 				toolsMenuData.push(validationRuleMenuITem);

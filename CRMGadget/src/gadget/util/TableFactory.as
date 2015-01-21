@@ -121,7 +121,11 @@ package gadget.util
 						cdef += " not null";
 					if (colsc.autoIncrement)
 						cdef += " autoincrement";
-					check[colsc.name]=cdef.toLowerCase();
+					try{
+						check[colsc.name]=cdef.toLowerCase();
+					}catch(e:Error){
+						trace(e.getStackTrace());
+					}
 					checklc[colsc.name.toLowerCase()]=true;
 				}
 

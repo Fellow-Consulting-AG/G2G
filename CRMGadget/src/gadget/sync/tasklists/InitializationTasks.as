@@ -17,6 +17,7 @@ package gadget.sync.tasklists {
 	import gadget.sync.incoming.IncomingUser;
 	import gadget.sync.incoming.PicklistService;
 	import gadget.sync.incoming.ReadCascadingPicklists;
+	import gadget.sync.incoming.ReadCountryService;
 	import gadget.sync.incoming.ReadPicklist;
 	import gadget.sync.incoming.RoleService;
 	import gadget.sync.task.MetadataChangeService;
@@ -61,6 +62,8 @@ package gadget.sync.tasklists {
 
 			// Picklists in this sequence, not different.
 			new ReadPicklist(),
+			
+			new ReadCountryService(),
 			
 			new CurrencyService(),
 					

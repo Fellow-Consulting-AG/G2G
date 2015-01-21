@@ -4,6 +4,9 @@ package gadget.dao
 	import flash.data.SQLStatement;
 	import flash.utils.Dictionary;
 	
+	import gadget.util.POOPS;
+	import gadget.util.Utils;
+	
 	import mx.collections.ArrayCollection;
 
 	public class BlockLayoutDAO extends SimpleTable
@@ -14,6 +17,104 @@ package gadget.dao
 		protected var stmtGetByField:SQLStatement;
 		protected var stmtGetSubField:SQLStatement;
 		protected var stmtGetallBlock:SQLStatement;
+		
+		private static const ADDRESS:String = 'address';
+		private static const ADDRESS2:String = 'address2';
+		private static const ADDRESS3:String = 'address3';
+		private static const CITY:String='city';
+		private static const COUNTY:String='county';
+		private static const STATE:String = 'state';
+		private static const ZIP:String = 'zip';
+		private static const PROVINCE:String = 'province';
+		
+		private static const FIELDS:Object ={
+			address:{'Main':'PrimaryBillToStreetAddress','Shipping':'PrimaryShipToStreetAddress','Contact Address':'AlternateAddress1','Main Address':'PrimaryAddress'},
+			address2:{'Main':'PrimaryBillToStreetAddress2','Shipping':'PrimaryShipToStreetAddress2','Contact Address':'AlternateAddress2','Main Address':'PrimaryStreetAddress2'},
+			address3:{'Main':'PrimaryBillToStreetAddress3','Shipping':'PrimaryShipToStreetAddress3','Contact Address':'AlternateAddress3','Main Address':'PrimaryStreetAddress3'},
+			city:{'Main':'PrimaryBillToCity','Shipping':'PrimaryShipToCity','Contact Address':'AlternateCity','Main Address':'PrimaryCity'},
+			county:{'Main':'PrimaryBillToCounty','Shipping':'PrimaryShipToCounty','Contact Address':'AlternateCounty','Main Address':'PrimaryCounty'},
+			state:{'Main':'PrimaryBillToState','Shipping':'PrimaryShipToState','Contact Address':'AlternateStateProvince','Main Address':'PrimaryStateProvince'},
+			zip:{'Main':'PrimaryBillToPostalCode','Shipping':'PrimaryShipToPostalCode','Contact Address':'AlternateZipCode','Main Address':'PrimaryZipCode'},
+			province:{'Main':'PrimaryBillToProvince','Shipping':'PrimaryShipToProvince','Contact Address':'AlternateProvince','Main Address':'PrimaryProvince'}
+		};
+		
+		private static const DYNAMIC_GROUP:Object ={
+			DEFAULT:[ADDRESS,ADDRESS2,ZIP,CITY],
+			Germany:[ADDRESS,ADDRESS2,ZIP,CITY],
+			Netherlands:[ADDRESS,ADDRESS2,ZIP,CITY],
+			Sweden:[ADDRESS,ADDRESS2,ZIP,CITY],
+			Switzerland:[ADDRESS,ADDRESS2,ZIP,CITY],
+			USA:[ADDRESS,ADDRESS2,ADDRESS3,CITY,COUNTY,STATE,ZIP],
+			'United Kingdom':[ADDRESS,ADDRESS2,ADDRESS3,CITY,COUNTY,ZIP],
+			'France':[ADDRESS,ADDRESS2,ZIP,CITY,COUNTY],
+			China:[ADDRESS,ADDRESS2,ADDRESS3,PROVINCE,CITY,ZIP],
+			'Spain':[ADDRESS,ADDRESS2,ADDRESS3,ZIP,CITY,PROVINCE],
+			'Italy':[ADDRESS,ADDRESS2,ZIP,CITY,PROVINCE],
+			'Japan':[ADDRESS,ADDRESS2,CITY,PROVINCE,ZIP],
+			'Portugal':[ADDRESS,ADDRESS2,ADDRESS3,ZIP,CITY],
+			'Russian Federation':[ZIP,CITY,COUNTY,ADDRESS,ADDRESS2],
+			'Poland':[ADDRESS,ZIP,CITY],
+			'Denmark':[ADDRESS,ADDRESS2,ZIP,CITY,COUNTY],
+			'Belgium':[ADDRESS,ADDRESS2,ZIP,CITY,COUNTY],
+			'New Zealand':[ADDRESS,ADDRESS2,ADDRESS3,CITY,ZIP],
+			'Mexico':[ADDRESS,ADDRESS2,ADDRESS3,COUNTY,ZIP,CITY,STATE],
+			'Australia':[ADDRESS,ADDRESS2,CITY,STATE,ZIP],
+			'India':[ADDRESS,ADDRESS2,CITY,STATE,ZIP],
+			Brazil:[ADDRESS,ADDRESS2,ADDRESS3,ZIP,CITY,STATE]
+		};
+		
+		
+		private static const DEFAULT_BLOCK:Array = [
+			{entity:'Account',parent_field:'PrimaryBillToCountry',Name:'Main'},			
+			{entity:'Account',parent_field:'PrimaryShipToCountry',Name:'Shipping'},
+			{entity:'Contact',parent_field:'AlternateCountry',Name:'Contact Address'},
+			{entity:'Contact',parent_field:'PrimaryCountry',Name:'Main Address'}			
+			
+		];
+		
+		protected function buildField(blockName:String,fields:Array):String{
+			var strFields:String = '';
+			var first:Boolean = true;
+			for each(var f:String in fields){
+				if(!first){
+					strFields+=',';
+				}
+				var objF:Object = FIELDS[f];
+				strFields+=objF[blockName];
+				first = false;
+			}
+			return strFields;
+		}
+		
+		public function checkAddressBlock():void{
+			var appInfo:Object = Utils.getAppInfo();
+			var deleteOld:Boolean = false;
+			try{
+				var vnr:Number = parseFloat(appInfo.version);
+				deleteOld = (vnr<1.441||this.countRecord()<1);
+			}catch(e:Error){
+				deleteOld = true;
+			}
+			
+			if(deleteOld){
+				delete_all();
+				Database.blockDependField.delete_all();
+				for each(var block:Object in DEFAULT_BLOCK){
+					block.addressfield='country';
+					insert(block);
+					var lastRecord:Object = selectLastRecord();
+					for(var val:String in DYNAMIC_GROUP){
+						var dependFields:Array = DYNAMIC_GROUP[val] as Array;
+						var objSave:Object = {'parent_field_value':val,'entity':lastRecord.entity,'isdefault':('DEFAULT'==val),'parent_id':lastRecord.gadget_id};
+						objSave.fields = buildField(lastRecord.Name,dependFields);
+						objSave.addressfields= dependFields.join(',');
+						Database.blockDependField.insert(objSave);
+					}
+				}
+			}
+			
+		}
+		
 		public function BlockLayoutDAO(sqlConnection:SQLConnection, work:Function) {
 			super(sqlConnection, work, {
 				table: 'block_layout',
@@ -28,16 +129,7 @@ package gadget.dao
 		}
 		
 		
-		public function getSubFields(entity:String,parent_field:String,parent_field_value:String):String{
-			return null;
-		}
-		public function getAllBlock(entity:String):Dictionary{
-			return null;
-		}
 		
-		public function getBlockByField(entity:String,parentField:String):Dictionary{
-			return null;
-		}
 		
 		public function getAvailableName(entity:String):ArrayCollection{
 			stmtGetNameByEntity.parameters[":entity"]=entity;
@@ -55,7 +147,8 @@ package gadget.dao
 		private var textColumns:Array = [
 			"entity", 
 			"Name",
-			"parent_field"
+			"parent_field",
+			'addressfield'			
 		];
 		
 	}

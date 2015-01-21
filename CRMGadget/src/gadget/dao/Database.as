@@ -44,6 +44,7 @@ package gadget.dao {
 	import flash.errors.SQLError;
 	import flash.filesystem.File;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	
 	import gadget.i18n.i18n;
 	import gadget.service.LocaleService;
@@ -130,7 +131,7 @@ package gadget.dao {
 		private var _accountCustomObject3Dao:AccountCustomObject3DAO;
 		private var _accountCustomObject4Dao:AccountCustomObject4DAO;
 		private var _accountCustomObject10Dao:AccountCustomObject10DAO;
-		private var _accountObjectiveDao:AccountObjectiveDAO;
+//		private var _accountObjectiveDao:AccountObjectiveDAO;
 		private var _accountServiceRequestDao:AccountServiceRequestDAO;
 		private var _contactOpportunityDao:ContactOpportunityDAO;
 		private var _incomingSyncHistoryDao:IncomingSyncHistoryDAO;
@@ -187,6 +188,8 @@ package gadget.dao {
 		private  var _revenueMappingProductFamilyDao:RevenueMappingProductFamilyDao;
 		private var _blockLayoutDao:BlockLayoutDAO;
 		private var _blockDependField:BlockDependFieldDAO;
+		private var _countryDao:CountryDao;
+		private var _addressfieldtranslatorDao:AddressFieldTranslatorDAO;
 		
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
@@ -255,11 +258,11 @@ package gadget.dao {
 			return database._accountCustomObject10Dao;
 		}
 		
-		public static function get accountObjectiveDao():AccountObjectiveDAO
-		{
-			return database._accountObjectiveDao;
-		}
-		
+//		public static function get accountObjectiveDao():AccountObjectiveDAO
+//		{
+//			return database._accountObjectiveDao;
+//		}
+//		
 		public static function get accountOpportunityDao():AccountOpportunityDAO
 		{
 			return database._accountOpportunityDao;
@@ -1553,7 +1556,7 @@ package gadget.dao {
 			_dashboardFilterDAO = new DashboardFilterDAO(_sqlConnection, _work);
 			_reportAdminDao = new ReportAdminDAO(_sqlConnection, _work);
 			_reportAdminChildDao = new ReportAdminChildDAO(_sqlConnection, _work);
-			_accountObjectiveDao = new AccountObjectiveDAO( _work,_sqlConnection);
+//			_accountObjectiveDao = new AccountObjectiveDAO( _work,_sqlConnection);
 			_accountOpportunityDao = new AccountOpportunityDAO(_sqlConnection,_work);
 			_accountCustomObject2Dao = new AccountCustomObject2DAO(_sqlConnection,_work);
 			_accountCustomObject3Dao = new AccountCustomObject3DAO(_sqlConnection,_work);
@@ -1655,6 +1658,8 @@ package gadget.dao {
 			_templateItemDao=new OrderTemplateItem(_sqlConnection,_work);
 			_blockLayoutDao = new BlockLayoutDAO(_sqlConnection,_work);
 			_blockDependField = new BlockDependFieldDAO(_sqlConnection,_work);
+			_countryDao = new CountryDao(_sqlConnection,_work);
+			_addressfieldtranslatorDao = new AddressFieldTranslatorDAO(_sqlConnection,_work);
 			
 		}
 		
@@ -1934,12 +1939,277 @@ package gadget.dao {
 				
 				YcheckFeeds();
 				YcheckSubTransaction();				
-				
-				
+				YCheckCountry();
+				blockLayoutDao.checkAddressBlock();
+				addressfieldtranslatorDao.init();
 				commit();
 				
 			});
 			
+		}
+		private static const DEFAULT_COUNTRY:Object={
+			"Afghanistan":"Afghanistan",
+			"Aland Islands":"Aland Islands",
+			"Albania":"Albania",
+			"Algeria":"Algeria",
+			"American Samoa":"American Samoa",
+			"Andorra":"Andorra",
+			"Angola":"Angola",
+			"Anguilla":"Anguilla",
+			"Antigua and Barbuda":"Antigua and Barbuda",
+			"Argentina":"Argentina",
+			"Armenia":"Armenia",
+			"Aruba":"Aruba",
+			"Ascension Island":"Ascension Island",
+			"Australia":"Australia",
+			"Austria":"Austria",
+			"Azerbaijan":"Azerbaijan",
+			"Bahamas":"Bahamas",
+			"Bahrain":"Bahrain",
+			"Bangladesh":"Bangladesh",
+			"Barbados":"Barbados",
+			"Belarus":"Belarus",
+			"Belgium":"Belgium",
+			"Belize":"Belize",
+			"Benin":"Benin",
+			"Bermuda":"Bermuda",
+			"Bhutan":"Bhutan",
+			"Bolivia":"Bolivia",
+			"Bonaire, Sint Eustatius & Saba":"Bonaire, Sint Eustatius & Saba",
+			"Bosnia and Herzegovina":"Bosnia and Herzegovina",
+			"Botswana":"Botswana",
+			"Bouvet Island":"Bouvet Island",
+			"Brazil":"Brazil",
+			"British Indian Ocean Territory":"British Indian Ocean Territory",
+			"Brunei Darussalam":"Brunei Darussalam",
+			"Bulgaria":"Bulgaria",
+			"Burkina Faso":"Burkina Faso",
+			"Burundi":"Burundi",
+			"Cambodia":"Cambodia",
+			"Cameroon":"Cameroon",
+			"Canada":"Canada",
+			"Cape Verde":"Cape Verde",
+			"Cayman Islands":"Cayman Islands",
+			"Central African Republic":"Central African Republic",
+			"Chad":"Chad",
+			"Channel Islands":"Channel Islands",
+			"Chile":"Chile",
+			"China":"China",
+			"Christmas Island":"Christmas Island",
+			"Cocos (Keeling) Islands":"Cocos (Keeling) Islands",
+			"Colombia":"Colombia",
+			"Comoros":"Comoros",
+			"Congo":"Congo",
+			"Congo, Democratic Republic of":"Congo, Democratic Republic of",
+			"Cook Islands":"Cook Islands",
+			"Costa Rica":"Costa Rica",
+			"Croatia":"Croatia",
+			"Cuba":"Cuba",
+			"Curacao":"Curacao",
+			"Cyprus":"Cyprus",
+			"Czech Republic":"Czech Republic",
+			"Denmark":"Denmark",
+			"Djibouti":"Djibouti",
+			"Dominica":"Dominica",
+			"Dominican Republic":"Dominican Republic",
+			"East Timor":"East Timor",
+			"Ecuador":"Ecuador",
+			"Egypt":"Egypt",
+			"El Salvador":"El Salvador",
+			"Equatorial Guinea":"Equatorial Guinea",
+			"Eritrea":"Eritrea",
+			"Estonia":"Estonia",
+			"Ethiopia":"Ethiopia",
+			"Falkland Islands (Malvinas)":"Falkland Islands (Malvinas)",
+			"Faroe Islands":"Faroe Islands",
+			"Fiji":"Fiji",
+			"Finland":"Finland",
+			"France":"France",
+			"French Guiana":"French Guiana",
+			"French Polynesia":"French Polynesia",
+			"French Southern Territories":"French Southern Territories",
+			"Gabon":"Gabon",
+			"Gambia":"Gambia",
+			"Georgia":"Georgia",
+			"Germany":"Germany",
+			"Ghana":"Ghana",
+			"Gibraltar":"Gibraltar",
+			"Greece":"Greece",
+			"Greenland":"Greenland",
+			"Grenada":"Grenada",
+			"Guadeloupe":"Guadeloupe",
+			"Guam":"Guam",
+			"Guatemala":"Guatemala",
+			"Guernsey":"Guernsey",
+			"Guinea":"Guinea",
+			"Guinea-Bissau":"Guinea-Bissau",
+			"Guyana":"Guyana",
+			"Haiti":"Haiti",
+			"Heard and McDonald Islands":"Heard and McDonald Islands",
+			"Holy See / Vatican City":"Holy See / Vatican City",
+			"Honduras":"Honduras",
+			"Hong Kong":"Hong Kong",
+			"Hungary":"Hungary",
+			"Iceland":"Iceland",
+			"India":"India",
+			"Indonesia":"Indonesia",
+			"Iran":"Iran",
+			"Iraq":"Iraq",
+			"Ireland":"Ireland",
+			"Isle of Man":"Isle of Man",
+			"Israel":"Israel",
+			"Italy":"Italy",
+			"Ivory Coast":"Ivory Coast",
+			"Jamaica":"Jamaica",
+			"Japan":"Japan",
+			"Jersey":"Jersey",
+			"Jordan":"Jordan",
+			"Kazakhstan":"Kazakhstan",
+			"Kenya":"Kenya",
+			"Kiribati":"Kiribati",
+			"Korea":"Korea",
+			"Korea, Democratic People's Rep":"Korea, Democratic People's Rep",
+			"Kosovo":"Kosovo",
+			"Kuwait":"Kuwait",
+			"Kyrgyzstan":"Kyrgyzstan",
+			"Laos":"Laos",
+			"Latvia":"Latvia",
+			"Lebanon":"Lebanon",
+			"Lesotho":"Lesotho",
+			"Liberia":"Liberia",
+			"Libya":"Libya",
+			"Liechtenstein":"Liechtenstein",
+			"Lithuania":"Lithuania",
+			"Luxembourg":"Luxembourg",
+			"Macau":"Macau",
+			"Macedonia":"Macedonia",
+			"Madagascar":"Madagascar",
+			"Malawi":"Malawi",
+			"Malaysia":"Malaysia",
+			"Maldives":"Maldives",
+			"Mali":"Mali",
+			"Malta":"Malta",
+			"Marshall Islands":"Marshall Islands",
+			"Martinique":"Martinique",
+			"Mauritania":"Mauritania",
+			"Mauritius":"Mauritius",
+			"Mayotte":"Mayotte",
+			"Mexico":"Mexico",
+			"Micronesia":"Micronesia",
+			"Moldova, Republic of":"Moldova, Republic of",
+			"Monaco":"Monaco",
+			"Mongolia":"Mongolia",
+			"Montenegro":"Montenegro",
+			"Montserrat":"Montserrat",
+			"Morocco":"Morocco",
+			"Mozambique":"Mozambique",
+			"Myanmar":"Myanmar",
+			"Namibia":"Namibia",
+			"Nauru":"Nauru",
+			"Nepal":"Nepal",
+			"Netherlands":"Netherlands",
+			"Netherlands Antilles":"Netherlands Antilles",
+			"New Caledonia":"New Caledonia",
+			"New Zealand":"New Zealand",
+			"Nicaragua":"Nicaragua",
+			"Niger":"Niger",
+			"Nigeria":"Nigeria",
+			"Niue":"Niue",
+			"Norfolk Island":"Norfolk Island",
+			"Northern Mariana Islands":"Northern Mariana Islands",
+			"Norway":"Norway",
+			"Oman":"Oman",
+			"Pakistan":"Pakistan",
+			"Palau":"Palau",
+			"Palestinian Authority":"Palestinian Authority",
+			"Panama":"Panama",
+			"Papua New Guinea":"Papua New Guinea",
+			"Paraguay":"Paraguay",
+			"Peru":"Peru",
+			"Philippines":"Philippines",
+			"Pitcairn Islands":"Pitcairn Islands",
+			"Poland":"Poland",
+			"Portugal":"Portugal",
+			"Puerto Rico":"Puerto Rico",
+			"Qatar":"Qatar",
+			"Reunion":"Reunion",
+			"Romania":"Romania",
+			"Russian Federation":"Russian Federation",
+			"Rwanda":"Rwanda",
+			"Samoa":"Samoa",
+			"San Marino":"San Marino",
+			"Sao Tome and Principe":"Sao Tome and Principe",
+			"Saudi Arabia":"Saudi Arabia",
+			"Senegal":"Senegal",
+			"Serbia":"Serbia",
+			"Seychelles":"Seychelles",
+			"Sierra Leone":"Sierra Leone",
+			"Singapore":"Singapore",
+			"Sint Maarten":"Sint Maarten",
+			"Slovakia":"Slovakia",
+			"Slovenia":"Slovenia",
+			"Solomon Islands":"Solomon Islands",
+			"Somalia":"Somalia",
+			"South Africa":"South Africa",
+			"South Georgia/South Sandwich":"South Georgia/South Sandwich",
+			"South Sudan":"South Sudan",
+			"Spain":"Spain",
+			"Sri Lanka":"Sri Lanka",
+			"St. Barts":"St. Barts",
+			"St. Helena":"St. Helena",
+			"St. Kitts and Nevis":"St. Kitts and Nevis",
+			"St. Lucia":"St. Lucia",
+			"St. Martin":"St. Martin",
+			"St. Pierre and Miquelon":"St. Pierre and Miquelon",
+			"St. Vincent and Grenadines":"St. Vincent and Grenadines",
+			"Sudan":"Sudan",
+			"Suriname":"Suriname",
+			"Svalbard and Jan Mayen Islands":"Svalbard and Jan Mayen Islands",
+			"Swaziland":"Swaziland",
+			"Sweden":"Sweden",
+			"Switzerland":"Switzerland",
+			"Syrian Arab Republic":"Syrian Arab Republic",
+			"Taiwan":"Taiwan",
+			"Tajikistan":"Tajikistan",
+			"Tanzania, United Republic of":"Tanzania, United Republic of",
+			"Thailand":"Thailand",
+			"Togo":"Togo",
+			"Tokelau":"Tokelau",
+			"Tonga":"Tonga",
+			"Trinidad and Tobago":"Trinidad and Tobago",
+			"Tunisia":"Tunisia",
+			"Turkey":"Turkey",
+			"Turkmenistan":"Turkmenistan",
+			"Turks and Caicos Islands":"Turks and Caicos Islands",
+			"Tuvalu":"Tuvalu",
+			"US Minor Outlying Islands":"US Minor Outlying Islands",
+			"USA":"USA",
+			"Uganda":"Uganda",
+			"Ukraine":"Ukraine",
+			"United Arab Emirates":"United Arab Emirates",
+			"United Kingdom":"United Kingdom",
+			"Uruguay":"Uruguay",
+			"Uzbekistan":"Uzbekistan",
+			"Vanuatu":"Vanuatu",
+			"Venezuela":"Venezuela",
+			"Vietnam":"Vietnam",
+			"Virgin Islands (British)":"Virgin Islands (British)",
+			"Virgin Islands (U.S.)":"Virgin Islands (U.S.)",
+			"Wallis and Futuna Islands":"Wallis and Futuna Islands",
+			"Western Sahara":"Western Sahara",
+			"Yemen":"Yemen",
+			"Zambia":"Zambia",
+			"Zimbabwe":"Zimbabwe"
+		
+		};
+		
+		private function YCheckCountry():void{
+			if(countryDao.countRecord()<1){
+				//initial country
+				for(var code:String in DEFAULT_COUNTRY){
+					countryDao.insert({'code':code,'displayname':DEFAULT_COUNTRY[code],'distance':'imperial'});
+				}
+			}
 		}
 		
 		private function YcheckPicklist_Service(sqlConnection:SQLConnection):void {			
@@ -2443,8 +2713,36 @@ package gadget.dao {
 		}
 		
 		public static function checkField(entity:String, field:String):Boolean {
-			return database.checkFieldInternal(entity, field);
+			var result:Boolean =  database.checkFieldInternal(entity, field);
+			if(!result){//try to add new col
+				result = database.addMissingCol(entity,field);	
+			}
+			
+			return result;
 		}  
+		
+		
+		private  function addMissingCol(entity:String,field:String):Boolean{
+			try{
+				var tableName:String = DAOUtils.getTable(entity);
+				if(!StringUtils.isEmpty(field) && !StringUtils.isEmpty(tableName)){
+					
+					var sql:String = "ALTER TABLE "+tableName+" ADD COLUMN "+field+" TEXT";
+					var stmtAddCol:SQLStatement = new SQLStatement();
+					stmtAddCol.sqlConnection = _sqlConnection;
+					stmtAddCol.text = sql;
+					exec(stmtAddCol);
+					return true;
+				}
+			}catch(sqlE:SQLError){
+				return true;
+			}			
+			catch(e:Error){
+				return false;
+			}
+			
+			return false;
+		}
 		
 		//VAHI moved the recreation code into this own area
 		// Note that in a distant future this all will go into the DAOs, but not today.
@@ -3360,6 +3658,16 @@ package gadget.dao {
 		public static function get blockDependField():BlockDependFieldDAO
 		{
 			return database._blockDependField;
+		}
+
+		public static function get countryDao():CountryDao
+		{
+			return database._countryDao;
+		}
+
+		public static function get addressfieldtranslatorDao():AddressFieldTranslatorDAO
+		{
+			return database._addressfieldtranslatorDao;
 		}
 
 

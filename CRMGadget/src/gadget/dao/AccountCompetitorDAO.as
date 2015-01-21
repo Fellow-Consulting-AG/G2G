@@ -20,7 +20,7 @@ package gadget.dao
 				,{
 					record_type:"AccountCompetitor",
 					unique:['Id'],
-					clean_table:true,
+					clean_table:false,
 					must_drop :false,
 					name_column:["CompetitorName"],
 					search_columns:["CompetitorName"],

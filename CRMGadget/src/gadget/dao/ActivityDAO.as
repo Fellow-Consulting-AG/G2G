@@ -362,6 +362,8 @@ package gadget.dao
 				"ms_id",
 				"ms_change_key",
 				"ms_local_change",
+				"ModifiedByExt",
+				"CreatedByExt",
 				"SmartCall"
 				]);
 			
@@ -1027,7 +1029,7 @@ package gadget.dao
 			"SubType",
 			"Subject",
 			"TotalHoldTime",
-			"Type",
+			"Type",			
 			"WrapUpBeginTime",
 			"WrapUpEndTime",
 			"WrapUpTime",

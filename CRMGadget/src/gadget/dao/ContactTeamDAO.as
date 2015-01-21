@@ -17,7 +17,7 @@ package gadget.dao
 				,{
 					record_type:"Contact Team",
 					unique:['ContactId,UserId','Id'],
-					clean_table:true,
+					clean_table:false,
 					name_column:["UserLastName"],
 					search_columns:["UserLastName"],
 					oracle_id:"Id",		//VAHI's not so evil kludge

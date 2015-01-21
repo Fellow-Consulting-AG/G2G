@@ -19,7 +19,7 @@ package gadget.dao
 				,{
 					record_type:"OpportunityPartner",
 					unique:['Id'],
-					clean_table:true,
+					clean_table:false,
 					must_drop :false,
 					name_column:["PartnerName"],
 					search_columns:["PartnerName"],

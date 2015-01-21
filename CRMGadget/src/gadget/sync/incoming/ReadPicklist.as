@@ -2,6 +2,7 @@ package gadget.sync.incoming
 {
 	import flash.utils.Dictionary;
 	
+	import gadget.dao.BaseDAO;
 	import gadget.dao.Database;
 	import gadget.dao.PicklistDAO;
 	import gadget.dao.SupportDAO;
@@ -12,8 +13,8 @@ package gadget.sync.incoming
 	
 	public class ReadPicklist extends SyncTask {
 		
-		private var ns1:Namespace = new Namespace("urn:crmondemand/ws/picklist/");
-		private var ns2:Namespace = new Namespace("urn:/crmondemand/xml/picklist");
+		protected var ns1:Namespace = new Namespace("urn:crmondemand/ws/picklist/");
+		protected var ns2:Namespace = new Namespace("urn:/crmondemand/xml/picklist");
 		
 		
 		private var allPicklists:ArrayCollection = null;
@@ -110,7 +111,7 @@ package gadget.sync.incoming
 			nextPage(currentPicklist == allPicklists.length);
 			return true;
 		}
-
+		
 		override protected function handleResponse(request:XML, result:XML):int {
 			if (getFailed()) {
 				return 0;

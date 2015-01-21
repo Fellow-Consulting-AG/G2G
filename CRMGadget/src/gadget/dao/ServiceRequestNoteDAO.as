@@ -15,8 +15,8 @@ package gadget.dao
 				,{
 					table:'services_note',
 					unique:['Id'],
-					clean_table:true,
-					must_drop :true,
+					clean_table:false,
+					must_drop :false,
 					name_column:["Subject"],
 					search_columns:["Subject"],
 					oracle_id:"Id",		//VAHI's not so evil kludge

@@ -20,7 +20,7 @@ package gadget.dao
 				,{
 					record_type:"Call SampDrop",
 					unique:['Id'],
-					clean_table:true,
+					clean_table:false,
 					must_drop :false,
 					name_column:["Sample"],
 					search_columns:["Sample"],

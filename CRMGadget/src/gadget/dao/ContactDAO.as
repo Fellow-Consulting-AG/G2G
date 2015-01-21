@@ -168,7 +168,9 @@ package gadget.dao
 					"facebook",
 					"linkedin",			
 					"ReferredByFirstName",
-					"ReferredByFullName",					
+					"ReferredByFullName",
+					"ModifiedByExt",
+					"CreatedByExt",
 					"ReferredByLastName",
 				]);
 		private var textColumns:Array = [
@@ -778,7 +780,7 @@ package gadget.dao
 			"CustomerId", 			
 			"IndexedBoolean0", 
 			"IndexedCurrency0",
-			"IndexedDate0", 
+			"IndexedDate0", 			
 			"IndexedLongText0", 
 			"IndexedNumber0", 
 			"IndexedPick0", 

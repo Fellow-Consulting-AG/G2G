@@ -15,7 +15,7 @@ package gadget.dao
 				,{
 					record_type:"Account Note",
 					unique:['Id'],
-					clean_table:true,
+					clean_table:false,
 					must_drop :false,
 					name_column:["Subject"],
 					search_columns:["Subject"],

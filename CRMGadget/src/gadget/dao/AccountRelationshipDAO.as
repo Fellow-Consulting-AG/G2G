@@ -20,7 +20,7 @@ package gadget.dao
 				unique:['Id'],
 				search_columns:["RelatedAccountName"],
 				record_type:"AccountRelationship",
-				clean_table:true,
+				clean_table:false,
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 				
 				

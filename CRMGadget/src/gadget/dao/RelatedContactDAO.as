@@ -21,7 +21,7 @@ package gadget.dao
 				unique:['Id'],
 				search_columns:["RelatedContactFirstName","RelatedContactLastName"],
 				record_type:"ContactRelationship",
-				clean_table:true,
+				clean_table:false,
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 			
 			

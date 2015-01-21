@@ -1794,6 +1794,7 @@
 								customFields.addItem(objectCustomField2.fieldName);
 							}
 						}else if(fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+							fields[i].readonly = fields[i].readonly||readonly;
 							displayObj =createBlockLayout(fields[i]);	
 							fields[i].component= displayObj;
 							createFieldLayout(displayObj,-1,i,pageIndex);
@@ -2132,7 +2133,7 @@
 				}
 			
 				private var listBlock:Dictionary = new Dictionary();
-				private function createDisplayObject(column_name:String,readonly:Boolean,dic:ArrayCollection):DisplayObject{
+				private function createDisplayObject(column_name:String,readonly:Boolean,dic:ArrayCollection,display_name:String=null):DisplayObject{
 					var objHeight:int = 26;
 					var displayObject:DisplayObject =null;
 					if(column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
@@ -2172,11 +2173,14 @@
 					}
 						var fieldInfo:Object = FieldUtils.getField(entity, column_name);
 						if(fieldInfo!=null){
+							if(StringUtils.isEmpty(display_name)){
+								display_name = fieldInfo.display_name;
+							}
 							var displayObj:BetterFormItem = new BetterFormItem();
 							if(fieldInfo.data_type.indexOf("Currency") != -1 && item.CurrencyCode != null && item.CurrencyCode != ""){
-								(displayObj as BetterFormItem).label = fieldInfo.display_name + " (" + item.CurrencyCode + ")";
+								(displayObj as BetterFormItem).label = display_name + " (" + item.CurrencyCode + ")";
 							}else{
-								(displayObj as BetterFormItem).label = fieldInfo.display_name;
+								(displayObj as BetterFormItem).label = display_name;
 							}
 							(displayObj as BetterFormItem).setStyle("labelWidth", 150);
 							//(entity:String, item:Object, subtype:int, bContactLinkActivity:Boolean, create:Boolean, fieldInfo:Object, readonly:Boolean, referenceClick:Function, finderClick:Function, openLocalFileDialog:Function)
@@ -2220,20 +2224,25 @@
 					return null;
 				}
 			
-				public static function getListFields(dependFieldObj:Object):Array{
+				private function getListFields(dependFieldObj:Object,isAddress:Boolean = false):Array{
 					if(dependFieldObj!=null){
-						var strfField:String = dependFieldObj.fields;
+						var strfField:String = null;
+						if(isAddress){
+							strfField = dependFieldObj.addressfields;
+						}else{
+							strfField = dependFieldObj.fields;
+						}
 						if(!StringUtils.isEmpty(strfField)){
 							return strfField.split(',');
 						}
 					}
 					return null;
 				}
-				public static function getDefaultDependField(dependField:Object,type:String=null):Array{
+				private function getDefaultDependField(dependField:Object,type:String=null):Object{
 					
 					if(dependField!=null){
 						
-						var defaultObj:Array =getListFields(dependField[type]);
+						var defaultObj:Object =dependField[type];
 						if(defaultObj!=null){
 							return defaultObj;
 						}
@@ -2243,21 +2252,17 @@
 							if(dependf!=null){
 								var strfField:String = dependf.fields;
 								if( dependf.isdefault){
-									if(!StringUtils.isEmpty(strfField)){
-										return strfField.split(',');
-									}else{
-										return null;
-									}
+									return dependf;
 								}else{
 									if(defaultObj==null && !StringUtils.isEmpty(strfField)){
-										defaultObj = strfField.split(',');
+										defaultObj = dependf;
 									}
 								}
 							}	
 						}
 						return defaultObj;
 					}
-					return new Array();
+					return null;
 				}
 				private function createBlockLayout(field:Object):DisplayObject{
 					var column_name:String = field.column_name;
@@ -2269,7 +2274,7 @@
 					var dicB:ArrayCollection = new ArrayCollection();
 					listBlock[dynamicId] = dicB;
 					column_name = blockObj.parent_field;
-					var displayObj:DisplayObject = createDisplayObject(column_name,field.readonly,dicB) as FormItem;
+					var displayObj:DisplayObject = createDisplayObject(column_name,field.readonly,dicB,Database.addressfieldtranslatorDao.getDisplayName(blockObj.addressfield)) as FormItem;
 					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 					
 					if(displayObj!=null){
 						vbox.addChild(displayObj);	
@@ -2285,16 +2290,11 @@
 										var objC:DisplayObject = o.childObj;
 										item[objF.element_name] = GUIUtils.getInputFieldValue(objC, objF);
 									}
-									var df:Object = dependField[obj.data];
-									var newfield:Array=null;
+									var df:Object = dependField[obj.data];									
 									if(df==null){
-										newfield = getDefaultDependField(dependField,item[blockObj.parent_field]);
-									}else{
-										var strfField:String = df.fields;
-										if(!StringUtils.isEmpty(strfField)){
-											newfield =  strfField.split(',');
-										}	
+										df = getDefaultDependField(dependField,item[blockObj.parent_field]);										
 									}
+									var newfield:Array = getListFields(df);
 									
 									//remove old layout
 									for( var i:int=vbox.getChildren().length-1;i>0;i--){
@@ -2305,14 +2305,21 @@
 										//vbox.height = vbox.height-27;
 									}
 									
-									if(newfield!=null){										
-										//draw new layout
+									if(newfield!=null){	
+										var addrFields:Array = getListFields(df,true);
+										var newIdx:int=0;
+											//draw new layout
 											for each(var newf:String in newfield){
+												var displayName:String = null;
+												if(addrFields!=null && newIdx<addrFields.length){
+													displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
+												}
 												var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB);
 												if(ndisplayObj!=null){
 													//vbox.height = vbox.height+27;
 													vbox.addChild(ndisplayObj);	
 												}	
+												newIdx++;
 											}
 										
 										
@@ -2330,14 +2337,22 @@
 					//var heightBlock:int = 27;
 					
 					if(dependField!=null){
-						var dfields:Array = getDefaultDependField(dependField,item[blockObj.parent_field]);
+						var objField:Object = getDefaultDependField(dependField,item[blockObj.parent_field]);
+						var dfields:Array = getListFields(objField);
+						var addressFields:Array = getListFields(objField,true);
 						if(dfields!=null){
+							var idx:int=0;
 							for each(var f:String in dfields){
-								displayObj = createDisplayObject(f,field.readonly,dicB);
+								var displayName:String = null;
+								if(addressFields!=null && idx<addressFields.length){
+									displayName = Database.addressfieldtranslatorDao.getDisplayName(addressFields[idx]);
+								}
+								displayObj = createDisplayObject(f,field.readonly,dicB,displayName);
 								if(displayObj!=null){
 									//heightBlock+=27;
 									vbox.addChild(displayObj);	
 								}	
+								idx++;
 							}
 						}
 //						for(var v:String in dependField){

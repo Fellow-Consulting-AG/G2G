@@ -17,7 +17,7 @@ package gadget.dao
 				,{
 					record_type:"Opportunity Team",
 					unique:['OpportunityId,UserId','Id'],
-					clean_table:true,
+					clean_table:false,
 					must_drop :false,
 					name_column:["UserFirstName","UserLastName"],
 					search_columns:["UserFirstName","UserLastName"],

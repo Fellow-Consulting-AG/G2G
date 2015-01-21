@@ -14,7 +14,7 @@ package gadget.dao{
 		public function AllUsersDAO(sqlConnection:SQLConnection, work:Function) {
 			var ent:String = entity;
 			super(work, sqlConnection, {
-				drop_table: true,
+				drop_table: false,
 				table:"allusers",
 				oracle_id: 'Id',
 				name_column: [ 'UserLoginId' ],

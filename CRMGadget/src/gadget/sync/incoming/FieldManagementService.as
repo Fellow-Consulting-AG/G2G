@@ -126,6 +126,8 @@ package gadget.sync.incoming {
 					}
 					else if(entity=="CRMODLS_OBJECTIVE"){
 						entity = Database.objectivesDao.entity;
+					}else if(entity == "CRMODLS_BusinessPlan"){
+						entity = Database.businessPlanDao.entity;
 					}
 					for each (var field:XML in objects.ns2::ListOfFields[0].ns2::Field) {
 	

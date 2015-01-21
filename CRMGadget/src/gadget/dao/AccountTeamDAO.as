@@ -18,7 +18,7 @@ package gadget.dao
 					,{
 						record_type:"Account Team",
 						unique:['AccountId,UserId','Id'],
-						clean_table:true,
+						clean_table:false,
 						must_drop:false,
 						name_column:["FirstName","LastName"],
 						search_columns:["FirstName","LastName"],

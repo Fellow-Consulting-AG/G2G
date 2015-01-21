@@ -285,7 +285,8 @@ package gadget.dao
 		];
 		
 		public function getGoolgeMapDistance():String{
-			return getStrValue(GOOGLE_MAP_DISTANCE,"metric");
+			var code:String = Database.allUsersDao.ownerUser().PersonalCountry;
+			return Database.countryDao.getDistance(code);			
 		}
 		
 		public function isModernIcon():Boolean{

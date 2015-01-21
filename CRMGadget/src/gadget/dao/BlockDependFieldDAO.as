@@ -10,7 +10,7 @@ package gadget.dao
 				table: 'block_dependfield',
 				index: ["parent_id", "parent_field_value"],
 				unique : ["entity,parent_id,parent_field_value"],
-				columns: {gadget_id: "INTEGER PRIMARY KEY AUTOINCREMENT", 'TEXT' : ['parent_field_value','entity','fields'],'isdefault':'BOOLEAN','parent_id':'INTEGER'}
+				columns: {gadget_id: "INTEGER PRIMARY KEY AUTOINCREMENT", 'TEXT' : ['parent_field_value','entity','fields','addressfields'],'isdefault':'BOOLEAN','parent_id':'INTEGER'}
 			});
 			
 		}
@@ -26,6 +26,10 @@ package gadget.dao
 			
 			return obj;
 		}
+		
+		
+		
+		
 		
 	}
 }

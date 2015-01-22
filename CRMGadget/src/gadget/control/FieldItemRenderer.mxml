@@ -3,6 +3,7 @@
 
 	<mx:Script>
 	    <![CDATA[
+			import gadget.dao.BookDAO;
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
@@ -175,11 +176,14 @@
 				}
 			}
 			
-			private function initCalculatedField(event:MouseEvent):void {
+			private function initCalculatedField(event:MouseEvent,block:Boolean=false):void {
 				var calculatedField:CalculatedField = new CalculatedField();
 				// quickSearch.mainWindow = this;
 				var textInput:TextInput = event.currentTarget as TextInput;
 				calculatedField.postSave =function(label:String):void{
+					if(block){
+						delete data.custom;
+					}
 					textInput.text=label;
 				};
 				calculatedField.tempHeaderVal = textInput.text;
@@ -213,7 +217,15 @@
 						var gadget_id:String = data.column_name;
 						var obj:Object = Database.blockLayoutDao.getByGadgetId(gadget_id.split('_')[1]);
 						if(obj!=null){
-							label = obj.Name;
+							if(data.customField!=null){
+								label = CustomFieldDAO.getHeaderValue(data.customField.value);
+								
+							}
+							
+							if(StringUtils.isEmpty(label)){
+								label = obj.Name;
+							}
+							
 						}
 					}
 				}
@@ -407,7 +419,7 @@
 			</mx:HBox>
 		</mx:Canvas>
 		<mx:Canvas width="100%" height="100%">
-			<mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" />
+			<mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" doubleClickEnabled="true" doubleClick="initCalculatedField(event,true)" />
 			<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
 		</mx:Canvas>
 	</mx:ViewStack>

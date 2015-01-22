@@ -2225,12 +2225,12 @@ package gadget.util {
 			dao = Database.dailyAgendaColumnLayoutDao;
 			dao.delete_all();
 			commitObjects(dao,xml.elements("dailyAgendaLayouts").children());
-//			dao = Database.blockLayoutDao;
-//			dao.delete_all();
-//			commitObjects(dao,xml.elements("layoutblocks").children());
-//			dao = Database.blockDependField;
-//			dao.delete_all();
-//			commitObjects(dao,xml.elements("blockLyoutFields").children());
+			dao = Database.blockLayoutDao;
+			dao.delete_all();
+			commitObjects(dao,xml.elements("layoutblocks").children());
+			dao = Database.blockDependField;
+			dao.delete_all();
+			commitObjects(dao,xml.elements("blockLyoutFields").children());
 			dao = Database.countryDao;
 			dao.delete_all();
 			commitObjects(dao,xml.elements("countrys").children());

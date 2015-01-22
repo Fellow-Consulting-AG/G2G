@@ -52,6 +52,8 @@ package gadget.dao {
 				}if (obj.column_name.indexOf(CustomLayout.SQLLIST_CODE) > -1){
 					var criterias:ArrayCollection = Database.sqlListDAO._select(obj.entity, obj.column_name);
 					obj["criterias"] = criterias;
+				}else if(col_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+					obj["customField"]=Database.customFieldDao.selectCustomField(entity,col_name);
 				}
 			}
 			return list;

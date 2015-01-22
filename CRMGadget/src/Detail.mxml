@@ -1796,8 +1796,10 @@
 						}else if(fields[i].column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
 							fields[i].readonly = fields[i].readonly||readonly;
 							displayObj =createBlockLayout(fields[i]);	
-							fields[i].component= displayObj;
-							createFieldLayout(displayObj,-1,i,pageIndex);
+							if(displayObj!=null){
+								fields[i].component= displayObj;
+								createFieldLayout(displayObj,-1,i,pageIndex);
+							}
 							
 							continue;
 						}	
@@ -2264,19 +2266,28 @@
 					}
 					return null;
 				}
+				private static const BLOCK_ID:int = 1;
 				private function createBlockLayout(field:Object):DisplayObject{
 					var column_name:String = field.column_name;
 					
-					var dynamicId:String = column_name.split('_')[1];
+					var dynamicId:String = column_name.split('_')[BLOCK_ID];
 					var vbox:VBox = new VBox();
 					vbox.percentWidth = 100;
 					var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
+					if(blockObj==null){
+						return null;
+					}
 					var dicB:ArrayCollection = new ArrayCollection();
 					listBlock[dynamicId] = dicB;
 					column_name = blockObj.parent_field;
+					
+					
 					var displayObj:DisplayObject = createDisplayObject(column_name,field.readonly,dicB,Database.addressfieldtranslatorDao.getDisplayName(blockObj.addressfield)) as FormItem;
 					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 					
 					if(displayObj!=null){
+						
+						var header:DisplayObject = GUIUtils.getHeaderTranslate(field,blockObj.Name);
+						vbox.addChild(header);
 						vbox.addChild(displayObj);	
 						var childObj:DisplayObject = FormItem(displayObj).getChildAt(0);
 
@@ -2297,11 +2308,11 @@
 									var newfield:Array = getListFields(df);
 									
 									//remove old layout
-									for( var i:int=vbox.getChildren().length-1;i>0;i--){
+									for( var i:int=vbox.getChildren().length-1;i>1;i--){//0---is the header field.1 is the country field
 										if(dicB.length>1){
 											dicB.removeItemAt(1);
 										}
-										vbox.removeChildAt(1);
+										vbox.removeChildAt(2);
 										//vbox.height = vbox.height-27;
 									}
 									

@@ -118,12 +118,16 @@ package gadget.util
 			}
 		}
 		
-		public static function getHeaderTranslate(objField:Object):DisplayObject {
+		public static function getHeaderTranslate(objField:Object,defaultHeader:String=null):DisplayObject {
 			if(objField.customField!=null){
 				var headerValue:String = CustomFieldDAO.getHeaderValue(objField.customField.value);
 				if(!StringUtils.isEmpty(headerValue)) return getHeader(headerValue);
 			}
-			return getHeader(objField.custom);
+			if(StringUtils.isEmpty(defaultHeader)){
+				return getHeader(objField.custom);
+			}else{
+				return getHeader(defaultHeader);
+			}
 		}
 		
 		public static function getHeader(headerText:String):DisplayObject {

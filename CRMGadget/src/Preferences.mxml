@@ -1367,6 +1367,8 @@
 						<conditions/>
 						<dailyAgendaLayouts/>
 						<countrys/>
+						<layoutblocks/>
+						<blockLyoutFields/>						
 					</configuration>;
 				
 				for each(var obj:Object in Database.industryDAO.getDifferenceLanguage()) {
@@ -1819,10 +1821,10 @@
 				
 				exportAssessmentScript(configXml);
 				
-//				var blocklayout:Array = Database.blockLayoutDao.fetch();
-//				generateXML(configXml.elements("layoutblocks"),"layoutblock",blocklayout);
-//				var blockLayoutFields:Array = Database.blockDependField.fetch();
-//				generateXML(configXml.elements("blockLyoutFields"),"blockLyoutField",blockLayoutFields);
+				var blocklayout:Array = Database.blockLayoutDao.fetch();
+				generateXML(configXml.elements("layoutblocks"),"layoutblock",blocklayout);
+				var blockLayoutFields:Array = Database.blockDependField.fetch();
+				generateXML(configXml.elements("blockLyoutFields"),"blockLyoutField",blockLayoutFields);
 				var countrys:Array = Database.countryDao.fetch();
 				generateXML(configXml.elements("countrys"),"country",countrys);
 					

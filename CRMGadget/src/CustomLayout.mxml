@@ -195,7 +195,7 @@
 						dropObject.column_name = "{" + CALCULATED_CODE + countFields(CALCULATED_CODE) + "}";
 					}
 					if(dropObject.column_name.indexOf(BLOCK_DYNAMIC_CODE)>-1){
-						dropObject.label = tileList.dataProvider[tileList.selectedIndex].label;
+						dropObject.label = tileList.dataProvider[tileList.selectedIndex].label;						
 					}
 					
 					dropObject.custom = tileList.dataProvider[tileList.selectedIndex].custom;
@@ -282,6 +282,12 @@
 					if(defaultMandatory){
 						obj.mandatory = defaultMandatory;
 					}
+					if(obj.column_name.indexOf(BLOCK_DYNAMIC_CODE)>-1){
+						if(obj.customField==null){
+							obj.customField= Database.customFieldDao.selectCustomField(obj.entity,obj.column_name);
+						}
+					}
+					
 				}
 				var targetData:ArrayCollection = list.dataProvider as ArrayCollection;
 				for(var p:int=0;p<mainPage.getChildren().length;p++){
@@ -413,6 +419,16 @@
 							}else if(layout.column_name.indexOf(CUSTOMFIELD_CODE) > -1){
 								//var objCusField:Object = Database.customFieldDao.selectCustomField(layout.entity,layout.column_name);
 								//Database.customFieldDao.addTableColumn(objCusField.entity,objCusField.fieldName,"TEXT");
+							}else if(layout.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
+								var customField:Object = (j ==0 ? leftPanel[i].customField : rightPanel[i].customField);
+								if(customField){
+									customField["subtype"] = 0;
+									// if(layout.column_name.indexOf("#") > -1) customField["column_name"] = layout.column_name + "_" + layout.col;
+									//Database.customFieldDao.deleteCustomField(customField);
+									// HSC : 6686
+									Database.customFieldDao.delete_({entity:entity, subtype:0, column_name:customField["column_name"]});
+									Database.customFieldDao.insert(customField);
+								}
 							}
 						}
 					}
@@ -425,12 +441,15 @@
             
             private function getFields():ArrayCollection {
             	var fields:ArrayCollection = new ArrayCollection();
+				var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();
             	for each (var field:Object in FieldUtils.allFields(entity)) {
-					Utils.suppressWarning(new ArrayCollection([field]));
-					var tmp:Object = new Object();
-					tmp.label = field.display_name;
-					tmp.column_name = field.element_name;
-            		fields.addItem(tmp);
+					if(!hidenFields.hasOwnProperty(field.element_name)){
+						Utils.suppressWarning(new ArrayCollection([field]));
+						var tmp:Object = new Object();
+						tmp.label = field.display_name;
+						tmp.column_name = field.element_name;
+	            		fields.addItem(tmp);
+					}
             	}		
 				
 				if(entity == 'Contact'){
@@ -482,10 +501,17 @@
 				if(dynamicBlock){
 					for each(var obj:Object in dynamicBlock){
 						var dynamicBlockObj:Object = new Object();
-						dynamicBlockObj.label = obj.Name;
+						
 						dynamicBlockObj.custom = null;
 						dynamicBlockObj.entity=entity;
 						dynamicBlockObj.column_name =  BLOCK_DYNAMIC_CODE+'_'+obj.gadget_id;
+						var customField:Object = Database.customFieldDao.selectCustomField(entity,dynamicBlockObj.column_name);
+						if(customField!=null){
+							dynamicBlockObj.customField = customField;
+							dynamicBlockObj.label=CustomFieldDAO.getHeaderValue(customField.value);
+						}else{
+							dynamicBlockObj.label = obj.Name;
+						}
 						fields.addItem(dynamicBlockObj);
 					}
 				}

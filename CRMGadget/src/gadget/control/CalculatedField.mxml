@@ -286,7 +286,7 @@
 					lblFieldName.visible = false;
 					txtFieldName.visible = false;
 					switchLayout(true);
-					if(Utils.checkNullValue(dataField.column_name).indexOf("#")>-1){
+					if(Utils.checkNullValue(dataField.column_name).indexOf("#")>-1 || Utils.checkNullValue(dataField.column_name).indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
 						cbolanguageCodes.selectedIndex = getComboSelectedIndex(cbolanguageCodes,CustomFieldDAO.DEFAULT_LANGUAGE_CODE);
 						titlebar.title = i18n._("CALCULATEDFIELD_CREATE_HEADER_FEILD");
 						height = 200;
@@ -329,7 +329,7 @@
 			// =================================================================================
 			private function loadHeaderFieldMap(headerValue:String):void{
 				if(StringUtils.isEmpty(headerValue)){
-					headerFieldMap[currentLanguage] = dataField.custom; 
+					headerFieldMap[currentLanguage] = StringUtils.isEmpty(tempHeaderVal)?dataField.custom:tempHeaderVal; 
 				}else{
 					var headerFields:Array = headerValue.split(";");
 					for each(var headerField:String in headerFields){
@@ -634,7 +634,7 @@
 							
 							dataField["customField"] = customField;		
 							// create header field.
-							if(Utils.checkNullValue(dataField.column_name).indexOf("#")>-1){
+							if(Utils.checkNullValue(dataField.column_name).indexOf("#")>-1|| Utils.checkNullValue(dataField.column_name).indexOf('BLOCKDYNAMIC_11')>-1){
 								customField["column_name"] = dataField.column_name;
 								customField["fieldType"] = "HeaderText";
 								customField["value"] = getHeaderFieldValue();

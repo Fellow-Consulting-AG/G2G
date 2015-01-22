@@ -64,6 +64,24 @@ package gadget.dao
 		};
 		
 		
+		public function getIgnoreCustomLayout():Dictionary{
+			var dic:Dictionary = new Dictionary();
+			for(var addrf:String in FIELDS){
+				var obj:Object = FIELDS[addrf];
+				for(var f:String in obj){
+					dic[obj[f]] = obj[f];
+				}
+			}
+			//default country address
+			dic['PrimaryBillToCountry'] = 'PrimaryBillToCountry';
+			dic['PrimaryShipToCountry'] = 'PrimaryShipToCountry';
+			dic['AlternateCountry'] = 'AlternateCountry';
+			dic['PrimaryCountry'] = 'PrimaryCountry';
+			
+			return dic;
+		}
+		
+		
 		private static const DEFAULT_BLOCK:Array = [
 			{entity:'Account',parent_field:'PrimaryBillToCountry',Name:'Main'},			
 			{entity:'Account',parent_field:'PrimaryShipToCountry',Name:'Shipping'},

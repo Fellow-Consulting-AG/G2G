@@ -200,10 +200,10 @@
 				columns.push(createColumnCurrency("MAT Revenue","MATRevenue"));
 				
 				col =createColumn("YTD Growth","YTDGrowth",null,true)
-				col.setStyle("textAlign","right");
+//				col.setStyle("textAlign","right");
 				columns.push(col);
-//				var renderer:ClassFactory = new ClassFactory(PercentageColRender);
-//				col.itemRenderer = renderer;
+				var renderer:ClassFactory = new ClassFactory(PercentageColRender);
+				col.itemRenderer = renderer;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));
@@ -257,10 +257,10 @@
 				//columns.push(createColumn("YTD Growth","YTDGrowth"));
 				
 				col =createColumn("YTD Growth","YTDGrowth",null,true)
-				col.setStyle("textAlign","right");
+//				col.setStyle("textAlign","right");
 				columns.push(col);
-//				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
-//				col.itemRenderer = rendererPercentage;
+				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
+				col.itemRenderer = rendererPercentage;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));
@@ -297,10 +297,10 @@
 				//columns.push(createColumn("YTD Growth","YTDGrowth"));
 				
 				col =createColumn("YTD Growth","YTDGrowth")
-				col.setStyle("textAlign","right");
+//				col.setStyle("textAlign","right");
 				columns.push(col);
-//				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
-//				col.itemRenderer = rendererPercentage;
+				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
+				col.itemRenderer = rendererPercentage;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));

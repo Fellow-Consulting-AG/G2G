@@ -17,16 +17,22 @@
 			 }		
 			override public function set data(value:Object):void{		
 				super.data = value;
+				var strPercentage:String = "";
+				
 				if(column!=null && value){					
 					//TODO
 					var num:String = value[column.dataField];					
 					var nmf:NumberFormatter = new NumberFormatter()
 					nmf.precision = 2;
+					
 					if(num == null || num ==""){
-						labelPerce.text =  "0.00%";
+						labelPerce.text =  "0.00";
 					}else{
+						if(num.indexOf("%") !=-1){
+							strPercentage = "%";
+						}
 						var percentageVal:String =nmf.format(num);
-						labelPerce.text = percentageVal + "%";
+						labelPerce.text = percentageVal + strPercentage;
 					}
 					
 				}

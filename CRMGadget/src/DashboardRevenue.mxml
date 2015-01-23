@@ -9,32 +9,18 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.rtc.sharedManagers.descriptors.FileDescriptor;
-			import com.adobe.utils.DateUtil;
-			import com.as3xls.xls.ExcelFile;
-			import com.as3xls.xls.Sheet;
-			import com.hurlant.util.der.Integer;
-			
-			import flex.lang.reflect.Field;
-			
-			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
 			import gadget.control.NumberColRenderer;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.lists.List;
-			import gadget.service.PicklistService;
-			import gadget.util.CurrencyUtils;
-			import gadget.util.DashboardUtils;
 			import gadget.util.DateUtils;
 			import gadget.util.ExportExcelUtils;
 			import gadget.util.FieldUtils;
-			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.NumberUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
-			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.Grouping;
@@ -42,28 +28,21 @@
 			import mx.collections.GroupingField;
 			import mx.collections.SummaryField2;
 			import mx.collections.SummaryRow;
-			import mx.containers.Form;
 			import mx.containers.HBox;
 			import mx.controls.AdvancedDataGrid;
 			import mx.controls.Alert;
 			import mx.controls.Button;
-			import mx.controls.DateField;
 			import mx.controls.HTML;
 			import mx.controls.Label;
 			import mx.controls.TextInput;
-			import mx.controls.VRule;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.events.AdvancedDataGridEvent;
 			import mx.events.CloseEvent;
 			import mx.events.IndexChangedEvent;
-			import mx.events.ItemClickEvent;
 			import mx.formatters.DateFormatter;
 			import mx.managers.DragManager;
-			import mx.managers.SystemManager;
 			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
-			
-			import org.igniterealtime.xiff.data.whiteboard.Path;
 			[Embed(source='/assets/sync.png')] [Bindable] public static var refreshIcon:Class;
 			[Embed(source='/assets/upload_config.png')] [Bindable] public static var importIcon:Class;
 			[Embed(source='/assets/search.png')] [Bindable] public static var searchIcon:Class;
@@ -211,7 +190,7 @@
 				//columns.push(createColumn("Brand","Brand"));
 				columns.push(createColumn("TM Name","TM"));
 //				columns.push(createColumn("Prior Day Revenue","PriorDayRevenue"));
-				col = createColumn("Prior Day Revenue","PriorDayRevenue",null,true);
+				var col:AdvancedDataGridColumn = createColumn("Prior Day Revenue","PriorDayRevenue",null,true);
 				columns.push(col);
 				col.setStyle("textAlign","right");
 				
@@ -220,10 +199,11 @@
 				columns.push(createColumnCurrency("YTD Revenue","YTDRevenue"));
 				columns.push(createColumnCurrency("MAT Revenue","MATRevenue"));
 				
-				var col:AdvancedDataGridColumn =createColumn("YTD Growth","YTDGrowth",null,true)
+				col =createColumn("YTD Growth","YTDGrowth",null,true)
+				col.setStyle("textAlign","right");
 				columns.push(col);
-				var renderer:ClassFactory = new ClassFactory(PercentageColRender);
-				col.itemRenderer = renderer;
+//				var renderer:ClassFactory = new ClassFactory(PercentageColRender);
+//				col.itemRenderer = renderer;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));
@@ -277,9 +257,10 @@
 				//columns.push(createColumn("YTD Growth","YTDGrowth"));
 				
 				col =createColumn("YTD Growth","YTDGrowth",null,true)
+				col.setStyle("textAlign","right");
 				columns.push(col);
-				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
-				col.itemRenderer = rendererPercentage;
+//				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
+//				col.itemRenderer = rendererPercentage;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));
@@ -303,7 +284,7 @@
 				//columns.push(createColumn("Brand","Brand"));
 				columns.push(createColumn("Catalog","Catalog"));
 				columns.push(createColumn("Description","Description"));
-				col = createColumn("Prior Day Revenue","PriorDayRevenue",null,true);
+				var col:AdvancedDataGridColumn = createColumn("Prior Day Revenue","PriorDayRevenue",null,true);
 				col.setStyle("textAlign","right");
 				columns.push(col);
 				
@@ -315,10 +296,11 @@
 				
 				//columns.push(createColumn("YTD Growth","YTDGrowth"));
 				
-				var col:AdvancedDataGridColumn =createColumn("YTD Growth","YTDGrowth")
+				col =createColumn("YTD Growth","YTDGrowth")
+				col.setStyle("textAlign","right");
 				columns.push(col);
-				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
-				col.itemRenderer = rendererPercentage;
+//				var rendererPercentage:ClassFactory = new ClassFactory(PercentageColRender);
+//				col.itemRenderer = rendererPercentage;
 				
 				columns.push(createColumnCurrency("LY Month Revenue","LYMonthRevenue"));
 				columns.push(createColumnCurrency("LY QTD Revenue","LYQTDRevenue"));

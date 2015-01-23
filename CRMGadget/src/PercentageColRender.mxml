@@ -24,7 +24,8 @@
 					var num:String = value[column.dataField];					
 					var nmf:NumberFormatter = new NumberFormatter()
 					nmf.precision = 2;
-					
+					nmf.decimalSeparatorTo = ".";
+					nmf.thousandsSeparatorTo = ",";
 					if(num == null || num ==""){
 						labelPerce.text =  "0.00";
 					}else{

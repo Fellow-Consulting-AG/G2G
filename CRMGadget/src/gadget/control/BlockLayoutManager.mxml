@@ -219,7 +219,7 @@
 			}
 			
 			
-			protected function getDependFields(parentId:int):Object{
+			protected function getDependFields(parentId:String):Object{
 				var result:Object = Database.blockDependField.getDependFields(parentId);
 				for each(var rec:Object in result){
 					var fields:String = rec.fields;

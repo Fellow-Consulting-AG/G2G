@@ -263,7 +263,9 @@ package gadget.util {
 		
 		
 		public static function reset():void {
-			_cache.clear();
+			
+			CacheUtils.clear_all();//remove all clear cache
+			_cache = new CacheUtils("field");
 		}
 		
 		public static const ACTIVITY_DEFAULT_DAILY_AGENDA:ArrayCollection = new ArrayCollection([
@@ -1389,6 +1391,7 @@ package gadget.util {
 			}
 			
 		}
+		
 		
 		
 		private static function addValidationRuleError(validatorErrorArray:Array, errMsg:String):void {

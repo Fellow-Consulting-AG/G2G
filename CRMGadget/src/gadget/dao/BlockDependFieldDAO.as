@@ -15,7 +15,7 @@ package gadget.dao
 			
 		}
 		
-		public function getDependFields(parentId:int):Object{
+		public function getDependFields(parentId:String):Object{
 			var result:Array = fetch({'parent_id' :parentId});
 			var obj:Object = new Object();
 			if(result!=null){

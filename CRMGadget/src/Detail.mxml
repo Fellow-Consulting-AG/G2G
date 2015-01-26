@@ -2266,6 +2266,50 @@
 					}
 					return null;
 				}
+			
+			
+				private function redrawBlock(field:Object,blockId:String,val:String,vbox:VBox):void{
+					var dependField:Object = Database.blockDependField.getDependFields(blockId); 	
+					var dicB:ArrayCollection = listBlock[blockId];
+					if(dicB==null){
+						dicB = new ArrayCollection();//cannot happend 
+						listBlock[blockId] = dicB;
+					}
+					var df:Object  = getDefaultDependField(dependField,val);										
+					
+					var newfield:Array = getListFields(df);
+					
+					//remove old layout
+					for( var i:int=vbox.getChildren().length-1;i>1;i--){//0---is the header field.1 is the country field
+						if(dicB.length>1){
+							dicB.removeItemAt(1);
+						}
+						vbox.removeChildAt(2);
+						//vbox.height = vbox.height-27;
+					}
+					
+					if(newfield!=null){	
+						var addrFields:Array = getListFields(df,true);
+						var newIdx:int=0;
+						//draw new layout
+						for each(var newf:String in newfield){
+							var displayName:String = null;
+							if(addrFields!=null && newIdx<addrFields.length){
+								displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
+							}
+							var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB,displayName);
+							if(ndisplayObj!=null){
+								//vbox.height = vbox.height+27;
+								vbox.addChild(ndisplayObj);	
+							}	
+							newIdx++;
+						}
+						
+						
+						
+					}
+					
+				}
 				private static const BLOCK_ID:int = 1;
 				private function createBlockLayout(field:Object):DisplayObject{
 					var column_name:String = field.column_name;
@@ -2301,41 +2345,8 @@
 										var objC:DisplayObject = o.childObj;
 										item[objF.element_name] = GUIUtils.getInputFieldValue(objC, objF);
 									}
-									var df:Object = dependField[obj.data];									
-									if(df==null){
-										df = getDefaultDependField(dependField,item[blockObj.parent_field]);										
-									}
-									var newfield:Array = getListFields(df);
+									redrawBlock(field,blockObj.gadget_id,obj.data,vbox);									
 									
-									//remove old layout
-									for( var i:int=vbox.getChildren().length-1;i>1;i--){//0---is the header field.1 is the country field
-										if(dicB.length>1){
-											dicB.removeItemAt(1);
-										}
-										vbox.removeChildAt(2);
-										//vbox.height = vbox.height-27;
-									}
-									
-									if(newfield!=null){	
-										var addrFields:Array = getListFields(df,true);
-										var newIdx:int=0;
-											//draw new layout
-											for each(var newf:String in newfield){
-												var displayName:String = null;
-												if(addrFields!=null && newIdx<addrFields.length){
-													displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
-												}
-												var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB,displayName);
-												if(ndisplayObj!=null){
-													//vbox.height = vbox.height+27;
-													vbox.addChild(ndisplayObj);	
-												}	
-												newIdx++;
-											}
-										
-										
-										
-									}
 								}
 							});
 						}
@@ -2348,40 +2359,27 @@
 					//var heightBlock:int = 27;
 					
 					if(dependField!=null){
-						var objField:Object = getDefaultDependField(dependField,item[blockObj.parent_field]);
-						var dfields:Array = getListFields(objField);
-						var addressFields:Array = getListFields(objField,true);
-						if(dfields!=null){
-							var idx:int=0;
-							for each(var f:String in dfields){
-								var displayName:String = null;
-								if(addressFields!=null && idx<addressFields.length){
-									displayName = Database.addressfieldtranslatorDao.getDisplayName(addressFields[idx]);
-								}
-								displayObj = createDisplayObject(f,field.readonly,dicB,displayName);
-								if(displayObj!=null){
-									//heightBlock+=27;
-									vbox.addChild(displayObj);	
-								}	
-								idx++;
-							}
-						}
-//						for(var v:String in dependField){
-//							var dependf:Object = dependField[v];
-//							if(dependf!=null && dependf.isdefault){
-//								var strfField:String = dependf.fields;
-//								if(!StringUtils.isEmpty(strfField)){
-//									for each(var f:String in strfField.split(',')){
-//										displayObj = createDisplayObject(f);
-//										if(displayObj!=null){
-//											vbox.addChild(displayObj);	
-//										}	
-//									}
+//						var objField:Object = getDefaultDependField(dependField,item[blockObj.parent_field]);
+//						var dfields:Array = getListFields(objField);
+//						var addressFields:Array = getListFields(objField,true);
+//						if(dfields!=null){
+//							var idx:int=0;
+//							for each(var f:String in dfields){
+//								var displayName:String = null;
+//								if(addressFields!=null && idx<addressFields.length){
+//									displayName = Database.addressfieldtranslatorDao.getDisplayName(addressFields[idx]);
 //								}
-//							}	
+//								displayObj = createDisplayObject(f,field.readonly,dicB,displayName);
+//								if(displayObj!=null){
+//									//heightBlock+=27;
+//									vbox.addChild(displayObj);	
+//								}	
+//								idx++;
+//							}
 //						}
+						redrawBlock(field,blockObj.gadget_id,item[blockObj.parent_field],vbox);
+
 					}
-//					vbox.minHeight =heightBlock; 
 					vbox.autoLayout=true;
 					return vbox;
 				}
@@ -2531,16 +2529,29 @@
 						//CH
 						//Bug #1727: update the sum in expenses report change from private to public CRO
 						public function refreshData():void{
-						for(var i:int=0; i<fields.length; i++){
-							if (!StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
-							var fieldInfo:Object = FieldUtils.getField(entity, fields[i].column_name);
-							if(fieldInfo && fieldInfo.element_name!="picture"){
-							GUIUtils.setInputFieldValue(fields[i].component, fieldInfo, item[fieldInfo.element_name],fields[i].customField,fields);
+							for(var i:int=0; i<fields.length; i++){
+								if (!StringUtils.startsWith(fields[i].column_name, "#") && !StringUtils.startsWith(fields[i].column_name, "{")) {
+									var col_name:String = fields[i].column_name;
+									var fieldInfo:Object = FieldUtils.getField(entity, col_name);
+									if(fieldInfo && fieldInfo.element_name!="picture"){										
+											GUIUtils.setInputFieldValue(fields[i].component, fieldInfo, item[fieldInfo.element_name],fields[i].customField,fields);										
+									}else if( col_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){										
+										var dynamicId:String = col_name.split('_')[1];
+										var dic:ArrayCollection = listBlock[dynamicId];
+										if(fields[i].component!=null){
+											for each(var o:Object in dic){							
+												var objF:Object = o.fieldInfo;
+												var objC:DisplayObject = o.childObj;			
+												GUIUtils.setInputFieldValue(objC, objF, item[objF.element_name],null,fields);
+											}
+											var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
+											redrawBlock(fields[i],dynamicId,item[blockObj.parent_field],fields[i].component as VBox);
+										}
+									}
+								}
+								
 							}
-							}
-							
-							}
-							}
+						}
 							
 							private function resetEmpty(childObj:DisplayObject):void{
 							if (childObj is TextInput) {		

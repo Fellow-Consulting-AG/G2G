@@ -1035,6 +1035,8 @@ package gadget.dao
 			"WrapUpTime",
 			"Address",
 			"AssignedTo",
+			"ModifiedByExt",
+			"CreatedByExt",
 			PARENTSURVEYID,
 			ASS_PAGE_NAME
 		];

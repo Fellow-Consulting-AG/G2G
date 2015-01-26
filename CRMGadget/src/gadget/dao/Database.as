@@ -2714,35 +2714,35 @@ package gadget.dao {
 		
 		public static function checkField(entity:String, field:String):Boolean {
 			var result:Boolean =  database.checkFieldInternal(entity, field);
-			if(!result){//try to add new col
-				result = database.addMissingCol(entity,field);	
-			}
+//			if(!result){//try to add new col
+//				result = database.addMissingCol(entity,field);	
+//			}
 			
 			return result;
 		}  
 		
-		
-		private  function addMissingCol(entity:String,field:String):Boolean{
-			try{
-				var tableName:String = DAOUtils.getTable(entity);
-				if(!StringUtils.isEmpty(field) && !StringUtils.isEmpty(tableName)){
-					
-					var sql:String = "ALTER TABLE "+tableName+" ADD COLUMN "+field+" TEXT";
-					var stmtAddCol:SQLStatement = new SQLStatement();
-					stmtAddCol.sqlConnection = _sqlConnection;
-					stmtAddCol.text = sql;
-					exec(stmtAddCol);
-					return true;
-				}
-			}catch(sqlE:SQLError){
-				return true;
-			}			
-			catch(e:Error){
-				return false;
-			}
-			
-			return false;
-		}
+	///some fields not support for webservice tag	
+//		private  function addMissingCol(entity:String,field:String):Boolean{
+//			try{
+//				var tableName:String = DAOUtils.getTable(entity);
+//				if(!StringUtils.isEmpty(field) && !StringUtils.isEmpty(tableName)){
+//					
+//					var sql:String = "ALTER TABLE "+tableName+" ADD COLUMN "+field+" TEXT";
+//					var stmtAddCol:SQLStatement = new SQLStatement();
+//					stmtAddCol.sqlConnection = _sqlConnection;
+//					stmtAddCol.text = sql;
+//					exec(stmtAddCol);
+//					return true;
+//				}
+//			}catch(sqlE:SQLError){
+//				return true;
+//			}			
+//			catch(e:Error){
+//				return false;
+//			}
+//			
+//			return false;
+//		}
 		
 		//VAHI moved the recreation code into this own area
 		// Note that in a distant future this all will go into the DAOs, but not today.

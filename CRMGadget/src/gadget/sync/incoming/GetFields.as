@@ -40,10 +40,11 @@ package gadget.sync.incoming {
  				updateLastSync(GETFIELDS_VERSION, SodUtils.fixFieldsHash);
 				return;
 			} 
-			FieldUtils.reset();
-			Database.incomingSyncDao.unsync_one("gadget.sync.task::ReadPicklist");
+		
 			
 			if (allEntities==null){				
+				FieldUtils.reset();
+				Database.incomingSyncDao.unsync_one("gadget.sync.task::ReadPicklist");
 				allEntities = SodUtils.transactionsTAOif("top_level");				
 				for each(var transaction:Object in new ArrayCollection(allEntities)){
 					for each (var sub:String in SupportRegistry.getSubObjects(transaction.our_name)) {						

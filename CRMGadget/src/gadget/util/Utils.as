@@ -1951,7 +1951,7 @@ package gadget.util {
 					Database.viewLayoutDAO.insert(objectView);
 				}
 			}
-			
+			Database.validationDao.delete_all();
 			// Validation Rule
 			// entity, num, rule_name, field, operator, value, message
 			var validationRules:XMLList = xml.elements("validationRules");
@@ -1970,7 +1970,7 @@ package gadget.util {
 					Database.validationDao.insertValidation(objectValidation);
 				}
 			}
-			
+			Database.validationRuleDAO.delete_all();
 			// Validation Rule_ 2
 			var validationRules_2:XMLList = xml.elements("validation-rules_2");
 			for each(var valRule2:XML in validationRules_2.elements("validation-rule")){
@@ -1988,6 +1988,7 @@ package gadget.util {
 					Database.validationRuleDAO.upSert(objValRule2);
 				}
 			}
+			Database.validationRuleTranslotorDAO.delete_all();
 			// Validation rule translator //
 			var validationTranslator:XMLList = xml.elements('validation-rules_translator');
 			for each(var tranXML:XML in validationTranslator.elements('validation-translator')){
@@ -2226,13 +2227,20 @@ package gadget.util {
 			dao.delete_all();
 			commitObjects(dao,xml.elements("dailyAgendaLayouts").children());
 			dao = Database.blockLayoutDao;
-			dao.delete_all();
+			
+			if(xml.elements("layoutblocks").children()!=null){
+				dao.delete_all();
+			}
 			commitObjects(dao,xml.elements("layoutblocks").children());
 			dao = Database.blockDependField;
-			dao.delete_all();
+			if(xml.elements("blockLyoutFields").children()!=null){
+				dao.delete_all();
+			}
 			commitObjects(dao,xml.elements("blockLyoutFields").children());
 			dao = Database.countryDao;
-			dao.delete_all();
+			if(xml.elements("countrys").children()!=null){
+				dao.delete_all();
+			}
 			commitObjects(dao,xml.elements("countrys").children());
 				
 			if(reload!=null) reload();
@@ -2892,10 +2900,11 @@ package gadget.util {
 		
 		// Validation Rule
 		// entity, num, rule_name, field, operator, value, message
+		Database.validationDao.delete_all();
 		var validationRules:XMLList = xml.elements("validationRules");
 		for each(var validationRule:XML in validationRules.elements("validationRule")){
 			var entityValidationRule:String = validationRule.children()[0];
-			Database.validationDao.deleteAll(entityValidationRule);
+			//Database.validationDao.deleteAll(entityValidationRule);
 			for each(var fieldValidation:XML in validationRule.fields.children()){
 				var objectValidation:Object = new Object();
 				objectValidation.entity = entityValidationRule;
@@ -2911,6 +2920,7 @@ package gadget.util {
 		
 		// Validation Rule_ 2
 		var validationRules_2:XMLList = xml.elements("validation-rules_2");
+		Database.validationRuleDAO.delete_all();
 		for each(var valRule2:XML in validationRules_2.elements("validation-rule")){
 			var entityValRule2:String = valRule2.children()[0];
 			for each(var rule:XML in valRule2.rules.children()){
@@ -2926,6 +2936,7 @@ package gadget.util {
 				Database.validationRuleDAO.upSert(objValRule2);
 			}
 		}
+		Database.validationRuleTranslotorDAO.delete_all();
 		// Validation rule translator //
 		var validationTranslator:XMLList = xml.elements('validation-rules_translator');
 		for each(var tranXML:XML in validationTranslator.elements('validation-translator')){

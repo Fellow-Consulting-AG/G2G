@@ -420,14 +420,11 @@
 								//var objCusField:Object = Database.customFieldDao.selectCustomField(layout.entity,layout.column_name);
 								//Database.customFieldDao.addTableColumn(objCusField.entity,objCusField.fieldName,"TEXT");
 							}else if(layout.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
-								var customField:Object = (j ==0 ? leftPanel[i].customField : rightPanel[i].customField);
-								if(customField){
-									customField["subtype"] = 0;
-									// if(layout.column_name.indexOf("#") > -1) customField["column_name"] = layout.column_name + "_" + layout.col;
-									//Database.customFieldDao.deleteCustomField(customField);
-									// HSC : 6686
-									Database.customFieldDao.delete_({entity:entity, subtype:0, column_name:customField["column_name"]});
-									Database.customFieldDao.insert(customField);
+								var blockTranslate:Object = (j ==0 ? leftPanel[i].customField : rightPanel[i].customField);
+								if(blockTranslate){
+									blockTranslate["subtype"] = 9999;//dummilayout cust we cannot delete the translate of the each block									
+									Database.customFieldDao.delete_({entity:entity, subtype:9999, column_name:blockTranslate["column_name"]});
+									Database.customFieldDao.insert(blockTranslate);
 								}
 							}
 						}
@@ -509,6 +506,9 @@
 						if(customField!=null){
 							dynamicBlockObj.customField = customField;
 							dynamicBlockObj.label=CustomFieldDAO.getHeaderValue(customField.value);
+							if(StringUtils.isEmpty(dynamicBlockObj.label)){
+								dynamicBlockObj.label = obj.Name;
+							}
 						}else{
 							dynamicBlockObj.label = obj.Name;
 						}

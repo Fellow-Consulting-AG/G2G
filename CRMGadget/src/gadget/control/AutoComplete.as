@@ -467,7 +467,7 @@ public class AutoComplete extends ComboBox
 				for each(var ele:Object in tempCollection){
 					if(ele.data==input){
 						labelFound=true;
-						this.selectedItem = obj;
+						this.selectedItem = ele;
 						input = itemToLabel(ele);
 					}
 				}

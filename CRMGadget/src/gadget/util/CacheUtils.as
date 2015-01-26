@@ -58,9 +58,8 @@ package gadget.util
 			parent.set(name,{});
 		}
 
-		public static function clear_all():void {
-			if (root!=null)
-				root.init({});
+		public static function clear_all():void {			
+				root=new CacheUtils(null);
 		}
 
 		public function del(key:String):Boolean {

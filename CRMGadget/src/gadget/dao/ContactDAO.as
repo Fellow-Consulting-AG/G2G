@@ -789,6 +789,8 @@ package gadget.dao
 			"IndexedPick3", 
 			"IndexedPick4", 
 			"IndexedPick5", 
+			"ModifiedByExt",
+			"CreatedByExt",
 			"IndexedShortText0",
 			"IndexedShortText1",
 			"facebook",

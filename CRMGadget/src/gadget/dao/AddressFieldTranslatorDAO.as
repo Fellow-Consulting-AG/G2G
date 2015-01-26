@@ -86,6 +86,9 @@ package gadget.dao
 					group[obj.name]=obj.word;
 				}
 			}
+			if(StringUtils.isEmpty(lang)){
+				lang = 'ENU';
+			}
 			var map:Dictionary = dic[lang] as Dictionary;
 			var word:String = map[name];
 			if(StringUtils.isEmpty(word)){

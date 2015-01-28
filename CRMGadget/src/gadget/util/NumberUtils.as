@@ -11,7 +11,9 @@ package gadget.util
 			var numfomatter:NumberFormatter = new NumberFormatter();
 			numfomatter.precision = 0;
 			numfomatter.decimalSeparatorTo = ".";
+			numfomatter.decimalSeparatorFrom = ".";
 			numfomatter.thousandsSeparatorTo = ",";
+			numfomatter.thousandsSeparatorFrom =",";
 			
 			return numfomatter.format(value);
 		}

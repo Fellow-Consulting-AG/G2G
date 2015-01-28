@@ -25,7 +25,9 @@
 					var nmf:NumberFormatter = new NumberFormatter()
 					nmf.precision = 2;
 					nmf.decimalSeparatorTo = ".";
+					nmf.decimalSeparatorFrom = ".";
 					nmf.thousandsSeparatorTo = ",";
+					nmf.thousandsSeparatorFrom =",";
 					if(num == null || num ==""){
 						labelPerce.text =  "0.00";
 					}else{

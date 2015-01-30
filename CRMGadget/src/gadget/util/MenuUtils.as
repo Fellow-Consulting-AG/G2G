@@ -46,6 +46,7 @@ package gadget.util {
 		public static function getContextMenu(aboutRecord:Function,recordCount:Function,mainWindow:MainWindow, list:IListItemRenderer, openLinkTo:Function, deleteItem:Function, editDetail:Function, batchUpdate:Function, addLead:Function, addActivity:Function, openDaschboard:Function, exportDetailPDF:Function,addNote:Function, entity:String):void {
 			
 			var rootMenu:XML = <root />;
+			var openMenu:XML = new XML('<menuitem data="' + i18n._('BROWSELOCALFILEDIALOG_DETAILBUTTONBAR_BUTTONLABEL_OPEN') + '" label="' + i18n._('BROWSELOCALFILEDIALOG_DETAILBUTTONBAR_BUTTONLABEL_OPEN') + '" icon="openIcon" />');
 			var editMenu:XML = new XML('<menuitem data="' + i18n._('GLOBAL_EDIT') + '" label="' + i18n._('GLOBAL_EDIT') + '" icon="editIcon" />');
 			var linkMenu:XML = new XML('<menuitem data="' + i18n._('GLOBAL_LINK') + '" label="' + i18n._('GLOBAL_LINK') + '" icon="linkIcon" />');
 			var deleteMenu:XML = new XML('<menuitem data="' + i18n._('GLOBAL_DELETE') + '" label="' + i18n._('GLOBAL_DELETE') + '" icon="deleteIcon" />');
@@ -82,6 +83,7 @@ package gadget.util {
 			var canDelete:Boolean = RightService.canCreate(entity);
 			deleteMenu.@enabled = canDelete;	
 			
+			rootMenu.appendChild(openMenu);
 			rootMenu.appendChild(editMenu);
 			if(!Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_PDF_EXPORT, 0)){
 				rootMenu.appendChild(printPDF);
@@ -166,8 +168,10 @@ package gadget.util {
 				}
 				switch(e.item.@data[0].toString()){
 					
-				
-					//case "Edit":
+					
+					case i18n._('BROWSELOCALFILEDIALOG_DETAILBUTTONBAR_BUTTONLABEL_OPEN'):
+						editDetail(obj,null,null,null,null,true); 
+						break;
 					case i18n._('GLOBAL_EDIT'):
 						editDetail(obj); //openDetail(obj.data);
 						break;

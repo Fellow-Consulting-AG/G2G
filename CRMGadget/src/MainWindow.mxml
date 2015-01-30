@@ -107,6 +107,7 @@
 			private const MAINWINDOW_ALERT_LOGO_ERROR_MSG:String = 'MAINWINDOW_ALERT_LOGO_ERROR_MSG';
 			
 			// Menu Item
+			[Embed(source="/assets/folderopen.gif")] [Bindable] public var openIcon:Class;
 			[Embed(source='/assets/edit.png')] [Bindable] public var editIcon:Class;
 			[Embed(source='/assets/link.png')] [Bindable] public var linkIcon:Class;
 			[Embed(source='/assets/delete.png')] [Bindable] public var deleteIcon:Class;

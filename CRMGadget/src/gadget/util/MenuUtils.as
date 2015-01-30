@@ -83,8 +83,13 @@ package gadget.util {
 			var canDelete:Boolean = RightService.canCreate(entity);
 			deleteMenu.@enabled = canDelete;	
 			
-			rootMenu.appendChild(openMenu);
-			rootMenu.appendChild(editMenu);
+			
+			if(canUpdate){
+				rootMenu.appendChild(editMenu);
+			}else{
+				rootMenu.appendChild(openMenu);
+			}
+			
 			if(!Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_PDF_EXPORT, 0)){
 				rootMenu.appendChild(printPDF);
 			}
@@ -170,7 +175,7 @@ package gadget.util {
 					
 					
 					case i18n._('BROWSELOCALFILEDIALOG_DETAILBUTTONBAR_BUTTONLABEL_OPEN'):
-						editDetail(obj,null,null,null,null,true); 
+						editDetail(obj); 
 						break;
 					case i18n._('GLOBAL_EDIT'):
 						editDetail(obj); //openDetail(obj.data);

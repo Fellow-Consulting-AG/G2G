@@ -4,7 +4,7 @@
 	xmlns:control="gadget.control.*"
 	width="660" height="480" resizable="false"
 	showFlexChrome="false" transparent="true" systemChrome="none" xmlns:form="gadget.form.*"
-	initialize="init()"
+	initialize="init()" close="closeDetail();"
 	creationComplete="window1_creationCompleteHandler(event)"
 	>
 	
@@ -77,7 +77,7 @@
 				]);
 			
 			[Bindable] public var isCreate:Boolean;
-			
+			[Bindable] public var isCopy:Boolean = false;
 			private function init():void {
 				
 				
@@ -95,11 +95,11 @@
 					customLayout.entity = "";
 					customLayout.layout_name = "";
 				}
-				actionButtonAdd.visible = isCreate;
-				actionButtonAdd.includeInLayout = isCreate;
-				actionButtonUpdate.visible = !isCreate;
-				actionButtonUpdate.includeInLayout = !isCreate;
-				this.title = isCreate ? i18n._(CUSTOMLAYOUTDETAIL_TITLEBAR_TITLE_CUSTOM_LAYOUT_CREATION) : i18n._(CUSTOMLAYOUTDETAIL_TITLEBAR_TITLE_CUSTOM_LAYOUT) + ": " + customLayout.layout_name;
+				actionButtonAdd.visible = (isCopy||isCreate);
+				actionButtonAdd.includeInLayout = (isCopy||isCreate);
+				actionButtonUpdate.visible = !(isCopy||isCreate);
+				actionButtonUpdate.includeInLayout =!(isCopy||isCreate);
+				this.title = (isCreate||isCopy) ? i18n._(CUSTOMLAYOUTDETAIL_TITLEBAR_TITLE_CUSTOM_LAYOUT_CREATION) : i18n._(CUSTOMLAYOUTDETAIL_TITLEBAR_TITLE_CUSTOM_LAYOUT) + ": " + customLayout.layout_name;
 				idTitleBar.title = this.title;
 				conditionBox.visible = (customLayout.deletable == null || customLayout.deletable == true);
 				
@@ -168,6 +168,12 @@
 					this.close();
 				}
 			}
+			
+			
+			private function closeDetail():void{
+				Database.customLayoutDao.removeTempRecords();
+			}
+			
 			private function loadDisplayName():void{
 				
 				
@@ -328,7 +334,7 @@
 					//						return false;
 					//					}
 					
-			
+				
 					if (customLayout.deletable == null || customLayout.deletable == true) {
 						if (!isCreate){
 							customLayout.entity = txtlayoutEntity.text;// layoutEntity.selectedLabel;
@@ -360,7 +366,7 @@
 							for each(var objectCondition:Object in object.conditions){
 								Database.customLayoutConditionDAO.insert(objectCondition);
 							}							
-							
+							customLayout.is_temp = false;
 							if(isCreate)
 								Database.customLayoutDao.insert(customLayout);
 							else
@@ -374,6 +380,7 @@
 							return true;
 						}
 					}else {
+						customLayout.is_temp = false;
 						customLayout.custom_layout_icon = layoutIcon.selectedItem.data;
 						customLayout.background_color = "0x" + layoutBackgroundColor.selectedColor.toString(16);
 						customLayout.display_name = displayName.text;

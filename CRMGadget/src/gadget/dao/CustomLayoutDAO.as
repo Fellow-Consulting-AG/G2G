@@ -3,6 +3,7 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.errors.SQLError;
 	import flash.utils.Dictionary;
 	
 	import gadget.i18n.i18n;
@@ -10,7 +11,10 @@ package gadget.dao
 	import gadget.service.UserService;
 	import gadget.util.CacheUtils;
 	import gadget.util.ImageUtils;
+	import gadget.util.OOPS;
+	import gadget.util.OOPStrace;
 	import gadget.util.StringUtils;
+	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -45,7 +49,7 @@ package gadget.dao
 				index: ["entity,subtype", "layout_name"],
 				unique : ["entity, subtype"],
 				columns: { 'TEXT' : textColumns,
-						   'BOOLEAN':["deletable"],
+						   'BOOLEAN':["deletable","is_temp"],
 						   'INTEGER':["subtype"]
 				}
 			});
@@ -53,14 +57,14 @@ package gadget.dao
 			
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
-			stmtInsert.text = "INSERT INTO custom_layout (entity, subtype, layout_name, deletable, custom_layout_icon, background_color, display_name, display_name_plural, custom_layout_title,layout_depend_on)" +
-				" VALUES (:entity, :subtype, :layout_name, :deletable, :custom_layout_icon, :background_color, :display_name, :display_name_plural, :custom_layout_title, :layout_depend_on)";
+			stmtInsert.text = "INSERT INTO custom_layout (entity, subtype, layout_name, deletable, custom_layout_icon, background_color, display_name, display_name_plural, custom_layout_title,layout_depend_on,is_temp)" +
+				" VALUES (:entity, :subtype, :layout_name, :deletable, :custom_layout_icon, :background_color, :display_name, :display_name_plural, :custom_layout_title, :layout_depend_on,:is_temp)";
 
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
 			stmtUpdate.text = "UPDATE custom_layout SET layout_name = :layout_name, " +
 				"deletable = :deletable, custom_layout_icon = :custom_layout_icon, background_color = :background_color, display_name = :display_name, display_name_plural = :display_name_plural," +
-				" custom_layout_title = :custom_layout_title,layout_depend_on = :layout_depend_on" +
+				" custom_layout_title = :custom_layout_title,layout_depend_on = :layout_depend_on,is_temp=:is_temp" +
 				" WHERE entity = :entity AND subtype = :subtype";
 				
 			stmtFieldCondition = new SQLStatement();
@@ -124,6 +128,7 @@ package gadget.dao
 			stmt.parameters[":display_name_plural"] = layout.display_name_plural;
 			stmt.parameters[":custom_layout_title"] = layout.custom_layout_title;
 			stmt.parameters[":layout_depend_on"] = layout.layout_depend_on;
+			stmt.parameters[":is_temp"]=layout.is_temp;
 			exec(stmt);
 		}
 		
@@ -159,6 +164,23 @@ package gadget.dao
 			return true ;
 		}
 		
+		public function removeTempRecords():void{
+			var list:ArrayCollection = new ArrayCollection(select("entity,subtype", null, {'is_temp':true}));
+			try{
+				Database.begin();
+				for each(var customLayoutObject:Object in list){
+					Database.customLayoutDao.delete_one(customLayoutObject.entity, customLayoutObject.subtype);
+					Database.layoutDao.deleteLayout(customLayoutObject.entity, customLayoutObject.subtype);
+					Database.customLayoutConditionDAO.deleted(customLayoutObject.entity, customLayoutObject.subtype);
+				}
+				Database.commit();
+			}catch(e:SQLError){
+				Database.rollback();
+			}
+		}
+		
+		
+		
 		public function readSubtype(entity:String, subtype:int):Object
 		{
 			var cache:CacheUtils = new CacheUtils("Custom_Layout");
@@ -174,7 +196,7 @@ package gadget.dao
 				customLayout = result.data[0];
 				cache.set(key, customLayout);
 			}
-			return customLayout;
+			return Utils.copyModel(customLayout,false);//release references
 		}
 		
 		public function delete_one(entity:String, subtype:int):void{
@@ -200,6 +222,39 @@ package gadget.dao
 			}
 			return int(result.data[0].max_num) + 1;
 		}
+		protected function copyCondiction(entity:String,srcSubType:String,destSubType:String):void{
+			var oldCondiction:ArrayCollection = Database.customLayoutConditionDAO.list(entity,srcSubType);
+			for each(var newObj:Object in oldCondiction){
+				newObj.subtype = destSubType;
+				Database.customLayoutConditionDAO.insert(newObj);
+			}	
+		}
+		
+		public function copyLayout(entity:String,subType:String):Object{
+			var source:Object = readSubtype(entity,parseInt(subType));
+			try{
+				Database.begin();
+				var temp:Object = new Object();
+				for(var f:String in source){
+					temp[f] = source[f];
+				}
+				temp.deletable=true;
+				temp.is_temp=true;
+				temp.subtype = nextSubtype(entity);
+				insert(temp);
+				copyCondiction(entity,subType,temp.subtype);
+				Database.layoutDao.copyLayout(entity,subType,temp.subtype);
+				Database.commit();
+				
+				return temp;					
+			}catch(e:SQLError){
+				OOPS(e.getStackTrace());
+			}
+					
+			return null;
+		}
+		
+		
 		public function getCustomTranslateField(entity:String,col_name:String,subtype:int=0):String{
 			var objCustomField:Object  = Database.customFieldDao.selectCustomFieldWithSubType(entity,col_name ,subtype,LocaleService.getLanguageInfo().LanguageCode);
 			if(objCustomField!=null && objCustomField.value){

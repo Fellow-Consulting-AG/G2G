@@ -118,6 +118,14 @@ package gadget.dao {
 			return dic;
 		}
 		
+		public function copyCustomFieldWithSubType(entity:String, srcSubtype:String,destSubtype:String):void{
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity,subtype:srcSubtype}));
+			for each(var newObj:Object in list){
+				newObj.subtype = destSubtype;
+				insert(newObj);
+			}
+		}
+		
 		
 		public function selectCustomFieldWithSubType(entity:String, column_name:String,subtype:int,languageCode:String=DEFAULT_LANGUAGE_CODE,addKeyValue:Boolean=false):Object {
 			var list:ArrayCollection = new ArrayCollection(select(vars, null, {entity:entity, column_name:column_name, subtype:subtype}));

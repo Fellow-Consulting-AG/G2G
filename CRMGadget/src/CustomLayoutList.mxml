@@ -24,6 +24,7 @@
 			//[Bindable] public var entity:String;
 			[Bindable] private var updateLabel:String = i18n._(GLOBAL_UPDATE);
 			private const GLOBAL_CLOSE:String = 'GLOBAL_CLOSE' ;
+			private const GLOBAL_COPY:String = 'GLOBAL_COPY' ;
 			private const GLOBAL_ADD:String = 'GLOBAL_ADD' ;
 			private const GLOBAL_EDIT:String = 'GLOBAL_EDIT' ;
 			private const GLOBAL_DELETE:String = 'GLOBAL_DELETE';
@@ -55,6 +56,7 @@
 				
 				buttons.addItem({label: i18n._(GLOBAL_CLOSE), icon:ImageUtils.cancelIcon}); 
 				buttons.addItem({label: i18n._(GLOBAL_ADD), icon: ImageUtils.addIcon});
+				buttons.addItem({label:i18n._(GLOBAL_COPY),icon:ImageUtils.copyIcon});
 				buttons.addItem({label: i18n._(GLOBAL_EDIT), icon: ImageUtils.editIcon});
 				buttons.addItem({label: i18n._(GLOBAL_DELETE), icon: ImageUtils.deleteIcon});
 				
@@ -103,10 +105,20 @@
 				if(mode == i18n._(GLOBAL_ADD)){
 					customLayoutDetail.isCreate = true;
 				}else{
-					if(customLayoutGrid.selectedItems.length == 0) return;
+					
+					var selectedObj:Object = customLayoutGrid.selectedItem;
+					if(selectedObj==null){
+						Alert.show(i18n._('GLOBAL_PLEASE_SELECT_A_RECORD'),i18n._('SYNCHRONIZE_ALERT_WARNING'),4,this);
+						return;
+					}
 					customLayoutDetail.isCreate = false;
-					var customLayoutObject:Object = customLayoutGrid.selectedItem;
-					customLayoutDetail.customLayout = customLayoutObject;
+					if(mode==i18n._(GLOBAL_COPY)){
+						selectedObj = Database.customLayoutDao.copyLayout(selectedObj.entity, selectedObj.subtype);
+						customLayoutDetail.isCopy = true;
+					}else{
+						
+					}
+					customLayoutDetail.customLayout = selectedObj;
 					customLayoutDetail.mainWindow = mainWindow;
 //					show = Boolean(customLayoutObject.deletable);
 				}

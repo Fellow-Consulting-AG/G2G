@@ -1324,7 +1324,7 @@ package gadget.util {
 			return "";
 		}
 		
-		public static function copyModel(model:Object):Object {
+		public static function copyModel(model:Object,addmodifiedDate:Boolean =true):Object {
 			var obj:Object = new Object();
 			// we copy the values from the a model
 			if(model!=null){
@@ -1332,7 +1332,7 @@ package gadget.util {
 					obj[field] = model[field];
 				}
 			}
-			if(obj.ModifiedDate==null){
+			if(addmodifiedDate && obj.ModifiedDate==null){
 				//add field modifieddate to obj on creattion
 				obj.ModifiedDate = DateUtils.toIsoDate(new Date());//now
 			}

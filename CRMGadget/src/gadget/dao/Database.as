@@ -1694,7 +1694,7 @@ package gadget.dao {
 			_work = null;	//VAHI make sure we do not accidentally use it later
 			
 			LocaleService.reset();
-			
+			customLayoutDao.removeTempRecords();//clear all temporary records
 			database.initTimeZoneData();
 		}
 		

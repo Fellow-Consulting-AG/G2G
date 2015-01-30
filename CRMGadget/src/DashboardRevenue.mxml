@@ -870,7 +870,7 @@
 				if(files != null && files.length>0){
 					var asOfDate:String = "";
 					try{
-						
+					Database.begin();	
 					for each (var file:File in files){
 						if(file.isDirectory || file.extension == null || file.extension.toLowerCase() != "xml"){
 							continue;
@@ -981,13 +981,17 @@
 							
 						stream.close();
 					}
-						
+					
 						if(asOfDate != ""){
 							Database.revenueDao.updateAsOfDate(asOfDate);
 						}
 						
-						
-					}catch(e:Error){
+						Database.commit();	
+					}catch(sqlE:SQLError){
+						Database.rollback();
+						//TODO
+					}
+					catch(e:Error){
 						//TODO
 					}
 				}

@@ -59,6 +59,19 @@ package gadget.dao {
 			return list;
 		}
 		
+		
+		
+		public function copyLayout(entity:String, srcSubType:String,destSubtype:String):void{
+			var list:ArrayCollection = new ArrayCollection(select(vars, null, {'entity':entity, 'subtype':srcSubType}));
+			for each(var newObj:Object in list){
+				newObj.subtype = destSubtype;
+				insert(newObj);
+			}
+			Database.customFieldDao.copyCustomFieldWithSubType(entity, srcSubType,destSubtype);
+			
+		}
+		
+		
 		public function existLayout(entity:String, subtype:int):Boolean {
 			var result:Array = select("Count(*) AS total",null,{entity:entity, subtype:subtype});
 			return parseInt(result[0].total)>0;

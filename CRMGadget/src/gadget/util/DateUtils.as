@@ -381,9 +381,15 @@ package gadget.util {
 				  
 				  var isNegative:Boolean=timeZone.substr(0,1)=="-";
 				 // timeZone=timeZone.replace(/+|-/,'');
+				  timeZone = timeZone.replace("h","");
+				  timeZone = StringUtils.replaceAll(timeZone," ","");
 				  var hourSecond:Array =timeZone.split(":");
 				  var hour:Number=parseInt(hourSecond[0]);
-				  var second:Number=parseInt(hourSecond[1])/60;
+				  var second:Number= 0;
+				  if(hourSecond.length>1){
+					  second=parseInt(hourSecond[1])/60;
+				  }
+				  
 				  if(isNegative){
 					  gmt=hour-second;
 				  }else{

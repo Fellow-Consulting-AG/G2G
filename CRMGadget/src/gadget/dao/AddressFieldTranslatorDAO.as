@@ -39,7 +39,7 @@ package gadget.dao
 				{name:COUNTY,word:'County','country':'USA'},
 				{name:STATE,word:'State','country':'USA'},
 				{name:ZIP,word:'Zip/Post Code','country':'USA'},
-				{name:PROVINCE,word:'Provine','country':'USA'},
+				{name:PROVINCE,word:'Province','country':'USA'},
 				{name:'country',word:'Country','country':'USA'}],
 			DEU:[{name:ADDRESS,word:'Hausnummer/Straße','country':'USA'},
 				{name:ADDRESS2,word:'Address 2','country':'USA'},
@@ -58,12 +58,25 @@ package gadget.dao
 				{name:STATE,word:'省/（直辖）市','country':'USA'},
 				{name:ZIP,word:'邮政编码','country':'USA'},
 				{name:PROVINCE,word:'省/自治区','country':'USA'},
-				{name:'country',word:'国家/地区 ','country':'USA'}]		
+				{name:'country',word:'国家/地区 ','country':'USA'}],
+			ITA:[{name:ADDRESS,word:'Numero/via','country':'USA'},
+				{name:ADDRESS2,word:'Indirizzo 2','country':'USA'},
+				{name:ADDRESS3,word:'Indirizzo 3','country':'USA'},
+				{name:CITY,word:'Città','country':'USA'},
+				{name:COUNTY,word:'Comune','country':'USA'},
+				{name:STATE,word:'Stato','country':'USA'},
+				{name:ZIP,word:'CAP','country':'USA'},
+				{name:PROVINCE,word:'Provincia','country':'USA'},
+				{name:'country',word:'Nazione','country':'USA'}]
 		
 		};
 		
+		
 		public function init():void{
-			if(countRecord()<1){
+			var recCount:int = countRecord();
+			if(recCount <1 || recCount < getMax_Language()){
+				// when we add Language more, we should delete all and reinsert 
+				delete_all();
 				for (var lang:String in DEFAULT_TRANSLATE){
 					var obj:Array = DEFAULT_TRANSLATE[lang] as Array;
 					for each(var rec:Object in obj){
@@ -73,7 +86,14 @@ package gadget.dao
 				}
 			}
 		}
-		
+		private function getMax_Language():int{
+			var rec:int = 0;
+			for (var lang:String in DEFAULT_TRANSLATE){
+				var obj:Array = DEFAULT_TRANSLATE[lang] as Array;
+				rec = rec + obj.length;
+			}
+			return rec;
+		}
 		private function translator(name:String, lang:String):String{
 			if(dic==null){
 				dic = new Dictionary();
@@ -86,10 +106,14 @@ package gadget.dao
 					group[obj.name]=obj.word;
 				}
 			}
-			if(StringUtils.isEmpty(lang)){
+			if(StringUtils.isEmpty(lang) || lang == "ENG"){
 				lang = 'ENU';
 			}
 			var map:Dictionary = dic[lang] as Dictionary;
+			if(map == null){
+				// when we find language not found we set ENU is default
+				map = dic['ENU'] as Dictionary;
+			}
 			var word:String = map[name];
 			if(StringUtils.isEmpty(word)){
 				map = dic['ENU'];//default lange

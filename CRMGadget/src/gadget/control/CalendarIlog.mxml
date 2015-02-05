@@ -77,6 +77,8 @@
 					
 				}else if(languageCode=='PTG'){
 					resourceManager.localeChain =['pt_BR'];
+				}else if(languageCode=='ITA'){
+					resourceManager.localeChain =['it_IT'];
 				}else if(languageCode=='ESN'){
 					resourceManager.localeChain =['es_ES'];
 				}else if(languageCode=='NLD'){

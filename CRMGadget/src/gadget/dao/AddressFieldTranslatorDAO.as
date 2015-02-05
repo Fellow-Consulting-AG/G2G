@@ -67,7 +67,16 @@ package gadget.dao
 				{name:STATE,word:'Stato','country':'USA'},
 				{name:ZIP,word:'CAP','country':'USA'},
 				{name:PROVINCE,word:'Provincia','country':'USA'},
-				{name:'country',word:'Nazione','country':'USA'}]
+				{name:'country',word:'Nazione','country':'USA'}],
+			ESN:[{name:ADDRESS,word:'Número/calle','country':'USA'},
+				{name:ADDRESS2,word:'Dirección 2','country':'USA'},
+				{name:ADDRESS3,word:'Dirección 3','country':'USA'},
+				{name:CITY,word:'Ciudad','country':'USA'},
+				{name:COUNTY,word:'País','country':'USA'},
+				{name:STATE,word:'Estado','country':'USA'},
+				{name:ZIP,word:'Código postal','country':'USA'},
+				{name:PROVINCE,word:'Provincia','country':'USA'},
+				{name:'country',word:'País','country':'USA'}]
 		
 		};
 		

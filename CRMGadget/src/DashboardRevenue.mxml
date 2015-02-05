@@ -19,6 +19,7 @@
 			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.NumberUtils;
+			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			
@@ -668,14 +669,10 @@
 					var clWon:int = 0;
 					var clLost:int = 0;
 					var open:int = 0;
-					var strClosedWon:String = "Closed/Won";
-					var strClosedLost:String = "Closed/Lost";
+					var strClosedWon:String = SalesStageUtils.getCloseWonValue();
+					var strClosedLost:String = SalesStageUtils.getCloseLostValue();
 					if(ls != null && ls.length>0){
 						var lngCode:String = Database.allUsersDao.ownerUser().LanguageCode;
-						if("DEU" == lngCode){
-							strClosedWon = "Abgeschlossen/Gewonnen";
-							strClosedLost = "Abgeschlossen/Verloren";
-						}
 						for each(var obj:Object in ls){
 							var val:String= obj["Revenue"];
 							var stage:String = obj["SalesStage"];//PicklistService.getValue(Database.opportunityDao.entity,"SalesStage",obj["SalesStage"],obj);

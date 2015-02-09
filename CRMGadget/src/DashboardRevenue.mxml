@@ -672,7 +672,6 @@
 					var strClosedWon:String = SalesStageUtils.getCloseWonValue();
 					var strClosedLost:String = SalesStageUtils.getCloseLostValue();
 					if(ls != null && ls.length>0){
-						var lngCode:String = Database.allUsersDao.ownerUser().LanguageCode;
 						for each(var obj:Object in ls){
 							var val:String= obj["Revenue"];
 							var stage:String = obj["SalesStage"];//PicklistService.getValue(Database.opportunityDao.entity,"SalesStage",obj["SalesStage"],obj);

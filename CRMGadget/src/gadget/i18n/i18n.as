@@ -28,7 +28,8 @@ package gadget.i18n {
 			CHS:'ch_CH',
 			SVE:'sv_SV',
 			PLK:'pl_PL',
-			RUS:'ru_RU'
+			RUS:'ru_RU',
+			ITA:'it_IT'
 			
 		};
 		
@@ -86,6 +87,7 @@ package gadget.i18n {
 		[ResourceBundle("localization_SVE")]
 		[ResourceBundle("localization_PLK")]
 		[ResourceBundle("localization_RUS")]
+		[ResourceBundle("localization_ITA")]
 		//[ResourceBundle("localization_SWE")]
 		//CRO 03.01.2010
 		// AM 03.01.2010 to be done later, when properties files are OK

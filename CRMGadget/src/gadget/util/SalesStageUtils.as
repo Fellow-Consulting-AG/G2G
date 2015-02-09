@@ -18,9 +18,9 @@ package gadget.util
 			return val;
 		}
 		public  static function getCloseLostValue():String{
-			var val:String = mapClosedWon[lngCode];
+			var val:String = mapClosedLost[lngCode];
 			if(StringUtils.isEmpty(val)){
-				val = mapClosedWon["ENU"];
+				val = mapClosedLost["ENU"];
 			}
 			return val;
 		}

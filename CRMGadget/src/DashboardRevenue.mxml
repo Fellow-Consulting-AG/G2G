@@ -149,8 +149,35 @@
 				buttons.addItem({label:i18n._(GLOBAL_EDIT),  icon:importIcon});
 				return buttons;
 			}
-			
+			private function initLocation():void{
+				var currentUser:Object = Database.allUsersDao.ownerUser()
+				var languageCode:String = currentUser.LanguageCode==null?"":currentUser.LanguageCode;			
+				resourceManager.localeChain =['en_US'];
+				if(languageCode=='JPN'){
+					resourceManager.localeChain =['ja_JP'];
+				}else if(languageCode=='FRA'){
+					resourceManager.localeChain =['fr_FR'];
+				}else if(languageCode=='DEU'){
+					resourceManager.localeChain =['de_DE'];
+					
+				}else if(languageCode=='PTG'){
+					resourceManager.localeChain =['pt_BR'];
+				}else if(languageCode=='ITA'){
+					resourceManager.localeChain =['it_IT'];
+				}else if(languageCode=='ESN'){
+					resourceManager.localeChain =['es_ES'];
+				}else if(languageCode=='NLD'){
+					resourceManager.localeChain =['nl_NL'];
+				}else if(languageCode=='SVE'){
+					resourceManager.localeChain =['sv_SE'];
+				}else if("CHS" == languageCode){
+					resourceManager.localeChain = ['zh_CN'];			
+				}
+			}
 			private function init():void {
+				
+				//init location
+				initLocation();
 				layoutImportButton.setStyle("horizontalAlign","right");
 				var oppOwner:String = getDisplayName("OwnerFullName","Opportunity Owner");
 				var salesStage:String = getDisplayName("SalesStage","Sales Stage");
@@ -509,8 +536,10 @@
 						vb.addChild(xboxExcel);
 						
 						var hboxHtml:HBox = new HBox();
-						hboxHtml.width = 640;
-						
+						hboxHtml.percentWidth = 100;
+						hboxHtml.percentHeight = 100;
+						hboxHtml.setStyle("paddingLeft",10);
+						hboxHtml.setStyle("paddingRight",20);
 						hboxHtml.addChild(html);
 						vb.addChild(hboxHtml);
 						hBox.addChild(vb);
@@ -624,9 +653,9 @@
 					'<td>'+
 					'<table cellspacing="0" width="100%">'+
 						'<tr style="text-align: center;font-weight: bold;font-size: 12;">'+
-							'<td width="200px">Open</td>'+
-							'<td width="200px">Closed/Won</td>'+
-							'<td width="200px">Closed/Lost</td>'+
+							'<td width="200px">'+i18n._('BROWSELOCALFILEDIALOG_DETAILBUTTONBAR_BUTTONLABEL_OPEN')+'</td>'+
+							'<td width="200px">'+SalesStageUtils.getCloseWonValue()+'</td>'+
+							'<td width="200px">'+SalesStageUtils.getCloseLostValue()+'</td>'+
 						'</tr>'+
 					'</table>'+
 					'</td>'+
@@ -831,8 +860,9 @@
 				
 				
 				var htmlString:String = getListOpportunitySalesStage();
-				var file:File = Utils.writeStringFile( 'googlemap_' + DateUtils.getCurrentDateAsSerial() + '.html', htmlString );
-				if(file!=null) html.location = file.url;
+				//var file:File = Utils.writeStringFile( 'googlemap_' + DateUtils.getCurrentDateAsSerial() + '.html', htmlString );
+				//if(file!=null) html.location = file.url;
+				html.htmlText= htmlString;
 				html.validateNow();
 				html.percentWidth = 100;
 				grid4.dataProvider = getListOpportunity();

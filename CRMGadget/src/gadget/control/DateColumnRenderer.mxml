@@ -29,7 +29,9 @@
 				dformater.formatString = currentDate.formatString;
 				return dformater.format(item);
 			}
-			
+			public function get selectedDate():Object{
+				return data[column.dataField];
+			}
 			override public function set data(value:Object):void{		
 				super.data = value;				
 				if(data!=null){		
@@ -64,7 +66,7 @@
 				if (currentDate.text != '') {
 					value = DateUtils.format(currentDate.selectedDate, DateUtils.DATABASE_DATE_FORMAT);
 				}
-				data[column.dataField]=value;
+				data[column.dataField]=value + "";
 			}
 
 		]]>

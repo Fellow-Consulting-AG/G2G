@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%"
+	verticalScrollPolicy="off"
+	
+	initialize="init()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import gadget.control.CloseableToolTip;
+			import gadget.control.ComboboxColRender;
+			import gadget.control.DateColumnRenderer;
+			import gadget.control.ImpactText;
+			import gadget.control.ItemFinderColRender;
+			import gadget.control.LinkButtonColRenderer;
+			import gadget.control.LinkButtonRevenueColRenderer;
+			import gadget.dao.Database;
+			import gadget.lists.List;
+			import gadget.util.DateUtils;
+			import gadget.util.ImageUtils;
+			import gadget.util.SalesStageUtils;
+			import gadget.util.StringUtils;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.AdvancedDataGrid;
+			import mx.controls.TextInput;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.core.UIComponent;
+			[Bindable] public var list:List;
+			[Embed(source='/assets/search.png')] [Bindable] public static var searchIcon:Class;
+			[Embed(source='/assets/cancel.png')] [Bindable] public var closeIcon:Class;
+			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
+			[Bindable] public var rows:ArrayCollection;
+			private var opp_columns:ArrayCollection = new ArrayCollection([
+				{element_name:"OwnerFullName"},
+				{element_name:"OpportunityType"},
+				{element_name:"OpportunityName"},
+				{element_name:"CustomPickList0"},
+				{element_name:"SalesStage"},
+				{element_name:"Probability"},
+				{element_name:"ModifiedDate"},
+				{element_name:"AccountName"}
+			]);
+			private function init():void{
+				initGridListAllOpportunities();
+				initGridTotalAllOpportunities();
+				initGridProductDetails();
+			}
+			private  function createColumn(header:String,dataField:String,editAble:Boolean=false,renderer:ClassFactory=null,itemEditEndListener:Function=null):AdvancedDataGridColumn{
+				
+				
+				var col:AdvancedDataGridColumn = new AdvancedDataGridColumn();
+				col.dataField = dataField;
+				col.headerText = header;
+				col.editable = editAble;
+				if(renderer !=null){
+//					col.itemRenderer = renderer;
+					col.itemEditor = renderer;
+				}
+				if(editAble && renderer==null){
+					var render:ClassFactory = new ClassFactory(ImpactText);
+					if(itemEditEndListener != null){
+						render.properties={focusOutHandler:itemEditEndListener,restrict:'0-9.,',maxChars:20};
+					}
+					col.itemEditor = render;
+					
+				}
+				return col;
+			}
+			
+			private  function displayDataTime(item:Object,col:AdvancedDataGridColumn):String{
+				
+
+				var fieldValue:String = item[col.dataField];	
+				if(!StringUtils.isEmpty(fieldValue)){
+					var date:Date = DateUtils.guessAndParse(fieldValue);
+					if(date!=null){
+						var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();
+						/*
+						if(!isDateTime){
+							return DateUtils.format(date, currentUserDatePattern.dateFormat);
+						}else{
+							date = new Date(date.getTime()+DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
+							var format:String = currentUserDatePattern.dateFormat + ' ' + currentUserDatePattern.timeFormat ;
+							return DateUtils.format(date, format);
+						}
+						*/
+						return DateUtils.format(date, currentUserDatePattern.dateFormat);
+						
+					}
+				}
+				return "";
+			}
+			private function createEmptyObject():Object{
+				var obj:Object = new Object();
+				obj.isNew=true;
+				return obj;
+			}
+			private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
+				if(rows!=null){
+					var lastRow:Object = rows.getItemAt(rows.length-1);
+					if(lastRow.isNew){//
+						return;
+					}
+				}
+				
+				if(gridListAll.editedItemPosition){
+					
+					var oldColIndex:int = gridListAll.editedItemPosition.columnIndex;
+					var editColumn:AdvancedDataGridColumn = gridListAll.columns[oldColIndex];
+					var oldRowIndex:int = gridListAll.editedItemPosition.rowIndex;
+					if((rows.length-1== oldRowIndex+1 || rows.length==oldRowIndex+1) ){//add empty row
+						
+						//						var lastRow:Object = rows.getItemAt(rows.length-1);
+						//						if(lastRow.isNew){
+						//							return;
+						//						}
+						
+						var newObj:Object = createEmptyObject();
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+						
+						rows.addItem(newObj); //add a blank record		
+						
+						gridListAll.dataProvider = rows;
+						//						editableGrid.validateNow();
+						if(setSelected){
+							
+							gridListAll.editedItemPosition = {columnIndex:0, rowIndex:(oldRowIndex+1)};
+						}else{
+							gridListAll.editedItemPosition = {columnIndex:oldColIndex, rowIndex:oldRowIndex};
+						}
+						
+					}
+				}else if(fromclick){
+					var selectedRow:int = gridListAll.selectedIndex;
+					if(rows.length-1==selectedRow){
+						
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+						
+						
+						if(colIdx>=0 && colIdx<gridListAll.columnCount){
+							var col:AdvancedDataGridColumn = gridListAll.columns[colIdx];
+							if(col.editable){
+								rows.addItem(createEmptyObject()); //add a blank record						
+								gridListAll.dataProvider = rows;	
+								gridListAll.editedItemPosition = {columnIndex:colIdx, rowIndex:selectedRow};
+							}
+						}
+					}
+				}
+			}
+			private function displayPicklistValue(item:Object,col:AdvancedDataGridColumn):String{
+				return List.displayPicklistValue(item,col,Database.opportunityDao.entity);
+			}
+			private function labelRMFunction(item:Object,col:AdvancedDataGridColumn):String{
+				if(item.isTotal){
+					return "";
+				}else if(item.isNew){
+					return "";
+				}else{
+					return Database.allUsersDao.ownerUser().ManagerFullName;
+				}
+				
+			}
+			private function labelToolTipFunction(item:Object,col:AdvancedDataGridColumn):String{
+				
+				var val:String = item[col.dataField];
+				if(item.isNew && StringUtils.isEmpty(val)){
+					var text:ImpactText = col.itemEditor as ImpactText;
+					createTip(text,"Enter New Opportunity");
+					return "";
+				}else{
+					return item[col.dataField];
+				}
+				
+			}
+			private var currentTip:CloseableToolTip = null;
+			private function createTip(textInput:TextInput, text:String):void {
+				if(list.boxImpactCalendar.visible && textInput != null){
+					currentTip = new CloseableToolTip(systemManager);
+					currentTip.text = text;
+					systemManager.toolTipChildren.addChild(UIComponent(currentTip));
+					
+					currentTip.setActualSize(currentTip.getExplicitOrMeasuredWidth(), currentTip.getExplicitOrMeasuredHeight());
+					currentTip.move(textInput.x + 10 , textInput.y + 20);
+				}
+				
+			}
+			private function initGridListAllOpportunities():void{				
+				var columns:Array = new Array();
+				var col:AdvancedDataGridColumn = null;
+				col = createColumn("RM Name","ManagerFullName",false);
+				col.labelFunction = labelRMFunction;
+				columns.push(col);
+				columns.push(createColumn("TM Name","OwnerFullName",false));
+				var optTypeRenderer:ClassFactory = new ClassFactory(ComboboxColRender);
+				optTypeRenderer.properties = {'entity':Database.opportunityDao.entity};
+				col = createColumn("Opportunity Type","OpportunityType",true,optTypeRenderer);
+				col.editorDataField = "selectedItem";
+				col.labelFunction = displayPicklistValue;
+				columns.push(col);
+				var renderer:ClassFactory = new ClassFactory(LinkButtonRevenueColRenderer);
+				renderer.properties = new Object();
+				renderer.properties["list"]= list;
+				col = createColumn("Opportunity Name","OpportunityName",true);
+				col.itemRenderer = renderer;
+				col.labelFunction = labelToolTipFunction;
+				columns.push(col);
+				renderer = new ClassFactory(ItemFinderColRender);
+				renderer.properties = {'entity':Database.opportunityDao.entity};
+				col = createColumn("Account Name","AccountName",true,renderer);
+				col.width = 120;
+				col.editorDataField = "selectedItem";
+				columns.push(col);
+				
+				renderer = new ClassFactory(ComboboxColRender);
+				renderer.properties = {'entity':Database.opportunityDao.entity};
+				col = createColumn("Business Area","CustomPickList0",true,renderer);
+				col.editorDataField = "selectedItem";
+				col.labelFunction = displayPicklistValue;
+				columns.push(col);
+				renderer = new ClassFactory(ComboboxColRender);
+				renderer.properties = {'entity':Database.opportunityDao.entity};
+				col = createColumn("Sales Stage","SalesStage",true,renderer);
+//				col.labelFunction = getFieldDisplayName;
+//				col.editorDataField = "selectedItem";
+				col.editorDataField = "selectedItem";
+				columns.push(col);
+				columns.push(createColumn("Probability %","Probability",true));
+				var dateRenderer:ClassFactory = new ClassFactory(DateColumnRenderer);
+				col = createColumn("Close Date","CloseDate",true,dateRenderer);
+				col.editorDataField = "selectedDate";
+				col.labelFunction = displayDataTime;
+				columns.push(col);
+				columns.push(createColumn("Last FY impact","LastFYImpact",false));
+				columns.push(createColumn("Annualized impact","AnnualizedImpact",true));
+				columns.push(createColumn("Oct","Oct",true,null,itemEditEndListener));
+				columns.push(createColumn("Nov","Nov",true,null,itemEditEndListener));
+				columns.push(createColumn("Dec","Dec",true,null,itemEditEndListener));
+				columns.push(createColumn("Jan","Jan",true,null,itemEditEndListener));
+				columns.push(createColumn("Feb","Feb",true,null,itemEditEndListener));
+				columns.push(createColumn("Mar","Mar",true,null,itemEditEndListener));
+				columns.push(createColumn("Apr","Apr",true,null,itemEditEndListener));
+				columns.push(createColumn("May","May",true,null,itemEditEndListener));
+				columns.push(createColumn("Jun","Jun",true,null,itemEditEndListener));
+				columns.push(createColumn("Jul","Jul",true,null,itemEditEndListener));
+				columns.push(createColumn("Aug","Aug",true,null,itemEditEndListener));
+				columns.push(createColumn("Sep","Sep",true,null,itemEditEndListener));
+				columns.push(createColumn("Current FY Impact","CurrentFYImpact",false));
+				columns.push(createColumn("Change vs last FY","ChangeVsLastFY",false));
+				columns.push(createColumn("Total CALLS current quarter","TotalCALLSCurrentQuarter",false));
+				columns.push(createColumn("Investments","Investments",true));
+				columns.push(createColumn("Modified Date","ModifiedDate",false));
+				columns.push(createColumn("Oct","OctNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Nov","NovNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Dec","DecNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jan","JanNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Feb","FebNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Mar","MarNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Apr","AprNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("May","MayNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jun","JunNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jul","JulNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Aug","AugNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Sep","SepNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Next FY Impact","NextFYImpact",false));
+				
+				gridListAll.columns = columns;
+				rows = Database.opportunityDao.findAll(opp_columns);
+				rows.addItem({AnnualizedImpact:"Forecast total",isTotal:true});
+				rows.addItem({AnnualizedImpact:"Actual revenue",isTotal:true});
+				calculateList(rows);
+				if(rows == null){
+					rows = new ArrayCollection();
+					rows.addItem(createEmptyObject());
+				}else{
+					rows.addItemAt(createEmptyObject(),0);
+				}
+				
+				
+				
+				gridListAll.addEventListener(KeyboardEvent.KEY_DOWN,keyEnterHandler);
+				
+//				rows.addItem({AnnualizedImpact:"Variance"});
+				gridListAll.dataProvider = rows;
+			}
+			private function keyEnterHandler(evt:KeyboardEvent):void {
+				if(evt.keyCode == Keyboard.ENTER){
+					var lst:ArrayCollection = gridListAll.dataProvider as ArrayCollection;
+					if(lst == null){
+						lst = new ArrayCollection();
+						lst.addItem(createEmptyObject());
+						gridListAll.dataProvider = lst;
+					}else{
+						// get first row to check to insert new row
+						var obj:Object = lst[0];
+						if(obj == null && !obj.isNew){
+							lst.addItemAt(createEmptyObject(),0);
+							gridListAll.selectedIndex = 0;
+						}
+					}
+				}
+					
+				
+				
+				
+			}
+			private function calculateItem(item:Object):void{
+				var octVal:int = item.Oct; 
+				var novVal:int = item.Nov;
+				var decVal:int = item.Dec;
+				var janVal:int = item.Jan;
+				var febVal:int = item.Feb;
+				var marVal:int = item.mar;
+				var aprVal:int = item.Apr;
+				var mayVal:int = item.May;
+				var junVal:int = item.Jun;
+				var julVal:int = item.Jul;
+				var augVal:int = item.Aug;
+			}
+			private function calculateList(ls:ArrayCollection,isNext:Boolean=false):void{
+				var totalForeCast:int = 0;
+				var closed:int = 0;
+				var notClosed:int = 0;
+				if(ls != null){
+					
+					for each(var item:Object in ls){
+						if(item.isTotal) continue;
+						var octVal:int =isNext? item.OctNext : item.Oct; 
+						var novVal:int = isNext? item.NovNext : item.Nov;
+						var decVal:int = isNext? item.DecNext : item.Dec;
+						var janVal:int = isNext? item.JanNext : item.Jan;
+						var febVal:int = isNext? item.FebNext : item.Feb;
+						var marVal:int = isNext? item.MarNext : item.Mar;
+						var aprVal:int = isNext? item.AprNext : item.Apr;
+						var mayVal:int = isNext? item.MayNext : item.May;
+						var junVal:int = isNext? item.JunNext : item.Jun;
+						var julVal:int = isNext? item.JulNext : item.Jul;
+						var augVal:int = isNext? item.AugNext : item.Aug;
+						var sepVal:int = isNext? item.SepNext : item.Sep;
+						var total:int = octVal + novVal + decVal + janVal + febVal + marVal + aprVal + mayVal + junVal + julVal + augVal + sepVal; 
+						totalForeCast = totalForeCast + total;
+						if(isNext){
+							item.NextFYImpact = total;
+						}else{
+							if(item.SalesStage == SalesStageUtils.getCloseLostValue() || item.SalesStage == SalesStageUtils.getCloseWonValue()){
+								closed = closed + total;
+							}else{
+								notClosed = notClosed + total;
+							}
+							item.CurrentFYImpact = total;
+							calculateGridTotal(closed,notClosed,totalForeCast);
+						}
+						
+					}
+			
+				}
+				
+			}
+			private function calculateGridTotal(closed:int,notClosed:int,curImpact:int):void{
+				var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+				if(lstTotal != null){
+					var obj:Object = lstTotal[0];
+					obj.Forecast = curImpact;
+					obj.variance = obj.Target - curImpact;
+					obj.closed = closed
+					obj.notclosed = notClosed
+					lstTotal.refresh();
+				}else{
+					var data:ArrayCollection = new ArrayCollection();
+					data.addItem({Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+					gridTotal.dataProvider = data;
+				}
+				
+	
+			}
+			private function itemEditEndListener():void{
+				//				var grid:AdvancedDataGrid = e.currentTarget as AdvancedDataGrid;
+				//				var dataField:String = grid.columns[e.columnIndex].dataField;grid.editedItemRenderer.data
+				//				e.preventDefault();
+				//				grid.createItemEditor(e.columnIndex,e.rowIndex);
+				var tolForeCast:int = 0;//sum(CurrentFYImpact);
+				var totalVarian:int = 0;//target - tolForeCast
+				var tolClosed:int = 0;// opportunities = status closed
+				var tolNotClosed:int = 0;// opportunities = status not closed
+				var tolCurrentFYImpact:int = 0;// sum(Oct to Sep)
+				//Change vs last FY = CurrentFYImpact - Last FY impact 
+				//Total CALLS current quarter = Account -> Call
+				//Next FY Impact = sum of all colum month in the last colum.
+				calculateList(gridListAll.dataProvider as ArrayCollection);
+				
+				
+			}
+			private function itemNextEditEndListener():void{
+//				var grid:AdvancedDataGrid = e.currentTarget as AdvancedDataGrid;
+//				var dataField:String = grid.columns[e.columnIndex].dataField;grid.editedItemRenderer.data
+				//				e.preventDefault();
+				//				grid.createItemEditor(e.columnIndex,e.rowIndex);
+				var tolForeCast:int = 0;//sum(CurrentFYImpact);
+				var totalVarian:int = 0;//target - tolForeCast
+				var tolClosed:int = 0;// opportunities = status closed
+				var tolNotClosed:int = 0;// opportunities = status not closed
+				var tolCurrentFYImpact:int = 0;// sum(Oct to Sep)
+				//Change vs last FY = CurrentFYImpact - Last FY impact 
+				//Total CALLS current quarter = Account -> Call
+				//Next FY Impact = sum of all colum month in the last colum.
+				calculateList(gridListAll.dataProvider as ArrayCollection,true);
+				
+				
+			}
+			private function getFieldDisplayName(item:Object,col:AdvancedDataGridColumn =null):String{
+				if(item == null || col == null) return "";
+				var obj:Object = item[col.dataField];
+				if(obj != null){
+					if(obj.hasOwnProperty("data")){
+						return obj["data"];
+					}
+
+				}
+				return String(obj);
+			}
+			private function itemEditEndGridTotalListener():void{
+				
+				var arrLst:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+				var item:Object = arrLst[0];
+				item["variance"] = Number(item.Target) - item.Forecast;
+			}
+			private  function initGridTotalAllOpportunities():void{
+				
+				var columns:Array = new Array();
+				//				columns.push(createColumn("","Total"));
+				columns.push(createColumn("FY 13/14 Target","FYTarget",true,null,itemEditEndGridTotalListener));
+				columns.push(createColumn("FY 13/14 Forecast","Forecast",false));
+				columns.push(createColumn("FY impact variance to target","variance",false));
+				columns.push(createColumn("FY impact, closed opportunities","closed",false));
+				columns.push(createColumn("FY impact, not-closed opportunities","notclosed",false));
+				gridTotal.columns = columns;
+
+				
+//				gridTotal.addEventListener(AdvancedDataGridEvent.ITEM_EDIT_END,itemEditEndGridTotalListener);
+				
+				//				gridTotal.rowCount = data.length;
+				
+			}
+			public function reload():void{
+				
+			}
+		
+			private  function initGridProductDetails():void{
+				
+				var columns:Array = new Array();
+				
+				columns.push(createColumn("Product Description","ProductDescription",true));
+				columns.push(createColumn("# of Patients","Patients",true));
+				columns.push(createColumn("Value of Product","ProductValue",true));
+				columns.push(createColumn("Value of Patients","QTDRevenue",false));
+				
+//				gridProductDetails.columns = columns;
+				
+				var dataProvider:ArrayCollection = new ArrayCollection();
+				var objDest:Object = {ProductDescription:"SelfCath",Patients:"200",ProductValue:"700",QTDRevenue:"140000"};
+				var objSpeediCath:Object = {ProductDescription:"SpeediCath Straight",Patients:"100",ProductValue:"1400",QTDRevenue:"140000"};
+				var objCollection:Object = {ProductDescription:"Collection",Patients:"100",ProductValue:"400",QTDRevenue:"40000"};
+				var objTotal:Object = {ProductDescription:"Total",Patients:"400",ProductValue:"2500",QTDRevenue:"320000"};
+				dataProvider.addItem(objDest);
+				dataProvider.addItem(objSpeediCath);
+				dataProvider.addItem(objCollection);
+				dataProvider.addItem(objTotal);
+//				gridProductDetails.dataProvider = dataProvider;
+			}
+			private function homeOpportunity():void{
+				list.showHomeOpportunity();
+			}
+			private function advanceSearch():void{
+				var where:String = "";
+				var records:ArrayCollection = null;
+				if(txtSearch.text != ""){
+					where = "OpportunityName Like '" + txtSearch.text +"%'" ;
+				}
+				records = Database.opportunityDao.findAll(opp_columns, where, null, 1001,null);
+				if(records == null){
+					records = new ArrayCollection();
+					records.addItem(createEmptyObject());
+				}else{
+					records.addItemAt(createEmptyObject(),0);
+				}
+
+				calculateList(records);
+				
+				records.addItem({AnnualizedImpact:"Forecast total"});
+				records.addItem({AnnualizedImpact:"Actual revenue"});
+				records.addItem({AnnualizedImpact:"Variance"});
+				
+				gridListAll.dataProvider = records;
+			}
+		]]>
+	</mx:Script>
+		<mx:VBox left="8" right="8" width="100%" height="100%">
+			<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
+				<mx:LinkButton label="Normal Mode"  click="list.showHomeOpportunity()" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
+				<mx:LinkButton icon="{ImageUtils.excelIcon}" label="Export Excel" />
+				<mx:LinkButton icon="{closeIcon}" label="Cancel"/>
+				<mx:LinkButton paddingRight="20" icon="{saveIcon}"  label="Save"/>
+			</mx:HBox>
+			<mx:Label paddingTop="20" text="Total of all Opportunities" />
+			<mx:AdvancedDataGrid  height="44" editable="true" width="800" id="gridTotal"/>
+			<mx:Label text="List of all Opportunities" />
+			<mx:HBox width="100%">
+				<mx:TextInput id="txtSearch" change="advanceSearch()" width="200"/>
+				<mx:Button icon="{searchIcon}" click="advanceSearch()" id="btnSearch" />
+			</mx:HBox>
+			<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
+				<mx:AdvancedDataGrid height="100%" editable="true" verticalScrollPolicy="auto" id="gridListAll"/>
+			</mx:Canvas>
+		</mx:VBox>
+		
+		<!--
+		<mx:Label text="Product Details" />
+		<mx:AdvancedDataGrid width="600" rowCount="5" editable="true" id="gridProductDetails"/>
+		-->
+</mx:Canvas>

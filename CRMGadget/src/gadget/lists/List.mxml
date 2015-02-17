@@ -71,6 +71,7 @@
 			[Embed(source='/assets/pdficon.gif')] [Bindable] private static var pdfIcon:Class;
 			[Embed(source='/assets/csvicon.gif')] [Bindable] private static var csvIcon:Class;
 			[Embed(source='/assets/customize.png')] [Bindable] private static var customIcon:Class;
+			[Embed(source='/assets/daily_agenda.png')] [Bindable] private static var dailyIcon:Class;
 			[Embed(source='/assets/link.png')] [Bindable] private static var linkIcon:Class;
 			[Embed(source='/assets/link_add.png')] [Bindable] private static var linkAddIcon:Class;
 			[Embed(source='/assets/delete.png')] [Bindable] private static var deleteIcon:Class;
@@ -80,6 +81,7 @@
 			[Embed(source='/assets/table.png')] [Bindable] private static var tableIcon:Class;
 			[Embed(source='/assets/netbreeze.png')] [Bindable] private static var netbreezeIcon:Class;
 			
+
 			
 			private static const LIST_ALERT_MSG_PLEASE_SELECT_THE:String = 'LIST_ALERT_MSG_PLEASE_SELECT_THE';
 			private static const LIST_ALERT_MSG_TO_EDIT:String = 'LIST_ALERT_MSG_TO_EDIT';
@@ -268,7 +270,20 @@
 				}
 				return 1;
 			}
+			private function showImpactCalendar():void{
+				
+				boxList.visible = false;
+//				impactCalendar.list = this;
+				
+				boxImpactCalendar.visible = true;
 			
+		
+			}
+			public function showHomeOpportunity():void{
+				boxList.visible = true;
+				boxImpactCalendar.visible = false;
+				
+			}
 			private function init():void {
 				//bug #1679 CRO add new tab
 				if(entity == MainWindow.DASHBOARD){
@@ -336,7 +351,10 @@
 					linkList.width = 0;
 					
 				}
+				var impactCalendar:ImpactCalendar = new ImpactCalendar();
 				
+				impactCalendar.list = this;
+				boxImpactCalendar.addChild(impactCalendar);
 			}
 			
 			
@@ -941,7 +959,9 @@
 					msProcess.entity = entity;
 					WindowManager.openModal(msProcess);
 				}
-				
+				if(event.label == "Impact Calendar"){
+					showImpactCalendar();
+				}
 			}
 			
 			
@@ -1797,6 +1817,10 @@
 				var disable_list_layout:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_LIST_LAYOUT);
 				
 				buttons.addItem({label:i18n._(LIST_BUTTON_LABEL_EDIT_LAYOUT), icon:customIcon, disabled: disable_list_layout});
+				if(entity == Database.opportunityDao.entity){
+					buttons.addItem({label:"Impact Calendar", icon:dailyIcon, disabled: false});
+					
+				}
 				// Add OrgChat
 				/*
 				if (entity == "Account") {
@@ -2067,7 +2091,9 @@
 	
 	<mx:Resize duration="150" id="expand" target="{detail}"  heightTo="192"/>
 	<mx:Resize duration="150" id="contract" target="{detail}" heightTo="0"/>
-	
+	<mx:Style source="styles.css"/>
+	<mx:VBox left="8" backgroundColor="0xeeeeee" styleName="main" width="100%" height="100%" visible="false"   id="boxImpactCalendar">
+	</mx:VBox>
 	<mx:HBox top="0" left="8" right="8" bottom="8" verticalAlign="middle" horizontalGap="0" id="boxList">
 		<mx:Canvas  id="homeTask"  visible="false" top="10" width="0" height="0"/>
 		<mx:VBox id="listTab" width="100%" height="100%" horizontalAlign="center" verticalGap="0">

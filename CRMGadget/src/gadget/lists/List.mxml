@@ -1818,7 +1818,7 @@
 				
 				buttons.addItem({label:i18n._(LIST_BUTTON_LABEL_EDIT_LAYOUT), icon:customIcon, disabled: disable_list_layout});
 				if(entity == Database.opportunityDao.entity){
-					buttons.addItem({label:"Impact Calendar", icon:dailyIcon, disabled: false});
+					//buttons.addItem({label:"Impact Calendar", icon:dailyIcon, disabled: false});
 					
 				}
 				// Add OrgChat

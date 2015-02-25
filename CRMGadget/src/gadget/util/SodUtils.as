@@ -103,9 +103,9 @@ package gadget.util
 			//[9, "Objectives",            true,  "CRMODLS_OBJECTIVE",        null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[9, "Objectives",            true,  null,        null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[1, "Opportunity",           true,  null,                       null, true,   true,    null,      false,   ],
-			[9, "PlanAccount",           true,  "CRMODLS_BPL_ACNT",         null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
-			[9, "PlanContact",           true,  "CRMODLS_BPL_CNTCT",        null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
-			[9, "PlanOpportunity",       true, "CRMODLS_PlanOpportunities", null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
+			[9, "PlanAccount",           true,  null,         null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
+			[9, "PlanContact",           true,  null,        null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
+			[9, "PlanOpportunity",       true, null, null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[0, "Policy",                true,  null,                       null, true,   true,    null,      false,   ],
 			[0, "PolicyHolder",          true,  null,                       null, true,   false,   null,      false,   ],
 			[9, "Portfolio",             true,  null,                       null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!

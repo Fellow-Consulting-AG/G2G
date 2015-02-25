@@ -4,7 +4,9 @@ package gadget.sync.incoming {
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.Dictionary;
 	
+	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -26,7 +28,7 @@ package gadget.sync.incoming {
 		private static var ns2:Namespace = new Namespace("urn:/crmondemand/xml/picklist/data");
 		
 		private const PICKLISTSERVICE_VERSION:int = 2;	// Increment to force FULL SYNC on older clients
-		
+		private var sodname2ourname:Dictionary = new Dictionary();
 		private var allPicklistServices:ArrayCollection = null;		
 		private var currentPicklist:int = 0;	
 		override protected function doRequest():void {
@@ -43,19 +45,21 @@ package gadget.sync.incoming {
 				allPicklistServices = new ArrayCollection() ;
 				for each(var transaction:Object in tmpTransaction) {
 					if (transaction.enabled) {
-						
-						allPicklistServices.addItem(transaction.entity);
+						var dao:BaseDAO = Database.getDao(transaction.entity);
+						allPicklistServices.addItem(dao.metaDataEntity);
+						sodname2ourname[dao.metaDataEntity] = dao.entity;
 						for each (var sub:String in SupportRegistry.getSubObjects(transaction.entity)) {
 							var subDao:SupportDAO = SupportRegistry.getSupportDao(transaction.entity, sub)
-							var subentity:String=DAOUtils.getRecordType(subDao.entity);
-							//allPicklistServices.addItem(subentity);
-							
-							if(subentity == Database.businessPlanDao.entity){
-								subentity = "CRMODLS_BusinessPlan";
-							}else if(subentity == Database.objectivesDao.entity){
-								subentity = "CRMODLS_OBJECTIVE";
-							}
-							allPicklistServices.addItem(subentity);
+//							var subentity:String=DAOUtils.getRecordType(subDao.entity);
+//							//allPicklistServices.addItem(subentity);
+//							
+//							if(subentity == Database.businessPlanDao.entity){
+//								subentity = "CRMODLS_BusinessPlan";
+//							}else if(subentity == Database.objectivesDao.entity){
+//								subentity = "CRMODLS_OBJECTIVE";
+//							}
+							sodname2ourname[subDao.metaDataEntity] = subDao.entity;
+							allPicklistServices.addItem(subDao.metaDataEntity);
 						}
 					}
 				}
@@ -131,13 +135,14 @@ package gadget.sync.incoming {
 				function put(rec:XML, field:String, repl:String=null):void {
 					var value:String = getDataStr(rec, field);
 					if(field=="ObjectName"){
-						if(value=="Revenue"){
-							value = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
-						}else if(value=="CRMODLS_BusinessPlan"){
-							value = Database.businessPlanDao.entity;
-						}else if(value=="CRMODLS_OBJECTIVE"){
-							value = Database.objectivesDao.entity;
-						}
+//						if(value=="Revenue"){
+//							value = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
+//						}else if(value=="CRMODLS_BusinessPlan"){
+//							value = Database.businessPlanDao.entity;
+//						}else if(value=="CRMODLS_OBJECTIVE"){
+//							value = Database.objectivesDao.entity;
+//						}
+						value = sodname2ourname[value];
 					}
 					data[repl!=null ? repl : field] = value;
 				}

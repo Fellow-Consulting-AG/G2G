@@ -1,4 +1,5 @@
 package gadget.sync.incoming {
+	import com.adobe.protocols.dict.Dict;
 	import com.adobe.utils.StringUtil;
 	
 	import flash.events.Event;
@@ -6,6 +7,7 @@ package gadget.sync.incoming {
 	import flash.utils.Dictionary;
 	
 	import gadget.dao.AllUsersDAO;
+	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -30,6 +32,7 @@ package gadget.sync.incoming {
 		
 		private var allTransactions:ArrayCollection = null;		
 		private var currentTransaction:int = 0;
+		private var sodname2ourname:Dictionary = new Dictionary();
 
 		override protected function doRequest():void {
  			if (getLastSync() != NO_LAST_SYNC_DATE){
@@ -42,22 +45,28 @@ package gadget.sync.incoming {
 				var tmpTransaction:ArrayCollection = Database.transactionDao.listTransaction();
 				allTransactions = new ArrayCollection() ;
 				allTransactions.addItem(Database.allUsersDao.entity);
+				sodname2ourname[Database.allUsersDao.metaDataEntity] = Database.allUsersDao.entity;
 				for each(var transaction:Object in tmpTransaction) {
 					if (transaction.enabled) {
-						var entityTran:String = transaction.entity;
-						if(entityTran==Database.medEdDao.entity){
-							entityTran = "MedEdEvent";
-						}else if(entityTran==Database.businessPlanDao.entity){
-							entityTran = "CRMODLS_BusinessPlan";
-						}else if(entityTran==Database.objectivesDao.entity){
-							entityTran = "CRMODLS_OBJECTIVE";
-						}
-						allTransactions.addItem(entityTran);						
+						var dao:BaseDAO = Database.getDao(transaction.entity);
+//						
+//						
+//						var entityTran:String = transaction.entity;
+//						if(entityTran==Database.medEdDao.entity){
+//							entityTran = "MedEdEvent";
+//						}else if(entityTran==Database.businessPlanDao.entity){
+//							entityTran = "CRMODLS_BusinessPlan";
+//						}else if(entityTran==Database.objectivesDao.entity){
+//							entityTran = "CRMODLS_OBJECTIVE";
+//						}
+						allTransactions.addItem(dao.metaDataEntity);
+						sodname2ourname[dao.metaDataEntity] = dao.entity;
 						for each (var sub:String in SupportRegistry.getSubObjects(transaction.entity)) {
 							var subDao:SupportDAO = SupportRegistry.getSupportDao(transaction.entity, sub)
-							var subentity:String=DAOUtils.getRecordType(subDao.entity);
+							//var subentity:String=DAOUtils.getRecordType(subDao.entity);
 							if(subDao.isGetField){								
-								allTransactions.addItem(subentity);
+								allTransactions.addItem(subDao.metaDataEntity);
+								sodname2ourname[subDao.metaDataEntity] = subDao.entity;
 							}
 							
 						}
@@ -121,14 +130,15 @@ package gadget.sync.incoming {
 
 				var entity:String = getDataStr(objects, "ObjectName");
 				try{
-					if(entity==="Revenue"){
-						entity = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
-					}
-					else if(entity=="CRMODLS_OBJECTIVE"){
-						entity = Database.objectivesDao.entity;
-					}else if(entity == "CRMODLS_BusinessPlan"){
-						entity = Database.businessPlanDao.entity;
-					}
+					entity = sodname2ourname[entity];
+//					if(entity==="Revenue"){
+//						entity = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
+//					}
+//					else if(entity=="CRMODLS_OBJECTIVE"){
+//						entity = Database.objectivesDao.entity;
+//					}else if(entity == "CRMODLS_BusinessPlan"){
+//						entity = Database.businessPlanDao.entity;
+//					}
 					for each (var field:XML in objects.ns2::ListOfFields[0].ns2::Field) {
 	
 						var fieldRec:Object = populate(field, Database.fieldManagementServiceDao.getColumns());
@@ -162,7 +172,11 @@ package gadget.sync.incoming {
 										'display_name': getDisplayName(fieldRec,mapTranslate),
 										'data_type':   getFieldType(fieldRec)
 								};
-								Database.fieldDao.insert(fieldObj);
+								try{
+									Database.fieldDao.insert(fieldObj);
+								}catch(e:Error){
+									trace(e.getStackTrace());
+								}
 							}
 							
 						}catch(e:TypeError){

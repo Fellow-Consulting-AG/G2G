@@ -33,6 +33,10 @@ package gadget.dao
 			return fields;
 			
 		}
+		
+		override public function get metaDataEntity():String{
+			return "Opportunity Contact Role";
+		}
 		override public function getLayoutFields():Array{
 			var layoutFields:Array = [
 				{data_type:"Text (Short)",display_name:"First Name",element_name:"ContactFirstName",entity:this.entity,required:true},

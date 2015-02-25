@@ -9,7 +9,7 @@ package gadget.dao
 			super(work, sqlConnection, {
 				table: 'sod_planaccount',
 				oracle_id: 'Id',
-				name_column: [ 'Id' ],	//___EDIT__THIS___
+				name_column: [ 'AccountIDAccountName' ],	//___EDIT__THIS___
 				search_columns: [ 'Id' ],
 				display_name : "PlanAccount",	//___EDIT__THIS___
 				index: [ 'Id' ],
@@ -19,6 +19,10 @@ package gadget.dao
 
 		override public function get entity():String {
 			return "PlanAccount";
+		}
+		
+		override public function get metaDataEntity():String{
+			return "CRMODLS_BPL_ACNT";
 		}
 		
 		private var textColumns:Array = [

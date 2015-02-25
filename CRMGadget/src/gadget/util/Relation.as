@@ -102,6 +102,7 @@ package gadget.util
 			{entitySrc:"Account", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name"], labelDest:["Name"], entityDest:"CustomObject14"},
 			{entitySrc:"Account", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
+			
 			// account_contact
 			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
 			
@@ -624,7 +625,7 @@ package gadget.util
 			{entitySrc:"Asset", keySrc:"CustomObject14Id", keyDest:"Id", labelSrc:["CustomObject14Name"], labelDest:["Name"], entityDest:"CustomObject14"},
 			{entitySrc:"Asset", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
-			{entitySrc:"BusinessPlan", keySrc:"Id", keyDest:"ParentPlanNameId", labelSrc:["PlanName"],keepOutLabelSrc : true, labelDest:["ParentPlanNamePlanName"], entityDest:"BusinessPlan"},
+			
 			
 			{entitySrc:"Campaign", keySrc:"CustomObject1Id", keyDest:"CustomObject1Id", labelSrc:["CustomObject1Name"], labelDest:["Name"], entityDest:"Custom Object 1"},
 			{entitySrc:"Campaign", keySrc:"CustomObject2Id", keyDest:"Id", labelSrc:["CustomObject2Name"], labelDest:["Name"], entityDest:"Custom Object 2"},
@@ -680,7 +681,21 @@ package gadget.util
 			
 			{entitySrc:"Objectives", keySrc:"AccountNameId", keyDest:"AccountId", labelSrc:["AccountNameAccountName"], labelDest:["AccountName"], entityDest:"Account"},
 			{entitySrc:"Objectives", keySrc:"PlanNameId", keyDest:"Id", labelSrc:["PlanNamePlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
-			{entitySrc:"Objectives", keySrc:"ProductNameId", keyDest:"Id", labelSrc:["ProductNameName"], labelDest:["Name"], entityDest:"Product"}
+			{entitySrc:"Objectives", keySrc:"ProductNameId", keyDest:"Id", labelSrc:["ProductNameName"], labelDest:["Name"], entityDest:"Product"},
+			
+			
+			{entitySrc:"BusinessPlan", keySrc:"ParentPlanNameId", keyDest:"Id", labelSrc:["ParentPlanNamePlanName"],keepOutLabelSrc : true, labelDest:["PlanName"], entityDest:"BusinessPlan"},
+			{entitySrc:"BusinessPlan", keySrc:"Id", keySupport:"UserId", keyDest:"Id", labelSrc:["PlanName"],isExceptLabelSrc:true, labelSupport:["LastName","FirstName","TeamRole","RoleName","AccessProfileName"],isColDynamic:true, labelDest:["LastName","FirstName"], entityDest:"User", supportTable:"BusinessPlan.Team"},
+			
+			
+			{entitySrc:"PlanAccount", keySrc:"BusinessPlanId", keyDest:"Id", labelSrc:["BusinessPlanPlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
+			{entitySrc:"PlanContact", keySrc:"BusinessPlanId", keyDest:"Id", labelSrc:["BusinessPlanPlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
+			{entitySrc:"PlanOpportunity", keySrc:"PlanId", keyDest:"Id", labelSrc:["PlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
+			
+			{entitySrc:"PlanOpportunity", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:['OpportunityName','OptyName',"OpportunityAccountName","OpportunityOwner","OpportunityForecast","OpportunityCloseDate","OpportunityRevenue"], labelDest:['OpportunityName','OpportunityName','AccountName','Owner','CloseDate','Forecast','Revenue'], entityDest:"Opportunity"},
+			{entitySrc:"PlanAccount", keySrc:"AccountIDId", keyDest:"AccountId", labelSrc:['AccountIDAccountName',"AccountIDAccountType","AccountIDLocation","AccountIDOwner","AccountIDPriority","AccountIDReference"], labelDest:['AccountName','AccountType','Location','Owner','Priority','Reference'], entityDest:"Account"},
+			{entitySrc:"PlanContact", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName","ContactFirstName","ContactLastName","ContactAccountName"], labelDest:['ContactFullName','ContactFirstName','ContactLastName','AccountName'], entityDest:"Contact"}
+			
 		]);
 		
 		

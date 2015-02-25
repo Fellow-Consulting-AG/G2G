@@ -60,6 +60,11 @@ package gadget.dao
 			return ["deleted", "local_update" ];			
 			
 		}
+		
+		
+		override public function get metaDataEntity():String{
+			return DAOUtils.getRecordType(entity);
+		}
 
 		///////////////////////////////////////////////////////////////
 		// Private data and initializers

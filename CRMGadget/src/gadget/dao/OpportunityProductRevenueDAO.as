@@ -32,6 +32,11 @@ package gadget.dao
 			
 		}
 		
+		override public function get metaDataEntity():String{
+			return "Revenue";
+		}
+		
+		
 		override public function getPluralName():String{
 			return i18n._("Product Revenues");
 		}

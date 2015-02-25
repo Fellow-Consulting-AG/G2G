@@ -1027,6 +1027,12 @@ package gadget.dao
 			}
 			return new ArrayCollection(result.data);
 		}
+		
+		
+		public function get metaDataEntity():String{
+			return entity;
+		}
+		
 		public function findDataBySubField(subField:String , oracleId:String):ArrayCollection {
 			if(StringUtils.isEmpty(oracleId) || oracleId=="No Match Row Id"){
 				return new ArrayCollection();

@@ -21,7 +21,9 @@ package gadget.dao
 		override public function get entity():String {
 			return "Objectives";
 		}
-		
+		override public function get metaDataEntity():String{
+			return "CRMODLS_OBJECTIVE";
+		}
 		private var textColumns:Array = [
 			"ModifiedDate",
 			"CreatedDate",

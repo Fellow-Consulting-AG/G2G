@@ -32,6 +32,7 @@
 
 package gadget.dao {
 	
+	import com.adobe.protocols.dict.Database;
 	import com.google.analytics.debug.Alert;
 	
 	import flash.data.SQLColumnSchema;
@@ -193,6 +194,7 @@ package gadget.dao {
 		
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
+		private var _auditTrail:AuditTrailDao;
 		
 		public static function get templateDao():OrderTemplate
 		{
@@ -312,6 +314,7 @@ package gadget.dao {
 		private var _assessmentMappingDao:AssessmentMappingDao;
 		private var _assessmentPDFHeaderDao:AssessmentPDFHeaderDAO;
 		private var _assessmentPDFColorThemeDao:AssessmentPDFColorThemeDAO;
+		private var _businessPlanTeam:BusinessPlanTeamDAO;
 		
 		
 		
@@ -1639,6 +1642,7 @@ package gadget.dao {
 			_assessmentPDFHeaderDao = new AssessmentPDFHeaderDAO(_sqlConnection,_work);
 			
 			_assessmentPDFColorThemeDao = new AssessmentPDFColorThemeDAO(_sqlConnection,_work);
+			_businessPlanTeam = new BusinessPlanTeamDAO(_sqlConnection,_work);
 			// CH 
 			_assessmentSplitterDao = new AssessmentSplitterDAO(_sqlConnection, _work);
 			_dashboardReportDao = new DashboardReportDAO(_sqlConnection, _work);
@@ -1660,6 +1664,7 @@ package gadget.dao {
 			_blockDependField = new BlockDependFieldDAO(_sqlConnection,_work);
 			_countryDao = new CountryDao(_sqlConnection,_work);
 			_addressfieldtranslatorDao = new AddressFieldTranslatorDAO(_sqlConnection,_work);
+			_auditTrail = new AuditTrailDao(_sqlConnection,_work);
 			
 		}
 		
@@ -1747,6 +1752,7 @@ package gadget.dao {
 				YcheckLayout(accountPartnerDao.entity);
 				YcheckLayout(accountCompetitorDao.entity);
 				YcheckLayout(accountTeamDao.entity);
+				YcheckLayout(businessPlanTeam.entity);
 				YcheckLayout(campaignNoteDao.entity);
 				YcheckLayout(contactNoteDao.entity);
 				YcheckLayout(contactTeamDao.entity);
@@ -1762,6 +1768,11 @@ package gadget.dao {
 				YcheckLayout(accountRelatedDao.entity);
 				YcheckLayout(opportunityContactDao.entity);
 				YcheckLayout(activityContactDao.entity);
+				YcheckLayout(planAccountDao.entity);
+				YcheckLayout(planContactDao.entity);
+				YcheckLayout(planOpportunityDao.entity);
+				
+				
 				// list Layout
 				YcheckListLayout("Account");
 				YcheckListLayout("Contact");
@@ -1815,6 +1826,10 @@ package gadget.dao {
 				YcheckListLayout(objectivesDao.entity);
 				YcheckListLayout(opportunityContactDao.entity);
 				YcheckListLayout(activityContactDao.entity);
+				YcheckListLayout(planAccountDao.entity);
+				YcheckListLayout(planContactDao.entity);
+				YcheckListLayout(planOpportunityDao.entity);
+				YcheckListLayout(businessPlanTeam.entity);
 				// view Layout
 				YcheckViewLayout("Account");
 				YcheckViewLayout("Contact");
@@ -1847,6 +1862,11 @@ package gadget.dao {
 				YcheckViewLayout(Database.objectivesDao.entity);
 				YcheckViewLayout(opportunityContactDao.entity);
 				YcheckViewLayout(activityContactDao.entity);
+				YcheckViewLayout(planAccountDao.entity);
+				YcheckViewLayout(planContactDao.entity);
+				YcheckViewLayout(planOpportunityDao.entity);
+				
+				
 				//field:String = null, operator:String = null, value:String = null
 				// custom layouts
 				
@@ -1917,6 +1937,10 @@ package gadget.dao {
 				YcheckCustomLayout("BusinessPlan", "BusinessDefault", "Business Plan", "Business Plans");
 				YcheckCustomLayout(Database.objectivesDao.entity, "ObjectivesDefault", "Objective", "Objectives");
 				YcheckCustomLayout(Database.activityContactDao.entity, "contactDefault", "Contact", "Contacts");
+				YcheckCustomLayout(Database.planAccountDao.entity, "planAccountDefault", "PlanAccount", "PlanAccounts");
+				YcheckCustomLayout(Database.planContactDao.entity, "planContactDefault", "PlanContact", "PlanContacts");
+				YcheckCustomLayout(Database.planOpportunityDao.entity, "planOpportunityDefault", "PlanOpportunity", "PlanOpportunitys");
+				
 				YcheckPrefs(PreferencesDAO.PDF_LOGO,sqlConnection);
 				YcheckPrefs(PreferencesDAO.WINDOW_LOGO,sqlConnection);
 				YcheckPrefs(PreferencesDAO.USER_SIGNATURE,sqlConnection);
@@ -3179,6 +3203,7 @@ package gadget.dao {
 				}
 				
 				for (var i:int = 0; i < defaultFields.length; i++) {
+					try{
 					if (defaultFields[i].subtype == null || defaultFields[i].subtype == subtype) {
 						var layout:Object = new Object();
 						layout.entity = entity;
@@ -3188,6 +3213,9 @@ package gadget.dao {
 						layout.column_name = defaultFields[i].column_name;
 						layout.custom = defaultFields[i].custom;
 						_layoutDao.insert(layout);
+					}
+					}catch(e:Error){
+						trace(e);
 					}
 				}
 			}			
@@ -3288,7 +3316,7 @@ package gadget.dao {
 				
 			}
 			var d2:BaseDAO = null;
-			if (entity.indexOf(".")>0) {
+			if (entity.indexOf(".")>0||entity==Database.auditTrail.entity) {
 				d2 = SupportRegistry.getDao(entity);
 			} else {
 				try {
@@ -3361,7 +3389,10 @@ package gadget.dao {
 			{entity:"Note",sync_order:26, rank:26},
 			{entity:"MedEdEvent",sync_order:27, rank:27},
 			{entity:"BusinessPlan",sync_order:28, rank:28},
-			{entity:"Objectives",sync_order:29, rank:29}
+			{entity:"Objectives",sync_order:29, rank:29},
+			{entity:"PlanContact",sync_order:29, rank:31},
+			{entity:"PlanAccount",sync_order:29, rank:30},
+			{entity:"PlanOpportunity",sync_order:29, rank:32}
 		];
 		
 		//Account.Account,Account.Objective,Account.ServiceRequest,Account.Opportunity,Account.CustomObject2,
@@ -3410,9 +3441,11 @@ package gadget.dao {
 				{name:"Custom Object 3",sodname:"Custom Object 3",enabled:0,entity_name:"Custom Object 3",syncable:false},
 				{name:"CustomObject4",sodname:"CustomObject4",enabled:0,entity_name:"CustomObject4",syncable:true},
 				{name:"CustomObject10",sodname:"CustomObject10",enabled:0,entity_name:"CustomObject10",syncable:true},
+				{name:"CustomObject15",sodname:"CustomObject15",enabled:0,entity_name:"CustomObject15",syncable:false},
 				{name:"Address",sodname:"Address",enabled:0,entity_name:"Account.Address",syncable:false},
 				{name:"Service Request",sodname:"Service Request",enabled:0,entity_name:"Service Request",syncable:true},
-				{name:"Objectives",sodname:"Objectives",enabled:0,entity_name:"Objectives",syncable:true},				
+				{name:"Objectives",sodname:"Objectives",enabled:0,entity_name:"Objectives",syncable:true},
+				{name:"PlanAccount",sodname:"PlanAccount",enabled:0,entity_name:"PlanAccount",syncable:false},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Account.Note",syncable:true}]},
 			{entity:"Activity",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
 				{name:"Sample Dropped",sodname:"SampleDropped",enabled:0,entity_name:"Activity.SampleDropped",syncable:true},
@@ -3431,9 +3464,20 @@ package gadget.dao {
 				{name:"Service Request",sodname:"Service Request",enabled:0,entity_name:"Service Request",syncable:false},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Contact.Note",syncable:true},
 				{name:"Contact Relationships",sodname:"Related",enabled:0,entity_name:"Contact.Related",syncable:true},
+				{name:"PlanContact",sodname:"PlanContact",enabled:0,entity_name:"PlanContact",syncable:false},
 				{name:"Custom Object 2",sodname:"CustomObject2",enabled:0,entity_name:"Custom Object 2",syncable:false}
 			]},
 			{entity:"Custom Object 1",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
+			},
+			{entity:"BusinessPlan",sub:[{name:"BusinessPlan",sodname:"BusinessPlan",enabled:0,entity_name:"BusinessPlan",syncable:false},
+				{name:"PlanAccount",sodname:"PlanAccount",enabled:0,entity_name:"PlanAccount",syncable:false},
+				{name:"Objectives",sodname:"Objectives",enabled:0,entity_name:"Objectives",syncable:false},
+				{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:false},
+				{name:"PlanOpportunity",sodname:"PlanOpportunity",enabled:0,entity_name:"PlanOpportunity",syncable:false},
+				{name:"PlanContact",sodname:"PlanContact",enabled:0,entity_name:"PlanContact",syncable:false},
+				{name:"BusinessPlanTeam",sodname:"Team",enabled:0,entity_name:"BusinessPlan.Team",syncable:true}
+			
+			]
 			},
 			{entity:"Lead",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
@@ -3444,11 +3488,14 @@ package gadget.dao {
 				{name:"Opportunity Partner",sodname:"Partner",enabled:0,entity_name:"Opportunity.Partner",syncable:true},
 				{name:"Contact",sodname:"ContactRole",enabled:0,entity_name:"Opportunity.ContactRole",syncable:true},
 				{name:"Competitor",sodname:"Competitor",enabled:0,entity_name:"Opportunity.Competitor",syncable:true},
+				{name:"PlanOpportunity",sodname:"PlanOpportunity",enabled:0,entity_name:"PlanOpportunity",syncable:false},
 				{name:"Opportunity Product Revenue",sodname:"Product",enabled:0,entity_name:"Opportunity.Product",syncable:true},				
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Opportunity.Note",syncable:true}]
 			},
 			//{entity:"Product",sub:[{name:"Activity",enabled:0},{name:"Attachment",enabled:0}]},
-			{entity:"Service Request",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
+			{entity:"Service Request",sub:[
+				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
+				{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Service Request.Note",syncable:true}]},
 			{entity:"Custom Object 2",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:false},
@@ -3668,6 +3715,16 @@ package gadget.dao {
 		public static function get addressfieldtranslatorDao():AddressFieldTranslatorDAO
 		{
 			return database._addressfieldtranslatorDao;
+		}
+
+		public static function get auditTrail():AuditTrailDao
+		{
+			return database._auditTrail;
+		}
+
+		public static function get businessPlanTeam():BusinessPlanTeamDAO
+		{
+			return database._businessPlanTeam;
 		}
 
 

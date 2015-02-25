@@ -157,6 +157,9 @@ package gadget.util{
 		[Embed(source='/assets/custom/si_note16.gif')] [Bindable] private static var noteDefaultImg:Class;
 		[Embed(source='/assets/custom/si_meded16.gif')] [Bindable] private static var medEdDefaultImg:Class;
 		[Embed(source='/assets/objective.gif')] [Bindable] private static var objectivesDefaultImg:Class;
+		[Embed(source='/assets/custom/oracleicons/money_dollar.png')] [Bindable] private static var planAccountDefault:Class;
+		[Embed(source='/assets/custom/oracleicons/onvacation_status.gif')] [Bindable] private static var planOpportunityDefault:Class;
+		[Embed(source='/assets/custom/oracleicons/user_orange.png')] [Bindable] private static var planContactDefault:Class;
 		
 		[Embed(source='/assets/custom/si_account16_bw.gif')] [Bindable] private static var accountDefaultBWImg:Class;
 		[Embed(source='/assets/custom/si_asset16_bw.gif')] [Bindable] private static var assetDefaultBWImg:Class;
@@ -752,6 +755,20 @@ package gadget.util{
 				case 'mod_customobject_25' : return mod_customobject_25;
 				case 'mod_territory_25' : return mod_territory_25;
 					
+				case 'planAccount': return planAccountDefault;
+				case 'planAccountBW': return planAccountDefault;
+				case 'planAccountDefault': return planAccountDefault;
+				case 'planAccountDefaultBW': return planAccountDefault;
+					
+				case 'planContact': return planContactDefault;
+				case 'planContactBW': return planContactDefault;
+				case 'planContactDefault': return planContactDefault;
+				case 'planContactDefaultBW': return planContactDefault;
+					
+				case 'planOpportunity': return planOpportunityDefault;
+				case 'planOpportunityBW': return planOpportunityDefault;
+				case 'planOpportunityDefault': return planOpportunityDefault;
+				case 'planOpportunityDefaultBW': return planOpportunityDefault;
 				default: return null;
 			}
 		}

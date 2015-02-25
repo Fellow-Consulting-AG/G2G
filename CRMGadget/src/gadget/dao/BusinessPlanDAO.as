@@ -29,7 +29,9 @@ package gadget.dao
 		override public function get entity():String {
 			return "BusinessPlan";
 		}
-		
+		override public function get metaDataEntity():String{
+			return "CRMODLS_BusinessPlan";
+		}
 		override protected function getOutgoingIgnoreFields():ArrayCollection{
 			return INCOMING_INGNORE_FIELDS;
 		}

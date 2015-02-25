@@ -64,8 +64,10 @@
 					}
 					else if(listChildren.length>=5 && listChildren.length<12){
 						h = h+100;
-					}else if(listChildren.length>=12){
+					}else if(listChildren.length>=12&& listChildren.length<17){
 						h = h+140;
+					}else if(listChildren.length>=17){
+						h = h+160;
 					}
 					
 					height = h;

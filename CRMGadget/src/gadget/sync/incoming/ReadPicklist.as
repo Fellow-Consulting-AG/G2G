@@ -8,6 +8,7 @@ package gadget.sync.incoming
 	import gadget.dao.SupportDAO;
 	import gadget.sync.task.SyncTask;
 	import gadget.util.CacheUtils;
+	import gadget.util.StringUtils;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -21,8 +22,7 @@ package gadget.sync.incoming
 		
 		private var currentPicklist:int = 0;
 		private var currentSynEntity:String = '';
-		
-		
+		private var currentOurEntity:String ='';
 		override protected function doRequest():void {
 			if (getLastSync() != NO_LAST_SYNC_DATE){
 				updateLastSync();
@@ -50,15 +50,18 @@ package gadget.sync.incoming
 					
 			trace("Picklist",allPicklists[currentPicklist].entity,":",allPicklists[currentPicklist].element_name);
 			var picklistObj:Object = allPicklists[currentPicklist];
-			var entity:String = picklistObj.entity;
-			if(entity==Database.opportunityProductRevenueDao.entity){
-				entity = "Revenue";
-			}else if(entity==Database.businessPlanDao.entity){
-				entity = "CRMODLS_BusinessPlan";
-			}else if(entity==Database.objectivesDao.entity){
-				entity = "CRMODLS_OBJECTIVE";
-				
-			}
+//			var entity:String = picklistObj.entity;
+//			if(entity==Database.opportunityProductRevenueDao.entity){
+//				entity = "Revenue";
+//			}else if(entity==Database.businessPlanDao.entity){
+//				entity = "CRMODLS_BusinessPlan";
+//			}else if(entity==Database.objectivesDao.entity){
+//				entity = "CRMODLS_OBJECTIVE";
+//				
+//			}
+			
+			currentOurEntity = picklistObj.entity;
+			var entity:String = getSodName(currentOurEntity);
 			// we have to create a new WebService object each time
 			//if(checkEntitySynchronize(allPicklists[currentPicklist].entity)){
 				var request:XML =
@@ -68,6 +71,19 @@ package gadget.sync.incoming
 					</PicklistWS_GetPicklistValues_Input>;
 				sendRequest("\"document/urn:crmondemand/ws/picklist/:GetPicklistValues\"", request);
 			//}
+		}
+		
+		
+		protected function getSodName(entity:String):String{
+			var dao:BaseDAO = Database.getDao(entity,false);
+			if(dao!=null && !StringUtils.isEmpty(dao.metaDataEntity)){
+				return dao.metaDataEntity;
+			}
+			return entity;
+		}
+		
+		protected function getOurName():String{
+			return currentOurEntity;
 		}
 		
 		private function checkEntitySynchronize(entity:String):Boolean{
@@ -123,17 +139,17 @@ package gadget.sync.incoming
 				isClearData=false;
 			}
 			var cnt:int = 0;
-			var recordType:String = request.ns1::RecordType[0].toString();
+			var recordType:String = currentOurEntity;//request.ns1::RecordType[0].toString();
 			var fieldName:String = request.ns1::FieldName[0].toString();
-			trace(recordType, fieldName);
-			if(recordType==="Revenue"){
-				recordType = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
-			}else if(recordType == "CRMODLS_BusinessPlan"){
-				recordType = Database.businessPlanDao.entity;
-			}else if(recordType=="CRMODLS_OBJECTIVE"){
-				recordType = Database.objectivesDao.entity;
-				
-			}
+//			trace(recordType, fieldName);
+//			if(recordType==="Revenue"){
+//				recordType = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
+//			}else if(recordType == "CRMODLS_BusinessPlan"){
+//				recordType = Database.businessPlanDao.entity;
+//			}else if(recordType=="CRMODLS_OBJECTIVE"){
+//				recordType = Database.objectivesDao.entity;
+//				
+//			}
 			var picklistDao:PicklistDAO = Database.picklistDao;
 			Database.begin();
 			var existCode:Dictionary = new Dictionary();

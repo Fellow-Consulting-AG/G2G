@@ -1,7 +1,9 @@
 package gadget.sync.incoming {
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.utils.Dictionary;
 	
+	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -20,6 +22,7 @@ package gadget.sync.incoming {
 		private var ns2:Namespace = new Namespace("urn:/crmondemand/xml/customrecordtype/data");
 		private var currentTransaction:int = 0;
 		private var allTransactions:ArrayCollection = null;	
+		private var sodname2ourname:Dictionary = new Dictionary();
 		override protected function doRequest():void {
  			if (getLastSync() != NO_LAST_SYNC_DATE){
 				successHandler(null);
@@ -30,16 +33,24 @@ package gadget.sync.incoming {
 				allTransactions = new ArrayCollection() ;
 				for each(var transaction:Object in tmpTransaction) {
 					if (transaction.enabled) {
-						var entityTran:String = transaction.entity;
-						if(entityTran==Database.medEdDao.entity){
-							entityTran = "MedEdEvent";
-						}else if(entityTran==Database.businessPlanDao.entity){
-							entityTran = "CRMODLS_BusinessPlan";
-						}else if(entityTran==Database.objectivesDao.entity){
-							entityTran = "CRMODLS_OBJECTIVE";
-						}
-						allTransactions.addItem(entityTran);						
+//						var entityTran:String = transaction.entity;
+//						if(entityTran==Database.medEdDao.entity){
+//							entityTran = "MedEdEvent";
+//						}else if(entityTran==Database.businessPlanDao.entity){
+//							entityTran = "CRMODLS_BusinessPlan";
+//						}else if(entityTran==Database.objectivesDao.entity){
+//							entityTran = "CRMODLS_OBJECTIVE";
+//						}
+//						allTransactions.addItem(entityTran);	
 						
+						var dao:BaseDAO = Database.getDao(transaction.entity);
+						allTransactions.addItem(dao.metaDataEntity);
+						sodname2ourname[dao.metaDataEntity] = dao.entity;
+						for each (var sub:String in SupportRegistry.getSubObjects(transaction.entity)) {
+							var subDao:SupportDAO = SupportRegistry.getSupportDao(transaction.entity, sub);							
+							sodname2ourname[subDao.metaDataEntity] = subDao.entity;
+							allTransactions.addItem(subDao.metaDataEntity);
+						}
 					}
 				}
 				
@@ -87,7 +98,7 @@ package gadget.sync.incoming {
 
 				for each (var trans:XML in rec.ns2::ListOfCustomRecordTypeTranslations[0].ns2::CustomRecordTypeTranslation) {
 					var transRec:Object = populate(trans, Database.customRecordTypeTranslationsDao.getColumns());
-					transRec.CustomRecordTypeServiceName = fieldRec.Name;
+					transRec.CustomRecordTypeServiceName = sodname2ourname[fieldRec.Name];
 					Database.customRecordTypeTranslationsDao.replace(transRec);
 				}
 				cnt++;

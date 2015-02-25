@@ -3,6 +3,7 @@ package gadget.sync.incoming {
 	import flash.events.IOErrorEvent;
 	import flash.utils.Dictionary;
 	
+	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -64,18 +65,18 @@ package gadget.sync.incoming {
 				
 
 			tao = allEntities[currentEntity];	
-			var entity:String = tao.sod_name;
-			if(tao.our_name==Database.medEdDao.entity){
-				entity = "MedEdEvent";
-			}
-			else if(entity==Database.businessPlanDao.entity){
-				entity = "CRMODLS_BusinessPlan";
-			}
-			else if(entity==Database.objectivesDao.entity){
-				entity = "CRMODLS_OBJECTIVE";
-			}else if(tao.our_name==Database.opportunityContactDao.entity){
-				entity = "Opportunity Contact Role";
-			}
+			var entity:String = getSodName(tao);
+//			if(tao.our_name==Database.medEdDao.entity){
+//				entity = "MedEdEvent";
+//			}
+//			else if(entity==Database.businessPlanDao.entity){
+//				entity = "CRMODLS_BusinessPlan";
+//			}
+//			else if(entity==Database.objectivesDao.entity){
+//				entity = "CRMODLS_OBJECTIVE";
+//			}else if(tao.our_name==Database.opportunityContactDao.entity){
+//				entity = "Opportunity Contact Role";
+//			}
 			var request:XML =
 					<MappingWS_GetMapping_Input xmlns='urn:crmondemand/ws/mapping/'>
 						<ObjectName>{entity}</ObjectName>
@@ -84,26 +85,38 @@ package gadget.sync.incoming {
 
 		}
 		
+		protected function getSodName(sod:SodUtilsTAO):String{
+			var dao:BaseDAO = Database.getDao(getOurName(sod),false);
+			if(dao!=null && !StringUtils.isEmpty(dao.metaDataEntity)){
+				return dao.metaDataEntity;
+			}
+			return sod.sod_name;
+		}
+		
+		protected function getOurName(sod:SodUtilsTAO):String{
+			return sod.our_name;
+		}
+		
 		override protected function handleResponse(request:XML, result:XML):int {
 			if (getFailed()) {
 				return 0;
 			}
 			var cnt:int = 0;
 			var fields:ArrayCollection = new ArrayCollection();
-			var entity:String = result.ns1::ObjectName[0].toString();
+			var entity:String = getOurName(tao);//result.ns1::ObjectName[0].toString();
 //			if (entity!=tao.sod_name) {
 //				OOPSthrow("unrequested entity", " got="+entity, "want="+tao.sod_name);
 //			}
 			
-			if(entity=="Revenue"){
-				entity = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
-			}else if(entity == "CRMODLS_BusinessPlan"){
-				entity = Database.businessPlanDao.entity;
-			}else if(entity == "CRMODLS_OBJECTIVE"){
-				entity = Database.objectivesDao.entity;
-			}else if(entity=="Opportunity Contact Role"){
-				entity = Database.opportunityContactDao.entity;
-			}
+//			if(entity=="Revenue"){
+//				entity = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue
+//			}else if(entity == "CRMODLS_BusinessPlan"){
+//				entity = Database.businessPlanDao.entity;
+//			}else if(entity == "CRMODLS_OBJECTIVE"){
+//				entity = Database.objectivesDao.entity;
+//			}else if(entity=="Opportunity Contact Role"){
+//				entity = Database.opportunityContactDao.entity;
+//			}
 
 			trace("WS response for",entity,"as",tao.our_name);
 			//CRO 15-06-2011 release table size

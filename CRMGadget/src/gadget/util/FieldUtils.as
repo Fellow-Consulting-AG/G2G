@@ -317,7 +317,11 @@ package gadget.util {
 			{col:0, row:9, column_name:"PrimaryBillToCity"}, 
 			{col:0, row:10, column_name:"PrimaryBillToCountry"}]; 
 		
-		
+		private static const DEFAULT_PLAN_ACCOUNT:Array = [
+			{col:0, row:0, column_name:"#0", custom:" Key Plan Account Information"},
+			{col:0, row:1, column_name:"AccountIDAccountName"}, 
+			{col:0, row:2, column_name:"PrimaryPlanAccountFlag"}, 			
+			{col:0, row:3, column_name:"BusinessPlanPlanName"}];
 		
 		private static const DEFAULT_CONTACT:Array = [
 			{col:0, row:0, column_name:"#0", custom:"Key Information"},
@@ -347,7 +351,16 @@ package gadget.util {
 		];
 		
 		
+		private static const DEFAULT_PLAN_CONTACT:Array = [
+			{col:0, row:0, column_name:"#0", custom:"Plan Contact"},
+			{col:0, row:1, column_name:"ContactFullName"}, 
+			{col:0, row:2, column_name:"PrimaryPlanContactFlag"}, 
+			{col:0, row:3, column_name:"ContactFirstName"}, 
+			{col:0, row:4, column_name:"ContactLastName"}, 
+			{col:0, row:5, column_name:"ContactAccountName"},
+			{col:0, row:6, column_name:"BusinessPlanPlanName"}
 		
+		];
 		
 		
 		
@@ -422,6 +435,12 @@ package gadget.util {
 			{col:1, row:5, column_name:"ReasonWonLost"},
 			{col:1, row:6, column_name:"OpportunityType"}
 		];
+		private static const DEFAULT_PLAN_OPPORTUNITY:Array = [
+			{col:0, row:0, column_name:"#0", custom:"Plan Opportunity Information"},
+			{col:0, row:1, column_name:"OpportunityName"}, 
+			{col:0, row:2, column_name:"PlanName"}];
+		
+		
 		private static const DEFAULT_ACTIVITY_SAMPLE_DROPPED:Array=[
 			{col:0, row:0, column_name:"CustomInteger1"},
 			{col:0, row:1, column_name:"CustomInteger2"},
@@ -644,6 +663,12 @@ package gadget.util {
 			{col:0, row:2, column_name:"FirstName"} ,
 			{col:0, row:3, column_name:"LastName"} 
 		];
+		
+		private static const DEFAULT_BUSINESSPLAN_TEAM:Array = [
+			{col:0, row:0, column_name:"FirstName"} ,
+			{col:0, row:1, column_name:"LastName"} 
+		];
+		
 		private static const DEFAULT_CAMPAIGN_NOTE:Array = [
 			{col:0, row:0, column_name:"#0", custom:"Key Information"},
 			{col:0, row:1, column_name:"Subject"}, 
@@ -904,6 +929,7 @@ package gadget.util {
 				case Database.accountPartnerDao.entity: return DEFAULT_ACCOUNT_PARTNER;
 				case Database.accountCompetitorDao.entity: return DEFAULT_ACCOUNT_COMPETITOR;
 				case Database.accountTeamDao.entity: return DEFAULT_ACCOUNT_TEAM;
+				case Database.businessPlanTeam.entity:return DEFAULT_BUSINESSPLAN_TEAM;
 				case Database.campaignNoteDao.entity: return DEFAULT_CAMPAIGN_NOTE;
 				case Database.contactNoteDao.entity: return DEFAULT_CONTACT_NOTE;
 				case Database.contactTeamDao.entity: return DEFAULT_CONTACT_TEAM;
@@ -920,7 +946,10 @@ package gadget.util {
 				case Database.activityProductDao.entity : return DEFAULT_ACTIVITY_PRODUCT;
 				case Database.accountRelatedDao.entity : return DEFAULT_ACCOUNT_RELATIONSHIPD;
 				case Database.opportunityContactDao.entity: return DEFAULT_OPPORTUNITY_CONTACT;	
-				case Database.activityContactDao.entity: return DEFAULT_ACTIVITY_CONTACT;		
+				case Database.activityContactDao.entity: return DEFAULT_ACTIVITY_CONTACT;	
+				case Database.planAccountDao.entity:return DEFAULT_PLAN_ACCOUNT;
+				case Database.planContactDao.entity:return DEFAULT_PLAN_CONTACT;
+				case Database.planOpportunityDao.entity:return DEFAULT_PLAN_OPPORTUNITY;
 			}
 			if(entity==Database.opportunityProductRevenueDao.entity){
 				return DEFAULT_OPPORTUNITY_PRODUCT_REVENUE;
@@ -972,6 +1001,7 @@ package gadget.util {
 		private static var defaultAccountPartner:ArrayCollection = new ArrayCollection(["PartnerName","Comments"]);
 		private static var defaultAccountCompetitor:ArrayCollection = new ArrayCollection(["CompetitorName","Comments"]);
 		private static var defaultAccountTeam:ArrayCollection = new ArrayCollection(["AccountName","FirstName","LastName"]);
+		private static var defaultBusinessPlanTeam:ArrayCollection = new ArrayCollection(["FirstName","LastName"]);
 		private static var defaultCampaignNote:ArrayCollection = new ArrayCollection(["Subject","Description"]);
 		private static var defaultContactNote:ArrayCollection = new ArrayCollection(["Subject","Description"]);
 		private static var defaultContactTeam:ArrayCollection = new ArrayCollection(["UserFirstName","UserLastName"]);
@@ -987,6 +1017,11 @@ package gadget.util {
 		private static var defaultAccountRelationship:ArrayCollection = new ArrayCollection(["RelatedAccountName","RelationshipStatus"]);
 		private static var defaultOpportunityContact:ArrayCollection = new ArrayCollection(["ContactFirstName","ContactLastName","BuyingRole"]);
 		private static var defaultActivityContact:ArrayCollection = new ArrayCollection(["ContactFirstName","ContactLastName"]);
+		
+		private static var defaultPlanAccount:ArrayCollection = new ArrayCollection(["AccountIDAccountName","PrimaryPlanAccountFlag","BusinessPlanPlanName"]);
+		private static var defaultPlanContact:ArrayCollection = new ArrayCollection(["ContactFullName","PrimaryPlanContactFlag","BusinessPlanPlanName"]);
+		private static var defaultPlanOpportunity:ArrayCollection = new ArrayCollection(["OpportunityName","PlanName"]);
+		
 		
 		public static function getDefaultFieldsObject(entity:String):ArrayCollection {
 			switch (entity) {
@@ -1021,6 +1056,7 @@ package gadget.util {
 				case Database.accountPartnerDao.entity: return defaultAccountPartner;
 				case Database.accountCompetitorDao.entity: return defaultAccountCompetitor;
 				case Database.accountTeamDao.entity: return defaultAccountTeam;
+				case Database.businessPlanTeam.entity: return defaultBusinessPlanTeam;	
 				case Database.campaignNoteDao.entity: return defaultCampaignNote;
 				case Database.contactNoteDao.entity: return defaultContactNote;
 				case Database.contactTeamDao.entity: return defaultContactTeam;
@@ -1040,6 +1076,9 @@ package gadget.util {
 				case Database.accountRelatedDao.entity: return defaultAccountRelationship;
 				case Database.opportunityContactDao.entity: return defaultOpportunityContact;	
 				case Database.activityContactDao.entity: return defaultActivityContact;	
+				case Database.planAccountDao.entity:return defaultPlanAccount;
+				case Database.planContactDao.entity:return defaultPlanContact;
+				case Database.planOpportunityDao.entity:return defaultPlanOpportunity;
 			}
 			if(entity==Database.opportunityProductRevenueDao.entity){
 				return defaultFieldOpptProdRevenue;

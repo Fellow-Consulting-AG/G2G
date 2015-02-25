@@ -129,45 +129,47 @@
 			
 			private function selectItem(selected:Object):void {
 				if (selected==null) return;
-				var other:Object = Database.getDao(relation.entityDest).findByGadgetId(selected.gadget_id);
-				item[relation.keySrc] = other[relation.keyDest];
-				for(var i:int=0; i<relation.labelDest.length; i++){
-					item[relation.labelSrc[i]] = other[relation.labelDest[i]];
-				}
+//				var other:Object = Database.getDao(relation.entityDest).findByGadgetId(selected.gadget_id);
+//				item[relation.keySrc] = other[relation.keyDest];
+//				for(var i:int=0; i<relation.labelDest.length; i++){
+//					item[relation.labelSrc[i]] = other[relation.labelDest[i]];
+//				}
+				
+				GUIUtils.setRelation2(item,selected,relation);
 				if (textInput != null) {
-					textInput.text = other[relation.labelDest[0]];
+					textInput.text = item[relation.labelSrc[0]];
 				}
-				selectPrimaryContact(item,other["PrimaryContactId"],item["gadget_type"]);
-				selectPrimaryAccount(item,other["AccountId"],item["gadget_type"]);
+//				selectPrimaryContact(item,other["PrimaryContactId"],item["gadget_type"]);
+//				selectPrimaryAccount(item,other["AccountId"],item["gadget_type"]);
 				if (reload != null) {
 					reload(); // refresh detail input fields
 				}
 				close();
 			}
 			//cr 4733 select primary contact when account was selected
-			private function selectPrimaryContact(itemSource:Object,oracleId:String,entity:String):void{
-				if(entity == Database.activityDao.entity && oracleId != null){
-					if(Database.preferencesDao.isAutoSetPrimaryContact()){
-						var con:Object = Database.contactDao.findByOracleId(oracleId);
-						if(con != null){
-							itemSource["PrimaryContactId"] = oracleId;
-							itemSource["PrimaryContact"] = con["ContactFullName"];
-							itemSource["PrimaryContactFirstName"] = con["ContactFirstName"];
-							itemSource["PrimaryContactLastName"] = con["ContactLastName"];
-						}
-					}
-				}
-			}
+//			private function selectPrimaryContact(itemSource:Object,oracleId:String,entity:String):void{
+//				if(entity == Database.activityDao.entity && oracleId != null){
+//					if(Database.preferencesDao.isAutoSetPrimaryContact()){
+//						var con:Object = Database.contactDao.findByOracleId(oracleId);
+//						if(con != null){
+//							itemSource["PrimaryContactId"] = oracleId;
+//							itemSource["PrimaryContact"] = con["ContactFullName"];
+//							itemSource["PrimaryContactFirstName"] = con["ContactFirstName"];
+//							itemSource["PrimaryContactLastName"] = con["ContactLastName"];
+//						}
+//					}
+//				}
+//			}
 			//CR #6664 select primary contact code was selected account 
-			private function selectPrimaryAccount(itemSource:Object,oracleId:String,entity:String):void{
-				if(entity == Database.activityDao.entity && oracleId != null){
-					var con:Object = Database.accountDao.findByOracleId(oracleId);
-					if(con != null){
-						itemSource["AccountId"] = oracleId;
-						itemSource["AccountName"] = con["AccountName"];
-						}
-				}
-			}
+//			private function selectPrimaryAccount(itemSource:Object,oracleId:String,entity:String):void{
+//				if(entity == Database.activityDao.entity && oracleId != null){
+//					var con:Object = Database.accountDao.findByOracleId(oracleId);
+//					if(con != null){
+//						itemSource["AccountId"] = oracleId;
+//						itemSource["AccountName"] = con["AccountName"];
+//						}
+//				}
+//			}
 			private function getOptionDiplayName():String{
 				if(relation.entitySrc == Database.activityDao.entity && Database.contactDao.entity == relation.entityDest){
 					return i18n._('ALL@All');

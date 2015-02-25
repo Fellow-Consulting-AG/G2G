@@ -694,7 +694,10 @@ package gadget.util
 			
 			{entitySrc:"PlanOpportunity", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:['OpportunityName','OptyName',"OpportunityAccountName","OpportunityOwner","OpportunityForecast","OpportunityCloseDate","OpportunityRevenue"], labelDest:['OpportunityName','OpportunityName','AccountName','Owner','CloseDate','Forecast','Revenue'], entityDest:"Opportunity"},
 			{entitySrc:"PlanAccount", keySrc:"AccountIDId", keyDest:"AccountId", labelSrc:['AccountIDAccountName',"AccountIDAccountType","AccountIDLocation","AccountIDOwner","AccountIDPriority","AccountIDReference"], labelDest:['AccountName','AccountType','Location','Owner','Priority','Reference'], entityDest:"Account"},
-			{entitySrc:"PlanContact", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName","ContactFirstName","ContactLastName","ContactAccountName"], labelDest:['ContactFullName','ContactFirstName','ContactLastName','AccountName'], entityDest:"Contact"}
+			{entitySrc:"PlanContact", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName","ContactFirstName","ContactLastName","ContactAccountName"], labelDest:['ContactFullName','ContactFirstName','ContactLastName','AccountName'], entityDest:"Contact"},
+			
+			{entitySrc:"AuditTrail", keySrc:"Id", keyDest:"ServiceRequestId", labelSrc:["RecordName"], labelDest:['SRNumber'], entityDest:"Service Request"},
+			{entitySrc:"AuditTrail", keySrc:"Id", keyDest:"OpportunityId", labelSrc:["RecordName"], labelDest:['OpportunityName'], entityDest:"Opportunity"}
 			
 		]);
 		

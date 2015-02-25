@@ -424,7 +424,7 @@ package gadget.util
 				//if(objectSQLQuery.entity==Database.opportunityProductRevenueDao.entity || objectSQLQuery.entity==Database.activitySampleDroppedDao.entity){
 					openDetailScreen(true,detail.mainWindow,objectSQLQuery.entity,function(param:Object):void{
 						objectSQLQuery.newRecord = param;
-						refreshRelationGrid(detail,grid,objectSQLQuery);
+						refreshGrid(detail,grid,objectSQLQuery);
 					},newObj,false,0,
 						function(newObject:Object):Boolean{
 							return checkExistOpportunityCompetitorRelation(objectSQLQuery,newObject);
@@ -445,7 +445,7 @@ package gadget.util
 					openDetailScreen(false,detail.mainWindow,objectSQLQuery.entity,function(param:Object):void{
 				
 							objectSQLQuery.newRecord = param;
-							refreshRelationGrid(detail,grid,objectSQLQuery);
+							refreshGrid(detail,grid,objectSQLQuery);
 						
 						
 					},selectedItem,false,0,
@@ -903,9 +903,11 @@ package gadget.util
 						objQuery.fields = fields;
 						objQuery.arrayDefaultObject = new Array();
 						function newItem():Object{
-							var newItem:Object = new Object();
+							//var newItem:Object = createNewRelationObject( subDao.entity,detail.entity,detail.item);
 							var oidName:String = DAOUtils.getOracleId(detail.item.gadget_type);
 							newItem[oidName] = detail.item[oidName];
+							
+							
 							if(subDao.entity == Database.opportunityProductRevenueDao.entity){
 								newItem['Probability']=detail.item['Probability'];
 								newItem['ExpectedRevenue']=detail.item['ExpectedRevenue'];
@@ -980,10 +982,12 @@ package gadget.util
 		}
 		private static function checkExistOpportunityCompetitorRelation(object:Object,objRes:Object):Boolean{
 			var relation:Object = null;
-			if(object.relation.supportTable != null){
-				relation = object.relation;
-			}else if(object.relation.relation != null){
-				relation = object.relation.relation;
+			if(object.relation){
+				if(object.relation.supportTable != null){
+					relation = object.relation;
+				}else if(object.relation.relation != null){
+					relation = object.relation.relation;
+				}
 			}
 			if(relation != null && (relation.supportTable == Database.opportunityCompetitorDao.entity || relation.supportTable == Database.activityProductDao.entity)){
 				return checkExistChildRelation(object,objRes);
@@ -1239,7 +1243,12 @@ package gadget.util
 			return enabled;
 		}
 		
-		
+		private static function createNewRelationObject(entirySrc:String,entityDest:String,objDest:Object):Object{
+			var srcObj:Object = new Object();
+			setRelation(srcObj,objDest,entirySrc,entityDest);
+			return srcObj;
+			
+		}
 		public static function getQueryGrid(objectSQLQuery:Object, detail:Detail, subtype:int, readonly:Boolean,showBarCodeReader:Function,isReadOnlyGrid:Boolean=false):DisplayObject{
 			var displayObj:VBox = new VBox();
 			displayObj.percentWidth = 100;
@@ -1292,7 +1301,9 @@ package gadget.util
 			addBtn.enabled = enabled;
 			addBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{
 				objectSQLQuery.target = null;
-				openSqlGridDetail(detail, grid, objectSQLQuery, addBtn.label, refreshSqlGrid);
+				openSqlGridDetail(detail, grid, objectSQLQuery, addBtn.label, refreshSqlGrid,function():Object{
+					return createNewRelationObject(objectSQLQuery.entity,detail.entity,detail.item);
+				});
 				
 			});
 			
@@ -2284,6 +2295,53 @@ package gadget.util
 					break;
 			}
 			return childObj;
+		}
+		
+		
+		public static function setRelation(objSrc:Object,objDest:Object,entitrySrc:String,entityDest:String):void{
+			var relation:Object = Relation.getRelation(entitrySrc,entityDest);
+			
+				setRelation2(objSrc,objDest,relation);
+			
+		}
+		public static function setRelation2(objSrc:Object,objDest:Object,relation:Object):void{
+			if(relation!=null && objDest!=null && objSrc!=null){
+				var other:Object = Database.getDao(relation.entityDest).findByGadgetId(objDest.gadget_id);
+				objSrc[relation.keySrc] = other[relation.keyDest];
+				for(var i:int=0; i<relation.labelDest.length; i++){
+					objSrc[relation.labelSrc[i]] = other[relation.labelDest[i]];
+				}		
+				if(relation.entitySrc == Database.activityDao.entity){
+					selectPrimaryContact(objSrc,other["PrimaryContactId"]);
+					selectPrimaryAccount(objSrc,other["AccountId"]);
+				}
+			}
+		}
+		
+		
+		//cr 4733 select primary contact when account was selected
+		private static function selectPrimaryContact(itemSource:Object,oracleId:String):void{
+			if(oracleId != null){
+				if(Database.preferencesDao.isAutoSetPrimaryContact()){
+					var con:Object = Database.contactDao.findByOracleId(oracleId);
+					if(con != null){
+						itemSource["PrimaryContactId"] = oracleId;
+						itemSource["PrimaryContact"] = con["ContactFullName"];
+						itemSource["PrimaryContactFirstName"] = con["ContactFirstName"];
+						itemSource["PrimaryContactLastName"] = con["ContactLastName"];
+					}
+				}
+			}
+		}
+		//CR #6664 select primary contact code was selected account 
+		private static function selectPrimaryAccount(itemSource:Object,oracleId:String):void{
+			if(oracleId != null){
+				var con:Object = Database.accountDao.findByOracleId(oracleId);
+				if(con != null){
+					itemSource["AccountId"] = oracleId;
+					itemSource["AccountName"] = con["AccountName"];
+				}
+			}
 		}
 		
 		

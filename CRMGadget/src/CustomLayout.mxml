@@ -641,11 +641,16 @@
 							resultList = Database.fieldDao.findFieldsByDisplayName(DAOUtils.getRecordType(entity), searchInput.text);
 						}
 					}
+					
+					var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();					
 					for each(var objectField:Object in resultList){
-						var object:Object = new Object();
-						object.label = customField?objectField.displayName:objectField.display_name;
-						object.column_name = customField?objectField.column_name:objectField.element_name;
-						data.addItem(object);
+						if(!hidenFields.hasOwnProperty(objectField.element_name)){
+							var object:Object = new Object();
+							object.label = customField?objectField.displayName:objectField.display_name;
+							object.column_name = customField?objectField.column_name:objectField.element_name;
+							data.addItem(object);
+						}
+						
 					}
 					Utils.suppressWarning(data);
 					dictionnary.dataProvider = data;

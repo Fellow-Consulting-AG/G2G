@@ -28,14 +28,14 @@ package gadget.dao
 		private static const PROVINCE:String = 'province';
 		
 		private static const FIELDS:Object ={
-			address:{'Main':'PrimaryBillToStreetAddress','Shipping':'PrimaryShipToStreetAddress','Contact Address':'AlternateAddress1','Main Address':'PrimaryAddress'},
-			address2:{'Main':'PrimaryBillToStreetAddress2','Shipping':'PrimaryShipToStreetAddress2','Contact Address':'AlternateAddress2','Main Address':'PrimaryStreetAddress2'},
-			address3:{'Main':'PrimaryBillToStreetAddress3','Shipping':'PrimaryShipToStreetAddress3','Contact Address':'AlternateAddress3','Main Address':'PrimaryStreetAddress3'},
-			city:{'Main':'PrimaryBillToCity','Shipping':'PrimaryShipToCity','Contact Address':'AlternateCity','Main Address':'PrimaryCity'},
-			county:{'Main':'PrimaryBillToCounty','Shipping':'PrimaryShipToCounty','Contact Address':'AlternateCounty','Main Address':'PrimaryCounty'},
-			state:{'Main':'PrimaryBillToState','Shipping':'PrimaryShipToState','Contact Address':'AlternateStateProvince','Main Address':'PrimaryStateProvince'},
-			zip:{'Main':'PrimaryBillToPostalCode','Shipping':'PrimaryShipToPostalCode','Contact Address':'AlternateZipCode','Main Address':'PrimaryZipCode'},
-			province:{'Main':'PrimaryBillToProvince','Shipping':'PrimaryShipToProvince','Contact Address':'AlternateProvince','Main Address':'PrimaryProvince'}
+			address:{'Address':'StreetAddress','Main':'PrimaryBillToStreetAddress','Shipping':'PrimaryShipToStreetAddress','Contact Address':'AlternateAddress1','Main Address':'PrimaryAddress'},
+			address2:{'Address':'StreetAddress2','Main':'PrimaryBillToStreetAddress2','Shipping':'PrimaryShipToStreetAddress2','Contact Address':'AlternateAddress2','Main Address':'PrimaryStreetAddress2'},
+			address3:{'Address':'StreetAddress3','Main':'PrimaryBillToStreetAddress3','Shipping':'PrimaryShipToStreetAddress3','Contact Address':'AlternateAddress3','Main Address':'PrimaryStreetAddress3'},
+			city:{'Address':'City','Main':'PrimaryBillToCity','Shipping':'PrimaryShipToCity','Contact Address':'AlternateCity','Main Address':'PrimaryCity'},
+			county:{'Address':'County','Main':'PrimaryBillToCounty','Shipping':'PrimaryShipToCounty','Contact Address':'AlternateCounty','Main Address':'PrimaryCounty'},
+			state:{'Address':'StateProvince','Main':'PrimaryBillToState','Shipping':'PrimaryShipToState','Contact Address':'AlternateStateProvince','Main Address':'PrimaryStateProvince'},
+			zip:{'Address':'ZipCode','Main':'PrimaryBillToPostalCode','Shipping':'PrimaryShipToPostalCode','Contact Address':'AlternateZipCode','Main Address':'PrimaryZipCode'},
+			province:{'Address':'Province','Main':'PrimaryBillToProvince','Shipping':'PrimaryShipToProvince','Contact Address':'AlternateProvince','Main Address':'PrimaryProvince'}
 		};
 		
 		private static const DYNAMIC_GROUP:Object ={
@@ -77,6 +77,7 @@ package gadget.dao
 			dic['PrimaryShipToCountry'] = 'PrimaryShipToCountry';
 			dic['AlternateCountry'] = 'AlternateCountry';
 			dic['PrimaryCountry'] = 'PrimaryCountry';
+			dic['Country'] = 'Country'
 			
 			return dic;
 		}
@@ -86,7 +87,8 @@ package gadget.dao
 			{entity:'Account',parent_field:'PrimaryBillToCountry',Name:'Main'},			
 			{entity:'Account',parent_field:'PrimaryShipToCountry',Name:'Shipping'},
 			{entity:'Contact',parent_field:'AlternateCountry',Name:'Contact Address'},
-			{entity:'Contact',parent_field:'PrimaryCountry',Name:'Main Address'}			
+			{entity:'Contact',parent_field:'PrimaryCountry',Name:'Main Address'},
+			{entity:'Lead',parent_field:'Country',Name:'Address'}
 			
 		];
 		
@@ -104,20 +106,9 @@ package gadget.dao
 			return strFields;
 		}
 		
-		public function checkAddressBlock():void{
-			var appInfo:Object = Utils.getAppInfo();
-			var deleteOld:Boolean = false;
-			try{
-				var vnr:Number = parseFloat(appInfo.version);
-				deleteOld = (vnr<1.441||this.countRecord()<1);
-			}catch(e:Error){
-				deleteOld = true;
-			}
-			
-			if(deleteOld){
-				delete_all();
-				Database.blockDependField.delete_all();
-				for each(var block:Object in DEFAULT_BLOCK){
+		public function checkAddressBlock():void{	
+			for each(var block:Object in DEFAULT_BLOCK){
+				if(!exist(block.entity,block.parent_field)){
 					block.addressfield='country';
 					insert(block);
 					var lastRecord:Object = selectLastRecord();
@@ -129,7 +120,7 @@ package gadget.dao
 						Database.blockDependField.insert(objSave);
 					}
 				}
-			}
+			}		
 			
 		}
 		
@@ -147,7 +138,10 @@ package gadget.dao
 		}
 		
 		
-		
+		public function exist(entity:String,parent_field:String):Boolean{
+			var result:Array = select("parent_field",null,{'parent_field':parent_field,'entity':entity},"1");
+			return result!=null && result.length>0;
+		}
 		
 		public function getAvailableName(entity:String):ArrayCollection{
 			stmtGetNameByEntity.parameters[":entity"]=entity;

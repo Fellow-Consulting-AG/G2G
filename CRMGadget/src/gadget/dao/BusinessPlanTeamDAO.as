@@ -40,7 +40,9 @@ package gadget.dao
 				"UserAlias"	,
 				"AccountName",
 				"RoleName",
-				"ObjectPlanName"
+				"ObjectPlanName",
+				"PlanName",
+				'AccessProfileName'
 				
 			]);
 		}
@@ -57,6 +59,7 @@ package gadget.dao
 			"FullName",
 			"AccessProfileId",
 			"FirstName",
+			"PlanName",
 			"ParentId",
 			"AccessProfileName",
 			"AccessCode",

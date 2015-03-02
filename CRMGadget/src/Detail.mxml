@@ -1745,6 +1745,9 @@
 							//check relation
 							var relation:Object = Relation.getMNRelation(item.gadget_type, fields[i].custom);
 							if(relation==null){
+								relation = Relation.getRelation(fields[i].custom,item.gadget_type);
+							}
+							if(relation==null){
 								//delete from db
 								Database.layoutDao.delete_({entity:item.gadget_type,subtype:fields[i].subtype,custom:fields[i].custom,row:fields[i].row,col:fields[i].col});
 								continue;

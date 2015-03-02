@@ -104,7 +104,7 @@ package gadget.util
 			
 			
 			// account_contact
-			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
+			//{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
 			
 //			{entitySrc:"Account", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Asset"},
 			/* fix #2018
@@ -685,9 +685,8 @@ package gadget.util
 			
 			
 			{entitySrc:"BusinessPlan", keySrc:"ParentPlanNameId", keyDest:"Id", labelSrc:["ParentPlanNamePlanName"],keepOutLabelSrc : true, labelDest:["PlanName"], entityDest:"BusinessPlan"},
-			{entitySrc:"BusinessPlan", keySrc:"Id", keySupport:"UserId", keyDest:"Id", labelSrc:["PlanName"],isExceptLabelSrc:true, labelSupport:["LastName","FirstName","TeamRole","RoleName","AccessProfileName"],isColDynamic:true, labelDest:["LastName","FirstName"], entityDest:"User", supportTable:"BusinessPlan.Team"},
-			
-			
+			{entitySrc:"BusinessPlan", keySrc:"Id", keySupport:"UserId", keyDest:"Id", labelSrc:["PlanName"],isExceptLabelSrc:true, labelSupport:["LastName","FirstName","TeamRole","RoleName","AccessProfileName"],isColDynamic:true, labelDest:["LastName","FirstName"], entityDest:"User", supportTable:"BusinessPlan.Team"},			
+			{entitySrc:"BusinessPlan.Team", keySrc:"ParentId", keyDest:"Id", labelSrc:["PlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},			
 			{entitySrc:"PlanAccount", keySrc:"BusinessPlanId", keyDest:"Id", labelSrc:["BusinessPlanPlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
 			{entitySrc:"PlanContact", keySrc:"BusinessPlanId", keyDest:"Id", labelSrc:["BusinessPlanPlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
 			{entitySrc:"PlanOpportunity", keySrc:"PlanId", keyDest:"Id", labelSrc:["PlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
@@ -765,7 +764,7 @@ package gadget.util
 		
 		public static function getMNRelation(entitySrc:String, entityDest:String):Object {
 			for each (var relation:Object in RELATIONS) {
-				if (relation.supportTable != null && relation.entitySrc == entitySrc && relation.entityDest == entityDest) {
+				if (relation.supportTable != null && relation.entitySrc == entitySrc && (relation.entityDest == entityDest||relation.supportTable==entityDest)) {
 					return relation;
 				}
 			}	

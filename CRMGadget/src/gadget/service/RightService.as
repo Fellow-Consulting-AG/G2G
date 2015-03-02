@@ -1,5 +1,6 @@
 package gadget.service
 {
+	import gadget.dao.BaseDAO;
 	import gadget.dao.Database;
 	import gadget.dao.PreferencesDAO;
 	import gadget.util.CacheUtils;
@@ -91,10 +92,17 @@ package gadget.service
 			if (entity != null) {
 				var role:String = Database.rightDAO.getRole();		
 				var roleObject:Object=Database.roleServiceDao.getRole(role);	
-				if(entity==Database.businessPlanDao.entity){
-					entity = "CRMODLS_BusinessPlan";
-				}
+//				if(entity==Database.businessPlanDao.entity){
+//					entity = "CRMODLS_BusinessPlan";
+//				}
 				var right:Object = Database.rightDAO.getRight(role, entity);
+				if(right==null){
+					var dao:BaseDAO = Database.getDao(entity,false);
+					if(dao!=null){
+						right = Database.rightDAO.getRight(role, dao.metaDataEntity);
+					}
+				}
+				
 				if(roleObject!=null){
 					var profileName:String = null;					
 					if(forOwner){	
@@ -104,7 +112,14 @@ package gadget.service
 					}
 					
 					var accessPf:Array=	 Database.accessProfileServiceEntryDao.fetch({'AccessProfileServiceName':profileName,
-						'AccessObjectName':entity});			
+						'AccessObjectName':entity});	
+					if(accessPf==null || accessPf.length<1){
+						var dao:BaseDAO = Database.getDao(entity,false);
+						if(dao!=null){
+							accessPf = Database.accessProfileServiceEntryDao.fetch({'AccessProfileServiceName':profileName,
+								'AccessObjectName':dao.metaDataEntity});	
+						}
+					}
 					
 //					if(!forOwner){
 //						var bookPf:Array = Database.accessProfileServiceEntryDao.fetch({'AccessProfileServiceName':roleObject.OwnerAccessProfile,

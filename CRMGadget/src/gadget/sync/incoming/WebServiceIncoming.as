@@ -84,7 +84,7 @@ package gadget.sync.incoming {
 			isUnboundedTask = false;
 
 			entityIDour	= ID;
-			entityIDsod	= SodUtils.transactionProperty(ID).sod_name;
+			entityIDsod	=getSodName();
 			entityIDns	= entityIDsod.replace(/ /g,"");
 			sodID		= entityIDns.toLowerCase();
 			listID		= "ListOf"+entityIDns;
@@ -93,13 +93,16 @@ package gadget.sync.incoming {
 			withFilters	= true;
 			
 			wsID		= entityIDns+"QueryPage_Input";
-			urn			= "document/urn:crmondemand/ws/ecbs/"+sodID+"/:"+entityIDns+"QueryPage";
-			ns1			= new Namespace("urn:crmondemand/ws/ecbs/"+sodID+"/");
-			ns2			= new Namespace("urn:/crmondemand/xml/"+entityIDns+"/Data");
+			urn			= getSoapAction();
+			ns1			= getNS1();
+			ns2			= getNS2();
 			
 			if (daoName==null)
 				daoName	= SodUtils.transactionProperty(ID).dao;
 			dao = Database[daoName] as BaseDAO;
+			if(dao==null){
+				dao = Database.getDao(ID);
+			}
 			if (!dao)
 				notImpl(i18n._("DAO {1} for {2}", daoName, ID));
 
@@ -115,20 +118,97 @@ package gadget.sync.incoming {
 			//<{ModifiedDate}>{DatePlaceholder}</{ModifiedDate}>
 			trace(wsID);
 			if (stdXML==null) {
-				stdXML =
-					<{wsID} xmlns={ns1.uri}>						
-						<ViewMode>{viewMode}</ViewMode>						
-						<{listID} pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
-							<{entityIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>
-							</{entityIDns}>
-						</{listID}>
-					</{wsID}>
-				;
+				stdXML = buildStdXML();					
 				
 			}
 			
 			
 
+		}
+		
+		override protected function doRequest():void {
+			
+			if(startTime!=-1){
+				if(param.range){
+					var start:Date = param.range.start;
+					var end:Date = param.range.end;	
+					if(start.getTime()<startTime && end.getTime()<startTime){
+						successHandler(null);
+						return;
+					}else{
+						if(start.getTime()<startTime){
+							param.range.start = new Date(startTime);
+						}
+						
+					}					
+				}
+			}
+			
+			var searchSpec:String = generateSearchSpec();
+			
+			//Bug fixing 588 CRO
+			if(isFormulaError){
+				setFailed();
+				param.errorHandler(i18n._("CANNOT_EVALUATE_YOUR_FILER",entityIDour), null);
+				successHandler(null);
+				return;
+			}
+			//			if (param.range) {
+			//				searchSpec = "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(param.range.start)+"'"
+			//					+ " AND ["+MODIFIED_DATE+"] &lt;= '"+ServerTime.toSodIsoDate(param.range.end)+"'";
+			//			}
+			//			
+			//			
+			//			if(entityIDour==Database.customObject3Dao.entity && UserService.getCustomerId()==UserService.JD){
+			//				if(searchSpec==''){
+			//					searchSpec = "[Name]= \'"+Utils.getGPlantLocation() + "\'";
+			//				}else{
+			//					searchSpec = "[Name]= \'"+Utils.getGPlantLocation() + "\' AND "+searchSpec;
+			//				}
+			//				
+			//			}
+			
+			var pagenow:int = _page;
+			
+			_lastItems = _nbItems;
+			isLastPage=false;
+			if (pagenow==0 && haveLastPage==false && param.force==false && isUnboundedTask==false) {
+				isLastPage = true;
+				pagenow	= SUCCESSFULLY_FAIL_UNFORCED_PAGES;
+			}
+			
+			trace("::::::: REQUEST20 ::::::::", getEntityName(), _page, pagenow, isLastPage, haveLastPage, searchSpec);
+			//CRO 15-06-2011 release table size
+			//Database.errorLoggingDao.add(null, {trace:[getEntityName(), _page, pagenow, isLastPage, haveLastPage, searchSpec]});
+			
+			//VAHI another poor man's workaround for missing late binding in XML templates
+			sendRequest("\""+getURN()+"\"", new XML(getRequestXML().toXMLString()
+				.replace(ROW_PLACEHOLDER, pagenow*pageSize)
+				.replace(SEARCHSPEC_PLACEHOLDER, searchSpec)
+			));
+		}
+		
+		protected function getSodName():String{
+			return  SodUtils.transactionProperty(entityIDour).sod_name;
+		}
+		protected function getSoapAction():String{
+			return "document/urn:crmondemand/ws/ecbs/"+sodID+"/:"+entityIDns+"QueryPage";
+		}
+		protected function getNS1():Namespace{
+			return new Namespace("urn:crmondemand/ws/ecbs/"+sodID+"/");
+		}
+		
+		protected function getNS2():Namespace{
+			return new Namespace("urn:/crmondemand/xml/"+entityIDns+"/Data");
+		}
+		protected function buildStdXML():XML{
+			return <{wsID} xmlns={ns1.uri}>						
+						<ViewMode>{viewMode}</ViewMode>						
+						<{listID} pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
+							<{entityIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>
+							</{entityIDns}>
+						</{listID}>
+					</{wsID}>;
 		}
 		
 		override public function set param(p:TaskParameterObject):void
@@ -427,71 +507,13 @@ package gadget.sync.incoming {
 			
 		}
 		
-		override protected function doRequest():void {
-			
-			if(startTime!=-1){
-				if(param.range){
-					var start:Date = param.range.start;
-					var end:Date = param.range.end;	
-					if(start.getTime()<startTime && end.getTime()<startTime){
-						successHandler(null);
-						return;
-					}else{
-						if(start.getTime()<startTime){
-							param.range.start = new Date(startTime);
-						}
-						
-					}					
-				}
-			}
-			
-			var searchSpec:String = generateSearchSpec();
-			
-			//Bug fixing 588 CRO
-			if(isFormulaError){
-				setFailed();
-				param.errorHandler(i18n._("CANNOT_EVALUATE_YOUR_FILER",entityIDour), null);
-				successHandler(null);
-				return;
-			}
-//			if (param.range) {
-//				searchSpec = "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(param.range.start)+"'"
-//					+ " AND ["+MODIFIED_DATE+"] &lt;= '"+ServerTime.toSodIsoDate(param.range.end)+"'";
-//			}
-//			
-//			
-//			if(entityIDour==Database.customObject3Dao.entity && UserService.getCustomerId()==UserService.JD){
-//				if(searchSpec==''){
-//					searchSpec = "[Name]= \'"+Utils.getGPlantLocation() + "\'";
-//				}else{
-//					searchSpec = "[Name]= \'"+Utils.getGPlantLocation() + "\' AND "+searchSpec;
-//				}
-//				
-//			}
-			
-			var pagenow:int = _page;
-
-			_lastItems = _nbItems;
-			isLastPage=false;
-			if (pagenow==0 && haveLastPage==false && param.force==false && isUnboundedTask==false) {
-				isLastPage = true;
-				pagenow	= SUCCESSFULLY_FAIL_UNFORCED_PAGES;
-			}
-			
-			trace("::::::: REQUEST20 ::::::::", getEntityName(), _page, pagenow, isLastPage, haveLastPage, searchSpec);
-			//CRO 15-06-2011 release table size
-			//Database.errorLoggingDao.add(null, {trace:[getEntityName(), _page, pagenow, isLastPage, haveLastPage, searchSpec]});
-			
-			//VAHI another poor man's workaround for missing late binding in XML templates
-			sendRequest("\""+getURN()+"\"", new XML(getRequestXML().toXMLString()
-					.replace(ROW_PLACEHOLDER, pagenow*pageSize)
-					.replace(SEARCHSPEC_PLACEHOLDER, searchSpec)
-				));
+		protected function getResponseNamespace():Namespace{
+			return ns2;
 		}
 		
 		override protected function handleResponse(request:XML, response:XML):int {
-			
-			var listObject:XML = response.child(new QName(ns2.uri,listID))[0];
+			var ns:Namespace = getResponseNamespace();
+			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
 			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';
 			
 			var googleListUpdate:ArrayCollection;
@@ -507,7 +529,7 @@ package gadget.sync.incoming {
 			}*/
 			
 			Database.begin();
-			var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns2.uri,entityIDns)),googleListUpdate);
+			var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)),googleListUpdate);
 			Database.commit();
 			
 			//do update to google calendar
@@ -535,7 +557,7 @@ package gadget.sync.incoming {
 		}
 		
 		protected function getValue(entitySod:String,data:XML,oodField:String):String{
-			var xmllist:XMLList = data.child(new QName(ns2.uri,oodField));
+			var xmllist:XMLList = data.child(new QName(getResponseNamespace().uri,oodField));
 			if (xmllist.length()>1)
 				trace(oodField,xmllist.length());
 			if (xmllist.length() > 0) {

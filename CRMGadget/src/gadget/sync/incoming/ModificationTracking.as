@@ -72,7 +72,8 @@ package gadget.sync.incoming {
 			OpportunityContactRole:Database.opportunityContactDao.entity,
 			OpportunityNote:Database.opportunityNoteDao.entity,
 			OpportunityPartner:Database.opportunityPartnerDao.entity,
-			OpportunityTeam:Database.opportunityTeamDao.entity
+			OpportunityTeam:Database.opportunityTeamDao.entity,
+			BusinessPlanTeam:Database.businessPlanTeam.entity
 			
 		}
 		

@@ -5,6 +5,7 @@ package gadget.sync.incoming
 	import flexunit.utils.ArrayList;
 	
 	import gadget.dao.AccountTeamDAO;
+	import gadget.dao.BusinessPlanTeamDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -152,7 +153,12 @@ package gadget.sync.incoming
 			
 		}
 		
-
+		protected function getParentFieldId():String{
+			if(entityIDour==Database.businessPlanDao.entity && subDao is BusinessPlanTeamDAO){
+				return "ParentId";
+			}
+			return entityIDour+"Id";
+		}
 		override protected function importRecord(sub:String, data:XML, subList:ArrayCollection=null):int {
 			if(this is IncomingSubActivity){
 				return super.importRecord(sub,data);
@@ -162,7 +168,7 @@ package gadget.sync.incoming
 //			var subDao:SupportDAO = SupportRegistry.getSupportDao(entityIDour, sub);
 			var subId:String = DAOUtils.getOracleId(subDao.entity);	
 			
-			var parentFieldId:String = entityIDour+"Id";
+			var parentFieldId:String = getParentFieldId();
 			
 			
 			

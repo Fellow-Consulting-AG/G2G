@@ -101,6 +101,45 @@ package gadget.util {
 					{element_name:"CreatedById"}
 				]);
 				
+			}else if(entity == Database.auditTrail.entity){
+				return new ArrayCollection([
+					{element_name:"Id"},
+					{element_name:"RecordType"},
+					{element_name:"ModifiedDate"},
+					{element_name:"RecordName"},
+					{element_name:"Operation"},
+					{element_name:"FieldName"},
+					{element_name:"OldFieldValue"},
+					{element_name:"NewFieldValue"},
+					{element_name:"RecordUpdatedDate"},
+					{element_name:"SourceIPAddress"},
+					{element_name:"SourceType"},
+					{element_name:"UserId"},
+					{element_name:"UserFirstName"},
+					{element_name:"UserLastName"},
+					{element_name:"UserFullName"},
+					{element_name:"UserSignInId"},
+					{element_name:"CreatedById"},
+					{element_name:"CreatedBy"},
+					{element_name:"CreatedDate"},
+					{element_name:"CreatedByAlias"},
+					{element_name:"CreatedByFirstName"},
+					{element_name:"CreatedByFullName"},
+					{element_name:"CreatedByLastName"},
+					{element_name:"CreatedByEMailAddr"},
+					{element_name:"CreatedByExternalSystemId"},
+					{element_name:"CreatedByUserSignInId"},
+					{element_name:"CreatedByIntegrationId"},
+					{element_name:"ModifiedBy"},
+					{element_name:"ModifiedById"},
+					{element_name:"UpdatedByFirstName"},
+					{element_name:"UpdatedByLastName"},
+					{element_name:"UpdatedByFullName"},
+					{element_name:"UpdatedByEMailAddr"},
+					{element_name:"UpdatedByExternalSystemId"},
+					{element_name:"UpdatedByUserSignInId"},
+					{element_name:"UpdatedByIntegrationId"}
+				]);
 			}
 			if(StringUtils.isEmpty(entity))
 				return new ArrayCollection();

@@ -525,30 +525,67 @@ package gadget.util
 		}*/
 		
 		public static function getRelationList(relation:Object, item:Object):ArrayCollection {
-			/*
-			return Database.getDao(relation.supportTable).findAll(
-				new ArrayCollection([{element_name:relation.labelSupport}, {element_name:relation.keySupport}]), 
-				relation.keySrc + " = '" + item[relation.keySrc] + "'"
-			);
-			*/
+//			/*
+//			return Database.getDao(relation.supportTable).findAll(
+//				new ArrayCollection([{element_name:relation.labelSupport}, {element_name:relation.keySupport}]), 
+//				relation.keySrc + " = '" + item[relation.keySrc] + "'"
+//			);
+//			*/
 			var result:ArrayCollection = null;
-			if(relation.supportTable == Database.contactAccountDao.entity){
-				if("Account" ==relation.entitySrc){
-					
-					// query contact
-					//result = Database.contactDao.findAll(new ArrayCollection([{element_name:"*"}]),"ContactId in (select ContactId from Contact_Account where AccountId='"+item[relation.keySrc]+"')");
-					result = Database.accountDao.getContactAccount(item[relation.keySrc]);
-					//result = Database.contactDao.findDataByRelation(relation,item[relation.keySrc]);
+//			if(relation.supportTable == Database.contactAccountDao.entity){
+//				if("Account" ==relation.entitySrc){
+//					
+//					// query contact
+//					//result = Database.contactDao.findAll(new ArrayCollection([{element_name:"*"}]),"ContactId in (select ContactId from Contact_Account where AccountId='"+item[relation.keySrc]+"')");
+//					result = Database.accountDao.getContactAccount(item[relation.keySrc]);
+//					//result = Database.contactDao.findDataByRelation(relation,item[relation.keySrc]);
+//				}else{
+//					//query account
+//					result = Database.contactDao.getContactAccount(item[relation.keySrc]);
+////					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
+//				}
+//			}else if(relation.supportTable ==  "Contact.CustomObject2"){
+//				result = Database.customObject2Dao.getContactCustomObject2(item[relation.keySrc]);
+//			}else{
+//				result = Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
+//			}
+			var entity:String = item.gadget_type;
+			var entityDao:BaseDAO = null;
+			if(relation.supportTable){
+				if(relation.supportTable==Database.accountAddressDao.entity){
+					entityDao = Database.addressDao;
 				}else{
-					//query account
-					result = Database.contactDao.getContactAccount(item[relation.keySrc]);
-//					result = Database.accountDao.findAll(new ArrayCollection([{element_name:"*"}]),"AccountId in (select AccountId from Contact_Account where ContactId='"+item[relation.keySrc]+"')");
+					entityDao = Database.getDao(relation.supportTable);	
 				}
-			}else if(relation.supportTable ==  "Contact.CustomObject2"){
-				result = Database.customObject2Dao.getContactCustomObject2(item[relation.keySrc]);
+				
 			}else{
-				result = Database.getDao(relation.supportTable).findDataByRelation(relation,item[relation.keySrc]);
+				entityDao = Database.getDao(relation.entitySrc);
 			}
+			
+			var relation:Object = Relation.getRelation(entityDao.entity,entity );
+			if (relation == null) {
+				if(entityDao is SupportDAO){
+					result=entityDao.findRelatedData(entity,item[DAOUtils.getOracleId(entity)])
+				}else{
+					result= new ArrayCollection();
+				}
+			}else{
+				
+				if("Contact" == entity && "Account" == entityDao.entity){
+					result = Database.contactDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
+				}else if("Contact" == entityDao.entity && "Account" == entity){
+					result = Database.accountDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
+				}else if("Contact" == entity && "Custom Object 2" == entityDao.entity){
+					result =Database.contactDao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
+				}else if("Contact" == entityDao.entity && "Custom Object 2" == entity){
+					result =Database.customObject2Dao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
+				}else if("Contact" == entity && "Opportunity" == entityDao.entity){
+					result = Database.contactDao.getContactOpportnity(item[DAOUtils.getOracleId(entity)], item["gadget_id"]);
+				}else{
+					result = entityDao.findRelatedData(entity,item[relation.keyDest]);
+				}
+			}
+			
 			
 			return result;
 			
@@ -713,9 +750,17 @@ package gadget.util
 		 */
 		public static function getRelationGrid(detail:Detail, item:Object, related:String, readonly:Boolean, innerListUpdate:Function = null):DisplayObject{
 			var relation:Object = Relation.getMNRelation(item.gadget_type, related);
+			if(relation==null){
+				relation = Relation.getRelation(related,item.gadget_type);
+			}
 			var displayObj:VBox = new VBox();
 			displayObj.percentWidth = 100;
-			var subDao:SupportDAO  = Database.getDao(relation.supportTable,false) as SupportDAO;
+			var subDao:BaseDAO  = null;
+			if(relation.supportTable!=null){
+				subDao = Database.getDao(relation.supportTable,false)
+			}else{
+				subDao = Database.getDao(related,false)
+			}
 			var grid:AdvancedDataGrid = new AdvancedDataGrid();
 			
 			grid.setStyle('top', 0);
@@ -728,21 +773,30 @@ package gadget.util
 			// updateRelationGrid(grid, relation, item);
 //			grid.dataProvider =  subDao.findRelatedData(item.gadget_type,item[relation.keySrc]);
 			var cfields:ArrayCollection = null;
-			if(relation.supportTable == Database.contactAccountDao.entity || relation.supportTable == "Contact.CustomObject2"){
-				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.entityDest);
+			if(relation.supportTable!=null){
+				if(relation.supportTable == Database.contactAccountDao.entity || relation.supportTable == "Contact.CustomObject2"){
+					cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.entityDest);
+				}else{
+					cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
+				}
 			}else{
-				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
+				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,subDao.entity);
 			}
 			grid.dataProvider = getRelationList(relation, item);
 			var columns:Array = new Array();
 			var contextMenuFunction:Function;
 			var isCreate:Boolean = detail.create;
 			if(cfields == null || cfields.length < 1){
-				
-				cfields = Database.columnsLayoutDao.getColumnLayout(relation.supportTable,'0');
+				if(relation.supportTable!=null){
+					cfields = Database.columnsLayoutDao.getColumnLayout(relation.supportTable,'0');
+				}				
 				
 				if(cfields == null || cfields.length < 1){
-					cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,'0');
+					if(relation.supportTable){
+						cfields = Database.columnsLayoutDao.getColumnLayout(relation.entityDest,'0');
+					}else{
+						cfields = Database.columnsLayoutDao.getColumnLayout(subDao.entity,'0');
+					}
 				}
 			}
 			var renderer:ClassFactory = null;
@@ -817,9 +871,9 @@ package gadget.util
 				//if(cfields != null || cfields.length >0){
 					for each (var field:Object in cfields ){				
 						var dgCol2:AdvancedDataGridColumn = List.createColumn(field,function(row:Object,col:AdvancedDataGridColumn):String{
-							return List.displayDataTime(row,col,related);
+							return List.displayDataTime(row,col,subDao.entity);
 						},function(row:Object,col:AdvancedDataGridColumn):String{
-							return List.displayPicklistValue(row,col,related);
+							return List.displayPicklistValue(row,col,subDao.entity);
 						});
 //						//var obj2:Object = null;
 //						var obj2:Object = null;
@@ -874,7 +928,7 @@ package gadget.util
 				hbox.addChild(addBtn);
 				//CRO 21.01.2011
 				addBtn.label = i18n._('GLOBAL_ADD');
-				if(relation.isColDynamic){
+				if(relation.isColDynamic || relation.supportTable==null){
 					if(related=='User'){
 						addBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{
 							addTeamHandler(detail, grid, addBtn.label);
@@ -891,7 +945,10 @@ package gadget.util
 						var objQuery:Object = new Object();
 						objQuery.entity = subDao.entity;
 						var recordType:String = DAOUtils.getRecordType(subDao.entity);
-						var fields:Array = subDao.getLayoutFields();
+						var fields:Array =new Array();
+						if(subDao is SupportDAO){
+							fields = (subDao as SupportDAO).getLayoutFields();
+						}
 						
 						
 						
@@ -903,18 +960,21 @@ package gadget.util
 						objQuery.fields = fields;
 						objQuery.arrayDefaultObject = new Array();
 						function newItem():Object{
-							//var newItem:Object = createNewRelationObject( subDao.entity,detail.entity,detail.item);
-							var oidName:String = DAOUtils.getOracleId(detail.item.gadget_type);
-							newItem[oidName] = detail.item[oidName];
+							var newObj:Object = new Object();
 							
-							
+							if(relation.supportTable==null){
+								newObj= createNewRelationObject( subDao.entity,detail.entity,detail.item);
+							}else{
+								var oidName:String = DAOUtils.getOracleId(detail.item.gadget_type);
+								newObj[oidName] = detail.item[oidName];
+							}							
 							if(subDao.entity == Database.opportunityProductRevenueDao.entity){
-								newItem['Probability']=detail.item['Probability'];
-								newItem['ExpectedRevenue']=detail.item['ExpectedRevenue'];
-								newItem['OpportunitySalesStage']=detail.item['SalesStage'];
+								newObj['Probability']=detail.item['Probability'];
+								newObj['ExpectedRevenue']=detail.item['ExpectedRevenue'];
+								newObj['OpportunitySalesStage']=detail.item['SalesStage'];
 								
 							}
-							return newItem;
+							return newObj;
 						}
 						objQuery.newItem = newItem;
 						
@@ -1077,7 +1137,11 @@ package gadget.util
 //					+ object.relation.keySupport + " = '" + other[object.relation.keyDest] + "'");
 				if (!checkExistChildRelation(object,other)) {
 					var newObj:Object = new Object();
-					newObj[object.relation.keySrc] = object.item[object.relation.keySrc];
+					if(object.relation.supportTable==Database.businessPlanTeam.entity){
+						newObj['ParentId'] = object.item[object.relation.keySrc];
+					}else{
+						newObj[object.relation.keySrc] = object.item[object.relation.keySrc];
+					}					
 					newObj[object.relation.keySupport] = other[object.relation.keyDest];
 					newObj[object.relation.labelSupport[0]] = other[object.relation.labelDest[0]];
 					newObj[object.relation.labelSupport[1]] = other[object.relation.labelDest[1]];
@@ -1094,6 +1158,11 @@ package gadget.util
 					}else{						
 						newObj['UserRole'] = other.Role;
 					}					
+					
+					if(object.relation.supportTable==Database.businessPlanTeam.entity){
+						newObj['AccessProfileId']=other.accessProfileId;
+						newObj['AccessProfileName']=other.accessProfile;
+					}
 					
 					Database.getDao(object.relation.supportTable).insert(newObj);
 					newObj = Database.getDao(object.relation.supportTable).selectLastRecord()[0];
@@ -1843,7 +1912,11 @@ package gadget.util
 		public static function getInputField(create:Boolean, functions:Object, entity:String, item:Object, fieldInfo:Object, readonly:Boolean, small:Boolean = false,field:ArrayCollection=null):DisplayObject {
 			var childObj:DisplayObject = null;
 			if(SMALL_FIELDS.indexOf(fieldInfo.element_name) > -1) small = true;
-			readonly = RightService.canUpdate(entity) ? readonly : true;
+			if(create){
+				readonly = RightService.canCreate(entity)?readonly:true;
+			}else{
+				readonly = RightService.canUpdate(entity) ? readonly : true;	
+			}
 			
 			switch (fieldInfo.data_type) {
 				case "Sum":

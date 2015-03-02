@@ -104,8 +104,14 @@ package gadget.sync.outgoing
 			
 			
 			if(oper=='insert'){
+				var parentId:String=''
 				//right now we send only one record per request
-				var parentId:String = records[0][SodID];
+				if(subIDour=='Team' && entity==Database.businessPlanDao.entity){
+					parentId = records[0]['ParentId'];
+				}else{
+					parentId = records[0][SodID];
+				}
+				
 				//ignore sub if the parent recode cannot sync.
 				if(parentId.indexOf('#')!=-1){
 					faulted++;
@@ -129,9 +135,16 @@ package gadget.sync.outgoing
 				if(oper == "delete"){
 					
 					var pf:String = WSProps.ws10to20(entity,SodID);
-					xml.appendChild(
-						<{pf}>{StringUtils.unNull(records[i][SodID])}</{pf}>
-					);
+					if(subIDour=='Team' && entity==Database.businessPlanDao.entity){
+						xml.appendChild(
+							<{pf}>{StringUtils.unNull(records[i]['ParentId'])}</{pf}>
+						);
+					}else{
+						xml.appendChild(
+							<{pf}>{StringUtils.unNull(records[i][SodID])}</{pf}>
+						);
+					}
+					
 					if("DummySiebelRowId" == subIDId){
 						subIDId = "Id";
 					}
@@ -151,12 +164,23 @@ package gadget.sync.outgoing
 								continue;
 							//warningHandler(_("trying to fix NULL value in {1} subrecord {2}", entity, sub), null);
 						}
-						if(SodID==name){
-							var ws20field:String = WSProps.ws10to20(entity,SodID);
-							xml.appendChild(
-								<{ws20field}>{val}</{ws20field}>
-							);
+						
+						if(subIDour=='Team' && entity==Database.businessPlanDao.entity){
+							if('ParentId'==name){
+								var ws20field:String = WSProps.ws10to20(entity,SodID);
+								xml.appendChild(
+									<{ws20field}>{val}</{ws20field}>
+								);
+							}
+						}else{
+							if(SodID==name){
+								var ws20field:String = WSProps.ws10to20(entity,SodID);
+								xml.appendChild(
+									<{ws20field}>{val}</{ws20field}>
+								);
+							}
 						}
+						
 						if(ingnoreFields.hasOwnProperty(name)) continue;
 						
 						tmp.appendChild(<{name}>{ensureData(val)}</{name}>);

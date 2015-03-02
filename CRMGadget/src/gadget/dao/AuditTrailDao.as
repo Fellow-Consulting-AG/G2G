@@ -31,12 +31,6 @@ package gadget.dao
 			
 		}
 		
-		
-		public function findByRecordId(id:String):ArrayCollection{
-			return null;
-		}
-		
-		
 		private const textColumns:Array = [
 			"ModId",
 			"Id",

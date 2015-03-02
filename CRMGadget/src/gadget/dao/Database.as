@@ -1757,6 +1757,7 @@ package gadget.dao {
 				YcheckLayout(contactNoteDao.entity);
 				YcheckLayout(contactTeamDao.entity);
 				YcheckLayout(opportunityCompetitorDao.entity);
+				
 				//YcheckListLayout("Contact Relationships");
 				YcheckLayout(opportunityNoteDao.entity);
 				YcheckLayout(opportunityTeamDao.entity);
@@ -1894,6 +1895,7 @@ package gadget.dao {
 				YcheckCustomLayout(opportunityCompetitorDao.entity,"opportunityDefault","Competitor","Competitors");
 				YcheckCustomLayout(accountRelatedDao.entity,"accountDefault","Account Relationship","Account Relationships");
 				YcheckCustomLayout(opportunityContactDao.entity,"contactDefault","Contact","Contacts");
+				YcheckCustomLayout(businessPlanTeam.entity,"businessPlanTeamDefault","Business Plan Team","Business Plan Teams");
 				/*
 				CH
 				1) activity != Appointment 									-----------> TASK
@@ -1939,7 +1941,7 @@ package gadget.dao {
 				YcheckCustomLayout(Database.activityContactDao.entity, "contactDefault", "Contact", "Contacts");
 				YcheckCustomLayout(Database.planAccountDao.entity, "planAccountDefault", "PlanAccount", "PlanAccounts");
 				YcheckCustomLayout(Database.planContactDao.entity, "planContactDefault", "PlanContact", "PlanContacts");
-				YcheckCustomLayout(Database.planOpportunityDao.entity, "planOpportunityDefault", "PlanOpportunity", "PlanOpportunitys");
+				YcheckCustomLayout(Database.planOpportunityDao.entity, "BusinessDefault", "PlanOpportunity", "PlanOpportunitys");
 				
 				YcheckPrefs(PreferencesDAO.PDF_LOGO,sqlConnection);
 				YcheckPrefs(PreferencesDAO.WINDOW_LOGO,sqlConnection);

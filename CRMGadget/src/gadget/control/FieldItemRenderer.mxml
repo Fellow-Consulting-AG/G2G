@@ -17,6 +17,7 @@
 			import gadget.util.Utils;
 			import gadget.window.WindowManager;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.DateField;
 			import mx.controls.NumericStepper;
 			import mx.controls.TextInput;
@@ -159,8 +160,30 @@
 					var iconCbo:IconComboBox = new IconComboBox();
 					iconCbo.percentWidth = 100;
 					iconCbo.styleName = "backgroundRelation";
-					iconCbo.dataProvider = Relation.getMNReferenced(data.entity);
-					iconCbo.labelField = "entityDest";
+					
+					
+					var entity:String = data.entity;
+					//iconCbo.dataProvider = Relation.getMNReferenced(data.entity);
+					var listChildren:Array = Database.subSyncDao.listSubEnabledOrder(entity);
+					var relations:ArrayCollection = new ArrayCollection();
+					for each(var child:Object in listChildren){
+						var r:Object = Relation.getMNRelation(entity,child.entity_name);
+						if(r==null){
+							r =  Relation.getRelation(child.entity_name,entity);
+						}
+						if(r!=null){
+							relations.addItem(r);
+						}
+					}
+					iconCbo.dataProvider =relations;
+					iconCbo.labelFunction = function(rl:Object):String{
+						if(rl.supportTable){
+							return rl.entityDest;
+						}else{
+							return rl.entitySrc;
+						}
+					
+					};
 					
 					//Load icons
 					initComboEntity(iconCbo);
@@ -276,10 +299,25 @@
 				if (!data.custom) {
 					//data.custom = combo.dataProvider[0].entityDest;	
 				}
-				for each (var obj:Object in combo.dataProvider) {
-					obj.icon = ImageUtils.getImage(obj.entityDest=="User"?"Contact":obj.entityDest);
+				
+				
+				var selectedIndx:int =0;		
+				var relations:ArrayCollection = combo.dataProvider as ArrayCollection;
+				if(relations!=null){
+					for (var i: int = 0; i <relations.length; i++) {
+						var obj:Object = relations.getItemAt(i);
+						var entity:String = obj.entityDest;
+						if(obj.supportTable==null){						
+							entity= obj.entitySrc;
+						}
+						if(entity==data.custom){
+							selectedIndx=i;
+						}
+						obj.icon = ImageUtils.getImage(entity=="User"?"Contact":entity);
+					}
 				}
-				combo.selectedIndex = getComboEntityIndex(combo, data.custom);
+				//combo.selectedIndex = getComboEntityIndex(combo, data.custom);
+				combo.selectedIndex = selectedIndx;
 				//fixed missing value if not change anyvalue
 				data.custom = combo.selectedLabel;
 			}

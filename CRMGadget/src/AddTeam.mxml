@@ -11,12 +11,15 @@
 		<![CDATA[
 			import gadget.control.ImageTextInput;
 			import gadget.dao.BaseDAO;
+			import gadget.dao.BusinessPlanTeamDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.dao.SupportRegistry;
 			import gadget.i18n.i18n;
 			import gadget.service.LocaleService;
 			import gadget.service.PicklistService;
+			import gadget.util.FieldUtils;
+			import gadget.util.StringUtils;
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
@@ -97,6 +100,9 @@
 					return;
 				}
 				selectedUser.accessProfile=accessProfiles.selectedLabel;
+				if(accessProfiles.selectedItem){
+					selectedUser.accessProfileId=accessProfiles.selectedItem.data;
+				}
 				selectedUser.ContactAccess = contactAccess.selectedItem;
 				selectedUser.OpportunityAccess = opportunityAccess.selectedItem;
 				selectedUser.OpportunityAccessId = accessProfiles.selectedItem.data
@@ -144,14 +150,19 @@
 			private function getLabel(element_name:String):String{
 				
 				var subDao:BaseDAO = SupportRegistry.getSupportDao(entity,"Team");				
-				var obj:Object = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),element_name);
-				
-				if(obj==null){
-					return element_name;
+				if(subDao is BusinessPlanTeamDAO &&element_name==(entity+'Access') ){
+					element_name='AccessProfileName';
 				}
-				
-				
-				return obj.display_name;
+				var displayName:String = FieldUtils.getFieldDisplayName(subDao.entity,element_name); 
+				if(StringUtils.isEmpty(displayName)){
+					var obj:Object = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),element_name);
+					if(obj==null){
+						displayName = element_name;
+					}else{
+						displayName = obj.display_name;
+					}
+				}
+				return displayName;
 				
 				
 				

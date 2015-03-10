@@ -12,6 +12,11 @@
 	<mx:Script>
 		<![CDATA[
 			import com.assessment.ComboboxColRender;
+			import com.probertson.utils.GZIPEncoder;
+			import com.probertson.utils.GZIPFile;
+			
+			import deng.fzip.FZip;
+			import deng.fzip.FZipFile;
 			
 			import gadget.chatclient.CRMXAMPPConnection;
 			import gadget.control.CalculatedField;
@@ -1849,17 +1854,35 @@
 				buttonsconfigure.enabled = false;
 				f.addEventListener(Event.SELECT, function (event:Event):void{
 					var file:File = event.currentTarget as File;
-					if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".xml"); // Bug #543
+					var nativePath:String = file.nativePath;
+					if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".zip"); // Bug #543
 					var strStyle:String = "black";
 					var showText:String = i18n._('PREFERENCES_STRING_FILE_SAVED_SUCCESSFULLY');
 					if(file!=null){
-						if(file.extension != null && file.extension.toLowerCase()=="xml"){
+						if(file.extension != null && file.extension.toLowerCase()=="zip"){
+							//var xmlFile:File = new File(nativePath + ".xml");
 							var fileStream:FileStream = new FileStream();
 							fileStream.open(file, FileMode.WRITE);
 							var byteData : ByteArray = new ByteArray();
 							byteData.writeUTFBytes(configXml.toXMLString());
-							fileStream.writeBytes(byteData, 0, byteData.length);
+							//var gz:GZIPEncoder = new GZIPEncoder();
+							//byteData.compress(CompressionAlgorithm.DEFLATE);
+							//fileStream.writeBytes(byteData, 0, byteData.length);
+							//fileStream.close();
+							
+							//gz.compressToFile(byteData,file);
+							
+							var fzip:FZip = new FZip();
+							fzip.addFile("preference.xml",byteData);
+							var ba:ByteArray = new ByteArray(); 
+							fzip.serialize(ba) ;
+							ba.position = 0; 
+							
+							fileStream.writeBytes(ba, 0, ba.length);
 							fileStream.close();
+							
+						
+							
 						} else {
 							
 							strStyle = "red";
@@ -1924,7 +1947,7 @@
 			
 			private function importConfiguration(impPopup:ImportFiledOOD):void{
 				var file:File = new File();
-				file.browseForOpen(i18n._('PREFERENCES_FILE_OPEN_FILE'), [new FileFilter("*.XML", "*.xml")]);
+				file.browseForOpen(i18n._('PREFERENCES_FILE_OPEN_FILE'), [new FileFilter("*.XML;*.ZIP", "*.xml;*.zip")]);
 				buttonbardetail.enabled = false;
 				buttonsconfigure.enabled = false;
 				showStatus.text = "";
@@ -2203,9 +2226,28 @@
 			
 			public static function uploadXMLFile(file:File,window:Window,prefsStatus:Function=null,prefsXMLList:Function=null,mapValueWithControls:Function=null,reload:Function=null):void{
 				dialog = window;
-				var stream:FileStream = new FileStream();			
+				var bytes:ByteArray = new ByteArray(); 
+				var stream:FileStream = new FileStream();		
 				stream.open(file, FileMode.READ);
-				var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
+				stream.readBytes(bytes,0,stream.bytesAvailable);
+				
+				if(file.extension == "zip"){
+					try
+					{
+						var fzip:FZip = new FZip();
+						fzip.loadBytes(bytes);
+						if(fzip.getFileCount() > 0){
+							var zipFile:FZipFile = fzip.getFileAt(0);
+							bytes = zipFile.content;
+						}
+					} 
+					catch(error:Error) 
+					{
+						//nothing todo( if normal file )
+					}
+				}
+
+				var fileData:String = bytes.readUTFBytes(bytes.bytesAvailable);
 				//trace(fileData);
 				try{
 					var xml:XML = new XML(fileData);

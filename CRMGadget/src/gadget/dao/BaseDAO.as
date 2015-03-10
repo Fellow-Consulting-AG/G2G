@@ -784,7 +784,7 @@ package gadget.dao
 			exec(stmtDeleteOracle);
 		}
 		
-		private function fieldList(updateFF:Boolean=true):ArrayCollection {
+		protected function fieldList(updateFF:Boolean=true):ArrayCollection {
 			var allFields:ArrayCollection = new ArrayCollection();
 			//allFields.addAll(FieldUtils.allFields(entity));
 			for each(var f:Object in FieldUtils.allFields(entity)){

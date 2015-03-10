@@ -919,7 +919,7 @@ package gadget.util
 			object.item = item;
 			object.relation = relation;
 			object.related = related;
-			
+			object.dao = subDao;
 			grid.data = object;
 			
 			var hbox:HBox = new HBox();
@@ -965,6 +965,7 @@ package gadget.util
 							if(relation.supportTable==null){
 								newObj= createNewRelationObject( subDao.entity,detail.entity,detail.item);
 							}else{
+								//set only parent id field
 								var oidName:String = DAOUtils.getOracleId(detail.item.gadget_type);
 								newObj[oidName] = detail.item[oidName];
 							}							
@@ -1249,7 +1250,17 @@ package gadget.util
 				WindowManager.openModal(entityFinder);
 			}else if(status==i18n._('GLOBAL_REMOVE')){
 				if (selectedItem == null || selectedItem.gadget_id==null ||selectedItem.gadget_id=='' ) return;
-				var dao:BaseDAO=Database.getDao(object.relation.supportTable);
+				var dao:BaseDAO= object.dao as BaseDAO;
+				if(dao==null){
+					dao = Database.getDao(object.related);
+				}
+				if(dao==null){
+					if(object.relation.supportTable){
+						dao = Database.getDao(object.relation.supportTable);
+					}else{
+						dao = Database.getDao(object.relation.entityDest);
+					}
+				}
 				var obj:Object=null;
 				var gadId:String="";
 				if(dao.entity == Database.contactAccountDao.entity){
@@ -2237,23 +2248,26 @@ package gadget.util
 							}
 						}
 						else {
-							if(entity == Database.accountPartnerDao.entity ||
-								entity == Database.accountCompetitorDao.entity||
-								entity == Database.opportunityPartnerDao.entity ||
-								//entity == Database.opportunityProductRevenueDao.entity ||
-								entity == Database.relatedContactDao.entity){
-								
-								
-								if(fieldInfo.element_name=='Owner'){
-									picklist = PicklistService.getPicklist(entity, fieldInfo.element_name);
-								}else{
-									var langCode:String = LocaleService.getLanguageInfo().LanguageCode;
-									picklist = Database.customFieldDao.getPicklistValueByFieldName(entity,fieldInfo.element_name,langCode);
+							
+							picklist = PicklistService.getPicklist(entity, fieldInfo.element_name);
+							if(picklist==null || picklist.length==1){
+								if(entity == Database.accountPartnerDao.entity ||
+									entity == Database.accountCompetitorDao.entity||
+									entity == Database.opportunityPartnerDao.entity ||
+									//entity == Database.opportunityProductRevenueDao.entity ||
+									entity == Database.relatedContactDao.entity){
+									
+									
+									if(fieldInfo.element_name=='Owner'){
+										picklist = PicklistService.getPicklist(entity, fieldInfo.element_name);
+									}else{
+										var langCode:String = LocaleService.getLanguageInfo().LanguageCode;
+										picklist = Database.customFieldDao.getPicklistValueByFieldName(entity,fieldInfo.element_name,langCode);
+									}
+									
 								}
-								
-							}else{
-								picklist = PicklistService.getPicklist(entity, fieldInfo.element_name);
 							}
+							
 						}
 						if (picklist.length == 1) {
 							

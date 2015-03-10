@@ -19,6 +19,7 @@ package gadget.sync.incoming
 	import gadget.util.DateUtils;
 	import gadget.util.ServerTime;
 	import gadget.util.SodUtils;
+	import gadget.util.SodUtilsTAO;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
@@ -47,7 +48,12 @@ package gadget.sync.incoming
 		
 		public function IncomingSubBase(ID:String, subId:String, _dao:String=null) {
 			subIDour	= subId;
-			subIDsod	= SodUtils.transactionProperty(subId).sod_name;
+			var objSod:SodUtilsTAO = SodUtils.transactionProperty(subId);
+			if(objSod!=null){
+				subIDsod	= objSod.sod_name;
+			}else{
+				subIDsod = subId;
+			}
 			if(ID == Database.opportunityDao.entity && subId == Database.productDao.entity){
 				subIDsod = subIDsod + "Revenue";
 				
@@ -56,7 +62,9 @@ package gadget.sync.incoming
 			}else if(ID == Database.contactDao.entity && "Custom Object 2" == subIDsod){
 				subIDsod = "CustomObject2";
 			}
-			
+			if(StringUtils.isEmpty(subIDsod)){
+				subIDsod = subId;
+			}
 			
 			subIDns		= subIDsod.replace(/ /g,"");
 			

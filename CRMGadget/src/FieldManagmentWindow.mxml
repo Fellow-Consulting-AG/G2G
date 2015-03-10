@@ -226,6 +226,7 @@
 								Database.customFieldTranslatorDao.deleteFieldByColumnName(obj.entity,obj.column_name);
 								Database.customFieldDao.deleteCustomField(obj);
 								Database.territoryTreeDAO._delete(obj);
+								Database.columnsLayoutDao.deleteByField(obj.entity,obj.column_name);
 								Database.depthStructureTreeDAO._delete(obj);
 								if((obj.column_name as String).indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
 									PicklistService.getPicklist(obj.entity,obj.fieldName,true,true,true);

@@ -104,18 +104,24 @@ package gadget.service
 		
 		public static function getPicklist_crmod(entity:String, field:String,langCode:String):ArrayCollection {			
 			var picklist:ArrayCollection;
-			var crmodEntity:String = DAOUtils.getRecordType(entity);
-			if(crmodEntity=="Revenue"){
-				crmodEntity=Database.opportunityProductRevenueDao.entity;
-			}
 			
-			picklist = Database.picklistDao.select(field, crmodEntity);
 			
-			if(field=='ReverseRole' && entity==Database.accountRelatedDao.entity){
-				//bug#8137
-				picklist=getPicklist_crmod(Database.accountCompetitorDao.entity,"ReverseRelationshipRole",langCode);
+			picklist = Database.picklistDao.select(field, entity);
+			if(picklist==null || picklist.length<1){
+				var crmodEntity:String = DAOUtils.getRecordType(entity);
+				if(crmodEntity=="Revenue"){
+					crmodEntity=Database.opportunityProductRevenueDao.entity;
+				}
+				picklist = Database.picklistDao.select(field, crmodEntity);
+				if(picklist==null || picklist.length<1){
+					if((field=='ReverseRole' || field=='Role') && entity==Database.accountRelatedDao.entity){
+						//bug#8137
+						picklist=getPicklist_crmod(Database.accountCompetitorDao.entity,"ReverseRelationshipRole",langCode);
+					}
+				}
+				
 			}
-			var picklist2:ArrayCollection = Database.picklistServiceDao.getPicklists(field, crmodEntity, langCode);
+			var picklist2:ArrayCollection = Database.picklistServiceDao.getPicklists(field, entity, langCode);
 			if(picklist==null || picklist.length<1){			
 		
 				if (picklist2.length > 0) {				

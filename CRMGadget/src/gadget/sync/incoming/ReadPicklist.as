@@ -16,7 +16,14 @@ package gadget.sync.incoming
 		
 		protected var ns1:Namespace = new Namespace("urn:crmondemand/ws/picklist/");
 		protected var ns2:Namespace = new Namespace("urn:/crmondemand/xml/picklist");
+		protected static const DBFIELD_2_OODFIELD:Object = {
+			'AccountRelationship':{
+				'Role':'RelationshipRole',
+				'ReverseRole':'ReverseRelationshipRole'
+			
+			}
 		
+		};
 		
 		private var allPicklists:ArrayCollection = null;
 		
@@ -35,6 +42,10 @@ package gadget.sync.incoming
 				for each(var picklist:Object in tmpPickList) {
 					if (checkEntitySynchronize(picklist.entity)) {
 						cache.del(picklist.entity + "/" + picklist.element_name);
+						var dbf2oodf:Object = DBFIELD_2_OODFIELD[picklist.entity];
+						if(dbf2oodf!=null && dbf2oodf.hasOwnProperty(picklist.element_name)){
+							picklist.element_name = dbf2oodf[picklist.element_name];
+						}
 						allPicklists.addItem(picklist);
 					}
 				}
@@ -80,6 +91,19 @@ package gadget.sync.incoming
 				return dao.metaDataEntity;
 			}
 			return entity;
+		}
+		
+		protected function getDbFieldName(entity:String,oodf):String{
+			var dbf2oodf:Object = DBFIELD_2_OODFIELD[entity];
+			if(dbf2oodf!=null){
+				for(var f:String in dbf2oodf){
+					if(oodf==dbf2oodf[f]){
+						return f;
+					}
+				}
+			}
+			
+			return oodf;
 		}
 		
 		protected function getOurName():String{
@@ -140,7 +164,7 @@ package gadget.sync.incoming
 			}
 			var cnt:int = 0;
 			var recordType:String = currentOurEntity;//request.ns1::RecordType[0].toString();
-			var fieldName:String = request.ns1::FieldName[0].toString();
+			var fieldName:String = getDbFieldName(recordType,request.ns1::FieldName[0].toString());
 //			trace(recordType, fieldName);
 //			if(recordType==="Revenue"){
 //				recordType = Database.opportunityProductRevenueDao.entity;//nestle--need only oppt-revenue

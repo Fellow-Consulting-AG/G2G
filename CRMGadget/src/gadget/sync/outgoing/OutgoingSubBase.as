@@ -17,6 +17,7 @@ package gadget.sync.outgoing
 	import gadget.sync.task.ReferenceUpdater;
 	import gadget.util.FieldUtils;
 	import gadget.util.SodUtils;
+	import gadget.util.SodUtilsTAO;
 	import gadget.util.StringUtils;
 	
 	import org.purepdf.pdf.forms.PushbuttonField;
@@ -36,7 +37,12 @@ package gadget.sync.outgoing
 		{
 			super(ID);
 			subIDour	= subId;
-			subIDsod	= SodUtils.transactionProperty(subId).sod_name;
+			var objSod:SodUtilsTAO = SodUtils.transactionProperty(subId);
+			if(objSod!=null){
+				subIDsod	= objSod.sod_name;
+			}else{
+				subIDsod = subId;
+			}
 			if(ID == Database.opportunityDao.entity && subId == Database.productDao.entity){
 				subIDsod = subIDsod + "Revenue";
 				
@@ -45,6 +51,10 @@ package gadget.sync.outgoing
 			}else if(ID == Database.contactDao.entity && "Custom Object 2" == subIDsod){
 				subIDsod = "CustomObject2";
 			}
+			if(subIDsod==null){
+				subIDsod = subId;
+			}
+			
 			subIDns		= subIDsod.replace(/ /g,"");
 			
 			subList		= "ListOf"+subIDns;
@@ -113,7 +123,7 @@ package gadget.sync.outgoing
 				}
 				
 				//ignore sub if the parent recode cannot sync.
-				if(parentId.indexOf('#')!=-1){
+				if(parentId==null || parentId.indexOf('#')!=-1){
 					faulted++;
 					doRequest();
 					return;
@@ -152,6 +162,7 @@ package gadget.sync.outgoing
 					
 				}else{
 					var ingnoreFields:Dictionary = subDao.outgoingIgnoreFields;
+					var addParentField:Boolean = false;
 					for each (var field:Object in FieldUtils.allFields(subDao.entity)) {
 						var name:String = field.element_name;
 						if (name=="DummySiebelRowId")
@@ -174,6 +185,7 @@ package gadget.sync.outgoing
 							}
 						}else{
 							if(SodID==name){
+								addParentField = true;
 								var ws20field:String = WSProps.ws10to20(entity,SodID);
 								xml.appendChild(
 									<{ws20field}>{val}</{ws20field}>
@@ -184,6 +196,12 @@ package gadget.sync.outgoing
 						if(ingnoreFields.hasOwnProperty(name)) continue;
 						
 						tmp.appendChild(<{name}>{ensureData(val)}</{name}>);
+					}
+					if(!addParentField){
+						var ws20field:String = WSProps.ws10to20(entity,SodID);
+						xml.appendChild(
+							<{ws20field}>{StringUtils.unNull(records[i][SodID])}</{ws20field}>
+						);
 					}
 				}
 				

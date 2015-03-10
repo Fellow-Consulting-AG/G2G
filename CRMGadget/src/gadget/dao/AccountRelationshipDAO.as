@@ -17,9 +17,10 @@ package gadget.dao
 			},{				
 				name_column:["RelatedAccountName"],
 				oracle_id:"Id",
-				unique:['Id'],
+				unique:['Id','AccountId,RelatedAccountId'],
 				search_columns:["RelatedAccountName"],
 				record_type:"AccountRelationship",
+				index:['AccountId','RelatedAccountId'],
 				clean_table:false,
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 				
@@ -33,11 +34,30 @@ package gadget.dao
 			_isGetField = true;
 		}
 		override protected function getIncomingIgnoreFields():ArrayCollection{
-			return new ArrayCollection(["AccountId"]);
+			return new ArrayCollection(["AccountId","AccountName"]);
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{
-		 	return new ArrayCollection(["AccountId"]);
+		 	return new ArrayCollection(["AccountId","AccountName"]);
+		}
+		
+		override public function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			return findDataByRelation({keySrc:'AccountId'},oracleId);//the parent is contact
+		}
+		
+		override protected function fieldList(updateFF:Boolean=true):ArrayCollection {
+			var fields:ArrayCollection = super.fieldList(updateFF);
+			var found:Boolean = false;
+			for each (var field:Object in fields) {
+				if (field.element_name == "AccountId") {
+					found = true;
+					break;
+				}
+			}
+			if(!found){
+				fields.addItem({element_name:"AccountId"});
+			}
+			return fields;
 		}
 		
 		override public function getLayoutFields():Array{
@@ -88,7 +108,7 @@ package gadget.dao
 			"UpdatedByLastName",
 			"UpdatedByUserSignInId",
 			"Weakness",
-			"AccountId"
+			"AccountId"			
 
 		];
 	}

@@ -26,6 +26,10 @@ package gadget.dao
 			delete_({'entity':entity});
 		}
 		
+		public function deleteByField(entity:String,field:String):void {
+			delete_({'entity':entity,'element_name':field});
+		}
+		
 		public function deleteColumnLayout(entity:String, filter_type:String):void {
 			delete_({'entity': entity, 'filter_type': filter_type});
 		}

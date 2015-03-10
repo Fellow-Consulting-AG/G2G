@@ -2072,8 +2072,9 @@
 				//always show page header---bug#8266
 				//viewstack.setStyle("tabHeight",pageIndex==0?0:24);
 				//if(pageIndex==0) height -=14;
-			
-					
+					if(pageIndex==0){
+						height +=14
+					}
 					
 					PreferenceUtils.WindowScreenBounds(this);				
 					detailCanvas.height = height;

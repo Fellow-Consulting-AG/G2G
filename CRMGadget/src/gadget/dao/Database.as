@@ -191,6 +191,7 @@ package gadget.dao {
 		private var _blockDependField:BlockDependFieldDAO;
 		private var _countryDao:CountryDao;
 		private var _addressfieldtranslatorDao:AddressFieldTranslatorDAO;
+		private var _contactCampaignDao:ContactCampaignDAO;
 		
 		private var _templateDao:OrderTemplate;
 		private var _templateItemDao:OrderTemplateItem;
@@ -1664,6 +1665,7 @@ package gadget.dao {
 			_blockDependField = new BlockDependFieldDAO(_sqlConnection,_work);
 			_countryDao = new CountryDao(_sqlConnection,_work);
 			_addressfieldtranslatorDao = new AddressFieldTranslatorDAO(_sqlConnection,_work);
+			_contactCampaignDao = new ContactCampaignDAO(_sqlConnection,_work);
 			_auditTrail = new AuditTrailDao(_sqlConnection,_work);
 			
 		}
@@ -1772,6 +1774,7 @@ package gadget.dao {
 				YcheckLayout(planAccountDao.entity);
 				YcheckLayout(planContactDao.entity);
 				YcheckLayout(planOpportunityDao.entity);
+				YcheckLayout(contactCampaignDao.entity);
 				
 				
 				// list Layout
@@ -1831,6 +1834,7 @@ package gadget.dao {
 				YcheckListLayout(planContactDao.entity);
 				YcheckListLayout(planOpportunityDao.entity);
 				YcheckListLayout(businessPlanTeam.entity);
+				YcheckListLayout(contactCampaignDao.entity);
 				// view Layout
 				YcheckViewLayout("Account");
 				YcheckViewLayout("Contact");
@@ -1866,6 +1870,7 @@ package gadget.dao {
 				YcheckViewLayout(planAccountDao.entity);
 				YcheckViewLayout(planContactDao.entity);
 				YcheckViewLayout(planOpportunityDao.entity);
+				YcheckViewLayout(contactCampaignDao.entity);
 				
 				
 				//field:String = null, operator:String = null, value:String = null
@@ -1942,7 +1947,7 @@ package gadget.dao {
 				YcheckCustomLayout(Database.planAccountDao.entity, "planAccountDefault", "PlanAccount", "PlanAccounts");
 				YcheckCustomLayout(Database.planContactDao.entity, "planContactDefault", "PlanContact", "PlanContacts");
 				YcheckCustomLayout(Database.planOpportunityDao.entity, "BusinessDefault", "PlanOpportunity", "PlanOpportunitys");
-				
+				YcheckCustomLayout(contactCampaignDao.entity, "campaignDefault", "Campaign", "Campaigns");
 				YcheckPrefs(PreferencesDAO.PDF_LOGO,sqlConnection);
 				YcheckPrefs(PreferencesDAO.WINDOW_LOGO,sqlConnection);
 				YcheckPrefs(PreferencesDAO.USER_SIGNATURE,sqlConnection);
@@ -3467,7 +3472,9 @@ package gadget.dao {
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Contact.Note",syncable:true},
 				{name:"Contact Relationships",sodname:"Related",enabled:0,entity_name:"Contact.Related",syncable:true},
 				{name:"PlanContact",sodname:"PlanContact",enabled:0,entity_name:"PlanContact",syncable:false},
-				{name:"Custom Object 2",sodname:"CustomObject2",enabled:0,entity_name:"Custom Object 2",syncable:false}
+				{name:"Campaign",sodname:"CampaignRecipient",enabled:0,entity_name:"Contact.CampaignRecipient",syncable:true},
+				{name:"Custom Object 2",sodname:"CustomObject2",enabled:0,entity_name:"Custom Object 2",syncable:false},
+				{name:"CustomObject11",sodname:"CustomObject11",enabled:0,entity_name:"CustomObject11",syncable:false}
 			]},
 			{entity:"Custom Object 1",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true}]
 			},
@@ -3497,7 +3504,7 @@ package gadget.dao {
 			//{entity:"Product",sub:[{name:"Activity",enabled:0},{name:"Attachment",enabled:0}]},
 			{entity:"Service Request",sub:[
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
-				{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
+				{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:false},
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Service Request.Note",syncable:true}]},
 			{entity:"Custom Object 2",sub:[{name:"Activity",sodname:"Activity",enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:false},
@@ -3727,6 +3734,11 @@ package gadget.dao {
 		public static function get businessPlanTeam():BusinessPlanTeamDAO
 		{
 			return database._businessPlanTeam;
+		}
+
+		public static function get contactCampaignDao():ContactCampaignDAO
+		{
+			return database._contactCampaignDao;
 		}
 
 

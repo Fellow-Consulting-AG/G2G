@@ -95,8 +95,8 @@ package gadget.sync.incoming {
 
 		}
 		
-		private function getDataStr(field:XML, col:String):String {
-			if(col=='Name'){
+		private function getDataStr(field:XML, col:String,changeName:Boolean=true):String {
+			if(col=='Name' && changeName){
 				col = 'GenericIntegrationTag';
 			}
 			var tmp:XMLList = field.child(new QName(ns2.uri,col));
@@ -147,12 +147,15 @@ package gadget.sync.incoming {
 							fieldRec.Name = 'Owner';//change alias to owner
 						}
 						if(StringUtils.isEmpty(fieldRec.Name)){
-							var name:String= getDataStr(field,"Name");
+							var name:String= getDataStr(field,"Name",false);
 							//hard code for coloplast
 							if(name=='Role Name - Translation' && entity=='Account Team'){
 								fieldRec.Name='RoleName';
+							}else if(name=='Related Party Contact Full Name' && entity==Database.relatedContactDao.entity){
+								fieldRec.Name='RelatedContactFullName';
 							}
 						}
+						
 						
 						
 						Database.fieldManagementServiceDao.replace(fieldRec);

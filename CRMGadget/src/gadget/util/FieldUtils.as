@@ -37,6 +37,15 @@ package gadget.util {
 		
 		private static const MILLIS_PER_DAY:int = 1000*60*60*24;
 		
+		
+		public static function allFieldsAsMap(entity:String, alwaysRead:Boolean = false, customField:Boolean = false):Dictionary{
+			var fields:ArrayCollection = allFields(entity,alwaysRead,customField);
+			var dic:Dictionary = new Dictionary();
+			for each(var f:Object in fields){
+				dic[f.element_name] = f;
+			}
+			return dic;
+		}
 		// entity is the CG internal transaction name (e. h. AllUsers)
 		// If you use this, be sure to NOT to alter the returned object!
 		public static function allFields(entity:String, alwaysRead:Boolean = false, customField:Boolean = false):ArrayCollection {
@@ -478,7 +487,10 @@ package gadget.util {
 			{col:0, row:0, column_name:"#0", custom:"Plan Opportunity Information"},
 			{col:0, row:1, column_name:"OpportunityName"}, 
 			{col:0, row:2, column_name:"PlanName"}];
-		
+		private static const DEFAULT_CONTACT_CAMPAIGN:Array = [			
+			{col:0, row:0, column_name:"CampaignName"},
+			{col:0, row:1, column_name:"DeliveryStatus"}, 
+			{col:0, row:2, column_name:"Description"}];
 		
 		private static const DEFAULT_ACTIVITY_SAMPLE_DROPPED:Array=[
 			{col:0, row:0, column_name:"CustomInteger1"},
@@ -989,6 +1001,7 @@ package gadget.util {
 				case Database.planAccountDao.entity:return DEFAULT_PLAN_ACCOUNT;
 				case Database.planContactDao.entity:return DEFAULT_PLAN_CONTACT;
 				case Database.planOpportunityDao.entity:return DEFAULT_PLAN_OPPORTUNITY;
+				case Database.contactCampaignDao.entity:return DEFAULT_CONTACT_CAMPAIGN;
 			}
 			if(entity==Database.opportunityProductRevenueDao.entity){
 				return DEFAULT_OPPORTUNITY_PRODUCT_REVENUE;
@@ -1060,6 +1073,7 @@ package gadget.util {
 		private static var defaultPlanAccount:ArrayCollection = new ArrayCollection(["AccountIDAccountName","PrimaryPlanAccountFlag","BusinessPlanPlanName"]);
 		private static var defaultPlanContact:ArrayCollection = new ArrayCollection(["ContactFullName","PrimaryPlanContactFlag","BusinessPlanPlanName"]);
 		private static var defaultPlanOpportunity:ArrayCollection = new ArrayCollection(["OpportunityName","PlanName"]);
+		private static var defaultContactCampaign:ArrayCollection = new ArrayCollection(["CampaignName","ResponseStatus","DeliveryStatus"]);
 		
 		
 		public static function getDefaultFieldsObject(entity:String):ArrayCollection {
@@ -1118,6 +1132,7 @@ package gadget.util {
 				case Database.planAccountDao.entity:return defaultPlanAccount;
 				case Database.planContactDao.entity:return defaultPlanContact;
 				case Database.planOpportunityDao.entity:return defaultPlanOpportunity;
+				case Database.contactCampaignDao.entity:return defaultContactCampaign;
 			}
 			if(entity==Database.opportunityProductRevenueDao.entity){
 				return defaultFieldOpptProdRevenue;

@@ -49,7 +49,7 @@ package gadget.util
 			{entitySrc:"Contact", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			{entitySrc:"Opportunity.ContactRole",  keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactLastName","ContactFirstName"], labelDest:["ContactLastName","ContactFirstName"], entityDest:"Contact"},
 			{entitySrc:"Activity.Contact", keySrc:"Id", keyDest:"ContactId", labelSrc:["ContactLastName","ContactFirstName"], labelDest:["ContactLastName","ContactFirstName"], entityDest:"Contact"},
-			{entitySrc:"Contact.Related", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["RelatedContactFullName","RelatedContactFirstName","RelatedContactLastName"], labelDest:["ContactFullName","ContactFirstName", "ContactLastName"], entityDest:"Contact"},
+			{entitySrc:"Contact.Related", keySrc:"RelatedContactId", keyDest:"ContactId", labelSrc:["RelatedContactFullName","RelatedContactFirstName","RelatedContactLastName"], labelDest:["ContactFullName","ContactFirstName", "ContactLastName"], entityDest:"Contact"},
 			{entitySrc:"Contact.Team", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactId"], labelDest:["ContactId"], entityDest:"Contact"},
 			{entitySrc:"Contact.Note", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactId"], labelDest:["ContactId"], entityDest:"Contact"},
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"ContactId", keyDest:"Id", labelSrc:["ContactFullName"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Contact.Note"},
@@ -65,7 +65,7 @@ package gadget.util
 			{entitySrc:"Account.Competitor", keySrc:"PrimaryContactId", keyDest:"ContactId", labelSrc:["PrimaryContactName"], labelDest:["ContactFullName"], entityDest:"Contact"},			
 			
 			{entitySrc:"Account", keySrc:"AccountId", keySupport:"AccountId", keyDest:"RelatedAccountId", labelSrc:["AccountName"], labelSupport:["RelatedAccountName","ReverseRole","RelationshipStatus","StartTime","EndTime"],isColDynamic:true, labelDest:["AccountName"], entityDest:"Relationships", supportTable:"Account.Related"},
-			{entitySrc:"Account.Related", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["RelatedAccountName"], labelDest:["AccountName"], entityDest:"Account"},
+			{entitySrc:"Account.Related", keySrc:"RelatedAccountId", keyDest:"AccountId", labelSrc:["RelatedAccountName"], labelDest:["AccountName"], entityDest:"Account"},
 			{entitySrc:"Account.Partner", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["PartnerName"], labelDest:["AccountName"], entityDest:"Account"},
 			{entitySrc:"Account.Partner", keySrc:"PrimaryContactId", keyDest:"ContactId", labelSrc:["PrimaryContactName"], labelDest:["ContactFullName"], entityDest:"Contact"},
 			
@@ -696,7 +696,10 @@ package gadget.util
 			{entitySrc:"PlanContact", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName","ContactFirstName","ContactLastName","ContactAccountName"], labelDest:['ContactFullName','ContactFirstName','ContactLastName','AccountName'], entityDest:"Contact"},
 			
 			{entitySrc:"AuditTrail", keySrc:"Id", keyDest:"ServiceRequestId", labelSrc:["RecordName"], labelDest:['SRNumber'], entityDest:"Service Request"},
-			{entitySrc:"AuditTrail", keySrc:"Id", keyDest:"OpportunityId", labelSrc:["RecordName"], labelDest:['OpportunityName'], entityDest:"Opportunity"}
+			{entitySrc:"AuditTrail", keySrc:"Id", keyDest:"OpportunityId", labelSrc:["RecordName"], labelDest:['OpportunityName'], entityDest:"Opportunity"},
+			
+			{entitySrc:"Contact.CampaignRecipient", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"], labelDest:['ContactFullName'], entityDest:"Contact"},
+			{entitySrc:"Contact.CampaignRecipient", keySrc:"CampaignId", keyDest:"CampaignId", labelSrc:["CampaignName",'CampaignType'], labelDest:['CampaignName','CampaignType'], entityDest:"Campaign"},
 			
 		]);
 		

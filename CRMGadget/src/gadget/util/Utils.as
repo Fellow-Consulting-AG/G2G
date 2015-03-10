@@ -1248,16 +1248,23 @@ package gadget.util {
 		}	
 		
 		public static function getColumn(entity:String):ArrayCollection {
-			var columns:ArrayCollection = Database.columnsLayoutDao.fetchColumns(entity);
+			var tempCols:ArrayCollection = Database.columnsLayoutDao.fetchColumns(entity);
 			// columns required for the small detail
 			var field:Object;
 			for each (var element_name:String in FieldUtils.getFieldsDetailAsList(entity)) {
-				if (!checkColumn(columns, element_name)) {
+				if (!checkColumn(tempCols, element_name)) {
 					field = new Object();
 					field.element_name = element_name;
-					columns.addItem(field);
+					tempCols.addItem(field);
 				}
 			}	
+			var columns:ArrayCollection = new ArrayCollection();
+			var availableFields:Dictionary = FieldUtils.allFieldsAsMap(entity,false,true);
+			for each(var f:Object in tempCols){
+				if(availableFields.hasOwnProperty(f.element_name)){
+					columns.addItem(f);
+				}
+			}
 			// specific columns for Account
 			if (entity == 'Account') {
 				field = new Object();

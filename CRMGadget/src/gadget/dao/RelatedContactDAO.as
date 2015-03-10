@@ -18,9 +18,10 @@ package gadget.dao
 			},{				
 				name_column:["RelatedContactFirstName","RelatedContactLastName"],
 				oracle_id:"Id",
-				unique:['Id'],
+				unique:['Id','RelatedContactId,ContactId'],
 				search_columns:["RelatedContactFirstName","RelatedContactLastName"],
 				record_type:"ContactRelationship",
+				index:['ContactId','RelatedContactId'],
 				clean_table:false,
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 			
@@ -52,6 +53,27 @@ package gadget.dao
 				"RelatedContactExternalId"
 			]);
 		}
+		
+		override public function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			return findDataByRelation({keySrc:'ContactId'},oracleId);//the parent is contact
+		}
+		
+		
+		override protected function fieldList(updateFF:Boolean=true):ArrayCollection {
+			var fields:ArrayCollection = super.fieldList(updateFF);
+			var found:Boolean = false;
+			for each (var field:Object in fields) {
+				if (field.element_name == "ContactId") {
+					found = true;
+					break;
+				}
+			}
+			if(!found){
+				fields.addItem({element_name:"ContactId"});
+			}
+			return fields;
+		}
+		
 		override public function getLayoutFields():Array{
 			var layoutFields:Array = [
 				{data_type:"Picklist",display_name:"Related Contact",element_name:"RelatedContactFullName",entity:this.entity,required:true},				
@@ -97,6 +119,7 @@ package gadget.dao
 			"UpdatedByIntegrationId",
 			"UpdatedByLastName",
 			"UpdatedByUserSignInId",
+			"RelatedContactId",
 			"ContactId"
 		];
 	}

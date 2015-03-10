@@ -12,11 +12,6 @@
 	<mx:Script>
 		<![CDATA[
 			import com.assessment.ComboboxColRender;
-			import com.probertson.utils.GZIPEncoder;
-			import com.probertson.utils.GZIPFile;
-			
-			import deng.fzip.FZip;
-			import deng.fzip.FZipFile;
 			
 			import gadget.chatclient.CRMXAMPPConnection;
 			import gadget.control.CalculatedField;
@@ -138,7 +133,7 @@
 				//----------------------------
 				var separator:String = preferences.cvs_separator;
 				var googleMapAddress:String = preferences.google_map_address;
-//				var googleMapDistance:String = Database.preferencesDao.getGoolgeMapDistance();
+				//				var googleMapDistance:String = Database.preferencesDao.getGoolgeMapDistance();
 				if(separator== null || separator == ''){
 					separator = ',';
 				}
@@ -1832,7 +1827,7 @@
 				generateXML(configXml.elements("blockLyoutFields"),"blockLyoutField",blockLayoutFields);
 				var countrys:Array = Database.countryDao.fetch();
 				generateXML(configXml.elements("countrys"),"country",countrys);
-					
+				
 				
 				//export custom layout
 				if(chkListLayout.selected){		
@@ -1854,35 +1849,17 @@
 				buttonsconfigure.enabled = false;
 				f.addEventListener(Event.SELECT, function (event:Event):void{
 					var file:File = event.currentTarget as File;
-					var nativePath:String = file.nativePath;
-					if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".zip"); // Bug #543
+					if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".xml"); // Bug #543
 					var strStyle:String = "black";
 					var showText:String = i18n._('PREFERENCES_STRING_FILE_SAVED_SUCCESSFULLY');
 					if(file!=null){
-						if(file.extension != null && file.extension.toLowerCase()=="zip"){
-							//var xmlFile:File = new File(nativePath + ".xml");
+						if(file.extension != null && file.extension.toLowerCase()=="xml"){
 							var fileStream:FileStream = new FileStream();
 							fileStream.open(file, FileMode.WRITE);
 							var byteData : ByteArray = new ByteArray();
 							byteData.writeUTFBytes(configXml.toXMLString());
-							//var gz:GZIPEncoder = new GZIPEncoder();
-							//byteData.compress(CompressionAlgorithm.DEFLATE);
-							//fileStream.writeBytes(byteData, 0, byteData.length);
-							//fileStream.close();
-							
-							//gz.compressToFile(byteData,file);
-							
-							var fzip:FZip = new FZip();
-							fzip.addFile("preference.xml",byteData);
-							var ba:ByteArray = new ByteArray(); 
-							fzip.serialize(ba) ;
-							ba.position = 0; 
-							
-							fileStream.writeBytes(ba, 0, ba.length);
+							fileStream.writeBytes(byteData, 0, byteData.length);
 							fileStream.close();
-							
-						
-							
 						} else {
 							
 							strStyle = "red";
@@ -1947,7 +1924,7 @@
 			
 			private function importConfiguration(impPopup:ImportFiledOOD):void{
 				var file:File = new File();
-				file.browseForOpen(i18n._('PREFERENCES_FILE_OPEN_FILE'), [new FileFilter("*.XML;*.ZIP", "*.xml;*.zip")]);
+				file.browseForOpen(i18n._('PREFERENCES_FILE_OPEN_FILE'), [new FileFilter("*.XML", "*.xml")]);
 				buttonbardetail.enabled = false;
 				buttonsconfigure.enabled = false;
 				showStatus.text = "";
@@ -2226,28 +2203,9 @@
 			
 			public static function uploadXMLFile(file:File,window:Window,prefsStatus:Function=null,prefsXMLList:Function=null,mapValueWithControls:Function=null,reload:Function=null):void{
 				dialog = window;
-				var bytes:ByteArray = new ByteArray(); 
-				var stream:FileStream = new FileStream();		
+				var stream:FileStream = new FileStream();			
 				stream.open(file, FileMode.READ);
-				stream.readBytes(bytes,0,stream.bytesAvailable);
-				
-				if(file.extension == "zip"){
-					try
-					{
-						var fzip:FZip = new FZip();
-						fzip.loadBytes(bytes);
-						if(fzip.getFileCount() > 0){
-							var zipFile:FZipFile = fzip.getFileAt(0);
-							bytes = zipFile.content;
-						}
-					} 
-					catch(error:Error) 
-					{
-						//nothing todo( if normal file )
-					}
-				}
-
-				var fileData:String = bytes.readUTFBytes(bytes.bytesAvailable);
+				var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 				//trace(fileData);
 				try{
 					var xml:XML = new XML(fileData);
@@ -2484,22 +2442,22 @@
 							customLayout.custom_layout_icon = bDefault ? defaulticon: (modernIcon?'mod_'+defaultModerm+'_25':defaulticon+'Default');
 							
 							
-//							switch(customLayout.entity){
-//								case "Account" : customLayout.custom_layout_icon = bDefault ? 'account' : (modernIcon?'mod_account_25':'accountDefault'); break;
-//								case "Asset" : customLayout.custom_layout_icon = bDefault ? 'asset' : (modernIcon?'mod_assets_25':'assetDefault'); break;
-//								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contact_25':'contactDefault'); break;
-//								case "Opportunity" : customLayout.custom_layout_icon = bDefault ? 'opportunity' : (modernIcon?'mod_opportunity_25':'opportunityDefault'); break;
-//								case "Product" : customLayout.custom_layout_icon = bDefault ? 'product' : (modernIcon?'mod_product_25':'productDefault'); break;
-//								case "Service Request" : customLayout.custom_layout_icon = bDefault ? 'service' : (modernIcon?'mod_servicerequest_25':'serviceDefault'); break;
-//								case "Campaign" : customLayout.custom_layout_icon = bDefault ? 'campaign' : (modernIcon?'mod_campaign_25':'campaignDefault'); break;
-//								case "Custom Object 1" : customLayout.custom_layout_icon = bDefault ? 'custom' : (modernIcon?'mod_customobject_25':'customDefault'); break;
-//								case "Lead" : customLayout.custom_layout_icon = bDefault ? 'lead' : (modernIcon?'mod_lead_25':'leadDefault'); break;
-//								case "Custom Object 2" : customLayout.custom_layout_icon = bDefault ? 'custom2' : (modernIcon?'mod_customobject_25':'custom2Default'); break;
-//								case "Custom Object 3" : customLayout.custom_layout_icon = bDefault ? 'custom3' : (modernIcon?'mod_customobject_25':'custom3Default'); break;
-//								case "CustomObject7" : customLayout.custom_layout_icon = bDefault ? 'custom7' : (modernIcon?'mod_customobject_25':'custom7Default'); break;
-//								case "CustomObject14" : customLayout.custom_layout_icon = bDefault ? 'custom14' : (modernIcon?'mod_customobject_25':'custom14Default'); break;
-//								case "Territory" : customLayout.custom_layout_icon = bDefault ? 'territory' : (modernIcon?'mod_territory_25':'territoryDefault'); break;
-//							}
+							//							switch(customLayout.entity){
+							//								case "Account" : customLayout.custom_layout_icon = bDefault ? 'account' : (modernIcon?'mod_account_25':'accountDefault'); break;
+							//								case "Asset" : customLayout.custom_layout_icon = bDefault ? 'asset' : (modernIcon?'mod_assets_25':'assetDefault'); break;
+							//								case "Contact" : customLayout.custom_layout_icon = bDefault ? 'contact' : (modernIcon?'mod_contact_25':'contactDefault'); break;
+							//								case "Opportunity" : customLayout.custom_layout_icon = bDefault ? 'opportunity' : (modernIcon?'mod_opportunity_25':'opportunityDefault'); break;
+							//								case "Product" : customLayout.custom_layout_icon = bDefault ? 'product' : (modernIcon?'mod_product_25':'productDefault'); break;
+							//								case "Service Request" : customLayout.custom_layout_icon = bDefault ? 'service' : (modernIcon?'mod_servicerequest_25':'serviceDefault'); break;
+							//								case "Campaign" : customLayout.custom_layout_icon = bDefault ? 'campaign' : (modernIcon?'mod_campaign_25':'campaignDefault'); break;
+							//								case "Custom Object 1" : customLayout.custom_layout_icon = bDefault ? 'custom' : (modernIcon?'mod_customobject_25':'customDefault'); break;
+							//								case "Lead" : customLayout.custom_layout_icon = bDefault ? 'lead' : (modernIcon?'mod_lead_25':'leadDefault'); break;
+							//								case "Custom Object 2" : customLayout.custom_layout_icon = bDefault ? 'custom2' : (modernIcon?'mod_customobject_25':'custom2Default'); break;
+							//								case "Custom Object 3" : customLayout.custom_layout_icon = bDefault ? 'custom3' : (modernIcon?'mod_customobject_25':'custom3Default'); break;
+							//								case "CustomObject7" : customLayout.custom_layout_icon = bDefault ? 'custom7' : (modernIcon?'mod_customobject_25':'custom7Default'); break;
+							//								case "CustomObject14" : customLayout.custom_layout_icon = bDefault ? 'custom14' : (modernIcon?'mod_customobject_25':'custom14Default'); break;
+							//								case "Territory" : customLayout.custom_layout_icon = bDefault ? 'territory' : (modernIcon?'mod_territory_25':'territoryDefault'); break;
+							//							}
 						}
 					}
 					Database.customLayoutDao.update(customLayout);
@@ -2779,7 +2737,7 @@
 			}
 			
 			protected function getCustomTranslate(i:int):Object{
-
+				
 				var obj:Object = new Object();
 				obj.column_name = getColumnName(i);
 				obj.entity="preferent";
@@ -2790,12 +2748,12 @@
 				
 				return obj;
 			}
-		
+			
 			protected function txtHeight_focusOutHandler(event:FocusEvent):void{
 				setDimension("height", event);
 			}
 			private function onTextDoubleClick(event:Event,i:int):void{
-
+				
 				var calculatedField:CalculatedField = new CalculatedField();
 				var objCusField:Object = listFieldTranslate[i]
 				calculatedField.dataField = objCusField;
@@ -3089,8 +3047,8 @@
 												<mx:ComboBox id="cboGoogleMapAddress" dataProvider="{dataGoogleMapAddress}" width="150"/>
 											</mx:HBox>
 											<!--<mx:HBox width="100%">
-												<mx:Label  text="{i18n._('GOOGLE_MAP_DISTANCE@Google Map Distance')}"/>
-												<mx:ComboBox id="cboGoogleMapDistance" dataProvider="{dataGoogleMapDistance}" width="150"/>
+											<mx:Label  text="{i18n._('GOOGLE_MAP_DISTANCE@Google Map Distance')}"/>
+											<mx:ComboBox id="cboGoogleMapDistance" dataProvider="{dataGoogleMapDistance}" width="150"/>
 											</mx:HBox>-->
 											
 											<mx:HBox width="100%">
@@ -3338,7 +3296,7 @@
 										</mx:columns>
 									</mx:AdvancedDataGrid>
 								</mx:HBox>
-							
+								
 							</components:FieldSet>	
 						</mx:HBox>
 					</mx:VBox>

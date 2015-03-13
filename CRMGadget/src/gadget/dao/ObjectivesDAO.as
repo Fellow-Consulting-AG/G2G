@@ -571,5 +571,12 @@ package gadget.dao
 			"CreatedBy",
 			"ModifiedBy"
 			];
+		
+		public function getLayoutFields():Array{
+			var layoutFields:Array = [
+				{data_type:"Picklist", display_name:"Period", isCustom:true, element_name:"PeriodName", entity:this.entity, required:true}
+			];
+			return layoutFields;
+		}
 	}
 }

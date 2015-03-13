@@ -20,6 +20,7 @@
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
+			import gadget.dao.ObjectivesDAO;
 			import gadget.dao.SupportDAO;
 			import gadget.i18n.i18n;
 			import gadget.service.LocaleService;
@@ -588,7 +589,7 @@
 								}else{
 									var colName:String = isBindPicklist?CustomLayout.BINDPICKLIST_CODE:CustomLayout.CUSTOMFIELD_CODE;
 									var count:int = Database.customFieldDao.countColumnName(colName);
-									if(txtEntity.text == Database.businessPlanDao.entity){
+									if(txtEntity.text == Database.businessPlanDao.entity||txtEntity.text==Database.objectivesDao.entity){
 										customField["column_name"] = txtFieldName.text;
 									}else{
 										customField["column_name"] = "{" + colName + count + "}";
@@ -604,7 +605,7 @@
 									
 								}
 							}else{		
-								if(txtEntity.text == Database.businessPlanDao.entity){
+								if(txtEntity.text == Database.businessPlanDao.entity||txtEntity.text==Database.objectivesDao.entity){
 									customField["column_name"] = dataField.customField.fieldName;
 								}else{
 									customField["column_name"] = dataField.customField.column_name;
@@ -655,7 +656,7 @@
 									postSave(txtArFormula.text);
 								}
 							}
-							if(txtEntity.text == Database.businessPlanDao.entity){
+							if(txtEntity.text == Database.businessPlanDao.entity||txtEntity.text==Database.objectivesDao.entity){
 								customField["column_name"] = txtFieldName.text;
 							}
 							//dataField["customField"] = customField;		
@@ -860,7 +861,7 @@
 				}
 				if(cboFieldTypes.text=="Picklist"){	
 					var baseDAO:BaseDAO = (Database.getDao(txtEntity.text) as BaseDAO);
-					if(baseDAO is SupportDAO || baseDAO is BusinessPlanDAO){
+					if(baseDAO is SupportDAO || baseDAO is BusinessPlanDAO || baseDAO is ObjectivesDAO){
 						visibleField = true;
 						getMappingField(baseDAO);	
 					}
@@ -901,7 +902,10 @@
 				// hard code for business plan picklist Period
 				if(baseDAO.entity == Database.businessPlanDao.entity){
 					listLayout = (baseDAO as BusinessPlanDAO).getLayoutFields();
-				}else{
+				}else if(baseDAO  is ObjectivesDAO){
+					listLayout = (baseDAO as ObjectivesDAO).getLayoutFields();	
+				}	
+				else{
 					listLayout = (baseDAO as SupportDAO).getLayoutFields();
 				}
 				

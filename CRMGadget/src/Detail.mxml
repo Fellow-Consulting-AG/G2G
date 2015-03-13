@@ -145,6 +145,7 @@
 			private var addresses:Array = [];
 			
 			private var startInspection:StartInspection;
+			public var controlError:Function;
 			//status of service request
 			private var srOldStatus:String;
 			private var oldDGD:String;
@@ -741,6 +742,7 @@
 				}
 				//update only readonly field
 				Utils.executeFomulaFields(entity,item,fields,true);
+				try{
 				if (create) {
 					
 					item["deleted"] = false;
@@ -855,6 +857,13 @@
 				modified == false; //reset the value
 				//#1061 CRO
 				if(mainWindow.refreshDashboard != null) mainWindow.refreshDashboard();
+				
+				}catch(e:SQLError){
+					if(controlError!=null){
+						controlError(e);
+					}
+					return false;
+				}
 				return true;
 			}
 			

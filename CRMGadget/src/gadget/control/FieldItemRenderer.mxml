@@ -178,9 +178,9 @@
 					iconCbo.dataProvider =relations;
 					iconCbo.labelFunction = function(rl:Object):String{
 						if(rl.supportTable){
-							return rl.entityDest;
+							return Database.customLayoutDao.getDisplayName(rl.entityDest);
 						}else{
-							return rl.entitySrc;
+							return Database.customLayoutDao.getDisplayName(rl.entitySrc);
 						}
 					
 					};
@@ -189,7 +189,17 @@
 					initComboEntity(iconCbo);
 					
 					iconCbo.addEventListener(Event.CHANGE, function(event:Event):void {
-						data.custom = (event.target as ComboBox).selectedLabel;
+						var rel:Object = (event.target as ComboBox).selectedItem;
+						if(rel!=null){
+							if(rel.supportTable){
+								data.custom =rel.entityDest;
+							}else{
+								data.custom =rel.entitySrc;
+							}
+						}else{
+							data.custom = "";
+						}
+						
 					});
 					
 					iconCbo.setFocus();
@@ -319,7 +329,16 @@
 				//combo.selectedIndex = getComboEntityIndex(combo, data.custom);
 				combo.selectedIndex = selectedIndx;
 				//fixed missing value if not change anyvalue
-				data.custom = combo.selectedLabel;
+				var rel:Object = combo.selectedItem;
+				if(rel!=null){
+					if(rel.supportTable){
+						data.custom =rel.entityDest;
+					}else{
+						data.custom =rel.entitySrc;
+					}
+				}else{
+					data.custom ="";
+				}
 			}
 			
 //			private function isMandatoryDefault():Boolean {

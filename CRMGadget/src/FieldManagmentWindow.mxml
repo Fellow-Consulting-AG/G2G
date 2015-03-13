@@ -129,7 +129,11 @@
 					{data:"CustomObject13", label:"Custom Object 13"},
 					{data:"CustomObject15", label:"Custom Object 15"},
 					{data:"CustomObject4", label:"Custom Object 4"},
-					{data:"CustomObject5", label:"Custom Object 5"}
+					{data:"CustomObject5", label:"Custom Object 5"},
+					{data:Database.objectivesDao.entity, label:Database.objectivesDao.entity},
+					{data:Database.planAccountDao.entity, label:Database.planAccountDao.entity},
+					{data:Database.planContactDao.entity, label:Database.planContactDao.entity},
+					{data:Database.planOpportunityDao.entity, label:Database.planOpportunityDao.entity}
 				]);
 			
 			private static var _cache_cascading_crm:CacheUtils = new CacheUtils("cascading_crm");

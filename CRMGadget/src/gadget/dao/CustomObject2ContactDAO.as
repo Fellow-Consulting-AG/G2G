@@ -37,6 +37,15 @@ package gadget.dao
 				"ContactId","ContactFullName"
 			]);
 		}
+		
+		public override function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			if(parentEntity==Database.contactDao.entity){
+				return Database.contactDao.getContactCustomObject2(oracleId);
+			}else{
+				return Database.customObject2Dao.getContactCustomObject2(oracleId);
+			}
+		}
+		
 		override public final function fix_sync_incoming(ob:Object, assoc:Object=null):Boolean {
 			//Fiddle in the ActivityId which is missing
 			//ob.ContactId = assoc.ContactId;

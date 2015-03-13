@@ -571,15 +571,7 @@ package gadget.util
 				}
 			}else{
 				
-				if("Contact" == entity && "Account" == entityDao.entity){
-					result = Database.contactDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
-				}else if("Contact" == entityDao.entity && "Account" == entity){
-					result = Database.accountDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
-				}else if("Contact" == entity && "Custom Object 2" == entityDao.entity){
-					result =Database.contactDao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
-				}else if("Contact" == entityDao.entity && "Custom Object 2" == entity){
-					result =Database.customObject2Dao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
-				}else if("Contact" == entity && "Opportunity" == entityDao.entity){
+				if("Contact" == entity && "Opportunity" == entityDao.entity){
 					result = Database.contactDao.getContactOpportnity(item[DAOUtils.getOracleId(entity)], item["gadget_id"]);
 				}else{
 					result = entityDao.findRelatedData(entity,item[relation.keyDest]);
@@ -727,6 +719,12 @@ package gadget.util
 				screenDetail.item = baseDOA.findByGadgetId(item.gadget_id); 
 				baseDOA.increaseImportant(screenDetail.item);
 			}
+			screenDetail.controlError = function(e:SQLError):void{
+				if(e.errorID==3131){//SQLError: 'Error #3131: Abort due to constraint violation.', details:'', operation:'execute'
+					Alert.show("The record already exists.","Duplicate",Alert.OK,screenDetail);
+				}
+			
+			};
 			screenDetail.entity = entity;
 			screenDetail.checkDoublicate = checkDoublicate;
 			// HSC 6656
@@ -1110,7 +1108,7 @@ package gadget.util
 					detail.innerListUpdate();
 				
 				}else{
-					Alert.show("Record already exists.","Duplicate",Alert.OK,detail);
+					Alert.show("The record already exists.","Duplicate",Alert.OK,detail);
 				}
 				
 			}
@@ -1244,6 +1242,8 @@ package gadget.util
 */
 							
 							
+						}else{
+							Alert.show(i18n._("GLOBAL_DUPLICATE@The selected record already added."),"Duplicate",Alert.OK,detail);
 						}
 					
 				};
@@ -2240,6 +2240,9 @@ package gadget.util
 							for each(var currency:Object in currencyList){
 								picklist.addItem({label: currency.Code, data: currency.Code});
 							}
+							//bug10024
+							item[fieldInfo.element_name] = Database.allUsersDao.ownerUser().CurrencyCode;
+							
 						}else if(fieldInfo.element_name == "TimeZoneName"){ //Bug #6661 CRO
 							picklist = new ArrayCollection();
 							picklist.addItem({label: "", data: ""});

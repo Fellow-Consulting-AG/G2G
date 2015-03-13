@@ -1,5 +1,7 @@
 package gadget.dao
 {
+	
+	
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
 	
@@ -31,6 +33,13 @@ package gadget.dao
 			stmtFindMissingContact.text = "select ContactId from contact_account where ContactType!='End User' and ContactId not in(select contactid from contact)";
 		}
 		
+		public override function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			if(parentEntity==Database.accountDao.entity){
+				return Database.accountDao.getContactAccount(oracleId);
+			}else{
+				return Database.contactDao.getContactAccount(oracleId);
+			}
+		}
 		
 		override public function deleteByChildId(parentId:String,childId:String):void{
 			exec_cmd("DELETE FROM contact_account WHERE AccountId='"+parentId+"' AND ContactId='"+childId+"'");

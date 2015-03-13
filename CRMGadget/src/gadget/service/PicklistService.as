@@ -44,7 +44,7 @@ package gadget.service
 				return Database.customFieldDao.getPicklistValue(entity,field,langCode);
 			}
 			
-			if(entity == Database.businessPlanDao.entity && field == "PeriodName"){
+			if((entity == Database.businessPlanDao.entity||entity==Database.objectivesDao.entity) && field == "PeriodName"){
 				return Database.customFieldDao.getPicklistValue(entity, field, langCode);
 			}
 			

@@ -178,6 +178,7 @@ package gadget.sync.outgoing
 						
 						if(subIDour=='Team' && entity==Database.businessPlanDao.entity){
 							if('ParentId'==name){
+								addParentField = true;
 								var ws20field:String = WSProps.ws10to20(entity,SodID);
 								xml.appendChild(
 									<{ws20field}>{val}</{ws20field}>

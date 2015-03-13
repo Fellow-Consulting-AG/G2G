@@ -620,6 +620,18 @@
 					}
 				}
 			}
+			protected static const OURNAM_2_OODNAME:Object={
+			
+				"Account":"Acct Att",
+				"Activity":"Activity Att",
+				"Campaign":"Camp Att",
+				"Contact":"Contact Att",
+				"Custom Object 1":"CustObj1 Att",
+				"Lead":"Lead Att",
+				"Opportunity":"Oppty Att",
+				"Service Request":"SR Att"				
+			
+			};
 			
 			public function loadData():void {
 				if (item == null){
@@ -630,8 +642,13 @@
 				
 				var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();
 				
-				var canUpdate:Boolean = RightService.canUpdate(entity);
-				deleteAttachment.enabled = canUpdate;
+				var canUpdate:Boolean = false;
+				var canDelete:Boolean = false;
+				if(OURNAM_2_OODNAME.hasOwnProperty(entity)){
+					canDelete = RightService.canDelete(OURNAM_2_OODNAME[entity]);
+					canUpdate = RightService.canCreate(OURNAM_2_OODNAME[entity]);
+				}
+				deleteAttachment.enabled = canDelete;
 				addAttachment.enabled = canUpdate;
 				
 				this.title = StringUtils.reduceTextLength(Utils.getName(item), 40);
@@ -857,29 +874,14 @@
 				if(subTab!=null){
 					var hbox:HBox = subTab.getChildAt(0) as HBox;
 					var lstPro:AdvancedDataGrid = hbox.getChildAt(0) as AdvancedDataGrid;
-					var relation:Object = Relation.getRelation(entityDao.entity,entity );
-					if (relation == null) {
-						if(entityDao is SupportDAO){
-							lstPro.dataProvider=entityDao.findRelatedData(entity,item[DAOUtils.getOracleId(entity)])
-						}else{
-							lstPro.dataProvider= new ArrayCollection();
-						}
-					}else{
-						
-						if("Contact" == entity && "Account" == entityDao.entity){
-							lstPro.dataProvider = Database.contactDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
-						}else if("Contact" == entityDao.entity && "Account" == entity){
-							lstPro.dataProvider = Database.accountDao.getContactAccount(item[DAOUtils.getOracleId(entity)]);
-						}else if("Contact" == entity && "Custom Object 2" == entityDao.entity){
-							lstPro.dataProvider =Database.contactDao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
-						}else if("Contact" == entityDao.entity && "Custom Object 2" == entity){
-							lstPro.dataProvider =Database.customObject2Dao.getContactCustomObject2(item[DAOUtils.getOracleId(entity)]);
-						}else if("Contact" == entity && "Opportunity" == entityDao.entity){
-							lstPro.dataProvider = Database.contactDao.getContactOpportnity(item[DAOUtils.getOracleId(entity)], item["gadget_id"]);
-						}else{
-							lstPro.dataProvider = entityDao.findRelatedData(entity,item[relation.keyDest]);
-						}
+					
+					var relation:Object = Relation.getMNRelation(entity, entityDao.entity);
+					if(relation==null){
+						relation = Relation.getRelation(entityDao.entity,entity);
 					}
+					//use only place for load sub list data
+					lstPro.dataProvider = GUIUtils.getRelationList(relation,item);
+					
 				}
 			}
 			

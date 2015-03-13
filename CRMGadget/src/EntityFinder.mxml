@@ -3,8 +3,7 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="440" height="428"
-	title="{entity +' ' + i18n._('GLOBAL_FINDER')}" 
+	width="440" height="428"	
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="updateInfo(); init()">
 	
 	<mx:Script>
@@ -27,6 +26,7 @@
 			public var filter:String;
 			
 			private function init():void {
+				this.title=Database.customLayoutDao.getDisplayName(entity) +' ' + i18n._('GLOBAL_FINDER');
 				searchInput.setFocus();
 				if (filter != null) {
 					doSearch();
@@ -72,7 +72,7 @@
 	</mx:Script>
 	<mx:Style source="styles.css"/>
 	<mx:Canvas styleName="main" left="0" top="0" width="440" height="428" right="0" bottom="0">
-		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{entity + ' ' + i18n._('GLOBAL_FINDER')}"/>
+		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{Database.customLayoutDao.getDisplayName(entity) + ' ' + i18n._('GLOBAL_FINDER')}"/>
 		<mx:VBox top="32" left="16" right="16">
 			<mx:Form width="100%" paddingBottom="8">
 				<mx:Label id="info" left="0"/><!--CRO 05.01.2011-->

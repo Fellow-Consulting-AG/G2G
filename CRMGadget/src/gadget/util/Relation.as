@@ -56,6 +56,7 @@ package gadget.util
 			
 			// contact_account
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelSupport:["AccountName"], labelDest:["AccountName"], entityDest:"Account", supportTable:"Contact.Account"},
+			{entitySrc:"Contact", keySrc:"ContactId", keyDest:"ContactId",keySupport:"ContactId", labelSrc:["ContactFullName"],labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Custom Object 2", supportTable:"Contact.CustomObject2"},
 			
 			{entitySrc:"Campaign", keySrc:"CampaignId", keySupport:"CampaignId", keyDest:"Id", labelSrc:["CampaignName"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Campaign.Note"},
 			{entitySrc:"Campaign.Note", keySrc:"CampaignId", keyDest:"CampaignId", labelSrc:["CampaignId"], labelDest:["CampaignId"], entityDest:"Campaign"},
@@ -104,7 +105,7 @@ package gadget.util
 			
 			
 			// account_contact
-			//{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
+			{entitySrc:"Account", keySrc:"AccountId", keySupport:"ContactId", keyDest:"ContactId", labelSrc:["PrimaryContactFullName"], labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact", supportTable:"Contact.Account"},
 			
 //			{entitySrc:"Account", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Asset"},
 			/* fix #2018
@@ -680,7 +681,7 @@ package gadget.util
 			{entitySrc:"MedEdEvent", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
 			{entitySrc:"Objectives", keySrc:"AccountNameId", keyDest:"AccountId", labelSrc:["AccountNameAccountName"], labelDest:["AccountName"], entityDest:"Account"},
-			{entitySrc:"Objectives", keySrc:"PlanNameId", keyDest:"Id", labelSrc:["PlanNamePlanName"], labelDest:["PlanName"], entityDest:"BusinessPlan"},
+			{entitySrc:"Objectives", keySrc:"PlanNameId", keyDest:"Id", labelSrc:["PlanNamePlanName","PlanNameType","PlanNameStatus","PlanNameDescription"], labelDest:["PlanName","Type","Status","Description"], entityDest:"BusinessPlan"},
 			{entitySrc:"Objectives", keySrc:"ProductNameId", keyDest:"Id", labelSrc:["ProductNameName"], labelDest:["Name"], entityDest:"Product"},
 			
 			

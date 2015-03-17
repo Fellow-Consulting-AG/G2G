@@ -56,7 +56,7 @@ package gadget.util
 			
 			// contact_account
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelSupport:["AccountName"], labelDest:["AccountName"], entityDest:"Account", supportTable:"Contact.Account"},
-			{entitySrc:"Contact", keySrc:"ContactId", keyDest:"ContactId",keySupport:"ContactId", labelSrc:["ContactFullName"],labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Custom Object 2", supportTable:"Contact.CustomObject2"},
+			{entitySrc:"Contact", keySrc:"ContactId", keyDest:"Id",keySupport:"Id", labelSrc:["ContactFullName"],labelSupport:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Custom Object 2", supportTable:"Contact.CustomObject2"},
 			
 			{entitySrc:"Campaign", keySrc:"CampaignId", keySupport:"CampaignId", keyDest:"Id", labelSrc:["CampaignName"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Campaign.Note"},
 			{entitySrc:"Campaign.Note", keySrc:"CampaignId", keyDest:"CampaignId", labelSrc:["CampaignId"], labelDest:["CampaignId"], entityDest:"Campaign"},

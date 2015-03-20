@@ -7,11 +7,12 @@
 	<mx:Script>
 		<![CDATA[
 			
-				import mx.collections.SortField;
-				import mx.collections.Sort;
-				import mx.utils.StringUtil; 
-				import mx.collections.ArrayCollection;
 				import gadget.i18n.i18n;
+				
+				import mx.collections.ArrayCollection;
+				import mx.collections.Sort;
+				import mx.collections.SortField;
+				import mx.utils.StringUtil;
 				
 				[Bindable]
 				private var _sectionTitle:String;
@@ -157,6 +158,19 @@
 							removeAvailableItems(arr.toArray());
 						}
 					}
+				}
+			
+				public function get text():String{
+					var value:String = "";
+					var first:Boolean = true;
+					for each(var multi:Object in selectedItems) {
+						if(!first){
+							value+=";";
+						}
+						value += multi.data;	
+						first=false;
+					}
+					return value;
 				}
 				
 				//reset lists

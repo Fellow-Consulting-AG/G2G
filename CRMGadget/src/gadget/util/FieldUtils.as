@@ -310,10 +310,10 @@ package gadget.util {
 		}
 		
 		
-		public static function reset():void {
-			
-			CacheUtils.clear_all();//remove all clear cache
-			_cache = new CacheUtils("field");
+		public static function reset():void {	
+			_cache.clear();
+			_cache_customField.clear();
+
 		}
 		
 		public static const ACTIVITY_DEFAULT_DAILY_AGENDA:ArrayCollection = new ArrayCollection([

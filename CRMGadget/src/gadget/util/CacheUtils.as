@@ -55,11 +55,15 @@ package gadget.util
 		}
 		
 		public function clear():void {
-			parent.set(name,{});
+			this.cache = {};
+			this.childs={};
+			parent.childs[this.name] = new Dictionary(true);
+			parent.cache[this.name] = {};
 		}
 
 		public static function clear_all():void {			
-				root=new CacheUtils(null);
+			root.cache={};
+			root.childs = {};
 		}
 
 		public function del(key:String):Boolean {

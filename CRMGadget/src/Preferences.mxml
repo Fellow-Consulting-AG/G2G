@@ -819,6 +819,7 @@
 						parentEntity.addChildAt(parentEntity.removeChildAt(index), index - 1);
 						//syncActivities.addChildAt(syncActivities.removeChildAt(index), index - 1);
 						//syncAttachments.addChildAt(syncAttachments.removeChildAt(index), index - 1);
+						authorizeDeletion.addChildAt(authorizeDeletion.removeChildAt(index),index-1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index - 1);
 						displayTrans.addChildAt(displayTrans.removeChildAt(index), index - 1);
 						editStatus = true;
@@ -828,6 +829,7 @@
 						enabledTrans.addChildAt(enabledTrans.removeChildAt(index), index + 1);
 						filterTrans.addChildAt(filterTrans.removeChildAt(index), index + 1);
 						parentEntity.addChildAt(parentEntity.removeChildAt(index), index + 1);
+						authorizeDeletion.addChildAt(authorizeDeletion.removeChildAt(index),index+1);
 						//syncActivities.addChildAt(syncActivities.removeChildAt(index), index + 1);
 						//syncAttachments.addChildAt(syncAttachments.removeChildAt(index), index + 1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index + 1);

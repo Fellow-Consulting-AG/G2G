@@ -563,6 +563,8 @@
 				
 				for each(var transaction:Object in listTransaction){
 					mapTransaction[transaction.entity] = transaction;
+					transaction.single_label=Database.customLayoutDao.getDisplayName(transaction.entity);
+					transaction.plural_label=Database.customLayoutDao.getPlural(transaction.entity);
 				}
 				
 				return mapTransaction;
@@ -604,7 +606,7 @@
 					
 					var checkBox:CheckBox = new CheckBox();
 					checkBox.data = transaction.entity;
-					checkBox.label = Database.customLayoutDao.getDisplayName(transaction.entity);
+					checkBox.label = transaction.single_label;
 					checkBox.selected = transaction.enabled==1;
 					// #311: hange request - Diversey sales - Prefernces
 					checkBox.enabled = !transaction.entity_disable;
@@ -617,7 +619,7 @@
 					//var listFilter:ArrayCollection = Database.filterDao.listFilters(transaction.entity);
 					var cboBox:ComboBox = new ComboBox();
 					var listFilter:ArrayCollection = Database.filterDao.listFiltersCriteria(transaction.entity);
-					var dataProvider:ArrayCollection = filterConjunctionAndToDisplay(listFilter, transaction.entity);
+					var dataProvider:ArrayCollection = filterConjunctionAndToDisplay(listFilter, transaction);
 					cboBox.dataProvider = dataProvider;
 					cboBox.labelField = "displayName";
 					cboBox.width = 230;				
@@ -770,7 +772,7 @@
 						relation.entityDest = obj.entityDest;
 						relation.enabled=transaction.enabled==1;
 						relation.entitySrc = entity;
-						relation.labelDest = Database.customLayoutDao.getDisplayName(obj.entityDest);
+						relation.labelDest = transaction.plural_label;
 						references.addItem(relation);
 					}
 				}
@@ -820,6 +822,8 @@
 						//syncActivities.addChildAt(syncActivities.removeChildAt(index), index - 1);
 						//syncAttachments.addChildAt(syncAttachments.removeChildAt(index), index - 1);
 						authorizeDeletion.addChildAt(authorizeDeletion.removeChildAt(index),index-1);
+						advancedFilter.addChildAt(advancedFilter.removeChildAt(index),index-1);
+						syncChildren.addChildAt(syncChildren.removeChildAt(index),index-1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index - 1);
 						displayTrans.addChildAt(displayTrans.removeChildAt(index), index - 1);
 						editStatus = true;
@@ -830,6 +834,8 @@
 						filterTrans.addChildAt(filterTrans.removeChildAt(index), index + 1);
 						parentEntity.addChildAt(parentEntity.removeChildAt(index), index + 1);
 						authorizeDeletion.addChildAt(authorizeDeletion.removeChildAt(index),index+1);
+						advancedFilter.addChildAt(advancedFilter.removeChildAt(index),index+1);
+						syncChildren.addChildAt(syncChildren.removeChildAt(index),index+1);
 						//syncActivities.addChildAt(syncActivities.removeChildAt(index), index + 1);
 						//syncAttachments.addChildAt(syncAttachments.removeChildAt(index), index + 1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index + 1);
@@ -839,14 +845,14 @@
 				}
 			}
 			
-			private function filterConjunctionAndToDisplay(list:ArrayCollection, entity:String):ArrayCollection{
-				var collection:ArrayCollection = new ArrayCollection();
+			private function filterConjunctionAndToDisplay(list:ArrayCollection, trans:Object):ArrayCollection{
+				var collection:ArrayCollection = new ArrayCollection();				
 				for each(var obj:Object in list){
 					// || obj.id == "-2" || obj.id == "-3" || obj.id == "-4"
 					//CRO 17.01.2011
 					var filterName:String = obj.name;
 					filterName = filterName.indexOf('GLOBAL') == -1 ? filterName : i18n._(filterName);
-					obj.displayName = filterName.replace("{ENTITY}", Database.customLayoutDao.getPlural(entity));
+					obj.displayName = filterName.replace("{ENTITY}",trans.plural_label );
 					if (obj.type == 0 || obj.type == -1 || WSProps.isWS20filter(obj.type)) {
 						collection.addItem(obj);
 					}else if(obj.type>0){

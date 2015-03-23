@@ -748,24 +748,24 @@ package gadget.sync.incoming {
 				Database.errorLoggingDao.add(e, null);
 			}
 			
-			//update formular field
-			
-			var customFormularFields:ArrayCollection = Database.customFieldDao.selectCustomFormularFields(dao.entity);
-			if(customFormularFields!=null && customFormularFields.length>0){
-				var updateFields:Array = new Array();
-				var curentSave:Object = dao.findByOracleId(tmpOb[DAOUtils.getOracleId(dao.entity)]);
-				for each(var customField:Object in customFormularFields){
-					updateFields.push(customField.fieldName);
-					var result:String = Utils.doEvaluate(customField.value,Database.allUsersDao.ownerUser(), customField.entity, customField.fieldName, curentSave,null);
-					curentSave[customField.fieldName] = result;
-				}
-				try{
-					dao.updateByField(updateFields,curentSave,DAOUtils.getOracleId(dao.entity));
-				}catch(e:SQLError){
-					OOPS(e.getStackTrace());
-				}
-			
-			}
+			//update formular field		
+			Utils.updateCustomFormulaField(dao,dao.findByOracleId(tmpOb[DAOUtils.getOracleId(dao.entity)]));
+//			var customFormularFields:ArrayCollection = Database.customFieldDao.selectCustomFormularFields(dao.entity);
+//			if(customFormularFields!=null && customFormularFields.length>0){
+//				var updateFields:Array = new Array();
+//				var curentSave:Object = dao.findByOracleId(tmpOb[DAOUtils.getOracleId(dao.entity)]);
+//				for each(var customField:Object in customFormularFields){
+//					updateFields.push(customField.fieldName);
+//					var result:String = Utils.doEvaluate(customField.value,Database.allUsersDao.ownerUser(), customField.entity, customField.fieldName, curentSave,null);
+//					curentSave[customField.fieldName] = result;
+//				}
+//				try{
+//					dao.updateByField(updateFields,curentSave,DAOUtils.getOracleId(dao.entity));
+//				}catch(e:SQLError){
+//					OOPS(e.getStackTrace());
+//				}
+//			
+//			}
 			//update language info
 			if(this is IncomingCurrentUserData){
 				LocaleService.updateLanguageInfo(tmpOb);

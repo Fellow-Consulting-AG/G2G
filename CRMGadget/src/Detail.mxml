@@ -822,7 +822,7 @@
 					}
 					
 				}
-				
+				Utils.updateCustomFormulaField(Database.getDao(entity),item);
 				//				if(!_parentCreate)
 				Utils.updateFieldByChild(entity,item);
 				

@@ -197,6 +197,9 @@ package gadget.dao {
 		private var _templateItemDao:OrderTemplateItem;
 		private var _auditTrail:AuditTrailDao;
 		
+		private var _divisionDao:DivisionDAO;
+		private var _pvgDao:PicklistValueGroupDAO;
+		
 		public static function get templateDao():OrderTemplate
 		{
 			return database._templateDao;
@@ -1667,6 +1670,8 @@ package gadget.dao {
 			_addressfieldtranslatorDao = new AddressFieldTranslatorDAO(_sqlConnection,_work);
 			_contactCampaignDao = new ContactCampaignDAO(_sqlConnection,_work);
 			_auditTrail = new AuditTrailDao(_sqlConnection,_work);
+			_divisionDao = new DivisionDAO(_sqlConnection,_work);
+			_pvgDao = new PicklistValueGroupDAO(_sqlConnection,_work);
 			
 		}
 		
@@ -1835,6 +1840,7 @@ package gadget.dao {
 				YcheckListLayout(planOpportunityDao.entity);
 				YcheckListLayout(businessPlanTeam.entity);
 				YcheckListLayout(contactCampaignDao.entity);
+				YcheckListLayout(activityUserDao.entity);
 				// view Layout
 				YcheckViewLayout("Account");
 				YcheckViewLayout("Contact");
@@ -1901,6 +1907,7 @@ package gadget.dao {
 				YcheckCustomLayout(accountRelatedDao.entity,"accountDefault","Account Relationship","Account Relationships");
 				YcheckCustomLayout(opportunityContactDao.entity,"contactDefault","Contact","Contacts");
 				YcheckCustomLayout(businessPlanTeam.entity,"businessPlanTeamDefault","Business Plan Team","Business Plan Teams");
+				
 				/*
 				CH
 				1) activity != Appointment 									-----------> TASK
@@ -3355,7 +3362,7 @@ package gadget.dao {
 				{type:-3, name: 'GLOBAL_CUSTOMERS'},
 				{type:-4, name: 'GLOBAL_COMPETITORS'}
 			]},
-			{entity:"Activity",sync_order:22, rank:2, enabled:true, filter:[
+			{entity:"Activity",sync_order:10, rank:2, enabled:true, filter:[
 				{type:-3, name: 'GLOBAL_TASK_NOT_DONE'},
 				{type:-4, name: 'GLOBAL_TASK_DONE'},
 				{type:-5, name: 'GLOBAL_APPOINTMENTS'},
@@ -3377,20 +3384,20 @@ package gadget.dao {
 				{type:-3, name: 'GLOBAL_NEW_SERVICE_REQUEST'},
 				{type:MISSING_PDF, name: 'GLOBAL_MISSING_PDF'}]},
 			
-			{entity:"Custom Object 2",sync_order:10, rank:10},
-			{entity:"Custom Object 3",sync_order:11, rank:11},						
-			{entity:"CustomObject14",sync_order:12, rank:12},
-			{entity:"CustomObject7",sync_order:13, rank:13},
-			{entity:"CustomObject4",sync_order:14, rank:14},
-			{entity:"CustomObject5",sync_order:15, rank:15},
-			{entity:"CustomObject6",sync_order:16, rank:16},
-			{entity:"CustomObject8",sync_order:17, rank:17},
-			{entity:"CustomObject9",sync_order:18, rank:18},
-			{entity:"CustomObject10",sync_order:19, rank:19},
-			{entity:"CustomObject11",sync_order:20, rank:20},
-			{entity:"CustomObject12",sync_order:21, rank:21},
-			{entity:"CustomObject13",sync_order:22, rank:22},
-			{entity:"CustomObject15",sync_order:23, rank:23},
+			{entity:"Custom Object 2",sync_order:11, rank:10},
+			{entity:"Custom Object 3",sync_order:12, rank:11},						
+			{entity:"CustomObject14",sync_order:13, rank:12},
+			{entity:"CustomObject7",sync_order:14, rank:13},
+			{entity:"CustomObject4",sync_order:15, rank:14},
+			{entity:"CustomObject5",sync_order:16, rank:15},
+			{entity:"CustomObject6",sync_order:17, rank:16},
+			{entity:"CustomObject8",sync_order:18, rank:17},
+			{entity:"CustomObject9",sync_order:19, rank:18},
+			{entity:"CustomObject10",sync_order:20, rank:19},
+			{entity:"CustomObject11",sync_order:21, rank:20},
+			{entity:"CustomObject12",sync_order:22, rank:21},
+			{entity:"CustomObject13",sync_order:23, rank:22},
+			{entity:"CustomObject15",sync_order:24, rank:23},
 			{entity:"Asset",sync_order:7, rank:24},
 			{entity:"Territory",sync_order:25, rank:25},
 			{entity:"Note",sync_order:26, rank:26},
@@ -3458,6 +3465,8 @@ package gadget.dao {
 				{name:"Sample Dropped",sodname:"SampleDropped",enabled:0,entity_name:"Activity.SampleDropped",syncable:true},
 				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Activity.Contact",syncable:false},
 				{name:"Products Detailed",sodname:"ProductsDetailed",enabled:0,entity_name:"Activity.Product",syncable:true},
+				{name:"CustomObject12",sodname:"CustomObject12",enabled:0,entity_name:"CustomObject12",syncable:false},
+				{name:"User",sodname:"User",enabled:0,entity_name:"Activity.User",syncable:true},
 			]},			
 			{entity:"Campaign",sub:[{name:"Activity",sodname:"Activity",enabled:0,enabled:0,entity_name:"Activity",syncable:true},
 				{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
@@ -3499,7 +3508,8 @@ package gadget.dao {
 				{name:"Competitor",sodname:"Competitor",enabled:0,entity_name:"Opportunity.Competitor",syncable:true},
 				{name:"PlanOpportunity",sodname:"PlanOpportunity",enabled:0,entity_name:"PlanOpportunity",syncable:false},
 				{name:"Opportunity Product Revenue",sodname:"Product",enabled:0,entity_name:"Opportunity.Product",syncable:true},				
-				{name:"Note",sodname:"Note",enabled:0,entity_name:"Opportunity.Note",syncable:true}]
+				{name:"Note",sodname:"Note",enabled:0,entity_name:"Opportunity.Note",syncable:true},
+				{name:"CustomObject7",sodname:"CustomObject7",enabled:0,entity_name:"CustomObject7",syncable:false}]
 			},
 			//{entity:"Product",sub:[{name:"Activity",enabled:0},{name:"Attachment",enabled:0}]},
 			{entity:"Service Request",sub:[
@@ -3554,7 +3564,7 @@ package gadget.dao {
 			for each (var transaction:Object in TRANSACTIONS) {
 				var transExist:Object=_transactionDao.find(transaction.entity);
 				if (transExist!=null){
-					if(transExist.sync_order==null ||transExist.sync_order==''||transExist.sync_order==0){
+					if(transExist.sync_order==null ||transExist.sync_order==''||transExist.sync_order==0 || transaction.sync_order!=transExist.sync_order){
 						transExist.sync_order=transaction.sync_order;
 						_transactionDao.updateSyncOrder(transExist);
 					}
@@ -3739,6 +3749,16 @@ package gadget.dao {
 		public static function get contactCampaignDao():ContactCampaignDAO
 		{
 			return database._contactCampaignDao;
+		}
+
+		public static function get pvgDao():PicklistValueGroupDAO
+		{
+			return database._pvgDao;
+		}
+
+		public static function get divisionDao():DivisionDAO
+		{
+			return database._divisionDao;
 		}
 
 

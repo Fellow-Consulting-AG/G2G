@@ -77,7 +77,8 @@ package gadget.sync.incoming {
 			ContactRecipient:Database.contactCampaignDao.entity,
 			ContactAccount:Database.contactAccountDao.entity,
 			ContactCustomObject2:Database.customObject2ContactDao.entity,
-			CustomObject2Contact:Database.customObject2ContactDao.entity
+			CustomObject2Contact:Database.customObject2ContactDao.entity,
+			ActivityUser:Database.activityUserDao.entity
 			
 		}
 		

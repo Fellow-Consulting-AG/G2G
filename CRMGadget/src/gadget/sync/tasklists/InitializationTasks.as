@@ -19,6 +19,7 @@ package gadget.sync.tasklists {
 	import gadget.sync.incoming.ReadCascadingPicklists;
 	import gadget.sync.incoming.ReadCountryService;
 	import gadget.sync.incoming.ReadPicklist;
+	import gadget.sync.incoming.ReadPicklistValueGroupService;
 	import gadget.sync.incoming.RoleService;
 	import gadget.sync.task.MetadataChangeService;
 	import gadget.sync.tests.TestCreateRight;
@@ -64,6 +65,7 @@ package gadget.sync.tasklists {
 			new ReadPicklist(),
 			
 			new ReadCountryService(),
+			new ReadPicklistValueGroupService(),
 			
 			new CurrencyService(),
 					

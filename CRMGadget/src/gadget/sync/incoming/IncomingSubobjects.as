@@ -5,12 +5,14 @@ package gadget.sync.incoming
 	import flexunit.utils.ArrayList;
 	
 	import gadget.dao.AccountTeamDAO;
+	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BusinessPlanTeamDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
 	import gadget.dao.SupportRegistry;
 	import gadget.i18n.i18n;
+	import gadget.service.SupportService;
 	import gadget.sync.WSProps;
 	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.FieldUtils;
@@ -25,7 +27,7 @@ package gadget.sync.incoming
 	{
 		protected var deletedAlready:Dictionary = new Dictionary();
 		protected var subDao:SupportDAO = null;		
-		protected var listField:ArrayCollection = null;
+		private var listField:ArrayCollection = null;
 		public function IncomingSubobjects(ID:String, _subID:String) {
 			var daoName:String = null;
 			var sodDao:SodUtilsTAO = SodUtils.transactionProperty(_subID);
@@ -42,10 +44,21 @@ package gadget.sync.incoming
 			super(ID, _subID, daoName);
 			if(subDao!=null){
 				isUsedLastModified = !subDao.isSelectAll;
-				listField = FieldUtils.allFields(subDao.entity,true);
+				//listField = FieldUtils.allFields(subDao.entity,true);
 			}
 			
 			
+		}
+		
+		protected function get allFields():ArrayCollection{
+			if(listField==null || listField.length<1){
+				if(subDao is ActivityUserDAO){
+					listField = SupportService.getFields(subDao.entity);
+				}else{			
+					listField = FieldUtils.allFields(subDao.entity,true);
+				}
+			}
+			return listField;
 		}
 		
 		
@@ -175,7 +188,7 @@ package gadget.sync.incoming
 			var rec:Object = {};
 			
 			
-			for each (var colObj:Object in listField) {
+			for each (var colObj:Object in allFields) {
 				var col:String=colObj.element_name;
 				var xmldata:XMLList = data.child(new QName(ns2.uri,WSProps.ws10to20(subDao.entity,colObj.element_name)));
 				if (xmldata.length()>1)
@@ -287,7 +300,7 @@ package gadget.sync.incoming
 			var qsublist:QName=new QName(ns1.uri,subList), qsub:QName=new QName(ns1.uri,subIDns);
 			qapp = qapp.child(qsublist)[0].child(qsub)[0];		
 			var ignoreFields:Dictionary = subDao.incomingIgnoreFields;
-			for each (var field:Object in FieldUtils.allFields(subDao.entity,true)) {
+			for each (var field:Object in allFields) {
 				
 				if(ignoreFields.hasOwnProperty(field.element_name)){
 					continue;

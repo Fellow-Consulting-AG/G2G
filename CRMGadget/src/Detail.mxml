@@ -17,6 +17,7 @@
 			import gadget.control.CalendarIlog;
 			import gadget.control.ImageTextInput;
 			import gadget.control.ImageTreeFinder;
+			import gadget.control.MultiSelectList;
 			import gadget.control.SampleItemView;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.CustomFieldDAO;
@@ -1049,7 +1050,7 @@
 					var transaction:Object = listTransaction[i];
 					// Bug #6359 check right before add action CRO
 					if(!RightService.canCreate(transaction.entity)) continue; 
-					if(transaction.enabled == 1){
+					if(transaction.enabled == 1 && transaction.display){
 						var NEW_PLUS_SPACE:String = NEW_STR + " ";
 						if(userOwner.LanguageCode == "SVE" && transaction.entity == "CustomObject7"){
 							NEW_PLUS_SPACE = "Nytt ";
@@ -1087,7 +1088,7 @@
 							this.create = false;
 							(comboAction.dataProvider as ArrayCollection).removeItemAt(0);
 							this.initButtons();
-							this.reload();
+							this.reload(true);
 						}else{
 							this.close();
 						}
@@ -2003,8 +2004,15 @@
 							if(fields[i].row==1 && fields[i].col == 0)
 								nameFocus = fields[i].column_name;
 							fields[i].component = childObj;
-							childObj.width = 264;
+							
 							childObj.name = fields[i].column_name;
+//							if(fieldInfo.data_type=='Multi-Select Picklist'){
+//								MultiSelectList(childObj).percentWidth=100;
+//								(displayObj as FormItem).direction="vertical";
+//							}else{
+								childObj.width = 264;
+								
+//							}
 							(displayObj as FormItem).addChild(childObj);
 							displayObj.name = fields[i].column_name;
 							
@@ -2581,400 +2589,400 @@
 							}
 							
 							private function upload(file:File):void {
-							var data:ByteArray = Utils.getContentFile(file);
-							Database.contactDao.updateImage(data, item);
-							reload();
+								var data:ByteArray = Utils.getContentFile(file);
+								Database.contactDao.updateImage(data, item);
+								reload();
 							}
 							
 							
 							private var currentSelected:int = 0;
-							public function reload():void {
-							validators = [];
-							viewstack.removeAllChildren();
-							initTab();
-							initForm();
-							if(viewstack.getChildren().length<=currentSelected){
-							currentSelected = 0;
-							}				
-							viewstack.selectedIndex = currentSelected;
-							if(currentSelected != -1) // Bug new custom layout no field 
+							public function reload(redraw:Boolean =false):void {
+								validators = [];
+								viewstack.removeAllChildren();
+								initTab();
+								initForm();							
+								if(viewstack.getChildren().length<=currentSelected){
+									currentSelected = 0;
+								}				
+								viewstack.selectedIndex = currentSelected;
+								if(currentSelected != -1) // Bug new custom layout no field 
 								if(viewstack.getChildren().length > 0){
-									(viewstack.getTabAt(currentSelected) as Button).setFocus();
+									(viewstack.getTabAt(viewstack.selectedIndex) as Button).setFocus();
 									}
+							}
+									
+							private function editLayout():void {
+								var layout:CustomLayout = new CustomLayout();
+								layout.entity = entity;
+								layout.item = item;
+								layout.detail = this;
+								currentSelected = viewstack.selectedIndex;
+								WindowManager.openModal(layout);
+							}
+									
+							private function openAttachmentFileLayout():void {
+								var attachmentDlg:Attachment = new Attachment();
+								attachmentDlg.detail = this;
+								WindowManager.openModal(attachmentDlg);	
+							}
+									
+							private function openValidationList():void {
+								var validationList:ValidationList = new ValidationList();
+								validationList.entity = entity;
+								WindowManager.openModal(validationList);
+							}
+									
+									
+							private function onDragIn(event:NativeDragEvent):void {
+								//check and see if files are being drug in
+								if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+								{
+								//get the array of files
+								var files:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+								
+								//make sure only one file is dragged in (i.e. this app doesn’t support dragging in multiple files)
+								if(files.length == 1)
+								{
+								//accept the drag action
+								DragManager.acceptDragDrop(this);
+								}
+								}
+							}
+									
+							private function modifiedLocalUpdateItem():void{
+								item.local_update = new Date().getTime();
+								item.deleted = 0;
+								Database.getDao(entity).update(item);
+								refreshFunction(item);
+							}
+									
+							//called when the user drops an item over the component
+							private function onDragDrop(event:NativeDragEvent):void {
+								if (!create) {
+								var arr:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+								var file:File = arr[0] as File;
+								
+								var itemName:String = '';
+								switch(entity){
+									case 'Account': itemName = item.AccountName; break;
+									case 'Contact': itemName = item.ContactLastName + ' ' + item.ContactFirstName;
+									if (EXTENSION_IMAGE_FILE.indexOf(file.type) < 0) {
+										Utils.upload(file, this.entity, this.item.gadget_id, displayAttachments, modifiedLocalUpdateItem);   	
+									//CRO 05.01.2011
+									Alert.show(i18n._('GLOBAL_ATTACHMENT') + ' ' +  file.name + ' ' + i18n._('DETAIL_ALERT_TEXT_WAS_ADDED_TO') + ' ' + entity + ' ' + itemName, i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
+									} else {
+										var data:ByteArray = Utils.getContentFile(file);
+									Database.contactDao.updateImage(data, item);
+									var displayObj:FormItem = leftFormL[0].getChildByName("picture") as FormItem;
+									if (displayObj==null) {
+									displayObj = rightFormL[0].getChildByName("picture") as FormItem;
 									}
-									
-									private function editLayout():void {
-									var layout:CustomLayout = new CustomLayout();
-									layout.entity = entity;
-									layout.item = item;
-									layout.detail = this;
-									currentSelected = viewstack.selectedIndex;
-									WindowManager.openModal(layout);
+									var childObj:HBox = displayObj.getChildAt(0) as HBox;
+									var canvasObj:Canvas = childObj.getChildAt(0) as Canvas;
+									var img : Image = canvasObj.getChildAt(0) as Image;
+									img.source = item["picture"]; 
 									}
-									
-									private function openAttachmentFileLayout():void {
-									var attachmentDlg:Attachment = new Attachment();
-									attachmentDlg.detail = this;
-									WindowManager.openModal(attachmentDlg);	
+									return ;
+									//break;
+									case 'Opportunity': itemName = item.OpportunityName; break;
+									case 'Activity': itemName = item.Subject; break;
+									case 'Product': itemName = item.Name; break;
+									case 'Service Request': itemName = item.SRNumber; break;
+									case 'Campaign' : itemName = item.CampaignName; break;
 									}
-									
-									private function openValidationList():void {
-									var validationList:ValidationList = new ValidationList();
-									validationList.entity = entity;
-									WindowManager.openModal(validationList);
-									}
-									
-									
-									private function onDragIn(event:NativeDragEvent):void {
-									//check and see if files are being drug in
-									if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
-									{
-									//get the array of files
-									var files:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-									
-									//make sure only one file is dragged in (i.e. this app doesn’t support dragging in multiple files)
-									if(files.length == 1)
-									{
-									//accept the drag action
-									DragManager.acceptDragDrop(this);
-									}
-									}
-									}
-									
-									private function modifiedLocalUpdateItem():void{
-									item.local_update = new Date().getTime();
-									item.deleted = 0;
-									Database.getDao(entity).update(item);
-									refreshFunction(item);
-									}
-									
-									//called when the user drops an item over the component
-									private function onDragDrop(event:NativeDragEvent):void {
-									if (!create) {
-									var arr:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-									var file:File = arr[0] as File;
-									
-									var itemName:String = '';
-									switch(entity){
-										case 'Account': itemName = item.AccountName; break;
-										case 'Contact': itemName = item.ContactLastName + ' ' + item.ContactFirstName;
-										if (EXTENSION_IMAGE_FILE.indexOf(file.type) < 0) {
-											Utils.upload(file, this.entity, this.item.gadget_id, displayAttachments, modifiedLocalUpdateItem);   	
+									Utils.upload(file, this.entity, this.item.gadget_id, displayAttachments, modifiedLocalUpdateItem);   		
+									//CRO 05.01.2011
+									Alert.show(i18n._('GLOBAL_ATTACHMENT') + ' ' +  file.name + ' ' + i18n._('DETAIL_ALERT_TEXT_WAS_ADDED_TO') + ' ' + entity + ' ' + itemName, i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
+									}else{
 										//CRO 05.01.2011
-										Alert.show(i18n._('GLOBAL_ATTACHMENT') + ' ' +  file.name + ' ' + i18n._('DETAIL_ALERT_TEXT_WAS_ADDED_TO') + ' ' + entity + ' ' + itemName, i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
-										} else {
-											var data:ByteArray = Utils.getContentFile(file);
-										Database.contactDao.updateImage(data, item);
-										var displayObj:FormItem = leftFormL[0].getChildByName("picture") as FormItem;
-										if (displayObj==null) {
-										displayObj = rightFormL[0].getChildByName("picture") as FormItem;
-										}
-										var childObj:HBox = displayObj.getChildAt(0) as HBox;
-										var canvasObj:Canvas = childObj.getChildAt(0) as Canvas;
-										var img : Image = canvasObj.getChildAt(0) as Image;
-										img.source = item["picture"]; 
-										}
-										return ;
-										//break;
-										case 'Opportunity': itemName = item.OpportunityName; break;
-										case 'Activity': itemName = item.Subject; break;
-										case 'Product': itemName = item.Name; break;
-										case 'Service Request': itemName = item.SRNumber; break;
-										case 'Campaign' : itemName = item.CampaignName; break;
-										}
-										Utils.upload(file, this.entity, this.item.gadget_id, displayAttachments, modifiedLocalUpdateItem);   		
-										//CRO 05.01.2011
-										Alert.show(i18n._('GLOBAL_ATTACHMENT') + ' ' +  file.name + ' ' + i18n._('DETAIL_ALERT_TEXT_WAS_ADDED_TO') + ' ' + entity + ' ' + itemName, i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
+										Alert.show(i18n._('DETAIL_ALERT_TEXT_CAN_NOT_DROP_FILE_TO_ATTACHMENT'), i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
+									}
+								}
+										
+										
+								private function initDragDropWindow():void {
+									//register for the drag enter event
+									this.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+									//register for the drag drop event
+									this.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+								}
+								private function getByteImage(img:String):ByteArray{
+									if(StringUtils.isEmpty(img)){
+									return null;
+									}
+									var base64Dec:Base64Decoder = new Base64Decoder();
+									base64Dec.decode(img);
+									var bytes:ByteArray  = base64Dec.toByteArray();
+									return bytes;
+								}
+								private function exportToPdfWithEpad(event:MouseEvent):void{
+									if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
+										updateItemFields();
+										PDFUtil.sampleItemsToPDF(item,sampleView.cloneItems());
+									}else{
+										var enable_pdf_signature:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_PDF_SIGNATURE, 0);
+										if(enable_pdf_signature){
+										epadPanel.generatePDF = exportToPDF;
+										epadPanel.startSign_clickHandler(event);
+										epadPanel.detail=this;
 										}else{
-											//CRO 05.01.2011
-											Alert.show(i18n._('DETAIL_ALERT_TEXT_CAN_NOT_DROP_FILE_TO_ATTACHMENT'), i18n._('GLOBAL_ATTACHMENTS'),Alert.OK,this);
+											exportToPDF();
 										}
-										}
+									}
+								}
+								private function exportToPDF():void {
+									var sign:String = epadPanel.stringImage;
+									var bytesSign:ByteArray = getByteImage(sign);
+									PDFUtil.detailToPDF(entity,subtype,item,create,logo_error_message,bytesSign);
+								}
+										
+								private function logo_error_message():void{
+									//CRO 05.01.2011
+									Alert.show(i18n._('GLOBAL_ALERT_MSG_LOGO_ERROR'), "", Alert.OK, this);
+								}
 										
 										
-										private function initDragDropWindow():void {
-										//register for the drag enter event
-										this.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-										//register for the drag drop event
-										this.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
-										}
-										private function getByteImage(img:String):ByteArray{
-										if(StringUtils.isEmpty(img)){
-										return null;
-										}
-										var base64Dec:Base64Decoder = new Base64Decoder();
-										base64Dec.decode(img);
-										var bytes:ByteArray  = base64Dec.toByteArray();
-										return bytes;
-										}
-										private function exportToPdfWithEpad(event:MouseEvent):void{
-											if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
-												updateItemFields();
-												PDFUtil.sampleItemsToPDF(item,sampleView.cloneItems());
-											}else{
-												var enable_pdf_signature:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_PDF_SIGNATURE, 0);
-												if(enable_pdf_signature){
-												epadPanel.generatePDF = exportToPDF;
-												epadPanel.startSign_clickHandler(event);
-												epadPanel.detail=this;
-												}else{
-													exportToPDF();
-												}
+								//Bug fixing 466 CRO show detail on sql grid double click
+								private function disableIcon():void{
+									if(isReadOnlyFields){ 
+									customLayoutBtn.visible = false;
+									attachmentBtn.visible = false;
+									validationBtn.visible = false;
+									pdfExportBtn.includeInLayout = false;
+									pdfExportBtn.visible = false;
+									comboAction.visible = false;
+									}
+								}
+										
+								// Feature #56 Integration of Barcode scanner
+								protected function showBarCode_clickHandler(event:MouseEvent,batchInserList:String=""):void{
+								
+									if(!StringUtils.isEmpty(batchInserList)){  // C.R #463 Insert more material numbers at once
+									generateBarCodeReader(batchInserList);  
+									}else{
+										var os:String = flash.system.Capabilities.os.substr(0, 3);
+									var touchscreenType:String = flash.system.Capabilities.touchscreenType;
+									flash.system.Capabilities.touchscreenType.length;
+									if (!(os == "Win")) {
+									Alert.show(i18n._("BarCode Scanner suport only on Widnow OS.") , i18n._("Not Suport OS"), Alert.OK, this);
+									return;
+									}else{
+										barcodeReader.generateBarCodeReader = generateBarCodeReader;
+									barcodeReader.show_BarcodeReader();
+									this.enabled =  false;
+									}
+									}
+								
+								
+								}
+										
+										
+								protected function generateBarCodeReader(barCodeList:String,readBarcode:Boolean=false):void{
+									if(barCodeList.indexOf("Cancel")<0){
+										barCodeList = StringUtil.trim(barCodeList);
+									var codeList:Array = barCodeList.split(",");
+									getProductList(codeList,"Custom Object 2",readBarcode);
+									}
+									this.enabled = true;
+								}
+										
+								public function getProductList(codeList:Array,entity:String,readBarcode:Boolean=false):void {
+								
+									for each(var sqlQueryObject:Object in sqlQueryObjects) {
+										var objectSQLQuery:Object = sqlQueryObject.objectSQLQuery;
+										var displayObj:DisplayObject = sqlQueryObject.displayObj;
+										if(displayObj is VBox && objectSQLQuery.entity==entity) {
+										var grid:DataGrid = ((displayObj as VBox).getChildAt(0)) as DataGrid;
+										var productList:ArrayCollection = new ArrayCollection();
+										for(var idx:int=0;idx<codeList.length;idx++){
+											var strCode:String = codeList[idx];
+										var qty:int = 1;
+										if(strCode.indexOf("=")>-1){
+											qty = parseInt(strCode.split("=")[1]);
+											if(qty==0){
+											qty=1;
 											}
-										}
-										private function exportToPDF():void {
-										var sign:String = epadPanel.stringImage;
-										var bytesSign:ByteArray = getByteImage(sign);
-										PDFUtil.detailToPDF(entity,subtype,item,create,logo_error_message,bytesSign);
-										}
-										
-										private function logo_error_message():void{
-										//CRO 05.01.2011
-										Alert.show(i18n._('GLOBAL_ALERT_MSG_LOGO_ERROR'), "", Alert.OK, this);
-										}
-										
-										
-										//Bug fixing 466 CRO show detail on sql grid double click
-										private function disableIcon():void{
-										if(isReadOnlyFields){ 
-										customLayoutBtn.visible = false;
-										attachmentBtn.visible = false;
-										validationBtn.visible = false;
-										pdfExportBtn.includeInLayout = false;
-										pdfExportBtn.visible = false;
-										comboAction.visible = false;
-										}
-										}
-										
-										// Feature #56 Integration of Barcode scanner
-										protected function showBarCode_clickHandler(event:MouseEvent,batchInserList:String=""):void{
-										
-										if(!StringUtils.isEmpty(batchInserList)){  // C.R #463 Insert more material numbers at once
-										generateBarCodeReader(batchInserList);  
-										}else{
-											var os:String = flash.system.Capabilities.os.substr(0, 3);
-										var touchscreenType:String = flash.system.Capabilities.touchscreenType;
-										flash.system.Capabilities.touchscreenType.length;
-										if (!(os == "Win")) {
-										Alert.show(i18n._("BarCode Scanner suport only on Widnow OS.") , i18n._("Not Suport OS"), Alert.OK, this);
-										return;
-										}else{
-											barcodeReader.generateBarCodeReader = generateBarCodeReader;
-										barcodeReader.show_BarcodeReader();
-										this.enabled =  false;
-										}
-										}
-										
-										
-										}
-										
-										
-										protected function generateBarCodeReader(barCodeList:String,readBarcode:Boolean=false):void{
-										if(barCodeList.indexOf("Cancel")<0){
-											barCodeList = StringUtil.trim(barCodeList);
-										var codeList:Array = barCodeList.split(",");
-										getProductList(codeList,"Custom Object 2",readBarcode);
-										}
-										this.enabled = true;
-										}
-										
-										public function getProductList(codeList:Array,entity:String,readBarcode:Boolean=false):void {
-										
-										for each(var sqlQueryObject:Object in sqlQueryObjects) {
-											var objectSQLQuery:Object = sqlQueryObject.objectSQLQuery;
-											var displayObj:DisplayObject = sqlQueryObject.displayObj;
-											if(displayObj is VBox && objectSQLQuery.entity==entity) {
-											var grid:DataGrid = ((displayObj as VBox).getChildAt(0)) as DataGrid;
-											var productList:ArrayCollection = new ArrayCollection();
-											for(var idx:int=0;idx<codeList.length;idx++){
-												var strCode:String = codeList[idx];
-											var qty:int = 1;
-											if(strCode.indexOf("=")>-1){
-												qty = parseInt(strCode.split("=")[1]);
-												if(qty==0){
-												qty=1;
-												}
+											}
+											
+											var sqlQuery:String = "select * from product where Name='" + strCode.split("=")[0] + "'";
+											if(readBarcode) sqlQuery = sqlQuery.replace("Name","IndexedShortText0"); // replaced Material Number by Barcode EAN 
+											var objProduct:Object = Database.queryDao.executeQueryObject(sqlQuery);
+											if(objProduct){
+											var obj:Object = new Object();
+											obj['ProductName'] = objProduct['Name'];
+											obj['ServiceRequestNumber'] = item['SRNumber'];
+											// obj['ServiceRequestId'] = item['ServiceRequestId'];
+											var strid:String = item['ServiceRequestId'];
+											// for each(var objField:Object in objectSQLQuery.fields){}
+											for each (var ns:String in DAOUtils.getNameColumns(entity)) {
+											if (!obj[ns]) obj[ns] = entity;
+											}
+											obj[DAOUtils.getOracleId(entity)] = null;
+											obj["ProductId"] = objProduct["ProductId"];
+											obj["deleted"] = false;
+											obj["error"] = false;
+											obj["OwnerId"] = Database.userDao.read().id;
+											obj['ServiceRequestId'] = item['ServiceRequestId'];
+											obj['IndexedNumber0'] = qty;   // quantity should be "1" 
+											obj['IndexedPick0'] =    GUIUtils.findEvaluatorDefaultValue(entity,"IndexedPick0",obj); //"FOL";  //  AccountingIndicator should be "FOL"
+											//#1002 CRO
+											obj['mat_unit'] = Utils.getFormulaValue(entity,userOwner,obj,'mat_unit','mat_unit');
+											obj['mat_desc'] = Utils.getFormulaValue(entity,userOwner,obj,'mat_desc','mat_desc');
+											var dao:BaseDAO = Database.getDao(entity);
+											try {
+												dao.insert(obj);
+												} catch (e:SQLError) {
+													Alert.show(e.toString(), i18n._('MINIDETAIL_ALERT_TITLE_CANNOT_CREATE_RECORD'), Alert.CANCEL, this);
+													return;
+													}
+													obj = dao.selectLastRecord()[0];
+													// by default, sets the OracleId as gadget_id
+													obj[DAOUtils.getOracleId(entity)] = "#" + obj.gadget_id;
+													Database.getDao(entity).update(obj);
+													}								
+													trace(codeList[idx]);
+													}									
+													// refresh data grid.
+													//grid.dataProvider = Database.queryDao.executeQuery(objectSQLQuery.sqlString);
+													innerListUpdate();break;
+													//(grid.dataProvider as ArrayCollection).refresh(); break;
+													}
+													}
+													
+													for each(var sqlQueryObjectR:Object in sqlQueryObjects) {
+													var objectSQLQueryR:Object = sqlQueryObjectR.objectSQLQuery;
+													var displayObjR:DisplayObject = sqlQueryObjectR.displayObj;
+													if(displayObjR is VBox && objectSQLQueryR.entity==entity) {
+													var gridR:DataGrid = ((displayObjR as VBox).getChildAt(0)) as DataGrid;
+													gridR.dataProvider = Database.queryDao.executeQuery(objectSQLQueryR.sqlString);
+													//CRO picklist display Code to Value
+													var data:ArrayCollection = gridR.dataProvider as ArrayCollection;
+													GUIUtils.mapPickListValueSqlGrid(data,sqlQueryObjectR.objectSQLQuery);
+													//--------------------
+													(gridR.dataProvider as ArrayCollection).refresh();
+													}
+													}	
 												}
 												
-												var sqlQuery:String = "select * from product where Name='" + strCode.split("=")[0] + "'";
-												if(readBarcode) sqlQuery = sqlQuery.replace("Name","IndexedShortText0"); // replaced Material Number by Barcode EAN 
-												var objProduct:Object = Database.queryDao.executeQueryObject(sqlQuery);
-												if(objProduct){
-												var obj:Object = new Object();
-												obj['ProductName'] = objProduct['Name'];
-												obj['ServiceRequestNumber'] = item['SRNumber'];
-												// obj['ServiceRequestId'] = item['ServiceRequestId'];
-												var strid:String = item['ServiceRequestId'];
-												// for each(var objField:Object in objectSQLQuery.fields){}
-												for each (var ns:String in DAOUtils.getNameColumns(entity)) {
-												if (!obj[ns]) obj[ns] = entity;
+												protected function facebookBtn_clickHandler(event:MouseEvent):void
+												{
+													// TODO Auto-generated method stub
+													var linkButton:LinkButton = event.currentTarget as LinkButton;
+													if(linkButton.id == "facebookBtn") {
+													if(!StringUtils.isEmpty(item.facebook)) {
+													openHTMLViewer(item,true,reload);
+													}else {
+														openFacebookWindow(item,true,null,reload);
+													}
+													}else if(linkButton.id == "linkedinBtn") {
+													if(!StringUtils.isEmpty(item.linkedin)) {
+													openHTMLViewer(item, false,reload);
+													}else {
+														openFacebookWindow(item, false,null,reload);
+													}
+													}
+												
 												}
-												obj[DAOUtils.getOracleId(entity)] = null;
-												obj["ProductId"] = objProduct["ProductId"];
-												obj["deleted"] = false;
-												obj["error"] = false;
-												obj["OwnerId"] = Database.userDao.read().id;
-												obj['ServiceRequestId'] = item['ServiceRequestId'];
-												obj['IndexedNumber0'] = qty;   // quantity should be "1" 
-												obj['IndexedPick0'] =    GUIUtils.findEvaluatorDefaultValue(entity,"IndexedPick0",obj); //"FOL";  //  AccountingIndicator should be "FOL"
-												//#1002 CRO
-												obj['mat_unit'] = Utils.getFormulaValue(entity,userOwner,obj,'mat_unit','mat_unit');
-												obj['mat_desc'] = Utils.getFormulaValue(entity,userOwner,obj,'mat_desc','mat_desc');
-												var dao:BaseDAO = Database.getDao(entity);
-												try {
-													dao.insert(obj);
-													} catch (e:SQLError) {
-														Alert.show(e.toString(), i18n._('MINIDETAIL_ALERT_TITLE_CANNOT_CREATE_RECORD'), Alert.CANCEL, this);
-														return;
-														}
-														obj = dao.selectLastRecord()[0];
-														// by default, sets the OracleId as gadget_id
-														obj[DAOUtils.getOracleId(entity)] = "#" + obj.gadget_id;
-														Database.getDao(entity).update(obj);
-														}								
-														trace(codeList[idx]);
-														}									
-														// refresh data grid.
-														//grid.dataProvider = Database.queryDao.executeQuery(objectSQLQuery.sqlString);
-														innerListUpdate();break;
-														//(grid.dataProvider as ArrayCollection).refresh(); break;
-														}
-														}
 														
-														for each(var sqlQueryObjectR:Object in sqlQueryObjects) {
-														var objectSQLQueryR:Object = sqlQueryObjectR.objectSQLQuery;
-														var displayObjR:DisplayObject = sqlQueryObjectR.displayObj;
-														if(displayObjR is VBox && objectSQLQueryR.entity==entity) {
-														var gridR:DataGrid = ((displayObjR as VBox).getChildAt(0)) as DataGrid;
-														gridR.dataProvider = Database.queryDao.executeQuery(objectSQLQueryR.sqlString);
-														//CRO picklist display Code to Value
-														var data:ArrayCollection = gridR.dataProvider as ArrayCollection;
-														GUIUtils.mapPickListValueSqlGrid(data,sqlQueryObjectR.objectSQLQuery);
-														//--------------------
-														(gridR.dataProvider as ArrayCollection).refresh();
-														}
-														}	
-														}
+												public static function openFacebookWindow(item:Object, facebook:Boolean=true, htmlViewer:HTMLViewer=null,reload:Function=null):void {
+													// default is facebook otherwise is linkedin
+													var facebookWindow:FacebookWindow = new FacebookWindow();
+													facebookWindow.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
+													facebookWindow.titleBarLabel = facebook ? "Facebook" : "Linkedin";
+													facebookWindow.htmlViewer = htmlViewer;
+													facebookWindow.facebook = facebook;
+													facebookWindow.item = item;
+													facebookWindow.reload = reload;
+													WindowManager.openModal(facebookWindow);
+												}
 														
-														protected function facebookBtn_clickHandler(event:MouseEvent):void
-														{
-														// TODO Auto-generated method stub
-														var linkButton:LinkButton = event.currentTarget as LinkButton;
-														if(linkButton.id == "facebookBtn") {
-														if(!StringUtils.isEmpty(item.facebook)) {
-														openHTMLViewer(item,true,reload);
-														}else {
-															openFacebookWindow(item,true,null,reload);
-														}
-														}else if(linkButton.id == "linkedinBtn") {
-														if(!StringUtils.isEmpty(item.linkedin)) {
-														openHTMLViewer(item, false,reload);
-														}else {
-															openFacebookWindow(item, false,null,reload);
-														}
-														}
+												private function openHTMLViewer(item:Object, facebook:Boolean=true,reload:Function=null):void {
+													// default is facebook otherwise is linkedin
+													var htmlViewer:HTMLViewer = new HTMLViewer();
+													htmlViewer.facebook = facebook;
+													htmlViewer.location = facebook ? item.facebook : item.linkedin;
+													htmlViewer.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
+													htmlViewer.titleBarLabel = facebook ? "Facebook" : "Linkedin";
+													htmlViewer.item = item;
+													htmlViewer.reload = reload;
+													WindowManager.openModal(htmlViewer);
+												}
 														
-														}
-														
-														public static function openFacebookWindow(item:Object, facebook:Boolean=true, htmlViewer:HTMLViewer=null,reload:Function=null):void {
-														// default is facebook otherwise is linkedin
-														var facebookWindow:FacebookWindow = new FacebookWindow();
-														facebookWindow.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
-														facebookWindow.titleBarLabel = facebook ? "Facebook" : "Linkedin";
-														facebookWindow.htmlViewer = htmlViewer;
-														facebookWindow.facebook = facebook;
-														facebookWindow.item = item;
-														facebookWindow.reload = reload;
-														WindowManager.openModal(facebookWindow);
-														}
-														
-														private function openHTMLViewer(item:Object, facebook:Boolean=true,reload:Function=null):void {
-														// default is facebook otherwise is linkedin
-														var htmlViewer:HTMLViewer = new HTMLViewer();
-														htmlViewer.facebook = facebook;
-														htmlViewer.location = facebook ? item.facebook : item.linkedin;
-														htmlViewer.titleBarIcon = facebook ? ImageUtils.facebookIcon : ImageUtils.linkedinIcon;
-														htmlViewer.titleBarLabel = facebook ? "Facebook" : "Linkedin";
-														htmlViewer.item = item;
-														htmlViewer.reload = reload;
-														WindowManager.openModal(htmlViewer);
-														}
-														
-														private function isFacebookLinkedin(key:String):Boolean {
-														return (entity=='Contact' && Database.preferencesDao.getBooleanValue(key));
-														}
-														
+												private function isFacebookLinkedin(key:String):Boolean {
+													return (entity=='Contact' && Database.preferencesDao.getBooleanValue(key));
+												}
+												
 														
 														protected function btnComment_clickHandler(event:MouseEvent):void
 														{
-														var msgObj:Object = new Object();
-														msgObj.Entity = entity;
-														msgObj.IsParent = 'true';
-														msgObj.CommentText = txtComment.text;
-														FeedUtils.formatAndSendFeed( msgObj );
-														txtComment.text = "";
+															var msgObj:Object = new Object();
+															msgObj.Entity = entity;
+															msgObj.IsParent = 'true';
+															msgObj.CommentText = txtComment.text;
+															FeedUtils.formatAndSendFeed( msgObj );
+															txtComment.text = "";
 														}
 														
 														
 														protected function chkFeed_clickHandler(event:MouseEvent):void
 														{
-														txtComment.visible = chkFeed.selected;
-														txtComment.includeInLayout = chkFeed.selected;
-														btnComment.visible = chkFeed.selected;
-														btnComment.includeInLayout = chkFeed.selected;
-														validateNow();
+															txtComment.visible = chkFeed.selected;
+															txtComment.includeInLayout = chkFeed.selected;
+															btnComment.visible = chkFeed.selected;
+															btnComment.includeInLayout = chkFeed.selected;
+															validateNow();
 														}
 														
 														
 														protected function txtComment_keyDownHandler(event:KeyboardEvent):void
 														{
-														if( event.keyCode == Keyboard.ENTER && txtComment.text != "" ){
-														btnComment_clickHandler(null);
-														}
+															if( event.keyCode == Keyboard.ENTER && txtComment.text != "" ){
+															btnComment_clickHandler(null);
+															}
 														}
 														private function exportSurvey():void{
-														try
-															{
-															if(Utils.exportSurveyPDF(item,this)==0) 
-															{
-															Alert.show(i18n._('There is no survey. Please do survey first.'), "Export Survey PDF", Alert.OK, this);
-															}
-															} 
-															catch(error:Error) 
+															try
 																{
-																Alert.show(error.message, "", Alert.OK, this);
+																if(Utils.exportSurveyPDF(item,this)==0) 
+																{
+																Alert.show(i18n._('There is no survey. Please do survey first.'), "Export Survey PDF", Alert.OK, this);
 																}
-																
-																}
-																
-																private function getPageHeader(idx:int):String{				
-																if(entity!=null){
-																
-																var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType(entity,"#header_"+entity+"_"+subtype+"_"+idx ,subtype,LocaleService.getLanguageInfo().LanguageCode);
-																if(objCustomField!=null){
-																var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
-																
-																
-																if(!StringUtils.isEmpty(headerValue)){
-																return headerValue;
-																}		
-																}
-																
-																}
-																return i18n._('GLOBAL_PAGE') + " " + (idx+1);
-																}
-																
-																private function getModelName(lst:ArrayCollection):String{
-																return lst[0].ActivitySubType;
-																}
-																
-																private function openSurvey():void{
-																	var acc:Object = Utils.getAccount(item);
-																	if(acc == null){
-																		Alert.show(i18n._("YOU_CAN_NOT_CREATE_SURVEY_WITH_ACCOUNT_IN_APPOINTMENT"),this.title, Alert.OK, this);
-																	}else{
-																		startInspection.openAssessmentModel(item);
+																} 
+																catch(error:Error) 
+																	{
+																	Alert.show(error.message, "", Alert.OK, this);
 																	}
+																	
+																	}
+																	
+																	private function getPageHeader(idx:int):String{				
+																	if(entity!=null){
+																	
+																	var objCustomField:Object = Database.customFieldDao.selectCustomFieldWithSubType(entity,"#header_"+entity+"_"+subtype+"_"+idx ,subtype,LocaleService.getLanguageInfo().LanguageCode);
+																	if(objCustomField!=null){
+																	var headerValue:String = CustomFieldDAO.getHeaderValue(objCustomField.value);				
+																	
+																	
+																	if(!StringUtils.isEmpty(headerValue)){
+																	return headerValue;
+																	}		
+																	}
+																	
+																	}
+																	return i18n._('GLOBAL_PAGE') + " " + (idx+1);
+																	}
+																	
+																	private function getModelName(lst:ArrayCollection):String{
+																	return lst[0].ActivitySubType;
+																	}
+																	
+																	private function openSurvey():void{
+																		var acc:Object = Utils.getAccount(item);
+																		if(acc == null){
+																			Alert.show(i18n._("YOU_CAN_NOT_CREATE_SURVEY_WITH_ACCOUNT_IN_APPOINTMENT"),this.title, Alert.OK, this);
+																		}else{
+																			startInspection.openAssessmentModel(item);
+																		}
 																}
 			
 					private function changeTabListener(e:Event):void{

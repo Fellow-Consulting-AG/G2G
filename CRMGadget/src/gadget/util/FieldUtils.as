@@ -157,8 +157,13 @@ package gadget.util {
 			}
 			var fields:ArrayCollection = _cache.get(entity) as ArrayCollection;
 			if (fields == null) {
+				
 				if (entity.indexOf(".")>0) {
-					fields = Database.fieldDao.listFields(entity);
+					if(entity==Database.activityUserDao.entity){
+						fields = Database.fieldDao.listFields(Database.allUsersDao.entity);
+					}else{
+						fields = Database.fieldDao.listFields(entity);
+					}
 					if(fields==null || fields.length<1){
 						fields = Database.fieldDao.listFields(DAOUtils.getRecordType(entity));
 					}
@@ -1069,6 +1074,7 @@ package gadget.util {
 		private static var defaultAccountRelationship:ArrayCollection = new ArrayCollection(["RelatedAccountName","RelationshipStatus"]);
 		private static var defaultOpportunityContact:ArrayCollection = new ArrayCollection(["ContactFirstName","ContactLastName","BuyingRole"]);
 		private static var defaultActivityContact:ArrayCollection = new ArrayCollection(["ContactFirstName","ContactLastName"]);
+		private static var defaultActivityUser:ArrayCollection = new ArrayCollection(["FirstName","LastName"]);
 		
 		private static var defaultPlanAccount:ArrayCollection = new ArrayCollection(["AccountIDAccountName","PrimaryPlanAccountFlag","BusinessPlanPlanName"]);
 		private static var defaultPlanContact:ArrayCollection = new ArrayCollection(["ContactFullName","PrimaryPlanContactFlag","BusinessPlanPlanName"]);
@@ -1133,6 +1139,7 @@ package gadget.util {
 				case Database.planContactDao.entity:return defaultPlanContact;
 				case Database.planOpportunityDao.entity:return defaultPlanOpportunity;
 				case Database.contactCampaignDao.entity:return defaultContactCampaign;
+				case Database.activityUserDao.entity:return defaultActivityUser;
 			}
 			if(entity==Database.opportunityProductRevenueDao.entity){
 				return defaultFieldOpptProdRevenue;

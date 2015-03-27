@@ -7,18 +7,22 @@ package gadget.sync.outgoing
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
 	import gadget.dao.SupportRegistry;
 	import gadget.i18n.i18n;
+	import gadget.service.SupportService;
 	import gadget.sync.WSProps;
 	import gadget.sync.task.ReferenceUpdater;
 	import gadget.util.FieldUtils;
 	import gadget.util.SodUtils;
 	import gadget.util.SodUtilsTAO;
 	import gadget.util.StringUtils;
+	
+	import mx.collections.ArrayCollection;
 	
 	import org.purepdf.pdf.forms.PushbuttonField;
 
@@ -33,6 +37,7 @@ package gadget.sync.outgoing
 		
 		protected var deleted:Boolean=true;
 		protected var oper:String = "";
+		protected var subFields:ArrayCollection;
 		public function OutgoingSubBase(ID:String, subId:String)
 		{
 			super(ID);
@@ -67,6 +72,7 @@ package gadget.sync.outgoing
 		
 			subIDId		=  DAOUtils.getOracleId(subDao.entity);;
 			NameCols = DAOUtils.getNameColumns(subDao.entity);	
+			
 			
 		}
 		
@@ -163,7 +169,7 @@ package gadget.sync.outgoing
 				}else{
 					var ingnoreFields:Dictionary = subDao.outgoingIgnoreFields;
 					var addParentField:Boolean = false;
-					for each (var field:Object in FieldUtils.allFields(subDao.entity)) {
+					for each (var field:Object in allFields) {
 						var name:String = field.element_name;
 						if (name=="DummySiebelRowId")
 							continue;
@@ -215,6 +221,17 @@ package gadget.sync.outgoing
 			
  			sendRequest(URNexe,request);
 
+		}
+		
+		protected function get allFields():ArrayCollection{
+			if(subFields==null || subFields.length<1){
+				if(subDao is ActivityUserDAO){
+					subFields = SupportService.getFields(subDao.entity);
+				}else{			
+					subFields = FieldUtils.allFields(subDao.entity);
+				}
+			}
+			return subFields;
 		}
 		
 		override protected function getOperation():String{

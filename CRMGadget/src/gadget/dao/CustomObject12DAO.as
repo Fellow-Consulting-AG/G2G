@@ -11,6 +11,8 @@ package gadget.dao
 	public class CustomObject12DAO extends CustomeObjectBaseDao {
 		private var stmtColoPlastFindUpdated:SQLStatement;
 		private var stmtColoPlastFindCreated:SQLStatement;
+		private var stmtFindCreateWithoutCo11:SQLStatement;
+		private var stmtFindUpdateWithoutCo11:SQLStatement;
 		public function CustomObject12DAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'sod_customobject12',
@@ -27,13 +29,36 @@ package gadget.dao
 			stmtColoPlastFindUpdated.sqlConnection = sqlConnection;
 			stmtColoPlastFindUpdated.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12 inner join sod_customobject11 co11 on co12.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( co12.local_update is not null) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY co12.local_update LIMIT :limit OFFSET :offset";	
 			
+			//find all recorde update without c011
+			stmtFindUpdateWithoutCo11 = new SQLStatement();
+			stmtFindUpdateWithoutCo11.sqlConnection = sqlConnection;
+			stmtFindUpdateWithoutCo11.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12 WHERE (co12.CustomObject11Id is null OR co12.CustomObject11Id='') AND ( co12.local_update is not null) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY co12.local_update LIMIT :limit OFFSET :offset";
+			
 			// Find all items created locally
 			stmtColoPlastFindCreated = new SQLStatement();
-			stmtColoPlastFindCreated.sqlConnection = sqlConnection;
-			//VAHI the "OR ... IS NULL" is a workaround to make Expenses work
+			stmtColoPlastFindCreated.sqlConnection = sqlConnection;			
 			stmtColoPlastFindCreated.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12 inner join sod_customobject11 co11 on co12.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( (co12.Id >= '#' AND co12.Id <= '#zzzz') OR co12.Id IS NULL ) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY  co12.Id LIMIT :limit OFFSET :offset";
+			
+			// Find all items created locally without c011
+			stmtFindCreateWithoutCo11 = new SQLStatement();
+			stmtFindCreateWithoutCo11.sqlConnection = sqlConnection;			
+			stmtFindCreateWithoutCo11.text = "SELECT '" + entity + "' gadget_type, co12.*, co12." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co12  WHERE (co12.CustomObject11Id is null OR co12.CustomObject11Id='') AND ( (co12.Id >= '#' AND co12.Id <= '#zzzz') OR co12.Id IS NULL ) AND (co12.deleted = 0 OR co12.deleted IS null) ORDER BY  co12.Id LIMIT :limit OFFSET :offset";
 		}
 		
+		//for coloplace only
+		public function findCreateWithoutCo11(offset:int, limit:int):ArrayCollection {
+			stmtFindCreateWithoutCo11.parameters[":offset"] = offset; 
+			stmtFindCreateWithoutCo11.parameters[":limit"] = limit; 
+			exec(stmtFindCreateWithoutCo11, false);
+			return new ArrayCollection(stmtFindCreateWithoutCo11.getResult().data);
+		}
+		//for coloplase only
+		public function findUpdateWithoutCo11(offset:int, limit:int):ArrayCollection {
+			stmtFindUpdateWithoutCo11.parameters[":offset"] = offset; 
+			stmtFindUpdateWithoutCo11.parameters[":limit"] = limit; 
+			exec(stmtFindUpdateWithoutCo11, false);
+			return new ArrayCollection(stmtFindUpdateWithoutCo11.getResult().data);
+		}
 		
 		override public function findCreated(offset:int, limit:int):ArrayCollection {
 			
@@ -41,8 +66,7 @@ package gadget.dao
 				stmtColoPlastFindCreated.parameters[":offset"] = offset; 
 				stmtColoPlastFindCreated.parameters[":limit"] = limit; 
 				exec(stmtColoPlastFindCreated, false);
-				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindCreated.getResult().data);
-				//checkBindPicklist(stmtFindCreated.text,list);
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindCreated.getResult().data);				
 				return list;
 			}else{
 				return super.findCreated(offset,limit);
@@ -55,7 +79,7 @@ package gadget.dao
 				stmtColoPlastFindUpdated.parameters[":offset"] = offset; 
 				stmtColoPlastFindUpdated.parameters[":limit"] = limit; 
 				exec(stmtColoPlastFindUpdated, false);
-				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindUpdated.getResult().data);			
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindUpdated.getResult().data);					
 				return list;
 			}else{
 				return super.findUpdated(offset,limit);

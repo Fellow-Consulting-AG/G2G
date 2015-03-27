@@ -35,11 +35,13 @@ package gadget.util
 	import gadget.control.ImageTreeFinder;
 	import gadget.control.LinkButtonColRenderer;
 	import gadget.control.MultiSelectList;
+	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomFieldDAO;
 	import gadget.dao.CustomPicklistValueDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.ITeam;
 	import gadget.dao.PreferencesDAO;
 	import gadget.dao.SupportDAO;
 	import gadget.i18n.i18n;
@@ -83,6 +85,7 @@ package gadget.util
 	import mx.events.CalendarLayoutChangeEvent;
 	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
+	import mx.events.ListEvent;
 	import mx.formatters.DateFormatter;
 	import mx.utils.StringUtil;
 	
@@ -1021,7 +1024,16 @@ package gadget.util
 				deleteBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{	
 					relationGridHandler(detail, grid, deleteBtn.label, grid.selectedItem);
 				});
-				
+				grid.addEventListener(ListEvent.CHANGE,function(e:ListEvent):void{
+				if(subDao is ITeam){
+					if(subDao is ActivityUserDAO){
+						deleteBtn.enabled=(detail.item['OwnerId']!=grid.selectedItem['Id']);
+					}else{
+						deleteBtn.enabled=(detail.item['OwnerId']!=grid.selectedItem['UserId']);
+					}
+				}
+					
+				});
 				
 				addBtn.enabled = !isCreate && RightService.canCreate(relation.supportTable);
 //				deleteBtn.enabled = !isCreate && RightService.canDelete(relation.supportTable);

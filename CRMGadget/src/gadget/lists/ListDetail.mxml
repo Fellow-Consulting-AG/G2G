@@ -278,7 +278,8 @@
 				//	if("Activity"==dataType){
 					//	Utils.openDetail(selectedRow,list.mainwindow);
 					//}else 
-					if(Database.accountAddressDao.entity == dataType || Database.opportunityContactDao.entity == dataType ||  Database.activityContactDao.entity == dataType){
+					if(Database.accountAddressDao.entity == dataType || Database.activityUserDao.entity==dataType
+						|| Database.opportunityContactDao.entity == dataType ||  Database.activityContactDao.entity == dataType){
 						// ignore adress becuase address doesn't has form
 						return ;
 					}else{

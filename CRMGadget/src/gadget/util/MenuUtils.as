@@ -7,8 +7,11 @@ package gadget.util {
 	
 	import gadget.control.AccountListImageRenderer;
 	import gadget.control.ContactListImageRenderer;
+	import gadget.dao.ActivityUserDAO;
+	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.ITeam;
 	import gadget.dao.PreferencesDAO;
 	import gadget.i18n.i18n;
 	import gadget.service.PicklistService;
@@ -662,6 +665,18 @@ package gadget.util {
 						return;
 					}
 					myMenu.hide();
+					var dao:BaseDAO = Database.getDao(entity,false);
+					if(dao is ITeam){						
+						if(dao is ActivityUserDAO){
+							deleteMenu.@enabled =(detail.item['OwnerId']!=grid.selectedItem['Id']);
+						}else{
+							deleteMenu.@enabled =(detail.item['OwnerId']!=grid.selectedItem['UserId']);
+						}
+						
+					}else{
+						deleteMenu.@enabled = true;
+					}
+					
 					myMenu.show(e.stageX, e.stageY);
 					if(e.target is DataGridItemRenderer){	
 						selectedItem = e.target.data;

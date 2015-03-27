@@ -266,6 +266,9 @@ package gadget.dao
 			return "";
 		}
 		public function getDisplayName(entity:String, subtype:int=0):String {
+			if(entity==Database.activityUserDao.entity){
+				entity = Database.allUsersDao.entity;
+			}
 			//bug #1679 CRO add new tab
 			if(MainWindow.mapCustomTab[entity] != null) return  i18n._("GLOBAL_" +entity.toUpperCase());
 			var objName:String;
@@ -306,6 +309,9 @@ package gadget.dao
 			//if(entity==Database.opportunityProductRevenueDao.entity){
 			//	return Database.opportunityProductRevenueDao.getPluralName();//mony
 			//}
+			if(entity==Database.activityUserDao.entity){
+				entity = Database.allUsersDao.entity;
+			}
 			var objName:String;
 			var customLayout:Object = readSubtype(entity, subtype);
 			if (customLayout != null) {

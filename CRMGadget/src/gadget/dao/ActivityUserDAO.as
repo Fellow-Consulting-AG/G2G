@@ -4,14 +4,17 @@ package gadget.dao
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
 	
+	import gadget.util.FieldUtils;
+	
 	import mx.collections.ArrayCollection;
 	
-	public class ActivityUserDAO extends SupportDAO {
+	public class ActivityUserDAO extends SupportDAO implements ITeam {
 /*		
 		private var stmtInsert:SQLStatement;
 		private var stmtDelete:SQLStatement;
 		private var stmtSelect:SQLStatement;
 */		
+		private var stmtUserSelect:SQLStatement;
 		public function ActivityUserDAO(sqlConnection:SQLConnection, work:Function) {
 
 			super(work, sqlConnection, {
@@ -25,6 +28,11 @@ package gadget.dao
 				search_columns:["UserAlias"]
 			});
 			_isSyncWithParent = false;
+			
+			stmtUserSelect = new SQLStatement();
+			stmtUserSelect.sqlConnection = sqlConnection;
+			stmtUserSelect.text = "SELECT 'User' gadget_type, * FROM allusers WHERE Id in (SELECT UserId FROM activity_user WHERE ( deleted = 0 OR deleted IS null ) AND ActivityId = :ActivityId);";
+			
 			/*
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
@@ -115,6 +123,24 @@ package gadget.dao
 			]);
 		}
 		
+		public override function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			stmtUserSelect.parameters[":ActivityId"]=oracleId;
+			exec(stmtUserSelect);
+			return new ArrayCollection(stmtUserSelect.getResult().data);
+		}
+		
+		protected override function fieldList(updateFF:Boolean=true):ArrayCollection {
+				return new ArrayCollection([
+					{element_name:"ActivityId"},
+					{element_name:"UserId"},
+					{element_name:"UserFirstName"},
+					{element_name:"UserLastName"},
+					{element_name:"Id"},
+					{element_name:"UserEmail"},
+					{element_name:"UserRole"},
+					{element_name:"UserAlias"}
+				]);
+		}
 		
 		private const TEXTCOLUMNS:Array = [
 			ID("Id"),

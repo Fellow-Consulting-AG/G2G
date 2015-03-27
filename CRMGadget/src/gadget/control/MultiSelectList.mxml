@@ -193,32 +193,32 @@
 		]]>
 	</mx:Script>
 	
-	<mx:HBox left="0" top="4" right="0" bottom="4" verticalAlign="middle" horizontalGap="5">
+	<mx:VBox left="0" top="4" right="0" bottom="4" verticalAlign="middle" horizontalGap="5">
 		
 		<mx:List id="aList" 
 			dataProvider="{_availableItems}" 
 			allowMultipleSelection="true" 
 			doubleClickEnabled="true" doubleClick="aList_doubleClickHandler(event)"  
-			width="50%" height="100%" />
+			width="100%" height="50%" />
 		
-		<mx:VBox>
+		<mx:HBox>
 			
-			<mx:LinkButton id="allRightBtn" icon="@Embed('/assets/all-right.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_RIGHT')}" click="allRightBtn_clickHandler(event)" />  
-		 	<mx:LinkButton id="oneRightBtn" icon="@Embed('/assets/one-right.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_RIGHT')}" click="oneRightBtn_clickHandler(event)" /> 	
+			<mx:LinkButton id="allRightBtn" icon="@Embed('/assets/all-down.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_RIGHT')}" click="allRightBtn_clickHandler(event)" />  
+		 	<mx:LinkButton id="oneRightBtn" icon="@Embed('/assets/one-down.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_RIGHT')}" click="oneRightBtn_clickHandler(event)" /> 	
 		 	<mx:Spacer height="2" />
-		 	<mx:LinkButton id="switchBtn" icon="@Embed('/assets/switch-h.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_SWITCH_SELECTION_ITEMS')}" click="switchBtn_clickHandler(event)" /> 
+		 	<mx:LinkButton id="switchBtn" icon="@Embed('/assets/switch-v.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_SWITCH_SELECTION_ITEMS')}" click="switchBtn_clickHandler(event)" /> 
 		 	<mx:Spacer height="2" /> 
-		    <mx:LinkButton id="oneLeftBtn" icon="@Embed('/assets/one-left.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_LEFT')}" click="oneLeftBtn_clickHandler(event)" />
-		 	<mx:LinkButton id="allLeftBtn" icon="@Embed('/assets/all-left.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_LEFT')}" click="allLeftBtn_clickHandler(event)" />
+		    <mx:LinkButton id="oneLeftBtn" icon="@Embed('/assets/one-up.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_SELECTED_ITEMS_TO_LEFT')}" click="oneLeftBtn_clickHandler(event)" />
+		 	<mx:LinkButton id="allLeftBtn" icon="@Embed('/assets/all-up.gif')" width="16" height="16" toolTip="{i18n._('MULTISELECTLIST_MOVE_ALL_ITEMS_TO_LEFT')}" click="allLeftBtn_clickHandler(event)" />
 			
-		</mx:VBox> 
+		</mx:HBox> 
 		
 		<mx:List id="sList" 
 			dataProvider="{_selectedItems}" 
 			allowMultipleSelection="true" 
 			doubleClickEnabled="true" doubleClick="sList_doubleClickHandler(event)"  
-			width="50%" height="100%" />
+			width="100%" height="50%" />
 		
-	</mx:HBox>
+	</mx:VBox>
 	
 </mx:Canvas>

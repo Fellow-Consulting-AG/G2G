@@ -13,6 +13,7 @@ package gadget.sync.outgoing
 	import gadget.dao.ActivityDAO;
 	import gadget.dao.AttachmentDAO;
 	import gadget.dao.BaseDAO;
+	import gadget.dao.CustomObject12DAO;
 	import gadget.dao.DAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -66,6 +67,7 @@ package gadget.sync.outgoing
 		protected var do_user:Boolean;
 
 		protected var updated:Boolean;
+		protected var _co12FindWithoutCo11:Boolean = false;
 		protected var faulted:int;
 		protected var _nbItems:int;
 
@@ -190,11 +192,29 @@ package gadget.sync.outgoing
 		
 		override protected function doRequest():void {
 			subObjects = {};
-
+			records = new ArrayCollection();//clear records
 			if (updated) {
-				records = dao.findUpdated(faulted, PAGE_SIZE);
+				if(!_co12FindWithoutCo11){
+					records = dao.findUpdated(faulted, PAGE_SIZE);
+				}
+				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject12DAO){
+					if(!_co12FindWithoutCo11){
+						faulted = 0;
+						_co12FindWithoutCo11=true;
+					}
+					records = (dao as CustomObject12DAO).findUpdateWithoutCo11(faulted,PAGE_SIZE);
+				}
 			} else {
-				records = dao.findCreated(faulted, PAGE_SIZE);
+				if(!_co12FindWithoutCo11){
+					records = dao.findCreated(faulted, PAGE_SIZE);
+				}
+				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject12DAO){
+					if(!_co12FindWithoutCo11){
+						faulted = 0;
+						_co12FindWithoutCo11=true;
+					}
+					records = (dao as CustomObject12DAO).findCreateWithoutCo11(faulted,PAGE_SIZE);
+				}
 			}
 			if (records.length == 0) {
 				if (updated) {
@@ -203,6 +223,7 @@ package gadget.sync.outgoing
 				}
 				updated = true;
 				faulted = 0;
+				_co12FindWithoutCo11=false;
 				doRequest();
 				return;
 			}

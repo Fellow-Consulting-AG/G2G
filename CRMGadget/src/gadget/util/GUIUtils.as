@@ -1873,10 +1873,12 @@ package gadget.util
 					(childObj as TextArea).editable = !readonly;
 					(childObj as TextArea).selectable = true;
 				}
+				(childObj as TextArea).setStyle('color','#000000');
 				if(readonly){
 					(childObj as TextArea).setStyle("fontWeight", "bold");
 					(childObj as TextArea).setStyle('backgroundAlpha','0');
 					(childObj as TextArea).setStyle('borderStyle','none');
+					(childObj as TextArea).setStyle('disabledColor','0x000000');
 					
 				}
 			}
@@ -1887,10 +1889,12 @@ package gadget.util
 					(childObj as TextInput).editable = !readonly;
 					(childObj as TextInput).selectable = true;
 				}
+				(childObj as TextInput).setStyle('color','#000000');
 				if(readonly){
 					(childObj as TextInput).setStyle('fontWeight','bold');
 					(childObj as TextInput).setStyle('backgroundAlpha','0');
 					(childObj as TextInput).setStyle('borderStyle','none');
+					(childObj as TextInput).setStyle('disabledColor','0x000000');
 				}
 				
 			}
@@ -2026,6 +2030,7 @@ package gadget.util
 					var datePattern:Object = DateUtils.getCurrentUserDatePattern();
 					var localeFormat:String = datePattern.dateFormat;
 					df.formatString = localeFormat;
+					df.setStyle("disabledColor","0x000000");
 					df.yearNavigationEnabled = true;
 					df.parseFunction = null;
 					df.labelFunction = function(item:Date):String{
@@ -2150,7 +2155,7 @@ package gadget.util
 					(childObj as HBox).addChild(df);
 					(childObj as HBox).addChild(hr);
 					(childObj as HBox).addChild(mm);
-					
+					(childObj as HBox).setStyle("disabledColor","0x000000");
 					//am/pm
 					var cboDD:DDStepper =null;
 					if(maxHour==12){
@@ -2309,7 +2314,13 @@ package gadget.util
 								/*				if (item[fieldInfo.element_name] == null && fieldInfo.required) {
 								(childObj as AutoComplete).selectedIndex = 1;
 								}*/
+								(childObj as AutoComplete).setStyle("disabledColor","0x000000");
 								(childObj as AutoComplete).enabled = !readonly;
+								if(readonly){
+									//(childObj as AutoComplete).setStyle('backgroundAlpha','0');
+									//(childObj as AutoComplete).setStyle('borderStyle','none');
+									(childObj as AutoComplete).setStyle("fontWeight", "bold");
+								}
 							} else {
 								// standard picklist => combo box
 								if (fieldInfo.element_name == 'ContactType' || fieldInfo.element_name == 'AccountType') {
@@ -2319,7 +2330,7 @@ package gadget.util
 									childObj = new ComboBox();
 									(childObj as ComboBox).enabled = !readonly;
 								}
-								
+								(childObj as ComboBox).setStyle("disabledColor","0x000000");
 								Utils.suppressWarning(picklist);
 								(childObj as ComboBox).dataProvider = picklist;
 								(childObj as ComboBox).selectedIndex = Utils.getComboIndex((childObj as ComboBox), item[fieldInfo.element_name]);
@@ -2608,13 +2619,25 @@ package gadget.util
 		
 		private static function getFinderAddress(finderAddressClick:Function, item:Object,readonly:Boolean,fields:ArrayCollection,fieldName:String):DisplayObject {
 			var childObj:DisplayObject;
-			childObj = new GoogleLocalSearchAddress();
-			(childObj as GoogleLocalSearchAddress).item = item;
-			(childObj as GoogleLocalSearchAddress).fieldName = fieldName;
-			(childObj as GoogleLocalSearchAddress).addressText = item[fieldName];
-			(childObj as GoogleLocalSearchAddress).clickFunc = finderAddressClick;
-			(childObj as GoogleLocalSearchAddress).enabled = !readonly;
-			(childObj as GoogleLocalSearchAddress).fields = fields;
+			if(readonly){
+				childObj = new TextInput();
+				(childObj as TextInput).text = item['AccountName'];
+				(childObj as TextInput).selectable = true;
+				(childObj as TextInput).enabled = false;
+				(childObj as TextInput).setStyle("fontWeight", "bold");
+				(childObj as TextInput).setStyle('disabledColor','0x000000');
+				(childObj as TextInput).setStyle("backgroundAlpha","0");
+				(childObj as TextInput).setStyle('borderStyle','none');
+			}else{
+				childObj = new GoogleLocalSearchAddress();
+				(childObj as GoogleLocalSearchAddress).item = item;
+				(childObj as GoogleLocalSearchAddress).fieldName = fieldName;
+				(childObj as GoogleLocalSearchAddress).addressText = item[fieldName];
+				(childObj as GoogleLocalSearchAddress).clickFunc = finderAddressClick;
+				(childObj as GoogleLocalSearchAddress).enabled = !readonly;
+				(childObj as GoogleLocalSearchAddress).fields = fields;
+			}
+			
 			return childObj;
 		}
 		
@@ -2628,12 +2651,14 @@ package gadget.util
 				(childObj as ImageTextInput).data = {'entity':entity, 'element_name':element_name};
 				(childObj as ImageTextInput).clickFunc = finderClick;
 				(childObj as ImageTextInput).enabled = !readonly;	
+				(childObj as ImageTextInput).setStyle("disabledColor","0x000000");
 			}else{
 				childObj = new Text();
 				(childObj as Text).text = item[element_name];
 				(childObj as Text).setStyle("fontWeight", "bold");
 				(childObj as Text).setStyle('color','#aab3b3');
 				(childObj as Text).enabled = !readonly;
+				(childObj as Text).setStyle("disabledColor","0x000000");
 			}
 			return childObj;
 		}
@@ -2811,7 +2836,9 @@ package gadget.util
 				(childObj as ImageTextInput).item = {'element_name':element_name, 'data':item};
 				(childObj as ImageTextInput).data = relation;
 				(childObj as ImageTextInput).clickFunc = finderClick;
-				(childObj as ImageTextInput).enabled = !readonly;
+//				(childObj as ImageTextInput).enabled = !readonly;
+				(childObj as ImageTextInput).isEnable = !readonly;
+				(childObj as ImageTextInput).setStyle("disabledColor","0x000000");
 			}
 			return childObj;
 			
@@ -2836,6 +2863,7 @@ package gadget.util
 			
 			dateControl.selectedDate = dateObject;
 			dateControl.enabled = !readonly;
+			dateControl.setStyle("disabledColor","0x000000");
 			dateControl.parseFunction = null;
 			dateControl.labelFunction = function(item:Date):String{
 				var dformater:DateFormatter = new DateFormatter();

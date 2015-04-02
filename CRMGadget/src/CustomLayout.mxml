@@ -38,6 +38,7 @@
 			import mx.core.DragSource;
 			import mx.events.DragEvent;
 			import mx.managers.DragManager;
+			import mx.utils.StringUtil;
 			
 			private const CUSTOMLAYOUT_TITLE_LAYOUT_MANAGER:String = 'CUSTOMLAYOUT_TITLE_LAYOUT_MANAGER';	
 			//CRO 05.01.2011
@@ -435,20 +436,12 @@
 	            Database.commit();
             	return true;
             }
-            
-            private function getFields():ArrayCollection {
-            	var fields:ArrayCollection = new ArrayCollection();
-				var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();
-            	for each (var field:Object in FieldUtils.allFields(entity)) {
-					if(!hidenFields.hasOwnProperty(field.element_name)){
-						Utils.suppressWarning(new ArrayCollection([field]));
-						var tmp:Object = new Object();
-						tmp.label = field.display_name;
-						tmp.column_name = field.element_name;
-	            		fields.addItem(tmp);
-					}
-            	}		
-				
+			
+			
+			private function getAllFields():ArrayCollection{
+				var fields:ArrayCollection = getFields();
+				fields.addAll(getCustomFields());
+				var tmp:Object=null;
 				if(entity == 'Contact'){
 					tmp = new Object();
 					tmp.label = i18n._("GLOBAL_PICTURE");
@@ -470,11 +463,11 @@
 				fields.addItem(sqlList);
 				
 				
-//				var blockDynamic:Object = new Object();
-//				blockDynamic.label = i18n._("BLOCK_DYNAMIC_CODE@Dynamic Block");
-//				blockDynamic.custom = "";
-//				blockDynamic.column_name = '{' + BLOCK_DYNAMIC_CODE + '}';
-//				fields.addItem(blockDynamic);
+				//				var blockDynamic:Object = new Object();
+				//				blockDynamic.label = i18n._("BLOCK_DYNAMIC_CODE@Dynamic Block");
+				//				blockDynamic.custom = "";
+				//				blockDynamic.column_name = '{' + BLOCK_DYNAMIC_CODE + '}';
+				//				fields.addItem(blockDynamic);
 				
 				var sqlField:Object = new Object();
 				sqlField.label = i18n._("GLOBAL_SQL_FIELD");
@@ -493,7 +486,7 @@
 				newsField.custom = "%" + DAOUtils.getNameColumn(entity) + "%";
 				newsField.column_name = '{' + NEWS_CODE + '}';
 				fields.addItem(newsField);
-
+				
 				var dynamicBlock:ArrayCollection = Database.blockLayoutDao.getAvailableName(entity);
 				if(dynamicBlock){
 					for each(var obj:Object in dynamicBlock){
@@ -529,7 +522,7 @@
 				calculatedField.custom = "Formula";
 				calculatedField.column_name = '{' + CALCULATED_CODE + '}';
 				fields.addItem(calculatedField); */
-			
+				
 				
 				var header:Object = new Object();
 				header.label = i18n._(CUSTOMLAYOUT_HEADER_LABEL_SECTION_HEADER);
@@ -537,6 +530,24 @@
 				header.column_name = '#';
 				fields.addItem(header); 
 				Utils.suppressWarning(fields);
+				
+				return fields;
+			}
+            
+            private function getFields():ArrayCollection {
+            	var fields:ArrayCollection = new ArrayCollection();
+				var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();
+            	for each (var field:Object in FieldUtils.allFields(entity)) {
+					if(!hidenFields.hasOwnProperty(field.element_name)){
+						Utils.suppressWarning(new ArrayCollection([field]));
+						var tmp:Object = new Object();
+						tmp.label = field.display_name;
+						tmp.column_name = field.element_name;
+	            		fields.addItem(tmp);
+					}
+            	}		
+				
+				
 				return fields;
             }
 			
@@ -550,6 +561,7 @@
 						var tmp:Object = new Object();
 						tmp.label = field.displayName;
 						tmp.column_name = field.column_name;
+						tmp.iscustom = true;
 						fields.addItem(tmp);
 					}
 				}	
@@ -558,6 +570,7 @@
 				calculatedField.label = i18n._("GLOBAL_CALCULATED_FIELD");
 				calculatedField.custom = "Formula";
 				calculatedField.column_name = '{' + CALCULATED_CODE + '}';
+				calculatedField.iscustom = true;
 				fields.addItem(calculatedField);
 				
 				Utils.suppressWarning(fields);
@@ -626,37 +639,56 @@
 				return num;
 			}
 			
-			private function doSearch(customField:Boolean=false):void{
-				if(btnPreField.enabled) customField = true;
-				if (searchInput.text.length >= 1) {
-					var data:ArrayCollection = new ArrayCollection();
-					var resultList:ArrayCollection = new ArrayCollection();
-					if(customField){
-						resultList = Database.customFieldDao.findFieldsByDisplayName(entity, searchInput.text);
-					}
-					else{
-						resultList = Database.fieldDao.findFieldsByDisplayName(entity, searchInput.text);
-						if(resultList==null || resultList.length<1){
-							//try select with record type 
-							resultList = Database.fieldDao.findFieldsByDisplayName(DAOUtils.getRecordType(entity), searchInput.text);
-						}
+			
+				private function defaultFilterFunction(element:*, text:String,all:Boolean):Boolean 
+				{
+					var label:String = element.label;					
+					if(all){
+						return (label.indexOf(text)!=-1 || label.toLowerCase().indexOf(text.toLocaleLowerCase())!=-1);
+					}else{
+						return (label.indexOf(text)!=-1 || label.toLowerCase().indexOf(text.toLocaleLowerCase())!=-1)&& element.iscustom;
 					}
 					
-					var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();					
-					for each(var objectField:Object in resultList){
-						if(!hidenFields.hasOwnProperty(objectField.element_name)){
-							var object:Object = new Object();
-							object.label = customField?objectField.displayName:objectField.display_name;
-							object.column_name = customField?objectField.column_name:objectField.element_name;
-							data.addItem(object);
-						}
-						
-					}
-					Utils.suppressWarning(data);
-					dictionnary.dataProvider = data;
-				} else {
-					dictionnary.dataProvider = customField?getCustomFields():getFields();
 				}
+			
+			
+			
+			private function doSearch(customField:Boolean=false):void{
+//				if(btnPreField.enabled) customField = true;
+//				if (searchInput.text.length >= 1) {
+//					var data:ArrayCollection = new ArrayCollection();
+//					var resultList:ArrayCollection = new ArrayCollection();
+//					if(customField){
+//						resultList = Database.customFieldDao.findFieldsByDisplayName(entity, searchInput.text);
+//					}
+//					else{
+//						resultList = Database.fieldDao.findFieldsByDisplayName(entity, searchInput.text);
+//						if(resultList==null || resultList.length<1){
+//							//try select with record type 
+//							resultList = Database.fieldDao.findFieldsByDisplayName(DAOUtils.getRecordType(entity), searchInput.text);
+//						}
+//					}
+//					
+//					var hidenFields:Dictionary = Database.blockLayoutDao.getIgnoreCustomLayout();					
+//					for each(var objectField:Object in resultList){
+//						if(!hidenFields.hasOwnProperty(objectField.element_name)){
+//							var object:Object = new Object();
+//							object.label = customField?objectField.displayName:objectField.display_name;
+//							object.column_name = customField?objectField.column_name:objectField.element_name;
+//							data.addItem(object);
+//						}
+//						
+//					}
+//					Utils.suppressWarning(data);
+//					dictionnary.dataProvider = data;
+//				} else {
+//					dictionnary.dataProvider = customField?getCustomFields():getFields();
+//				}
+				var filterData:ArrayCollection = dictionnary.dataProvider as ArrayCollection;
+				filterData.filterFunction = function(element:*):Boolean{
+					return defaultFilterFunction(element,searchInput.text,!customField);
+				}
+				filterData.refresh();
 			}
 			private function fetch():void{
 				fetchBtn.enabled = false;
@@ -747,7 +779,7 @@
 							 dragDrop="dragBackDrop(event)" 
 							 width="100%" 
 							 height="66"
-							 direction="horizontal" dataProvider="{getFields()}"
+							 direction="horizontal" dataProvider="{getAllFields()}"
 							 columnWidth="160" rowHeight="32">
 					<mx:itemRenderer>
 						<mx:Component>

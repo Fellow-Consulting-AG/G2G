@@ -7,7 +7,7 @@ package gadget.dao
 	import mx.collections.ArrayCollection;
 
 	public class AccountDAO extends BaseDAO {
-		
+		public static const CUST_SEGMENT_FIELD:String = 'Segment';
 		private var stmtSelectChild:SQLStatement;
 		private var stmtSelectParent:SQLStatement;
 		private var stmtSelectAccountById:SQLStatement;
@@ -773,6 +773,14 @@ package gadget.dao
 			'IndexedPick5',
 			'IndexedShortText0',
 			'IndexedShortText1',
+			CUST_SEGMENT_FIELD
 			];
+		override protected function getOutgoingIgnoreFields():ArrayCollection{
+			return new ArrayCollection([CUST_SEGMENT_FIELD]);
+		}
+		
+		override protected function getIncomingIgnoreFields():ArrayCollection{
+			return new ArrayCollection([CUST_SEGMENT_FIELD]);
+		}
 	}
 }

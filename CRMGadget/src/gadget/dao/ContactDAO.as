@@ -7,6 +7,7 @@ package gadget.dao
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	
 	import gadget.util.FieldUtils;
 	import gadget.util.Utils;
@@ -134,6 +135,13 @@ package gadget.dao
 		
 		override protected function getIncomingIgnoreFields():ArrayCollection{
 			return INCOMING_INGNORE_FIELDS;
+		}
+		
+		public override function getLinkFields():Dictionary{
+			var fields:Dictionary = new Dictionary();
+			fields["ContactLastName"]=null;
+			return fields;
+			
 		}
 		
 		private static const INCOMING_INGNORE_FIELDS:ArrayCollection=new ArrayCollection(

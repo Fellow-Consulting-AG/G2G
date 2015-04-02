@@ -38,9 +38,11 @@ package gadget.util {
 	import gadget.control.AutoComplete;
 	import gadget.control.CalculatedField;
 	import gadget.control.LoadingIndicator;
+	import gadget.dao.AccountDAO;
 	import gadget.dao.AllUsersDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.BaseSQL;
+	import gadget.dao.CustomObject15DAO;
 	import gadget.dao.DAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -3132,6 +3134,24 @@ package gadget.util {
 	}
 	
 	public static function updateCustomFormulaField(dao:BaseDAO,tmpOb:Object):void{
+		if(UserService.COLOPLAST==UserService.getCustomerId()){
+			//bug#10110---update account
+			if(dao is AccountDAO && !StringUtils.isEmpty(tmpOb.AccountId)){
+				var co15:Array = Database.customObject15Dao.getByParentId({'AccountId':tmpOb.AccountId});
+				if(co15!=null && co15.length>0){
+					tmpOb[AccountDAO.CUST_SEGMENT_FIELD]=co15[0].IndexedPick0;
+					Database.accountDao.updateByField([AccountDAO.CUST_SEGMENT_FIELD],tmpOb,DAOUtils.getOracleId(Database.accountDao.entity));
+				}
+			}else if(dao is CustomObject15DAO){
+				var accountObj:Object = Database.accountDao.findByOracleId(tmpOb.AccountId);
+				if(accountObj!=null){
+					accountObj[AccountDAO.CUST_SEGMENT_FIELD]=tmpOb.IndexedPick0;
+					Database.accountDao.updateByField([AccountDAO.CUST_SEGMENT_FIELD],accountObj,DAOUtils.getOracleId(Database.accountDao.entity));
+				}
+			}
+		}
+		
+		
 		//update formular field			
 		var customFormularFields:ArrayCollection = Database.customFieldDao.selectCustomFormularFields(dao.entity);
 		if(customFormularFields!=null && customFormularFields.length>0){

@@ -319,6 +319,7 @@ package gadget.dao {
 		private var _assessmentPDFHeaderDao:AssessmentPDFHeaderDAO;
 		private var _assessmentPDFColorThemeDao:AssessmentPDFColorThemeDAO;
 		private var _businessPlanTeam:BusinessPlanTeamDAO;
+		private var _divisionUserDao:DivisionUserDAO;
 		
 		
 		
@@ -1647,6 +1648,7 @@ package gadget.dao {
 			
 			_assessmentPDFColorThemeDao = new AssessmentPDFColorThemeDAO(_sqlConnection,_work);
 			_businessPlanTeam = new BusinessPlanTeamDAO(_sqlConnection,_work);
+			_divisionUserDao = new DivisionUserDAO(_sqlConnection,_work);
 			// CH 
 			_assessmentSplitterDao = new AssessmentSplitterDAO(_sqlConnection, _work);
 			_dashboardReportDao = new DashboardReportDAO(_sqlConnection, _work);
@@ -3463,7 +3465,7 @@ package gadget.dao {
 				{name:"Note",sodname:"Note",enabled:0,entity_name:"Account.Note",syncable:true}]},
 			{entity:"Activity",sub:[{name:"Attachment",sodname:"Attachment",enabled:0,entity_name:"Attachment",syncable:true},
 				{name:"Sample Dropped",sodname:"SampleDropped",enabled:0,entity_name:"Activity.SampleDropped",syncable:true},
-				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Activity.Contact",syncable:false},
+				{name:"Contact",sodname:"Contact",enabled:0,entity_name:"Contact",syncable:true},
 				{name:"Products Detailed",sodname:"ProductsDetailed",enabled:0,entity_name:"Activity.Product",syncable:true},
 				{name:"CustomObject12",sodname:"CustomObject12",enabled:0,entity_name:"CustomObject12",syncable:false},
 				{name:"User",sodname:"User",enabled:0,entity_name:"Activity.User",syncable:true},
@@ -3759,6 +3761,11 @@ package gadget.dao {
 		public static function get divisionDao():DivisionDAO
 		{
 			return database._divisionDao;
+		}
+
+		public static function get divisionUserDao():DivisionUserDAO
+		{
+			return database._divisionUserDao;
 		}
 
 

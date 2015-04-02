@@ -15,6 +15,7 @@ package gadget.sync.tasklists {
 	import gadget.sync.incoming.IncomingObject;
 	import gadget.sync.incoming.IncomingSalesProcess;
 	import gadget.sync.incoming.IncomingUser;
+	import gadget.sync.incoming.IncomingUserDivision;
 	import gadget.sync.incoming.PicklistService;
 	import gadget.sync.incoming.ReadCascadingPicklists;
 	import gadget.sync.incoming.ReadCountryService;
@@ -100,6 +101,8 @@ package gadget.sync.tasklists {
 		if (Database.transactionDao.find("Opportunity").enabled || Database.transactionDao.find("Lead").enabled) {
 			all.addItem(new IncomingSalesProcess());
 		}
+		
+		all.addItem(new IncomingUserDivision());
 		
 		return all.source;
 	}

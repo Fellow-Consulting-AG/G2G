@@ -605,7 +605,8 @@ package gadget.sync.task {
 					Database.errorLoggingDao.add(null,{entity:getEntityName(), cnt:cnt, request:request, response:xml});
 				}
 				retries	= 0;
-			} catch (e:Error) {				
+			} catch (e:Error) {		
+				e.getStackTrace()
 				_iscompress=false;
 				try {
 					Database.rollback();					

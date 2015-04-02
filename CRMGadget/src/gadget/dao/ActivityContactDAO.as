@@ -16,6 +16,7 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	import flash.data.SQLStatement;
 	import flash.utils.Dictionary;
 	
 	import gadget.util.StringUtils;
@@ -23,7 +24,8 @@ package gadget.dao
 	import mx.collections.ArrayCollection;
 	
 	public class ActivityContactDAO extends SupportDAO {
-		
+		protected var stmtSelectContact:SQLStatement;
+		protected var stmtSelectActivity:SQLStatement;
 		public function ActivityContactDAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				entity: ['Activity',   'Contact'],
@@ -38,7 +40,17 @@ package gadget.dao
 				oracle_id:"DummySiebelRowId",		//VAHI's not so evil kludge
 				columns: { DummySiebelRowId:{type:"TEXT", init:"gadget_id" } }
 			});
+			SupportRegistry.init_registry('Contact.Activity' , this);
 			_isSyncWithParent = false;
+			_isSelectAll=true;
+			
+			stmtSelectContact = new SQLStatement();
+			stmtSelectContact.sqlConnection = sqlConnection;
+			stmtSelectContact.text = "SELECT 'Contact' gadget_type, * FROM Contact WHERE ContactId in (SELECT Id FROM activity_contact WHERE ( deleted = 0 OR deleted IS null ) AND ActivityId = :ActivityId);";
+			stmtSelectActivity = new SQLStatement();
+			stmtSelectActivity.sqlConnection = sqlConnection;
+			stmtSelectActivity.text = "SELECT 'Activity' gadget_type, * FROM Activity WHERE ActivityId in (SELECT ActivityId FROM activity_contact WHERE ( deleted = 0 OR deleted IS null ) AND Id = :ContactId);";
+			
 		}
 		public override function getLinkFields():Dictionary{
 			var fields:Dictionary = new Dictionary();
@@ -48,12 +60,26 @@ package gadget.dao
 		}
 		override public final function fix_sync_incoming(ob:Object, assoc:Object=null):Boolean {
 			//Fiddle in the ActivityId which is missing
-			ob.ActivityId = assoc.ActivityId;
-			ob.Subject = assoc.Subject;		// It cannot hurt to do this.
+			if(assoc!=null){
+				ob.ActivityId = assoc.ActivityId;
+				ob.Subject = assoc.Subject;		// It cannot hurt to do this.
+			}
 			
 			//try to find DummySiebelRowId for a matching record
 			ob.DummySiebelRowId = StringUtils.toString(b_value("DummySiebelRowId",{ActivityId:ob.ActivityId,Id:ob.Id}));
 			return true;
+		}
+		
+		public override function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {
+			if(parentEntity==Database.activityDao.entity){
+				stmtSelectContact.parameters[":ActivityId"]=oracleId;
+				exec(stmtSelectContact);
+				return new ArrayCollection(stmtSelectContact.getResult().data);
+			}else{
+				stmtSelectActivity.parameters[":ContactId"]=oracleId;
+				exec(stmtSelectActivity);
+				return new ArrayCollection(stmtSelectActivity.getResult().data);
+			}
 		}
 
 		override public function fix_sync_add(ob:Object,parent:Object=null):void {
@@ -63,6 +89,15 @@ package gadget.dao
 		override public final function fix_sync_outgoing(ob:Object):Boolean {
 			ob.DummySiebelRowId = ob.gadget_id;
 			return true;
+		}
+		
+		override protected function getIncomingIgnoreFields():ArrayCollection{
+			return new ArrayCollection([
+				"ActivityId",				
+				"Subject",
+				"AccountName"
+			
+			]);
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{

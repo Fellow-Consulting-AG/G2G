@@ -424,7 +424,7 @@
 						createSubTab(Database.accountDao.entity);
 						navTabsData.addItem(dynamicSubTabs[Database.accountDao.entity]);
 					}
-					if(Database.transactionDao.find(Database.contactDao.entity).enabled && dynamicSubTabs[Database.activityContactDao.entity]==null){
+					if(Database.transactionDao.find(Database.contactDao.entity).enabled && dynamicSubTabs[Database.contactDao.entity]==null){
 						createSubTab(Database.activityContactDao.entity);
 						navTabsData.addItem(dynamicSubTabs[Database.activityContactDao.entity]);
 					}					

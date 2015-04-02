@@ -48,6 +48,7 @@ package gadget.util
 			[2, "Activity",              true,  null,                       null, false,  true,    null,      true ,   ],	//ActivityActivity fetches ActivityProduct
 			[9, "Allocation",            true,  "CRMOD_LS_Allocation",      null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[0, "User",   		         true,  null,              "allUsersDao", false,  false,   null,      false,   ],	// there is WS10, disable it for now?
+			[0, "Division",   		     true,  null,              			null, false,  false,   null,      false,   ],	// there is WS10, disable it for now?
 			[9, "Application",           true,  null,                       null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[9, "Asset",                 true,  null,                       null, false,  false,   null,      false,   ],	//NEW, perhaps some flags need to be set!
 			[0, "Attachment",            false, null,                       null, false,  false,   null,      false,   ],

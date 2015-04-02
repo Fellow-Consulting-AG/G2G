@@ -110,7 +110,8 @@ package gadget.sync
 			},
 			MedEdEvent:{
 				MedEdId: 'Id'
-			}
+			},
+			'Division.User':{'IsPrimary':'Primary'}
 			
 		};
 		

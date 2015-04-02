@@ -5,6 +5,7 @@ package gadget.sync.incoming
 	import flexunit.utils.ArrayList;
 	
 	import gadget.dao.AccountTeamDAO;
+	import gadget.dao.ActivityContactDAO;
 	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BusinessPlanTeamDAO;
 	import gadget.dao.DAOUtils;
@@ -35,11 +36,7 @@ package gadget.sync.incoming
 				daoName = sodDao.dao;
 			}else{
 					
-				subDao = SupportRegistry.getSupportDao(ID, _subID);	
-				
-				if(subDao==null){
-					subDao = Database[sodDao.dao] as SupportDAO;
-				}
+				subDao = getSubDao(ID,_subID);
 			}
 			super(ID, _subID, daoName);
 			if(subDao!=null){
@@ -48,6 +45,17 @@ package gadget.sync.incoming
 			}
 			
 			
+		}
+		
+		protected function getSubDao(pid:String,subId:String):SupportDAO{
+			var sodDao:SodUtilsTAO = SodUtils.transactionProperty(subId);
+			var sDao:SupportDAO = SupportRegistry.getSupportDao(pid, subId);	
+			
+			if(sDao==null && sodDao!=null){
+				sDao = Database[sodDao.dao] as SupportDAO;
+			}
+			
+			return sDao;
 		}
 		
 		protected function get allFields():ArrayCollection{
@@ -118,6 +126,9 @@ package gadget.sync.incoming
 		}
 		
 		override protected function handleResponse(request:XML, response:XML):int {
+			if(subDao is ActivityContactDAO){
+				trace("");
+			}
 			var listObject:XML = response.child(new QName(ns2.uri,listID))[0];
 			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';
 			var lastSubPage:Boolean = true;
@@ -129,6 +140,7 @@ package gadget.sync.incoming
 				var subObject:XML = parentRec.child(qsublist)[0];					
 				//this.pid =  parentRec.child(new QName(ns2.uri,"Id"))[0].toString();	
 				parentIds.addItem(parentRec.child(new QName(ns2.uri,"Id"))[0].toString());
+				readParentInfo(parentRec);
 				lastSubPage = lastSubPage && ( subObject.attribute("lastpage")[0].toString() == 'true' );					
 				subXmls.addItem(subObject);				
 			}
@@ -172,6 +184,13 @@ package gadget.sync.incoming
 			}
 			return entityIDour+"Id";
 		}
+		
+		protected function readParentInfo(parentRec:XML):void{
+			//nothing todo
+		}
+		protected function addParentInfo(rec:Object,parentId:String):void{
+			//nothing todo
+		}
 		override protected function importRecord(sub:String, data:XML, subList:ArrayCollection=null):int {
 			if(this is IncomingSubActivity){
 				return super.importRecord(sub,data);
@@ -205,25 +224,33 @@ package gadget.sync.incoming
 				rec['RelatedContactFullName'] = rec['RelatedContactFirstName'] +' '+rec['RelatedContactLastName']
 			}
 			rec[parentFieldId] = this.pid;
-			
+			addParentInfo(rec,this.pid);
 			rec.deleted = false;
 			rec.local_update = null;
-			if(subDao.entity == Database.customObject2ContactDao.entity){
-				var allOk:Boolean = Database.customObject2ContactDao.fix_sync_incoming(rec,null);
-				if (StringUtils.isEmpty(rec[subId]) || subDao.findByOracleId(rec[subId])==null) {
-					trace('ADD', subDao.entity, rec[subId]);
-					subDao.insert(rec);
-					
-					if (rec[subId]==null)
-						subDao.fix_sync_add(rec, null);
+			
+			subDao.fix_sync_incoming(rec,null);
+			
+//			if(subDao.entity == Database.customObject2ContactDao.entity){
+//				var allOk:Boolean = Database.customObject2ContactDao.fix_sync_incoming(rec,null);
+//				if (StringUtils.isEmpty(rec[subId]) || subDao.findByOracleId(rec[subId])==null) {
+//					trace('ADD', subDao.entity, rec[subId]);
+//					subDao.insert(rec);
+//					
+//					if (rec[subId]==null)
+//						subDao.fix_sync_add(rec, null);
+//				}
+//			}else if (StringUtils.isEmpty(rec[subId])) {
+//				
+//				return 0;
+//				
+//			} else{
+				
+				var obj:Object = null;
+				if (!StringUtils.isEmpty(rec[subId])) {
+					obj = subDao.findByOracleId(rec[subId]);
 				}
-			}else if (StringUtils.isEmpty(rec[subId])) {
-				
-				return 0;
-				
-			} else{
-				
-				var obj:Object = subDao.findByOracleId(rec[subId]);
+					
+					
 //				if(isUsedLastModified){
 //					obj = subDao.findByOracleId(rec[subId]);
 //				}else{
@@ -236,7 +263,8 @@ package gadget.sync.incoming
 				if(obj==null){
 //					trace('ADD', subDao.entity, rec[subId]);
 					try{
-					subDao.insert(rec);
+						subDao.insert(rec);
+						subDao.fix_sync_add(rec, null);
 					}catch(e:Error){
 						//maybe dupldate recode 
 					}
@@ -252,7 +280,7 @@ package gadget.sync.incoming
 				
 				
 				
-			} 
+//			} 
 			
 			_nbItems ++;
 			

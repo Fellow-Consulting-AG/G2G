@@ -19,6 +19,7 @@
 			import gadget.control.ImageTreeFinder;
 			import gadget.control.MultiSelectList;
 			import gadget.control.SampleItemView;
+			import gadget.dao.AccountDAO;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.CustomFieldDAO;
 			import gadget.dao.CustomRecordTypeServiceDAO;
@@ -1680,11 +1681,19 @@
 					//Bug fixing 466 CRO only display form not editable fields
 					if(isReadOnlyFields){
 						fields[i].readonly = isReadOnlyFields;
+					}else{
+						//bug #1912
+						fields[i].readonly = readOnlyFields.hasOwnProperty(fields[i].column_name);
+						//bug#10110
+						if(fields[i].column_name==AccountDAO.CUST_SEGMENT_FIELD && entity==Database.accountDao.entity ){
+							fields[i].readonly = true;
+						} 
 					}
-					//bug #1912
-					if(readOnlyFields[fields[i].column_name] != null && readOnlyFields[fields[i].column_name]){
-						fields[i].readonly = true;	
-					}
+					
+					
+//					if(readOnlyFields[fields[i].column_name] != null && readOnlyFields[fields[i].column_name]){
+//						fields[i].readonly = true;	
+//					}
 					
 					//Change Request # 781 CRO
 					/*if(fields[i].column_name.indexOf("CustomPickList10") >-1 && (fields[i].readonly == null || fields[i].readonly == false)){

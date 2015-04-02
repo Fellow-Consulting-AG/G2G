@@ -14,6 +14,7 @@
 			import gadget.control.ImageListRenderer;
 			import gadget.control.PriorityListImageRenderer;
 			import gadget.control.WebsiteListRenderer;
+			import gadget.dao.AccountDAO;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.BookDAO;
 			import gadget.dao.DAO;
@@ -25,6 +26,7 @@
 			import gadget.i18n.i18n;
 			import gadget.service.PicklistService;
 			import gadget.service.RightService;
+			import gadget.service.UserService;
 			import gadget.util.ActivityDataUtils;
 			import gadget.util.CSVUtils;
 			import gadget.util.DateUtils;
@@ -1311,6 +1313,12 @@
 						entityName = "Activity";
 					}
 					var value:String= PicklistService.getValue(entityName,col.dataField,code);
+					if(UserService.COLOPLAST==UserService.getCustomerId()){
+						//bug#10110
+						if(entityName==Database.accountDao.entity && col.dataField==AccountDAO.CUST_SEGMENT_FIELD){
+							value = PicklistService.getValue(Database.customObject15Dao.entity,'IndexedPick0',code);
+						}
+					}
 					
 					if(StringUtils.isEmpty(value)){
 						return item[col.dataField];

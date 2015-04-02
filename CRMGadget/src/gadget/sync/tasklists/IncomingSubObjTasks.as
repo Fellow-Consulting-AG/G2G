@@ -51,7 +51,7 @@ package gadget.sync.tasklists {
 					case "Objectives":
 					case "Lead":
 					//case "Product":
-					case "Contact":
+					//case "Contact":
 					case "Service Request":
 					case "Asset":	
 						//var obj:Object = Database.transactionDao.find(subObj.entity);
@@ -80,9 +80,9 @@ package gadget.sync.tasklists {
 			subSync.push(co2Contact);
 		//}
 		
-		if(syncActivityUser){
-			subSync.push(new IncomingSubobjects(Database.activityDao.entity,Database.allUsersDao.entity));
-		}
+//		if(syncActivityUser){
+//			subSync.push(new IncomingSubobjects(Database.activityDao.entity,Database.allUsersDao.entity));
+//		}
 		
 		return subSync;
 		

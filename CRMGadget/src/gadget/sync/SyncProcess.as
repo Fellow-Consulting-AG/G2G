@@ -81,14 +81,14 @@ package gadget.sync
 						,_metaSyn
 					));
 				}else{
-					if(_metaSyn||fullCompare || _full){
-						_groups.addItem(new TaskGroupBase(
-							this,
-							InitializationTasks(_metaSyn),
-							_full // true,  // VAHI changed this to always do it, which is better but incorrect as well
-							,_metaSyn
-						));			
-					}
+//					if(_metaSyn||fullCompare || _full){
+//						_groups.addItem(new TaskGroupBase(
+//							this,
+//							InitializationTasks(_metaSyn),
+//							_full // true,  // VAHI changed this to always do it, which is better but incorrect as well
+//							,_metaSyn
+//						));			
+//					}
 					if(_metaSyn){  // Sync only Metadata. get only a full sync on the meta data(field management,Picklist,)
 						return;
 					}	

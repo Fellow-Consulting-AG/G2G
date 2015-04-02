@@ -10,6 +10,8 @@ package gadget.service
 	import gadget.util.StringUtils;
 	
 	import mx.collections.ArrayCollection;
+	
+	import org.purepdf.pdf.ArabicLigaturizer;
 
 	/**
 	 * Class that stores field info for support tables. 
@@ -34,6 +36,23 @@ package gadget.service
 			"TIME": "CustomDate"
 		};
 		
+		private static const PVG_FIELD_MAPPING:Object={
+			"ZPick" 	 : "CustomPickList"
+		};
+		
+		
+		public static function getPVGField(tmpName:String):String{	
+			if(tmpName!=null){
+				var strSplit:Array = tmpName.split('_');
+				var key:String = strSplit[0];
+				if(PVG_FIELD_MAPPING.hasOwnProperty(key)){
+					return PVG_FIELD_MAPPING[key]+strSplit[1];
+				}
+			}
+			
+			return tmpName;
+		}
+		
 		private static const FIELD_MAPPING_OOD:Object = {
 			"BOOL"	 : "CustomBoolean",
 			"TEXTLG" : "CustomText",
@@ -41,7 +60,7 @@ package gadget.service
 			"PICK" 	 : "CustomPickList",
 			"INT" 	 : "CustomInteger",
 			"DATE": "CustomDate",
-			"TIME": "CustomDate",
+			"TIME": "CustomDateTime",
 			"CUR" : "CustomCurrency",
 			"NUM" : "CustomNumber"
 		};

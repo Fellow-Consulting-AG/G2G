@@ -568,7 +568,7 @@ package gadget.util
 			var relation:Object = Relation.getRelation(entityDao.entity,entity );
 			if (relation == null) {
 				if(entityDao is SupportDAO){
-					result=entityDao.findRelatedData(entity,item[DAOUtils.getOracleId(entity)])
+					result=entityDao.findRelatedData(entity,item[DAOUtils.getOracleId(entity)]);
 				}else{
 					result= new ArrayCollection();
 				}
@@ -576,7 +576,11 @@ package gadget.util
 				
 				if("Contact" == entity && "Opportunity" == entityDao.entity){
 					result = Database.contactDao.getContactOpportnity(item[DAOUtils.getOracleId(entity)], item["gadget_id"]);
-				}else{
+				}else if(Database.contactDao.entity==entity && Database.activityDao.entity==entityDao.entity){
+					//this hard code cause in the contact no support taable with activity
+					result = Database.activityContactDao.findRelatedData(entity,item[DAOUtils.getOracleId(entity)]);
+				}				
+				else{
 					result = entityDao.findRelatedData(entity,item[relation.keyDest]);
 				}
 			}

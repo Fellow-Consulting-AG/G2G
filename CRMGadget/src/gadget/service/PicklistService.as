@@ -10,6 +10,7 @@ package gadget.service
 	import gadget.dao.CustomPicklistValueDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.PicklistDAO;
 	import gadget.util.CacheUtils;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
@@ -143,8 +144,30 @@ package gadget.service
 					picklist = picklist2;
 				}
 			}
+			
+			var visibleList:ArrayCollection=new ArrayCollection();
+			//pvg check
+			var pvgId:String = Database.divisionUserDao.getPVGId();
+			if(!StringUtils.isEmpty(pvgId)){
+				var groupList:ArrayCollection = Database.pvgDao.getPickList(entity,pvgId,field);
+				if(groupList!=null && groupList.length>0){
+					var groupMap:Dictionary = new Dictionary();
+					for each(var g:Object in groupList){
+						groupMap[g.LicName]=g.LicName;
+					}
+					
+					for each(var pic:Object in picklist){
+						if(groupMap.hasOwnProperty(pic.data)|| groupMap.hasOwnProperty(pic.label)){
+							visibleList.addItem(pic);
+						}
+					}
+				}else{
+					visibleList = picklist;
+				}
+				
+			}
 
-			return picklist;
+			return visibleList;
 		}
 		
 		

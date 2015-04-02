@@ -28,6 +28,7 @@ package gadget.sync.incoming {
 	import gadget.util.ObjectUtils;
 	import gadget.util.ServerTime;
 	import gadget.util.SodUtils;
+	import gadget.util.SodUtilsTAO;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
@@ -97,8 +98,15 @@ package gadget.sync.incoming {
 			ns1			= getNS1();
 			ns2			= getNS2();
 			
-			if (daoName==null)
-				daoName	= SodUtils.transactionProperty(ID).dao;
+			if (daoName==null){
+				var sod:SodUtilsTAO=SodUtils.transactionProperty(ID);
+				if(sod!=null){
+					daoName	= sod.dao;
+				}else{
+					daoName	= entityIDsod;
+				}
+			}
+				
 			dao = Database[daoName] as BaseDAO;
 			if(dao==null){
 				dao = Database.getDao(ID);

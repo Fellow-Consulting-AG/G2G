@@ -13,6 +13,7 @@ package gadget.sync.incoming {
 	import gadget.dao.SupportRegistry;
 	import gadget.i18n.i18n;
 	import gadget.lists.List;
+	import gadget.service.SupportService;
 	import gadget.sync.task.SyncTask;
 	import gadget.util.CacheUtils;
 	import gadget.util.FieldUtils;
@@ -26,18 +27,13 @@ package gadget.sync.incoming {
 		
 		private static var ns1:Namespace = new Namespace("urn:crmondemand/ws/odesabs/pickvaluegroup/");
 		private static var ns2:Namespace = new Namespace("urn:/crmondemand/xml/pickvaluegroup/data");		
-		override protected function doRequest():void {
-			if (getLastSync() != NO_LAST_SYNC_DATE){
-				updateLastSync();
-				return;
-			}
+		override protected function doRequest():void {			
+			//alway read picklist value group when user click full compare or sync-meta or full sync.
 			var request:XML =
 				<PickValueGroupReadAll_Input xmlns="urn:crmondemand/ws/odesabs/pickvaluegroup/">				
 						<IncludeAll>true</IncludeAll> 
 				</PickValueGroupReadAll_Input>;
-			sendRequest("\"ocument/urn:crmondemand/ws/odesabs/pickvaluegroup/:PickValueGroupReadAll\"", request,"admin","Services/cte/PickValueGroupService");
-		
-			
+			sendRequest("\"ocument/urn:crmondemand/ws/odesabs/pickvaluegroup/:PickValueGroupReadAll\"", request,"admin","Services/cte/PickValueGroupService");				
 		}
 		
 		
@@ -77,6 +73,7 @@ package gadget.sync.incoming {
 				for each (var picklist:XML in set.ns2::ListOfPicklistTypeSet[0].ns2::PicklistTypeSet) {
 					put(picklist, "ObjectName");
 					put(picklist, "FieldName");
+					data.FieldName=SupportService.getPVGField(data.FieldName);
 					for each (var lns:XML in picklist.ns2::ListOfLicNameSet[0].ns2::LicNameSet) {
 						for each(var val:XML in lns.ns2::LicName){
 							data['LicName'] = val.toString();						

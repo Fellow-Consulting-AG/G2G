@@ -8,6 +8,7 @@ package gadget.util {
 	import gadget.control.AutoComplete;
 	import gadget.control.GoogleLocalSearchAddress;
 	import gadget.control.ImageTextInput;
+	import gadget.dao.AccountDAO;
 	import gadget.dao.AllUsersDAO;
 	import gadget.dao.BookDAO;
 	import gadget.dao.DAOUtils;
@@ -16,6 +17,7 @@ package gadget.util {
 	import gadget.i18n.i18n;
 	import gadget.service.LocaleService;
 	import gadget.service.SupportService;
+	import gadget.service.UserService;
 	
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
@@ -186,7 +188,15 @@ package gadget.util {
 						fields = Database.fieldDao.listFields(entity);
 					}
 				}
-				
+				//bug#10110--add seqmentfield
+				if(entity==Database.accountDao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
+					var segmentF:Object = new Object();					
+					segmentF.entity=entity;
+					segmentF.element_name=AccountDAO.CUST_SEGMENT_FIELD;
+					segmentF.display_name=getFieldDisplayName(Database.customObject15Dao.entity,'IndexedPick0');
+					segmentF.data_type='Picklist';
+					fields.addItem(segmentF);
+				}
 				
 				if (fields != null && fields.length > 2) {
 					_cache.put(entity, fields);

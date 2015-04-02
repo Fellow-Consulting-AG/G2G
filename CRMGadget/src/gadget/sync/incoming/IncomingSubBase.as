@@ -46,26 +46,33 @@ package gadget.sync.incoming
 		protected var _listParents:ArrayCollection;
 		private var _currentRequestIds:ArrayCollection;
 		
-		public function IncomingSubBase(ID:String, subId:String, _dao:String=null) {
-			subIDour	= subId;
+		
+		protected function getSubIdSod(pId:String,subId:String):String{
+			var oodId:String = subId;
 			var objSod:SodUtilsTAO = SodUtils.transactionProperty(subId);
 			if(objSod!=null){
-				subIDsod	= objSod.sod_name;
+				oodId	= objSod.sod_name;
 			}else{
-				subIDsod = subId;
+				oodId = subId;
 			}
-			if(ID == Database.opportunityDao.entity && subId == Database.productDao.entity){
-				subIDsod = subIDsod + "Revenue";
+			if(pId == Database.opportunityDao.entity && subId == Database.productDao.entity){
+				oodId = oodId + "Revenue";
 				
-			}else if((ID == Database.contactDao.entity||ID == Database.accountDao.entity  )&& subId == "Related"){
-				subIDsod = subIDsod + ID;
-			}else if(ID == Database.contactDao.entity && "Custom Object 2" == subIDsod){
-				subIDsod = "CustomObject2";
+			}else if((pId == Database.contactDao.entity||pId == Database.accountDao.entity  )&& subId == "Related"){
+				oodId = oodId + pId;
+			}else if(pId == Database.contactDao.entity && "Custom Object 2" == oodId){
+				oodId = "CustomObject2";
 			}
-			if(StringUtils.isEmpty(subIDsod)){
-				subIDsod = subId;
+			if(StringUtils.isEmpty(oodId)){
+				oodId = subId;
 			}
+			return oodId;
+		}
+		
+		public function IncomingSubBase(ID:String, subId:String, _dao:String=null) {
+			subIDour	= subId;
 			
+			subIDsod = getSubIdSod(ID,subId);
 			subIDns		= subIDsod.replace(/ /g,"");
 			
 			subList		= "ListOf"+subIDns;

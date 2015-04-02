@@ -98,6 +98,8 @@ package gadget.sync.incoming {
 		private function getDataStr(field:XML, col:String,changeName:Boolean=true):String {
 			if(col=='Name' && changeName){
 				col = 'GenericIntegrationTag';
+			}else if(col=='HtmlName'){
+				col='Name';
 			}
 			var tmp:XMLList = field.child(new QName(ns2.uri,col));
 			return tmp.length()==0 ? "" : tmp[0].toString();

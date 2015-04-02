@@ -30,7 +30,7 @@ package gadget.dao
 		}
 		
 		public function getByIntegrationTag(entity:String, integrationTagName:String):Object{
-			var where:String = " Where entity='" + entity + "' and IntegrationTag='" + integrationTagName + "'";
+			var where:String = " Where entity='" + entity + "' and (IntegrationTag='" + integrationTagName + "' OR HtmlName='"+integrationTagName+"')";
 			var result:Array = select_order("*", where, null, null,null);
 			if(result!=null && result.length>0){
 				return result[0];
@@ -110,7 +110,8 @@ package gadget.dao
 				'PostDefault',
 				'ReadOnly',
 				'Required',
-				'ValidationErrorMsg'
+				'ValidationErrorMsg',
+				'HtmlName'
 			];
 		}
 	}

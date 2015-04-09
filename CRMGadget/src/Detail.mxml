@@ -1683,7 +1683,9 @@
 						fields[i].readonly = isReadOnlyFields;
 					}else{
 						//bug #1912
-						fields[i].readonly = readOnlyFields.hasOwnProperty(fields[i].column_name);
+						if(readOnlyFields.hasOwnProperty(fields[i].column_name)){
+								fields[i].readonly = true;	
+						}
 						//bug#10110
 						if(fields[i].column_name==AccountDAO.CUST_SEGMENT_FIELD && entity==Database.accountDao.entity ){
 							fields[i].readonly = true;

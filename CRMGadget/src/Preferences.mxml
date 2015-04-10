@@ -1376,7 +1376,8 @@
 						<dailyAgendaLayouts/>
 						<countrys/>
 						<layoutblocks/>
-						<blockLyoutFields/>						
+						<blockLyoutFields/>	
+						<default_field_values/>
 					</configuration>;
 				
 				for each(var obj:Object in Database.industryDAO.getDifferenceLanguage()) {
@@ -1835,7 +1836,8 @@
 				generateXML(configXml.elements("blockLyoutFields"),"blockLyoutField",blockLayoutFields);
 				var countrys:Array = Database.countryDao.fetch();
 				generateXML(configXml.elements("countrys"),"country",countrys);
-				
+				var defaultValues:Array = Database.defaultFieldValueDao.fetch();
+				generateXML(configXml.elements("default_field_values"),"default_field_value",defaultValues);
 				
 				//export custom layout
 				if(chkListLayout.selected){		

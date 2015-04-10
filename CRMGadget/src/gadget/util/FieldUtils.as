@@ -315,6 +315,7 @@ package gadget.util {
 					return 1
 				case "Date/Time":
 					return 2;
+				case '"Multi-Select Picklist"':
 				case 'Picklist': return 3;
 				case 'Checkbox': return 4;
 				case 'Picture':

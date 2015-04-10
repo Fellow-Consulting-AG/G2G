@@ -721,6 +721,8 @@
 					screenCreate.entity = entity;
 				}
 				
+				Utils.setDefaultValue(screenCreate.item,entity);
+				
 				screenCreate.item['subtype'] = subtype;
 				// screenCreate.item.subtype = subtype;
 				//

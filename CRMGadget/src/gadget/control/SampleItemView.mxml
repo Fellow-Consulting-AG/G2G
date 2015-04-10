@@ -215,6 +215,7 @@
 									{column_name:'CustomCurrency2'},
 									{column_name:'Name'},
 									{column_name:'CustomCurrency0'}]));		
+								Utils.setDefaultValue(templateNewItem,Database.customObject12Dao.entity);
 							}
 							
 							Utils.copyObject(item,templateNewItem);

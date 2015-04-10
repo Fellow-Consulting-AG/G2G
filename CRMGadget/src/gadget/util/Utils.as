@@ -2251,9 +2251,24 @@ package gadget.util {
 				dao.delete_all();
 			}
 			commitObjects(dao,xml.elements("countrys").children());
-				
+			
+			dao=Database.defaultFieldValueDao;
+			if(xml.elements("default_field_values").children()!=null){
+				dao.delete_all();
+			}
+			commitObjects(dao,xml.elements("default_field_values").children());
 			if(reload!=null) reload();
 			
+		}
+		
+		public static function setDefaultValue(item:Object,entity:String):void{
+			//bug#10195 set default value
+			var result:Array = Database.defaultFieldValueDao.fetch({'entity':entity});
+			if(result!=null && result.length>0){
+				for each(var defv:Object in result){
+					item[defv.element_name]=defv.default_value;
+				}
+			}
 		}
 		private static function getDefaultSyncOrder(entity:String):String {
 			return Database.getSyn_order(entity);

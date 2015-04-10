@@ -199,6 +199,7 @@ package gadget.dao {
 		
 		private var _divisionDao:DivisionDAO;
 		private var _pvgDao:PicklistValueGroupDAO;
+		private var _defaultFieldValueDao:DefaultFieldValueDAO;
 		
 		public static function get templateDao():OrderTemplate
 		{
@@ -1674,6 +1675,7 @@ package gadget.dao {
 			_auditTrail = new AuditTrailDao(_sqlConnection,_work);
 			_divisionDao = new DivisionDAO(_sqlConnection,_work);
 			_pvgDao = new PicklistValueGroupDAO(_sqlConnection,_work);
+			_defaultFieldValueDao= new DefaultFieldValueDAO(_sqlConnection,_work);
 			
 		}
 		
@@ -3766,6 +3768,11 @@ package gadget.dao {
 		public static function get divisionUserDao():DivisionUserDAO
 		{
 			return database._divisionUserDao;
+		}
+
+		public static function get defaultFieldValueDao():DefaultFieldValueDAO
+		{
+			return database._defaultFieldValueDao;
 		}
 
 

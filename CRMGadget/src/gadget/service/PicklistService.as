@@ -154,17 +154,16 @@ package gadget.service
 					var groupMap:Dictionary = new Dictionary();
 					for each(var g:Object in groupList){
 						groupMap[g.LicName]=g.LicName;
-					}
-					
+					}					
 					for each(var pic:Object in picklist){
 						if(groupMap.hasOwnProperty(pic.data)|| groupMap.hasOwnProperty(pic.label)){
 							visibleList.addItem(pic);
 						}
 					}
-				}else{
-					visibleList = picklist;
-				}
-				
+				}				
+			}
+			if(visibleList.length<1){
+				visibleList=picklist;
 			}
 
 			return visibleList;

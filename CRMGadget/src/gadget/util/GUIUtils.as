@@ -35,6 +35,7 @@ package gadget.util
 	import gadget.control.ImageTreeFinder;
 	import gadget.control.LinkButtonColRenderer;
 	import gadget.control.MultiSelectList;
+	import gadget.dao.ActivityContactDAO;
 	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomFieldDAO;
@@ -715,6 +716,7 @@ package gadget.util
 			if(isCreate){
 				screenDetail.item = Utils.copyModel(item);							
 				Utils.doFomulaField(entity,screenDetail.item,false,subtype);
+				Utils.setDefaultValue(screenDetail.item,entity);
 				screenDetail.item[DAOUtils.getOracleId(entity)] = Detail.DUMMY_OID;
 				screenDetail.item['subtype'] = subtype;
 				screenDetail.subtype = subtype;
@@ -1294,6 +1296,12 @@ package gadget.util
 				}else if(dao.entity == Database.customObject2ContactDao.entity){
 					obj = dao.findContactC02(object.item["Id"],selectedItem["ContactId"]);
 					gadId = obj.gadget_id;
+				}else if(dao is ActivityContactDAO){
+					var actId:String = object.item["ActivityId"];
+					var contId:String = selectedItem["ContactId"];
+					//the result cannot be null or empty
+					obj = dao.getByParentId({'ActivityId':actId,'Id':contId})[0];
+					gadId = obj.gadget_id;
 				}else{
 					gadId = selectedItem.gadget_id;
 					obj = dao.findByGadgetId(gadId);
@@ -1305,6 +1313,9 @@ package gadget.util
 					dao.deleteByOracleId(oraId);
 				}else{
 					dao.deleteTemporary({gadget_id:gadId});
+				}
+				if(!(dao is SupportDAO)){
+					Utils.deleteChild(obj,dao.entity);
 				}
 				// updateRelationGrid(grid, object.relation, object.item);
 				grid.dataProvider = getRelationList(object.relation, object.item);
@@ -1594,7 +1605,7 @@ package gadget.util
 					labelValue.text = value;
 					//------
 					labelValue.setStyle("fontWeight", "bold");
-					labelValue.setStyle('color','#aab3b3');
+					//labelValue.setStyle('color','#aab3b3');
 					labelValue.width = 260;
 					(displayObj as FormItem).setStyle("labelWidth", 150);
 					(displayObj as FormItem).addChild(labelValue);
@@ -2212,6 +2223,7 @@ package gadget.util
 				case "Multi-Select Picklist": // Change Request #460
 					childObj = new MultiSelectList();
 					var multiPicklist:Object = PicklistService.getMultiSelectPicklist(entity, item, fieldInfo.element_name);
+					//(childObj as MultiSelectList).editable=!readonly;
 					(childObj as MultiSelectList).availableItems = multiPicklist.availableItems;
 					(childObj as MultiSelectList).selectedItems = multiPicklist.selectedItems;
 					break;
@@ -2654,7 +2666,7 @@ package gadget.util
 				(childObj as ImageTextInput).item = {'element_name':element_name, 'data':item};
 				(childObj as ImageTextInput).data = {'entity':entity, 'element_name':element_name};
 				(childObj as ImageTextInput).clickFunc = finderClick;
-				(childObj as ImageTextInput).enabled = !readonly;	
+				(childObj as ImageTextInput).isEnable = !readonly;	
 				(childObj as ImageTextInput).setStyle("disabledColor","0x000000");
 			}else{
 				childObj = new Text();

@@ -689,6 +689,7 @@
 					return defaultFilterFunction(element,searchInput.text,!customField);
 				}
 				filterData.refresh();
+				dictionnary.dataProvider =filterData;//refresh gui
 			}
 			private function fetch():void{
 				fetchBtn.enabled = false;

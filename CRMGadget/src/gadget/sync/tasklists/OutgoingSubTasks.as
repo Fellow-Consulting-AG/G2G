@@ -60,10 +60,15 @@ package gadget.sync.tasklists {
 							break;
 						}
 					default:
-						var supportDao:SupportDAO = Database.getDao(subObj.entity_name,false) as SupportDAO;
-						if(supportDao!=null && !supportDao.isSyncWithParent){
+						if(obj.entity==Database.activityDao.entity && subObj.entity_name==Database.contactDao.entity ){
 							outs.push(new OutgoingSubObject(subObj.entity,sodname));
+						}else{
+							var supportDao:SupportDAO = Database.getDao(subObj.entity_name,false) as SupportDAO;
+							if(supportDao!=null && !supportDao.isSyncWithParent){
+								outs.push(new OutgoingSubObject(subObj.entity,sodname));
+							}
 						}
+						
 						
 				}
 			}

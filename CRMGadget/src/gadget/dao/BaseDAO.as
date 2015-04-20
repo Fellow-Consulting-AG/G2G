@@ -779,6 +779,11 @@ package gadget.dao
 			exec(stmtUndeleteTemporary);
 		}
 		
+		public function updateAllFromField2Field(sourceF:String,targF:String):void{
+			exec_cmd("UPDATE " +tableName +" SET "+ targF+"="+sourceF);
+		}
+		
+		
 		public function deleteByOracleId(oracleId:String):void	{
 			stmtDeleteOracle.parameters[":" + fieldOracleId] = oracleId;
 			exec(stmtDeleteOracle);
@@ -959,12 +964,17 @@ package gadget.dao
 		}		
 		
 		public function updateReference(columnName:String, previousValue:String, nextValue:String):void {
-			stmtUpdateRef.text = "UPDATE " + tableName + " SET " + columnName + " = '" + nextValue + "' WHERE " + columnName + " = '" + previousValue + "'";
+			stmtUpdateRef.clearParameters();
+			stmtUpdateRef.parameters[':nextValue']=nextValue;
+			stmtUpdateRef.parameters[':previousValue']=previousValue;
+			stmtUpdateRef.text = "UPDATE " + tableName + " SET " + columnName + " =  :nextValue WHERE " + columnName + " = :previousValue ";
 			exec(stmtUpdateRef);
 		}
 		
 		public function updateByGadgetId(columnName:String, gadgetId:String, value:String):void {
-			stmtUpdateRef.text = "UPDATE " + tableName + " SET " + columnName + " = '" + value + "' WHERE gadget_id = " + gadgetId;
+			stmtUpdateRef.clearParameters();
+			stmtUpdateRef.parameters[':value']=value;			
+			stmtUpdateRef.text = "UPDATE " + tableName + " SET " + columnName + " = :value  WHERE gadget_id = " + gadgetId;
 			exec(stmtUpdateRef);
 		}
 		

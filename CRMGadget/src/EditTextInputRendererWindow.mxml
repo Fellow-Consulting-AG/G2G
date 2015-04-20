@@ -46,7 +46,7 @@
 	<mx:Canvas styleName="main" left="0" top="0" width="400" height="270" right="0" bottom="0">
 		<control:TitleBar title="{titleWindow}"/>
 		<mx:VBox top="32" left="16" right="16">
-			<s:TextArea id="commandText" height="200" width="100%" text="{sourceText}" />
+			<s:TextArea id="commandText" height="200" maxChars="255" width="100%" text="{sourceText}" />
 			<mx:HBox id="hboxButtonbar" horizontalAlign="right" width="100%" />
 		</mx:VBox>
 	</mx:Canvas>

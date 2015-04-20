@@ -1850,7 +1850,7 @@
 						var childObj:DisplayObject = GUIUtils.getInputField(create, functions, entity, item, fieldInfo,( fields[i].readonly||readonly),false,fields);
 						
 						
-						if(fields[i].max_chars != null ){
+						if(!StringUtils.isEmpty(fields[i].max_chars)){
 							
 							if(childObj is TextArea){
 								(childObj as TextArea).maxChars = Number(fields[i].max_chars);

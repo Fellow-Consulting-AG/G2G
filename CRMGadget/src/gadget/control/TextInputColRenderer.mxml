@@ -46,6 +46,7 @@
 						if(txtComment==null){
 							txtComment=new TextInput();
 							txtComment.percentHeight=100;
+							txtComment.maxChars=255;
 							txtComment.addEventListener(Event.CHANGE,changeFunction);
 							txtComment.addEventListener(MouseEvent.DOUBLE_CLICK, doubleClickActionPerforment);
 							hBoxCell.addChild(txtComment);

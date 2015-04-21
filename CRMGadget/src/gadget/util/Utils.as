@@ -2205,12 +2205,10 @@ package gadget.util {
 			//clear cache
 			new CacheUtils("cascading_crm").clear();
 			new CacheUtils("customField").clear();
+			FieldUtils.reset();
 			dao = Database.customFieldDao;
 			dao.delete_all();
 			commitObjects(dao,xml.elements("custom_fields").children(),true,function(obj:Object):void{
-				if(obj.entity==Database.accountDao.entity && obj.fieldName=='Address'){
-					trace('abc---check');
-				}
 				if(obj.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
 						Database.customFieldDao.addTableColumn(obj.entity,obj.fieldName,"TEXT");
 						if(obj.fieldType=='Formula') CalculatedField.refreshFormulaField(obj,false);

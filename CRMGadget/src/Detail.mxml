@@ -1367,6 +1367,7 @@
 					leftForm.width = 460;
 					leftForm.setStyle('paddingTop', 0);
 					leftForm.setStyle('verticalGap', 4);
+					leftForm.percentHeight=100;
 					leftForm.autoLayout=true;
 					var vRule:VRule = new VRule();
 					var rightForm:Form = new Form();
@@ -1374,9 +1375,10 @@
 					rightForm.setStyle('paddingTop', 0);
 					rightForm.setStyle('verticalGap', 4);
 					rightForm.autoLayout=true;
+					rightForm.percentHeight=100;
 					hbox.addChild(leftForm);
 					hbox.addChild(vRule);
-					vRule.percentHeight=99;
+					vRule.percentHeight=97;
 					
 					hbox.addChild(rightForm);
 					innerCanvas.addChild(hbox);
@@ -2060,7 +2062,8 @@
 					GUIUtils.setupCascadingCombo(inputFieldObj.component, inputFieldObj.formField, inputFields);
 				}
 				isNew = false;
-				// setup window dimensions
+				var noRight:Boolean = true
+				var heightMax:int =70;
 				for(var p:int=0;p<numOfPage;p++){
 					var canv:Canvas = innerCanvasL[p];
 					if (leftFormL[p].getChildren().length == 0 &&
@@ -2068,44 +2071,43 @@
 						viewstack.removeChild(innerCanvasL[p]);
 						continue;
 					}					
-					
-					var heightMax:int = heightLeftL[p];
+					if(heightLeftL[p]>heightMax){
+						heightMax = heightLeftL[p];
+					}					
 					if (heightRightL[p] > heightMax) {
 						heightMax = heightRightL[p];
 					}
-					if (rightFormL[p].getChildren().length == 0 && pageIndex == 0) {
-						// width = 500;
-						width = 660;
+					if (rightFormL[p].getChildren().length == 0 ) {						
 						vruleL[p].visible = false;
 						rightFormL[p].visible = false;
 					} else {
-						width = 980;
+						noRight = false;						
 						vruleL[p].visible = true;
-						rightFormL[p].visible = true;
-						
+						rightFormL[p].visible = true;						
 					}
-					detailCanvas.width = width;
-					buttonCanvas.width = width - 20;
-					if (heightMax < 70) {
-						heightMax = 70;
-					}
-//					innerCanvasL[p].height = heightMax + 15;
-//					vruleL[p].height = heightMax;
-					heightMax += 138;
-					height = heightMax>height?heightMax:height; 
-					
+				
 				}
 				
+				heightMax += 150;
+				height = heightMax>height?heightMax:height; 
+				
+				if(noRight){
+					width = 600;
+				}else{
+					width = 980;
+				}
+				detailCanvas.width = width;
+				buttonCanvas.width = width - 20;
 
 				//always show page header---bug#8266
 				//viewstack.setStyle("tabHeight",pageIndex==0?0:24);
 				//if(pageIndex==0) height -=14;
-					if(pageIndex==0){
-						height +=14
-					}
+				//	if(pageIndex==0){
+				//		height +=20
+				//	}
 					
 					PreferenceUtils.WindowScreenBounds(this);				
-					detailCanvas.height = height;
+					detailCanvas.height = height-5;
 					modified = false;
 					this.enabled = true;
 					if(item.objTree!=null){
@@ -2426,13 +2428,13 @@
 					}
 					
 					if(fields[i].col%2==0){
-					leftFormL[pageIndex].addChild(displayObj);
-					heightLeftL[pageIndex] += displayObj.height + 4;
+						leftFormL[pageIndex].addChild(displayObj);
+						heightLeftL[pageIndex] += displayObj.height + 4;
 					}else{
-					rightFormL[pageIndex].addChild(displayObj);
-					heightRightL[pageIndex] += displayObj.height + 4;
+						rightFormL[pageIndex].addChild(displayObj);
+						heightRightL[pageIndex] += displayObj.height + 4;
 					} 
-					}
+				}
 					
 					
 					// #332: TCS - Change Request - 7. Milestone: Services Request and Equipment history list (29)

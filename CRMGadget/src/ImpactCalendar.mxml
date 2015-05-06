@@ -8,19 +8,25 @@
 	>
 	<mx:Script>
 		<![CDATA[
+			import gadget.control.ButtonExpandRenderer;
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
 			import gadget.control.ImpactText;
 			import gadget.control.ItemFinderColRender;
+			import gadget.control.LabelColRenderer;
 			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
+			import gadget.control.SubTableRenderer;
+			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.lists.List;
+			import gadget.service.PicklistService;
 			import gadget.util.DateUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
+			import gadget.util.Utils;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.AdvancedDataGrid;
@@ -32,6 +38,7 @@
 			[Embed(source='/assets/cancel.png')] [Bindable] public var closeIcon:Class;
 			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
 			[Bindable] public var rows:ArrayCollection;
+			
 			private var opp_columns:ArrayCollection = new ArrayCollection([
 				{element_name:"OwnerFullName"},
 				{element_name:"OpportunityType"},
@@ -40,8 +47,40 @@
 				{element_name:"SalesStage"},
 				{element_name:"Probability"},
 				{element_name:"ModifiedDate"},
+				{element_name:"gadget_id"},
+				
+				{element_name:"CustomText0"},
+				{element_name:"CustomText1"},
+				{element_name:"CustomText2"},
+				{element_name:"CustomText3"},
+				{element_name:"CustomText4"},
+				{element_name:"CustomText5"},
+				{element_name:"CustomText6"},
+				{element_name:"CustomText7"},
+				{element_name:"CustomText8"},
+				{element_name:"CustomText9"},
+				{element_name:"CustomText10"},
+				{element_name:"CustomText11"},
+				{element_name:"CustomText12"},
+				{element_name:"CustomText13"},
+				{element_name:"CustomText14"},
+				{element_name:"CustomText15"},
+				{element_name:"CustomText16"},
+				{element_name:"CustomText17"},
+				{element_name:"CustomText18"},
+				{element_name:"CustomText19"},
+				{element_name:"CustomText20"},
+				{element_name:"CustomText21"},
+				{element_name:"CustomText22"},
+				{element_name:"CustomText23"},
 				{element_name:"AccountName"}
 			]);
+			
+			
+			private static var mapFields:Object ={Oct:"CustomText0",Nov:"CustomText1",Dec:"CustomText2",Jan:"CustomText3",Feb:"CustomText4",Mar:"CustomText5",Apr:"CustomText6",May:"CustomText7",Jun:"CustomText8",Jul:"CustomText9",Aug:"CustomText10",Sep:"CustomText11",
+				OctNext:"CustomText12",NovNext:"CustomText13",DecNext:"CustomText14",JanNext:"CustomText15",FebNext:"CustomText16",MarNext:"CustomText17",AprNext:"CustomText18",MayNext:"CustomText19",JunNext:"CustomText20",JulNext:"CustomText21",AugNext:"CustomText22",SepNext:"CustomText23"};
+
+			
 			private function init():void{
 				initGridListAllOpportunities();
 				initGridTotalAllOpportunities();
@@ -160,32 +199,21 @@
 			private function labelRMFunction(item:Object,col:AdvancedDataGridColumn):String{
 				if(item.isTotal){
 					return "";
-				}else if(item.isNew){
-					return "";
+				}else if(item.isNew){		
+					return "Enter New Opportunity";
 				}else{
 					return Database.allUsersDao.ownerUser().ManagerFullName;
 				}
 				
 			}
-			private function labelToolTipFunction(item:Object,col:AdvancedDataGridColumn):String{
-				
-				var val:String = item[col.dataField];
-				if(item.isNew && StringUtils.isEmpty(val)){
-					var text:ImpactText = col.itemEditor as ImpactText;
-					createTip(text,"Enter New Opportunity");
-					return "";
-				}else{
-					return item[col.dataField];
-				}
-				
-			}
+			
 			private var currentTip:CloseableToolTip = null;
 			private function createTip(textInput:TextInput, text:String):void {
+
 				if(list.boxImpactCalendar.visible && textInput != null){
 					currentTip = new CloseableToolTip(systemManager);
 					currentTip.text = text;
 					systemManager.toolTipChildren.addChild(UIComponent(currentTip));
-					
 					currentTip.setActualSize(currentTip.getExplicitOrMeasuredWidth(), currentTip.getExplicitOrMeasuredHeight());
 					currentTip.move(textInput.x + 10 , textInput.y + 20);
 				}
@@ -194,8 +222,17 @@
 			private function initGridListAllOpportunities():void{				
 				var columns:Array = new Array();
 				var col:AdvancedDataGridColumn = null;
+				
+				col = createColumn("","ButtonRenderer",false);
+				col.itemRenderer = new ClassFactory(ButtonExpandRenderer);
+				col.width = 15;
+				columns.push(col);
+				
+				
 				col = createColumn("RM Name","ManagerFullName",false);
+				col.itemRenderer = new ClassFactory(LabelColRenderer);
 				col.labelFunction = labelRMFunction;
+				col.width = 160;
 				columns.push(col);
 				columns.push(createColumn("TM Name","OwnerFullName",false));
 				var optTypeRenderer:ClassFactory = new ClassFactory(ComboboxColRender);
@@ -204,12 +241,22 @@
 				col.editorDataField = "selectedItem";
 				col.labelFunction = displayPicklistValue;
 				columns.push(col);
+				
+//				var sub_renderer:ClassFactory = new ClassFactory(SubTableRenderer);
+//				sub_renderer.properties = new Object();
+//				sub_renderer.properties["list"]= list;
+				
+				col = createColumn("Opportunity Product Revenue","ProductRevenue",false);
+				col.itemRenderer = new ClassFactory(SubTableRenderer);
+				col.width = 450;
+				columns.push(col);
+				
 				var renderer:ClassFactory = new ClassFactory(LinkButtonRevenueColRenderer);
 				renderer.properties = new Object();
 				renderer.properties["list"]= list;
 				col = createColumn("Opportunity Name","OpportunityName",true);
 				col.itemRenderer = renderer;
-				col.labelFunction = labelToolTipFunction;
+//				col.labelFunction = labelToolTipFunction;
 				columns.push(col);
 				renderer = new ClassFactory(ItemFinderColRender);
 				renderer.properties = {'entity':Database.opportunityDao.entity};
@@ -239,35 +286,35 @@
 				columns.push(col);
 				columns.push(createColumn("Last FY impact","LastFYImpact",false));
 				columns.push(createColumn("Annualized impact","AnnualizedImpact",true));
-				columns.push(createColumn("Oct","Oct",true,null,itemEditEndListener));
-				columns.push(createColumn("Nov","Nov",true,null,itemEditEndListener));
-				columns.push(createColumn("Dec","Dec",true,null,itemEditEndListener));
-				columns.push(createColumn("Jan","Jan",true,null,itemEditEndListener));
-				columns.push(createColumn("Feb","Feb",true,null,itemEditEndListener));
-				columns.push(createColumn("Mar","Mar",true,null,itemEditEndListener));
-				columns.push(createColumn("Apr","Apr",true,null,itemEditEndListener));
-				columns.push(createColumn("May","May",true,null,itemEditEndListener));
-				columns.push(createColumn("Jun","Jun",true,null,itemEditEndListener));
-				columns.push(createColumn("Jul","Jul",true,null,itemEditEndListener));
-				columns.push(createColumn("Aug","Aug",true,null,itemEditEndListener));
-				columns.push(createColumn("Sep","Sep",true,null,itemEditEndListener));
+				columns.push(createColumn("Oct",mapFields["Oct"],true,null,itemEditEndListener));
+				columns.push(createColumn("Nov",mapFields["Nov"],true,null,itemEditEndListener));
+				columns.push(createColumn("Dec",mapFields["Dec"],true,null,itemEditEndListener));
+				columns.push(createColumn("Jan",mapFields["Jan"],true,null,itemEditEndListener));
+				columns.push(createColumn("Feb",mapFields["Feb"],true,null,itemEditEndListener));
+				columns.push(createColumn("Mar",mapFields["Mar"],true,null,itemEditEndListener));
+				columns.push(createColumn("Apr",mapFields["Apr"],true,null,itemEditEndListener));
+				columns.push(createColumn("May",mapFields["May"],true,null,itemEditEndListener));
+				columns.push(createColumn("Jun",mapFields["Jun"],true,null,itemEditEndListener));
+				columns.push(createColumn("Jul",mapFields["Jul"],true,null,itemEditEndListener));
+				columns.push(createColumn("Aug",mapFields["Aug"],true,null,itemEditEndListener));
+				columns.push(createColumn("Sep",mapFields["Sep"],true,null,itemEditEndListener));
 				columns.push(createColumn("Current FY Impact","CurrentFYImpact",false));
 				columns.push(createColumn("Change vs last FY","ChangeVsLastFY",false));
 				columns.push(createColumn("Total CALLS current quarter","TotalCALLSCurrentQuarter",false));
 				columns.push(createColumn("Investments","Investments",true));
 				columns.push(createColumn("Modified Date","ModifiedDate",false));
-				columns.push(createColumn("Oct","OctNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Nov","NovNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Dec","DecNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jan","JanNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Feb","FebNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Mar","MarNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Apr","AprNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("May","MayNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jun","JunNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jul","JulNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Aug","AugNext",true,null,itemNextEditEndListener));
-				columns.push(createColumn("Sep","SepNext",true,null,itemNextEditEndListener));
+				columns.push(createColumn("Oct",mapFields["OctNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Nov",mapFields["NovNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Dec",mapFields["DecNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jan",mapFields["JanNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Feb",mapFields["FebNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Mar",mapFields["MarNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Apr",mapFields["AprNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("May",mapFields["MayNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jun",mapFields["JunNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Jul",mapFields["JulNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Aug",mapFields["AugNext"],true,null,itemNextEditEndListener));
+				columns.push(createColumn("Sep",mapFields["SepNext"],true,null,itemNextEditEndListener));
 				columns.push(createColumn("Next FY Impact","NextFYImpact",false));
 				
 				gridListAll.columns = columns;
@@ -299,7 +346,7 @@
 					}else{
 						// get first row to check to insert new row
 						var obj:Object = lst[0];
-						if(obj == null && !obj.isNew){
+						if(obj != null ){//&& !obj.isNew){
 							lst.addItemAt(createEmptyObject(),0);
 							gridListAll.selectedIndex = 0;
 						}
@@ -331,18 +378,18 @@
 					
 					for each(var item:Object in ls){
 						if(item.isTotal) continue;
-						var octVal:int =isNext? item.OctNext : item.Oct; 
-						var novVal:int = isNext? item.NovNext : item.Nov;
-						var decVal:int = isNext? item.DecNext : item.Dec;
-						var janVal:int = isNext? item.JanNext : item.Jan;
-						var febVal:int = isNext? item.FebNext : item.Feb;
-						var marVal:int = isNext? item.MarNext : item.Mar;
-						var aprVal:int = isNext? item.AprNext : item.Apr;
-						var mayVal:int = isNext? item.MayNext : item.May;
-						var junVal:int = isNext? item.JunNext : item.Jun;
-						var julVal:int = isNext? item.JulNext : item.Jul;
-						var augVal:int = isNext? item.AugNext : item.Aug;
-						var sepVal:int = isNext? item.SepNext : item.Sep;
+						var octVal:int =isNext? item[mapFields["OctNext"]] : item[mapFields["Oct"]]; 
+						var novVal:int = isNext? item[mapFields["NovNext"]] : item[mapFields["Nov"]];
+						var decVal:int = isNext? item[mapFields["DecNext"]] : item[mapFields["Dec"]];
+						var janVal:int = isNext? item[mapFields["JanNext"]] : item[mapFields["Jan"]];
+						var febVal:int = isNext? item[mapFields["FebNext"]] : item[mapFields["Feb"]];
+						var marVal:int = isNext? item[mapFields["MarNext"]] : item[mapFields["Mar"]];
+						var aprVal:int = isNext? item[mapFields["AprNext"]] : item[mapFields["Apr"]];
+						var mayVal:int = isNext? item[mapFields["MayNext"]] : item[mapFields["May"]];
+						var junVal:int = isNext? item[mapFields["JunNext"]] : item[mapFields["Jun"]];
+						var julVal:int = isNext? item[mapFields["JulNext"]] : item[mapFields["Jul"]];
+						var augVal:int = isNext? item[mapFields["AugNext"]] : item[mapFields["Aug"]];
+						var sepVal:int = isNext? item[mapFields["SepNext"]] : item[mapFields["Sep"]];
 						var total:int = octVal + novVal + decVal + janVal + febVal + marVal + aprVal + mayVal + junVal + julVal + augVal + sepVal; 
 						totalForeCast = totalForeCast + total;
 						if(isNext){
@@ -364,10 +411,10 @@
 			}
 			private function calculateGridTotal(closed:int,notClosed:int,curImpact:int):void{
 				var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
-				if(lstTotal != null){
+				if(lstTotal != null && lstTotal.length>0){
 					var obj:Object = lstTotal[0];
 					obj.Forecast = curImpact;
-					obj.variance = obj.Target - curImpact;
+					obj.variance = obj.FYTarget - curImpact;
 					obj.closed = closed
 					obj.notclosed = notClosed
 					lstTotal.refresh();
@@ -428,7 +475,7 @@
 				
 				var arrLst:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 				var item:Object = arrLst[0];
-				item["variance"] = Number(item.Target) - item.Forecast;
+				item["variance"] = Number(item.FYTarget) - item.Forecast;
 			}
 			private  function initGridTotalAllOpportunities():void{
 				
@@ -440,7 +487,10 @@
 				columns.push(createColumn("FY impact, closed opportunities","closed",false));
 				columns.push(createColumn("FY impact, not-closed opportunities","notclosed",false));
 				gridTotal.columns = columns;
-
+				var arr:Array = Database.impactCalendarDao.fetch();
+				if(arr != null && arr.length>0){
+					gridTotal.dataProvider = new ArrayCollection(arr);
+				}
 				
 //				gridTotal.addEventListener(AdvancedDataGridEvent.ITEM_EDIT_END,itemEditEndGridTotalListener);
 				
@@ -476,28 +526,118 @@
 			private function homeOpportunity():void{
 				list.showHomeOpportunity();
 			}
-			private function advanceSearch():void{
+			private function filterDataGridResult(item:Object):Boolean {
+			
 				var where:String = "";
-				var records:ArrayCollection = null;
-				if(txtSearch.text != ""){
-					where = "OpportunityName Like '" + txtSearch.text +"%'" ;
+				var map:Object = new Object();
+				if(txtAccountName.text != ""){
+					if(item["AccountName"] != null){
+						map["AccountName"]=txtAccountName.text;
+					}
 				}
-				records = Database.opportunityDao.findAll(opp_columns, where, null, 1001,null);
-				if(records == null){
-					records = new ArrayCollection();
-					records.addItem(createEmptyObject());
-				}else{
-					records.addItemAt(createEmptyObject(),0);
+				if(cboBusinessArea.selectedItem != "" && cboBusinessArea.selectedItem.data != ""){
+					if(item["BusinessArea"] != null){
+						map["BusinessArea"]=cboBusinessArea.selectedItem.data;
+					}
 				}
+				if(txtTerritory.text != ""){
+					if(item["OwnerFullName"] != null){
+						map["OwnerFullName"]= txtTerritory.text;
+					}
+					
+				}
+				if(cboCategory.selectedItem != null && cboCategory.selectedItem.data != ""){
+					if(item["Category"] != null){
+						map["Category"]= cboCategory.selectedItem.data;
+					}
+				}
+				if(cboSalesStage.selectedItem != null && cboSalesStage.selectedItem.data != ""){
+					if(item["SalesStage"] != null){
+						map["SalesStage"]=cboSalesStage.selectedItem.data;
+					}
+				}
+				if(dtCloseDate.selectedDate != null){
+					if(item["CloseDate"] != null){
+						//map["CloseDate"]=item["CloseDate"].toString();
+					}
+				}
+				var found:Boolean = true;
+				for each(var key:String in map){
+					if(item[key] != null && item[key].toString().indexOf(map[key]) != -1){
+						found = true;
+					}else{
+						found = false;
+						break;
+					}
+				}
+				return found;
 
-				calculateList(records);
 				
-				records.addItem({AnnualizedImpact:"Forecast total"});
-				records.addItem({AnnualizedImpact:"Actual revenue"});
-				records.addItem({AnnualizedImpact:"Variance"});
 				
-				gridListAll.dataProvider = records;
 			}
+			
+			private function advanceSearch():void{
+				
+				
+				rows.filterFunction = filterDataGridResult;
+				rows.refresh();
+				
+				
+			}
+			private function save():void{
+				Database.begin();
+				try
+				{
+					var lsItem:ArrayCollection = gridListAll.dataProvider as ArrayCollection;
+					if(lsItem != null){
+						for each(var item:Object in lsItem){
+							if(item.isTotal || item.isNew){
+								continue;
+							}
+							var cloneItem:Object = new Object();
+							for each(var objField:Object in opp_columns){
+								cloneItem[objField.element_name] = item[objField.element_name];
+							}
+							if(StringUtils.isEmpty(item.gadget_id)){
+								Database.opportunityDao.insert(cloneItem);
+								var objLast:Object = Database.opportunityDao.selectLastRecord()[0];
+								var oidName:String = DAOUtils.getOracleId(Database.opportunityDao.entity);
+								item.gadget_id =  objLast.gadget_id;
+								cloneItem .gadget_id =  objLast.gadget_id;
+								cloneItem[oidName] = "#" + item.gadget_id;
+								Database.opportunityDao.update(cloneItem);
+							}
+							Database.opportunityDao.update(cloneItem);
+						}
+						var total:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+						if(total != null){
+							var objTotal:Object = total[0];
+							var newTotal:Object = new Object();
+							newTotal.FYTarget = objTotal.newTotal;
+							newTotal.gadget_id = objTotal.gadget_id;
+							if(StringUtils.isEmpty(newTotal.gadget_id)){
+								Database.impactCalendarDao.insert(newTotal);
+							}else{
+								Database.impactCalendarDao.update(newTotal,{gadget_id:newTotal.gadget_id});
+							}
+							
+						}
+						var newObj:Object = createEmptyObject();
+						lsItem.addItemAt(newObj,0);
+						Database.commit();
+					}	
+				} 
+				catch(error:Error) 
+				{
+					Database.rollback();
+				}
+				
+			}
+			
+			private function openProductRevenue():void{
+				var data:Object = gridTotal.selectedItem;
+			}
+			
 		]]>
 	</mx:Script>
 		<mx:VBox left="8" right="8" width="100%" height="100%">
@@ -505,14 +645,36 @@
 				<mx:LinkButton label="Normal Mode"  click="list.showHomeOpportunity()" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
 				<mx:LinkButton icon="{ImageUtils.excelIcon}" label="Export Excel" />
 				<mx:LinkButton icon="{closeIcon}" label="Cancel"/>
-				<mx:LinkButton paddingRight="20" icon="{saveIcon}"  label="Save"/>
+				<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="Save"/>
 			</mx:HBox>
 			<mx:Label paddingTop="20" text="Total of all Opportunities" />
-			<mx:AdvancedDataGrid  height="44" editable="true" width="800" id="gridTotal"/>
+			<mx:AdvancedDataGrid doubleClickEnabled="true" doubleClick="{openProductRevenue()}" height="44" editable="true" width="800" id="gridTotal"/>
 			<mx:Label text="List of all Opportunities" />
 			<mx:HBox width="100%">
-				<mx:TextInput id="txtSearch" change="advanceSearch()" width="200"/>
-				<mx:Button icon="{searchIcon}" click="advanceSearch()" id="btnSearch" />
+				<mx:VBox>
+					<mx:Label text="Account Name"/>
+					<mx:TextInput id="txtAccountName" change="advanceSearch()" width="100"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Business Area"/>
+					<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'BusinessArea')}" change="advanceSearch()" width="100"/>
+				</mx:VBox> 
+				<mx:VBox>
+					<mx:Label text="Sales Stage"/>
+					<mx:ComboBox dataProvider="{Utils.getSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="100"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Close Date "/>
+					<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Category"/>
+					<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.productDao.entity,'Category')}" change="advanceSearch()" width="100"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Territory"/>
+					<mx:TextInput id="txtTerritory" change="advanceSearch()" width="100"/>
+				</mx:VBox>
 			</mx:HBox>
 			<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
 				<mx:AdvancedDataGrid height="100%" editable="true" verticalScrollPolicy="auto" id="gridListAll"/>

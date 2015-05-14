@@ -553,9 +553,10 @@
 							storeCustomFieldsAccount.local_update=new Date().getTime();
 							Database.accountDao.update(storeCustomFieldsAccount);
 						}
+						//always close the window after save cause user cannot select other one after save
+						if(closeAssModelFunction != null) closeAssModelFunction();
 						
-						if(isClose){
-							if(closeAssModelFunction != null) closeAssModelFunction();
+						if(isClose){							
 							this.close();
 						}
 					}
@@ -626,6 +627,11 @@
 					// by default, sets the OracleId as gadget_id
 					item[oidName] = "#" + item.gadget_id;
 					Database.getDao(Database.activityDao.entity).update(item);
+					
+					//add task id to lstQuestion
+					for(var j:int=0; j<lstQues.length;j++){
+						lstQues[j].gadget_id = item.gadget_id;
+					}
 					
 				}else{
 					item.local_update = new Date().getTime();

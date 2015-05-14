@@ -32,17 +32,20 @@
 				txtFindAss.text = roleName;
 				txtFindAss.setFocus();
 				lstData= new ArrayCollection( Database.assessmentConfigDao.getAssessmentConfigByEnitty(parentItem.gadget_type,roleName));
+				addEventListener(Event.CLOSE,function(e:Event):void{	
+					if(lstAssName.selectedItem !=null){
+						var survey:Survey = new Survey();
+						//survey.assType = lstAssName.selectedItem.AssessmentType;
+						survey.parentItem = parentItem;
+						survey.assModel = lstAssName.selectedItem as DtoConfiguration;
+						//survey.closeAssModelFunction = closeAssModel;
+						WindowManager.openModal(survey);
+					}
+				});
 			}
 			
 			private function clickFuction(event:ListEvent):void{
-				
-				var survey:Survey = new Survey();
-				//survey.assType = lstAssName.selectedItem.AssessmentType;
-				survey.parentItem = parentItem;
-				survey.assModel = lstAssName.selectedItem as DtoConfiguration;
-				survey.closeAssModelFunction = closeAssModel;
-				WindowManager.openModal(survey);
-				
+				this.close();
 			}
 			public function closeAssModel():void{
 				this.close();

@@ -38,7 +38,7 @@
 			[Embed(source='/assets/cancel.png')] [Bindable] public var closeIcon:Class;
 			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
 			[Bindable] public var rows:ArrayCollection;
-			
+		
 			private var opp_columns:ArrayCollection = new ArrayCollection([
 				{element_name:"OwnerFullName"},
 				{element_name:"OpportunityType"},
@@ -219,10 +219,14 @@
 				}
 				
 			}
+			
+			private var opp_columns:ArrayCollection = new ArrayCollection([
+					{element_name:"OwnerFullName"},
+				]);
 			private function initGridListAllOpportunities():void{				
 				var columns:Array = new Array();
 				var col:AdvancedDataGridColumn = null;
-				
+				/*
 				col = createColumn("","ButtonRenderer",false);
 				col.itemRenderer = new ClassFactory(ButtonExpandRenderer);
 				col.width = 15;
@@ -234,22 +238,21 @@
 				col.labelFunction = labelRMFunction;
 				col.width = 160;
 				columns.push(col);
+				*/
 				columns.push(createColumn("TM Name","OwnerFullName",false));
+				/*
 				var optTypeRenderer:ClassFactory = new ClassFactory(ComboboxColRender);
 				optTypeRenderer.properties = {'entity':Database.opportunityDao.entity};
 				col = createColumn("Opportunity Type","OpportunityType",true,optTypeRenderer);
 				col.editorDataField = "selectedItem";
 				col.labelFunction = displayPicklistValue;
 				columns.push(col);
-				
+				*/
 //				var sub_renderer:ClassFactory = new ClassFactory(SubTableRenderer);
 //				sub_renderer.properties = new Object();
 //				sub_renderer.properties["list"]= list;
 				
-				col = createColumn("Opportunity Product Revenue","ProductRevenue",false);
-				col.itemRenderer = new ClassFactory(SubTableRenderer);
-				col.width = 450;
-				columns.push(col);
+				
 				
 				var renderer:ClassFactory = new ClassFactory(LinkButtonRevenueColRenderer);
 				renderer.properties = new Object();
@@ -265,12 +268,7 @@
 				col.editorDataField = "selectedItem";
 				columns.push(col);
 				
-				renderer = new ClassFactory(ComboboxColRender);
-				renderer.properties = {'entity':Database.opportunityDao.entity};
-				col = createColumn("Business Area","CustomPickList0",true,renderer);
-				col.editorDataField = "selectedItem";
-				col.labelFunction = displayPicklistValue;
-				columns.push(col);
+
 				renderer = new ClassFactory(ComboboxColRender);
 				renderer.properties = {'entity':Database.opportunityDao.entity};
 				col = createColumn("Sales Stage","SalesStage",true,renderer);
@@ -284,8 +282,40 @@
 				col.editorDataField = "selectedDate";
 				col.labelFunction = displayDataTime;
 				columns.push(col);
-				columns.push(createColumn("Last FY impact","LastFYImpact",false));
-				columns.push(createColumn("Annualized impact","AnnualizedImpact",true));
+				dateRenderer = new ClassFactory(DateColumnRenderer);
+				col = createColumn("Original close date","OriginalCloseDate",true,dateRenderer);
+				col.editorDataField = "selectedDate";
+				col.labelFunction = displayDataTime;
+				columns.push(col);
+				renderer = new ClassFactory(ComboboxColRender);
+				renderer.properties = {'entity':Database.opportunityDao.entity};
+				col = createColumn("Business Area","CustomPickList0",true,renderer);
+				col.editorDataField = "selectedItem";
+				col.labelFunction = displayPicklistValue;
+				columns.push(col);
+				columns.push(createColumn("Curve Type","CurveType",false));
+				col = createColumn("Category","CustomPickList31",false);
+				col.itemRenderer = new ClassFactory(SubTableRenderer);
+//				col.width = 450;
+				columns.push(col);
+				col = createColumn("Unit","CustomPickList34",false);
+				col.itemRenderer = new ClassFactory(SubTableRenderer);
+//				col.width = 450;
+				columns.push(col);
+				col = createColumn("Quantity","CustomNumber0",false);
+				col.itemRenderer = new ClassFactory(SubTableRenderer);
+				columns.push(col);
+				col = createColumn("Value","CustomCurrency4",false);
+				col.itemRenderer = new ClassFactory(SubTableRenderer);
+				columns.push(col);
+				//columns.push(createColumn("Last FY impact","LastFYImpact",false));
+//				columns.push(createColumn("Annualized impact","AnnualizedImpact",true));
+				col = createColumn("Annualized impact","AnnualizedImpact",false);
+				renderer = new ClassFactory(SubTableRenderer);
+				renderer.properties = {'isCalculate':true,'columnCalculate':new ArrayCollection(["CustomCurrency4","Quantity"])};
+				col.itemRenderer = renderer;
+				columns.push(col);
+				
 				columns.push(createColumn("Oct",mapFields["Oct"],true,null,itemEditEndListener));
 				columns.push(createColumn("Nov",mapFields["Nov"],true,null,itemEditEndListener));
 				columns.push(createColumn("Dec",mapFields["Dec"],true,null,itemEditEndListener));
@@ -536,8 +566,8 @@
 					}
 				}
 				if(cboBusinessArea.selectedItem != "" && cboBusinessArea.selectedItem.data != ""){
-					if(item["BusinessArea"] != null){
-						map["BusinessArea"]=cboBusinessArea.selectedItem.data;
+					if(item["CustomPickList0"] != null){
+						map["CustomPickList0"]=cboBusinessArea.selectedItem.data;
 					}
 				}
 				if(txtTerritory.text != ""){
@@ -558,12 +588,14 @@
 				}
 				if(dtCloseDate.selectedDate != null){
 					if(item["CloseDate"] != null){
-						//map["CloseDate"]=item["CloseDate"].toString();
+						map["CloseDate"]=dtCloseDate.selectedDate.getTime();
 					}
 				}
 				var found:Boolean = true;
-				for each(var key:String in map){
-					if(item[key] != null && item[key].toString().indexOf(map[key]) != -1){
+				for(var key:String in map){
+					var value:String = item[key];
+					var textCompare:String = map[key];
+					if(value != null && value.toLowerCase().indexOf(textCompare.toLowerCase()) != -1){
 						found = true;
 					}else{
 						found = false;
@@ -657,7 +689,7 @@
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Business Area"/>
-					<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'BusinessArea')}" change="advanceSearch()" width="100"/>
+					<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'CustomPickList0')}" change="advanceSearch()" width="100"/>
 				</mx:VBox> 
 				<mx:VBox>
 					<mx:Label text="Sales Stage"/>
@@ -665,11 +697,11 @@
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Close Date "/>
-					<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100"/>
+					<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Category"/>
-					<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.productDao.entity,'Category')}" change="advanceSearch()" width="100"/>
+					<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="100"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Territory"/>

@@ -28,7 +28,7 @@ package gadget.sync.incoming
 			var ownerUser:Object = Database.allUsersDao.ownerUser();
 			
 			var role:String = ownerUser["Role"];
-			var fileName:String = "gadget_" + getRoleNameUrl(role) + ".xml";
+			var fileName:String = "gadget_" + getRoleNameUrl(role)+"_"+Utils.getAppInfo().version + ".xml";
 			loadXmlConfig(sessionId, fileName);
 			
 			
@@ -82,10 +82,12 @@ package gadget.sync.incoming
 			});
 			
 			loader.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
-				onError("Can not get configuration file with role name.", null);
+				onError("Can not get configuration file '"+fileName+"' from server.", null);
 				if(retry){
-					info("Importing default xml");
-					loadXmlConfig(sessionId,"gadget.xml",false);
+					
+					fileName = fileName.substr(0,fileName.lastIndexOf('_'))+".xml";
+					info("Importing "+fileName);
+					loadXmlConfig(sessionId,fileName,(fileName!="gadget.xml"));
 				}else{					
 					onError("Could not read configuration file from server.", null);
 					setFailed();

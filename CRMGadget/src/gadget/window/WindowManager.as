@@ -24,7 +24,7 @@ package gadget.window {
 			openModal(main);	
 		}
 		
-		private static function getTopWindow():IWindow {
+		public static function getTopWindow():IWindow {
 			if (windows.length == 0) {
 				return null;
 			}

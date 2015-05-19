@@ -5,15 +5,23 @@
 								  focusEnabled="true" height="100%">
 	<fx:Script>
 		<![CDATA[
+			import flashx.textLayout.operations.InsertTextOperation;
+			
+			import gadget.i18n.i18n;
 			import gadget.window.WindowManager;
 			
 			import mx.controls.AdvancedDataGrid;
+			import mx.controls.Alert;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 			import mx.controls.listClasses.BaseListData;
+			import mx.core.FlexSprite;
+			import mx.core.Window;
 			
 			import spark.components.Label;
+			import spark.components.RichEditableText;
 			import spark.components.TextInput;
+			import spark.events.TextOperationEvent;
 			private var grid:AdvancedDataGrid;
 			public var column:AdvancedDataGridColumn;
 			
@@ -49,6 +57,7 @@
 							txtComment.maxChars=255;
 							txtComment.addEventListener(Event.CHANGE,changeFunction);
 							txtComment.addEventListener(MouseEvent.DOUBLE_CLICK, doubleClickActionPerforment);
+							txtComment.addEventListener(TextOperationEvent.CHANGING,textChangingHandler);
 							hBoxCell.addChild(txtComment);
 						}
 						if(data.odd){
@@ -101,6 +110,18 @@
 //					}
 				}
 			}
+			
+			
+			
+			protected function textChangingHandler(e:TextOperationEvent):void
+			{
+				if(e.operation is InsertTextOperation){
+					if(InsertTextOperation(e.operation).text==''||InsertTextOperation(e.operation).text==null){
+						var wd:Sprite = Sprite(WindowManager.getTopWindow());
+						Alert.show(i18n._("GLOBAL_MAX_LENGHT@cannot exceed {1} characters","255"),i18n._("GLOBAL_INFO@Info"),4,wd);
+					}
+				}
+			}
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
@@ -115,8 +136,7 @@
 			}
 			private function changeFunction(e:Event):void{
 				if(column!=null){	
-					data[column.dataField] = txtComment.text;
-				
+					data[column.dataField] = txtComment.text;				
 				}
 			}
 			

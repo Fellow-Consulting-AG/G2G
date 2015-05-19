@@ -2158,7 +2158,7 @@
 				// var user:Object = Database.allUsersDao.ownerUser();
 				if(ownerUser){
 					var role:String = ownerUser["Role"];
-					fileName = "gadget_" + getRoleNameUrl(role) + ".xml";
+					fileName = "gadget_" + getRoleNameUrl(role)+"_"+Utils.getAppInfo().version + ".xml";
 					loadXmlConfig(sessionId, fileName, finishLoadRoleXml);
 				}else{
 					loadXmlConfig(sessionId, FILE_NAME, null);
@@ -2182,8 +2182,13 @@
 			
 			private function finishLoadRoleXml(sessionId:String, success:Boolean):void{
 				if(!success){
+					var f:String = this._fileName.substr(0,this._fileName.lastIndexOf('_'))+".xml";
 					// if can not find role xml on server, then go to check gadget.xml on server again
-					loadXmlConfig(sessionId, FILE_NAME, null);
+					if(f!==FILE_NAME){
+						loadXmlConfig(sessionId, f, finishLoadRoleXml);
+					}else{
+						loadXmlConfig(sessionId, f, null);
+					}
 				}
 			}
 			

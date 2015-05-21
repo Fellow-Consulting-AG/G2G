@@ -2156,13 +2156,46 @@
 				var fileName:String = FILE_NAME;
 				// var currentUser:Object = Database.currentUserDAO.getCurrentUser();
 				// var user:Object = Database.allUsersDao.ownerUser();
-				if(ownerUser){
+//				if(ownerUser){
+//					var role:String = ownerUser["Role"];
+//					fileName = "gadget_" + getRoleNameUrl(role)+"_"+Utils.getAppInfo().version + ".xml";
+//					loadXmlConfig(sessionId, fileName, finishLoadRoleXml);
+//				}else{
+//					loadXmlConfig(sessionId, FILE_NAME, null);
+//				}
+				var fileOrders:Array;
+				/**
+				 * Order file
+				 *	g2g_rolename_version.xml
+				 g2g_rolename.xml
+				 gadget_rolename.xml
+				 g2g.xml
+				 gadget.xml 
+				 
+				 */
+				if(ownerUser!=null){
 					var role:String = ownerUser["Role"];
-					fileName = "gadget_" + getRoleNameUrl(role)+"_"+Utils.getAppInfo().version + ".xml";
-					loadXmlConfig(sessionId, fileName, finishLoadRoleXml);
+					var rolName:String = getRoleNameUrl(role);
+					var appVersion:String = StringUtils.replaceAll(Utils.getAppInfo().version,'[.]','');
+					fileOrders=[
+						"g2g_"+rolName+"_"+appVersion+".xml",
+						"g2g_"+rolName+".xml",
+						"gadget_"+rolName+".xml",
+						"g2g.xml",
+						"gadget.xml"
+						
+						
+					];
 				}else{
-					loadXmlConfig(sessionId, FILE_NAME, null);
+					fileOrders=[					
+						"g2g.xml",
+						"gadget.xml"
+					];
 				}
+				
+				loadXmlConfig(sessionId, fileOrders);
+				
+				
 			}
 			
 			
@@ -2180,19 +2213,23 @@
 				return roleName;
 			}
 			
-			private function finishLoadRoleXml(sessionId:String, success:Boolean):void{
-				if(!success){
-					var f:String = this._fileName.substr(0,this._fileName.lastIndexOf('_'))+".xml";
-					// if can not find role xml on server, then go to check gadget.xml on server again
-					if(f!==FILE_NAME){
-						loadXmlConfig(sessionId, f, finishLoadRoleXml);
-					}else{
-						loadXmlConfig(sessionId, f, null);
-					}
-				}
-			}
+//			private function finishLoadRoleXml(sessionId:String, success:Boolean):void{
+//				if(!success){
+//					var f:String = this._fileName.substr(0,this._fileName.lastIndexOf('_'))+".xml";
+//					// if can not find role xml on server, then go to check gadget.xml on server again
+//					if(f!==FILE_NAME){
+//						loadXmlConfig(sessionId, f, finishLoadRoleXml);
+//					}else{
+//						loadXmlConfig(sessionId, f, null);
+//					}
+//				}
+//			}
 			
-			private function loadXmlConfig(sessionId:String, fileName:String, finishLoadRoleXml:Function):void{
+			private function loadXmlConfig(sessionId:String, fileOrders:Array):void{
+				if(fileOrders.length<1){
+					return;//no file to retriev
+				}
+				var fileName:String = fileOrders.shift();
 				var strForwardSlash:String = tmpPreferences.sodhost.charAt(tmpPreferences.sodhost.length-1) == "/" ? "" : "/";
 				
 				this._fileName = fileName;
@@ -2216,13 +2253,8 @@
 						// import preferrence 
 						importFromOOD(xml);
 						testConnectionWait.visible = false;
-						impFromOOD.enabled = true;
+						impFromOOD.enabled = true;						
 						
-						if(finishLoadRoleXml != null){
-							finishLoadRoleXml(sessionId, true);
-						}else{
-							// Alert.show("Message", "Read file : " + fileName + " from server sucessfully." , Alert.OK, this); 
-						}
 					}else{
 						testConnectionError('Max size expected',null);
 					}
@@ -2230,8 +2262,8 @@
 				
 				loader.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
 					
-					if(finishLoadRoleXml != null){
-						finishLoadRoleXml(sessionId, false);
+					if(fileOrders.length>0){
+						loadXmlConfig(sessionId, fileOrders);
 					}else{
 						testConnectionError(e.text, null);
 					}

@@ -16,6 +16,8 @@ package gadget.sync.incoming
 
 	public class GetConfigXml extends SyncTask
 	{
+		
+		
 		public function GetConfigXml()
 		{
 		}
@@ -28,8 +30,39 @@ package gadget.sync.incoming
 			var ownerUser:Object = Database.allUsersDao.ownerUser();
 			
 			var role:String = ownerUser["Role"];
-			var fileName:String = "gadget_" + getRoleNameUrl(role)+"_"+Utils.getAppInfo().version + ".xml";
-			loadXmlConfig(sessionId, fileName);
+			var fileOrders:Array = new Array();
+			/**
+			 * Order file
+			 *	g2g_rolename_version.xml
+			 g2g_rolename.xml
+			 gadget_rolename.xml
+			 g2g.xml
+			 gadget.xml 
+			 
+			 */
+			if(!StringUtils.isEmpty(role)){
+				var rolName:String = getRoleNameUrl(role);
+				var appVersion:String = StringUtils.replaceAll(Utils.getAppInfo().version,'[.]','');
+				fileOrders=[
+					"g2g_"+rolName+"_"+appVersion+".xml",
+					"g2g_"+rolName+".xml",
+					"gadget_"+rolName+".xml",
+					"g2g.xml",
+					"gadget.xml"
+					
+					
+				];
+			}else{
+				fileOrders=[					
+					"g2g.xml",
+					"gadget.xml"
+				];
+			}
+			
+			
+			
+			
+			loadXmlConfig(sessionId, fileOrders);
 			
 			
 		}
@@ -56,7 +89,12 @@ package gadget.sync.incoming
 			return "Importing configuration file from server..."; 
 		}
 		
-		private function loadXmlConfig(sessionId:String, fileName:String, retry:Boolean = true):void{
+		private function loadXmlConfig(sessionId:String, fileOrders:Array):void{
+			if(fileOrders.length<0){
+				return;
+			}
+			var fileName:String = fileOrders.shift();
+			info("Importing "+fileName);
 			var pref:Object = readPrefs();
 			var strForwardSlash:String = pref.sodhost.charAt(pref.sodhost.length-1) == "/" ? "" : "/";			
 			
@@ -83,11 +121,9 @@ package gadget.sync.incoming
 			
 			loader.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
 				onError("Can not get configuration file '"+fileName+"' from server.", null);
-				if(retry){
-					
-					fileName = fileName.substr(0,fileName.lastIndexOf('_'))+".xml";
-					info("Importing "+fileName);
-					loadXmlConfig(sessionId,fileName,(fileName!="gadget.xml"));
+				if(fileOrders.length>0){
+					//var loadingFile:String = fileOrders.shift();					
+					loadXmlConfig(sessionId,fileOrders);
 				}else{					
 					onError("Could not read configuration file from server.", null);
 					setFailed();

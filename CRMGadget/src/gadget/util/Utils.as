@@ -3187,7 +3187,13 @@ package gadget.util {
 		}
 	}
 	
-
+	public static function ensureOracleId(oraId:String):String{
+		if(oraId=='No Match Row Id'){
+			oraId =null;
+		}
+		
+		return oraId;
+	}
 	
 	public static function generateId():String
 	{

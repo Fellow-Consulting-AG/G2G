@@ -1378,10 +1378,9 @@ package gadget.util {
 		
 		public static function getAllFilters(entity:String):ArrayCollection{
 			var userOwner:Object =  Database.allUsersDao.ownerUser();
-			
 			var filterList:ArrayCollection = Database.filterDao.listFiltersCriteria(entity);
 			filterList.filterFunction = function (item:Object):Boolean {
-				if(item.type == 0) return true; //show All {Entity} predefined filter
+				if(item.type == 0 || entity == Database.opportunityDao.entity+"_IMP") return true; //show All {Entity} predefined filter
 				
 				// VM --- >  bug #55
 				if(item.type == -3 && entity == Database.serviceDao.entity){
@@ -1437,7 +1436,7 @@ package gadget.util {
 				
 				filterName = filterName.indexOf('GLOBAL') == -1 ? filterName : i18n._(filterName);
 				filter.displayName = filterName.replace(ENTITY, Database.customLayoutDao.getPlural(entity));
-				if(filter.type==defaultFilter.type){
+				if(defaultFilter != null && filter.type==defaultFilter.type){
 					filter.isDefault=true;
 				}else{
 					filter.isDefault=false;

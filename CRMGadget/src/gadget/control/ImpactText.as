@@ -52,7 +52,10 @@ package gadget.control
 							total = total + val;
 						}
 					}
-					super.data[columnTarget] = total;
+					if(columnTarget != null){
+						super.data[columnTarget] = total;
+					}
+					
 					if(grid != null){
 						grid.invalidateList();
 					}

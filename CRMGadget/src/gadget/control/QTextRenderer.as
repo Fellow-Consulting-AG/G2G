@@ -33,7 +33,7 @@ package gadget.control
 		}
 		public function set focusOutHandler(f:Function):void{
 			
-			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f(columns,dataField)});
+			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f()});
 		}
 		private function onChange(e:Event):void{
 			if(column != null){

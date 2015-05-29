@@ -10,6 +10,7 @@
 		<![CDATA[
 			import gadget.control.ButtonAddRenderer;
 			import gadget.control.CalculateColRender;
+			import gadget.control.CalculateGridTotalRender;
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
@@ -257,10 +258,10 @@
 					{element_name:"CustomNumber0",display_name:"Quantity",properties:null},
 					{element_name:"CustomCurrency4",display_name:"Value",properties:null},
 					{element_name:"AnnualizedImpact",display_name:"Annualized impact"},
-					{element_name:"Q1",display_name:"Q1",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemQEditEndListener,dataField:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]])},editAble:true},
-					{element_name:"Q2",display_name:"Q2",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]])},editAble:true},
-					{element_name:"Q3",display_name:"Q3",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]])},editAble:true},
-					{element_name:"Q4",display_name:"Q4",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]])},editAble:true},
+					{element_name:"Q1",display_name:"Q1",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemEditEndListener,dataField:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]])},editAble:true},
+					{element_name:"Q2",display_name:"Q2",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemEditEndListener,columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]])},editAble:true},
+					{element_name:"Q3",display_name:"Q3",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemEditEndListener,columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]])},editAble:true},
+					{element_name:"Q4",display_name:"Q4",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemEditEndListener,columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]])},editAble:true},
 					{element_name:mapFields["Oct"],display_name:"Oct",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
 					{element_name:mapFields["Nov"],display_name:"Nov",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
 					{element_name:mapFields["Dec"],display_name:"Dec",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
@@ -360,26 +361,29 @@
 					col.labelFunction = objCol.labelFunction;
 					columns.push(col);
 				}
-
+				reloadData();
 				gridListAll.columns = columns;
-				rows = Database.opportunityDao.findAll(opp_columns);
-				rows.addItem({AnnualizedImpact:"Forecast total",isTotal:true});
-				rows.addItem({AnnualizedImpact:"Actual revenue",isTotal:true});
-				//calculateList(rows);
-				calculateCo7(rows);
+				
+				/*
 				if(rows == null){
 					rows = new ArrayCollection();
 					rows.addItem(createEmptyObject());
 				}else{
 					rows.addItemAt(createEmptyObject(),0);
 				}
-
-				gridListAll.addEventListener(KeyboardEvent.KEY_DOWN,keyEnterHandler);
+				*/
+				//gridListAll.addEventListener(KeyboardEvent.KEY_DOWN,keyEnterHandler);
 				
 //				rows.addItem({AnnualizedImpact:"Variance"});
 				//gridListAll.dataProvider = rows;
 			}
-			
+			public function reloadData():void{
+				rows = Database.opportunityDao.findAll(opp_columns);
+				rows.addItem({AnnualizedImpact:"Forecast total",isTotal:true});
+				rows.addItem({AnnualizedImpact:"Actual revenue",isTotal:true});
+				calculateList(rows);
+				
+			}
 			public static function cloneObject(ob:Object):Object{
 				var newObj:Object = new Object();
 				for(var key:String in ob){
@@ -387,67 +391,7 @@
 				}
 				return newObj;
 			}
-			private function calculateCo7(ls:ArrayCollection):void{
-				var listMapObject:ArrayCollection = new ArrayCollection();
-				
-				if(ls != null && ls.length>0){
-					for(var i:int=0;i<ls.length;i++){
-						var item:Object =ls[i];
-						var map:Object = new Object();
-						var relation:Object =Relation.getRelation(Database.customObject7Dao.entity,Database.opportunityDao.entity);;
-						if(relation!=null){
-							var dataPro:ArrayCollection = GUIUtils.getRelationList(relation, item);
-							var isChild:Boolean = false;
-							if(dataPro != null && dataPro.length>0){
-								var listCo7:ArrayCollection = new ArrayCollection();
-								for each(var co7:Object in dataPro){
-									var qty:int = parseInt(co7['CustomNumber0']);
-									var val:int = parseInt(co7['CustomCurrency4']);
-									var total:int =  val * qty;
-									item["CustomPickList31"] = co7['CustomPickList31'];
-									item["CustomPickList34"] = co7['CustomPickList34'];
-									item["CustomNumber0"] = qty;
-									item["CustomCurrency4"] = val;
-									item["AnnualizedImpact"] = total;
-									if(!isChild){
-										isChild = true;
-									}else{
-										var objClone:Object = cloneObject(item);
-										objClone["isChild"] = isChild;
-										listCo7.addItem(objClone);
-										
-										//ls.addItemAt(objClone,i);
-									}
-								}
-								if(listCo7.length>0){
-									map["index"] = i;
-									map["list"] = listCo7;
-									listMapObject.addItem(map)
-								}
-								
-								
-							}
-						}
-						
-					}
-					
-					// loop map to add co7
-					var count:int = 1;
-					if(listMapObject.length>0){
-						for(var j:int=0;j<listMapObject.length;j++){
-							var obj:Object = listMapObject[j];
-							var idex:int = parseInt(obj["index"]) + count;
-							var list:ArrayCollection = obj["list"] as ArrayCollection;
-							for each(var co:Object in list){
-								ls.addItemAt(co,idex);
-								count++;
-							}
-							
-						}
-					}
-					
-				}
-			}
+			
 			private function keyEnterHandler(evt:KeyboardEvent):void {
 				if(evt.keyCode == Keyboard.ENTER){
 					var lst:ArrayCollection = gridListAll.dataProvider as ArrayCollection;
@@ -486,8 +430,13 @@
 				var totalForeCast:int = 0;
 				var closed:int = 0;
 				var notClosed:int = 0;
+				var listMapObject:ArrayCollection = new ArrayCollection();
+				
+				
 				if(ls != null){
-					for each(var item:Object in ls){
+					for(var i:int=0;i<ls.length;i++){
+						var item:Object =ls[i];
+						var map:Object = new Object();
 						if(item.isTotal) continue;
 						var total:int = item.CurrentFYImpact==null?0:item.CurrentFYImpact;
 						totalForeCast = totalForeCast + total;
@@ -495,6 +444,54 @@
 							closed = closed + total;
 						}else{
 							notClosed = notClosed + total;
+						}
+						var relation:Object =Relation.getRelation(Database.customObject7Dao.entity,Database.opportunityDao.entity);;
+						if(relation!=null){
+							var dataPro:ArrayCollection = GUIUtils.getRelationList(relation, item);
+							var isChild:Boolean = false;
+							if(dataPro != null && dataPro.length>0){
+								var listCo7:ArrayCollection = new ArrayCollection();
+								for each(var co7:Object in dataPro){
+									var qty:int = parseInt(co7['CustomNumber0']);
+									var val:int = parseInt(co7['CustomCurrency4']);
+									var total:int =  val * qty;
+									item["CustomPickList31"] = co7['CustomPickList31'];
+									item["CustomPickList34"] = co7['CustomPickList34'];
+									item["CustomNumber0"] = qty;
+									item["CustomCurrency4"] = val;
+									item["AnnualizedImpact"] = total;
+									if(!isChild){
+										isChild = true;
+									}else{
+										var objClone:Object = cloneObject(item);
+										objClone["isChild"] = isChild;
+										listCo7.addItem(objClone);
+										
+										//ls.addItemAt(objClone,i);
+									}
+								}
+								if(listCo7.length>0){
+									map["index"] = i;
+									map["list"] = listCo7;
+									listMapObject.addItem(map)
+								}
+								
+								
+							}
+						}
+						
+					}			
+				}
+				// loop map to add co7
+				var count:int = 1;
+				if(listMapObject.length>0){
+					for(var j:int=0;j<listMapObject.length;j++){
+						var obj:Object = listMapObject[j];
+						var idex:int = parseInt(obj["index"]) + count;
+						var list:ArrayCollection = obj["list"] as ArrayCollection;
+						for each(var co:Object in list){
+							ls.addItemAt(co,idex);
+							count++;
 						}
 						
 					}
@@ -520,11 +517,7 @@
 				
 	
 			}
-			private function itemQEditEndListener(cols:ArrayCollection,dataField:String):void{
-				if(cols != null && dataField != null){
-					
-				}
-			}
+		
 			private function itemEditEndListener():void{
 				//				var grid:AdvancedDataGrid = e.currentTarget as AdvancedDataGrid;
 				//				var dataField:String = grid.columns[e.columnIndex].dataField;grid.editedItemRenderer.data
@@ -582,18 +575,20 @@
 				var columns:Array = new Array();
 				//				columns.push(createColumn("","Total"));
 				var renderer:ClassFactory = new ClassFactory(ImpactText);
-				renderer.properties= {focusOutHandler:itemEditEndGridTotalListener,restrict:'0-9.,',maxChars:20};
+				renderer.properties= {restrict:'0-9.,',maxChars:20};
 				columns.push(createColumn("FY 13/14 Target","FYTarget",true,renderer));
 				columns.push(createColumn("FY 13/14 Forecast","Forecast",false));
-				columns.push(createColumn("FY impact variance to target","variance",false));
+				var col:AdvancedDataGridColumn = createColumn("FY impact variance to target","variance",false);
+				col.itemRenderer = new ClassFactory(CalculateGridTotalRender);
+				columns.push(col);
 				columns.push(createColumn("FY impact, closed opportunities","closed",false));
 				columns.push(createColumn("FY impact, not-closed opportunities","notclosed",false));
 				gridTotal.columns = columns;
-				var arr:Array = Database.impactCalendarDao.fetch();
-				if(arr != null && arr.length>0){
-					gridTotal.dataProvider = new ArrayCollection(arr);
-				}
-				
+				//var arr:Array = Database.impactCalendarDao.fetch();
+				//if(arr != null && arr.length>0){
+					//gridTotal.dataProvider = new ArrayCollection(arr);
+				//}
+				calculateGridTotal(0,0,0);
 //				gridTotal.addEventListener(AdvancedDataGridEvent.ITEM_EDIT_END,itemEditEndGridTotalListener);
 				
 				//				gridTotal.rowCount = data.length;
@@ -758,8 +753,8 @@
 							}
 							
 						}
-						var newObj:Object = createEmptyObject();
-						lsItem.addItemAt(newObj,0);
+						//var newObj:Object = createEmptyObject();
+						//lsItem.addItemAt(newObj,0);
 						Database.commit();
 					}	
 				} 

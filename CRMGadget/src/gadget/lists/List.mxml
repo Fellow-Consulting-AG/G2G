@@ -280,7 +280,7 @@
 					boxImpactCalendar.addChild(impactCalendar);
 				}
 				
-				
+				impactCalendar.reloadData();
 				boxList.visible = false;
 				impactCalendar.list = this;
 				boxImpactCalendar.visible = true;

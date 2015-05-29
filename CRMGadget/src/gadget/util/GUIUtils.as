@@ -1057,7 +1057,7 @@ package gadget.util
 					{label:'CN Sales Manager',data:'AJTA-1IJJE5'},{label:'CN Sales Rep',data:'AJTA-1IJPPT'},{label:'CP Sales Rep',data:'AJTA-DUBAH'}]);
 			
 		}
-		private static function checkExistOpportunityCompetitorRelation(object:Object,objRes:Object):Boolean{
+		public static function checkExistOpportunityCompetitorRelation(object:Object,objRes:Object):Boolean{
 			var relation:Object = null;
 			if(object.relation){
 				if(object.relation.supportTable != null){

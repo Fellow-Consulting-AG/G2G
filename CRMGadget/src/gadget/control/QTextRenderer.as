@@ -10,63 +10,57 @@ package gadget.control
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 	import mx.controls.listClasses.BaseListData;
 
-	public class ImpactText extends TextInput
+	public class QTextRenderer extends TextInput
 	{
-		
 		private var _columns:ArrayCollection;
 		public var column:AdvancedDataGridColumn;
+		private var _dataField:String;
 		private var grid:AdvancedDataGrid = null;
-		private var _columnTarget:String;
-		public function ImpactText()
+		public function QTextRenderer()
 		{
 			addEventListener(Event.CHANGE,onChange);
 			super();
 		}
 
-		public function get columnTarget():String
+		public function get dataField():String
 		{
-			return _columnTarget;
+			return _dataField;
 		}
 
-		public function set columnTarget(value:String):void
+		public function set dataField(value:String):void
 		{
-			_columnTarget = value;
+			_dataField = value;
 		}
-
 		public function set focusOutHandler(f:Function):void{
 			
-			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f()});
+			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f(columns,dataField)});
 		}
-		
 		private function onChange(e:Event):void{
-			
-					
-					if(column != null){
-						var currentValEnter:int = parseInt(super.text,0);
-						super.data[column.dataField] = currentValEnter;
-					}
-					var total:int = 0;
+			if(column != null){
+				var q1:int = parseInt(super.text,0);
+				if(q1>0){
+					var val:Number = q1/3;
 					if(columns != null){
 						for each(var col:String in columns){
-							var val:int = parseInt(super.data[col],0);
-							total = total + val;
+							super.data[col] = val;
 						}
 					}
-					super.data[columnTarget] = total;
-					if(grid != null){
-						grid.invalidateList();
-					}
+				}
+				if(grid != null){
+					grid.invalidateList();
+				}
+			}
 		}
 		public function get columns():ArrayCollection
 		{
 			return _columns;
 		}
-		
+
 		public function set columns(value:ArrayCollection):void
 		{
 			_columns = value;
 		}
-		
+
 		override public function set data(value:Object):void
 		{
 			
@@ -87,5 +81,7 @@ package gadget.control
 				
 			}
 		}
+		
+		
 	}
 }

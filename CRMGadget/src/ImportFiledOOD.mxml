@@ -21,7 +21,7 @@
 			private var uri:String;
 			private var httpStatus:int;
 			private var sessionId:String; 
-			private static const FILE_NAME:String = 'gadget.xml';
+			private static const FILE_NAME:String = 'gadget.zip';
 			public var tmpPreferences:Object = new Object();
 			private function closeClick():void{
 				this.close();

@@ -32,7 +32,15 @@
 			private var filterSelectedIndices:Object = new Object();
 			
 			public function listFilters():void {
-				filterList = Utils.getAllFilters(list.entity);
+				
+				if(Database.opportunityDao.entity == list.entity && list.boxImpactCalendar.visible){
+					buttonBar.visible = false;
+					filterList = Utils.getAllFilters(list.entity+"_IMP");
+				}else{
+					buttonBar.visible = true;
+					filterList = Utils.getAllFilters(list.entity);
+				}
+				
 
 				filterGrid.dataProvider = filterList;
 				
@@ -216,7 +224,7 @@
 				</mx:DataGridColumn>
 			</mx:columns>		
 		</mx:DataGrid>	
-		<mx:ButtonBar itemClick="handleFilterBar(event)" width="100%">
+		<mx:ButtonBar itemClick="handleFilterBar(event)" id="buttonBar" width="100%">
 			<mx:dataProvider>
 				<mx:Object icon="@Embed('/assets/add.png')" toolTip="{i18n._('FILTERLIST_BUTTON_BAR_TOOL_TIP_NEW_FILTER')}" />
 				<mx:Object icon="@Embed('/assets/edit.png')" toolTip="{i18n._('FILTERLIST_BUTTON_BAR_TOOL_TIP_EDIT_FILTER')}" />

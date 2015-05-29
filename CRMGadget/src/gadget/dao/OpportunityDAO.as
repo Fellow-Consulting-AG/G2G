@@ -665,6 +665,22 @@ package gadget.dao
 			'IndexedShortText0',
 			'IndexedShortText1'
 		];
+		public function findAllWithCO7(columns:ArrayCollection):ArrayCollection {
+			
+			var cols:String = '';
+			for each (var column:Object in columns) {
+				cols += ", o." + column.element_name;
+			}
+			
+			stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",co.CustomPickList31,co.CustomPickList34,co.CustomNumber0,co.CustomCurrency4 FROM " + tableName + " as o LEFT OUTER JOIN sod_customobject7 as co ON o.OpportunityId = co.OpportunityId WHERE o.deleted != 1 LIMIT 1001";
+			exec(stmtFindAllWithCO7);
+			var result:SQLResult = stmtFindAllWithCO7.getResult();
+			if (result.data == null || result.data.length == 0) {
+				return new ArrayCollection();
+			}
+			return new ArrayCollection(result.data);
+		}
+		
 		override public function getOwnerFields():Array{
 			var mapfields:Array = [
 				{entityField:"OwnerFullName", userField:"FullName"},{entityField:"Owner", userField:"Alias"},{entityField:"OwnerId", userField:"Id"}

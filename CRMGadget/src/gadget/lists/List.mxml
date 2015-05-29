@@ -158,7 +158,7 @@
 			[Bindable] public var backHistory:Object;
 			[Bindable]private var isLstVisibleHomeTask:Boolean;
 			private var mapSortColHeader:Object = new Object();
-			
+			private var impactCalendar:ImpactCalendar = null;
 			//Bug #1728 CRO
 			public function showListTasks():void{
 				homeTask.visible = false;
@@ -273,18 +273,25 @@
 				return 1;
 			}
 			private function showImpactCalendar():void{
+				if(impactCalendar == null){
+					impactCalendar = new ImpactCalendar();
+					impactCalendar.list = this;
+//					impactCalendar.init();
+					boxImpactCalendar.addChild(impactCalendar);
+				}
+				
 				
 				boxList.visible = false;
-//				impactCalendar.list = this;
-				
+				impactCalendar.list = this;
 				boxImpactCalendar.visible = true;
-			
+				mainwindow.filterList.listFilters();
+				
 		
 			}
 			public function showHomeOpportunity():void{
 				boxList.visible = true;
 				boxImpactCalendar.visible = false;
-				
+				mainwindow.filterList.listFilters();
 			}
 			private function init():void {
 				//bug #1679 CRO add new tab
@@ -353,10 +360,7 @@
 					linkList.width = 0;
 					
 				}
-				var impactCalendar:ImpactCalendar = new ImpactCalendar();
 				
-				impactCalendar.list = this;
-				boxImpactCalendar.addChild(impactCalendar);
 			}
 			
 			
@@ -1720,7 +1724,13 @@
 				if (newFilter) {
 					filter = newFilter;
 				}
-				filterData(); 
+				if(newFilter.entity == Database.opportunityDao.entity+"_IMP"){
+					impactCalendar.filter = filter;
+					impactCalendar.showHideColumns();
+				}else{
+					filterData(); 
+				}
+				
 			}
 			
 			private const LINK_LIST_WIDTH:int = 264;
@@ -1828,7 +1838,7 @@
 				
 				buttons.addItem({label:i18n._(LIST_BUTTON_LABEL_EDIT_LAYOUT), icon:customIcon, disabled: disable_list_layout});
 				if(entity == Database.opportunityDao.entity){
-					//buttons.addItem({label:"Impact Calendar", icon:dailyIcon, disabled: false});
+					buttons.addItem({label:"Impact Calendar", icon:dailyIcon, disabled: false});
 					
 				}
 				// Add OrgChat

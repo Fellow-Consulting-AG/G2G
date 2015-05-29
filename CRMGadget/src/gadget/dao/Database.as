@@ -110,6 +110,7 @@ package gadget.dao {
 		private var _campaignDao:CampaignDAO;
 		private var _transactionDao:TransactionDAO;
 		private var _subSyncDao:SubSyncDAO;
+		private var _impactCalendarDao:ImpactCalendarDao;
 		private var _relationManagementDao:RelationManagementDAO;
 		private var _customObject1Dao:CustomObject1DAO;		
 		private var _opportunityTeamDao:OpportunityTeamDAO;
@@ -608,7 +609,9 @@ package gadget.dao {
 		public static function get subSyncDao():SubSyncDAO {
 			return database._subSyncDao;
 		}
-		
+		public static function get impactCalendarDao():ImpactCalendarDao {
+			return database._impactCalendarDao;
+		}
 		public static function get customObject1Dao():CustomObject1DAO{
 			return database._customObject1Dao;
 		}
@@ -1595,7 +1598,7 @@ package gadget.dao {
 			_salesStageDao = new SalesStageDAO(_sqlConnection);
 			_transactionDao = new TransactionDAO(_sqlConnection);
 			_subSyncDao = new SubSyncDAO(_sqlConnection,_work);
-			
+			_impactCalendarDao = new ImpactCalendarDao(_sqlConnection,_work);
 			_opportunityTeamDao = new OpportunityTeamDAO(_work,_sqlConnection);
 			_validationDao = new ValidationDAO(_sqlConnection, _work);
 			_processOpportunityDao = new ProcessOpportunityDAO(_sqlConnection);
@@ -3673,7 +3676,12 @@ package gadget.dao {
 			//delete sub objects which is not entity name
 			_subSyncDao.clean();
 		}
-		
+		private var objImpListFilter:Object = {entity:"Opportunity_IMP", filter:[
+			{type:-0, name: 'GLOBAL_CURRENT_FY_COMPACT'},
+			{type:-1, name: 'GLOBAL_CURRENT_FY_ALL_COLUMNS'},
+			{type:-2, name: 'GLOBAL_NEXT_FY_COMPACT'},
+			{type:-3, name: 'GLOBAL_NEXT_FY_ALL_COLUMNS'}
+		]};
 		private function YcheckDefaultFilter():void {
 			var stdFilters:Array = [
 				//CRO 17.01.2011 Bug #69
@@ -3717,6 +3725,25 @@ package gadget.dao {
 						type:	filt.type
 					});
 				}
+				
+				//check opportunity impact
+				for each(var objImpFilter:Object in objImpListFilter.filter){
+					var objImp:Object = _filterDao.getObjectFilter(objImpListFilter.entity,objImpFilter.type);
+					if (objImp!=null && objImp.name == objImpFilter.name)
+						continue;	//VAHI or delete for recreate?
+					
+					if (objImp!=null) {
+						_filterDao.delete_(objImp);
+					}
+					
+					_filterDao.insert({
+						name:	objImpFilter.name,
+						entity:	objImpListFilter.entity,
+						predefined: 1,
+						type:	objImpFilter.type
+					});
+				}
+				
 			}
 		}
 

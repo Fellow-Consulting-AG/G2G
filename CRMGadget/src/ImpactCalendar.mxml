@@ -8,7 +8,8 @@
 	>
 	<mx:Script>
 		<![CDATA[
-			import gadget.control.ButtonExpandRenderer;
+			import gadget.control.ButtonAddRenderer;
+			import gadget.control.CalculateColRender;
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
@@ -17,13 +18,16 @@
 			import gadget.control.LabelColRenderer;
 			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
+			import gadget.control.QTextRenderer;
 			import gadget.control.SubTableRenderer;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.lists.List;
 			import gadget.service.PicklistService;
 			import gadget.util.DateUtils;
+			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.Relation;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -33,12 +37,14 @@
 			import mx.controls.TextInput;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.core.UIComponent;
-			[Bindable] public var list:List;
+			
+			import spark.components.supportClasses.ItemRenderer;
+ 			private var _list:List;
 			[Embed(source='/assets/search.png')] [Bindable] public static var searchIcon:Class;
 			[Embed(source='/assets/cancel.png')] [Bindable] public var closeIcon:Class;
 			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
 			[Bindable] public var rows:ArrayCollection;
-		
+			[Bindable] public var filter:Object;
 			private var opp_columns:ArrayCollection = new ArrayCollection([
 				{element_name:"OwnerFullName"},
 				{element_name:"OpportunityType"},
@@ -46,9 +52,10 @@
 				{element_name:"CustomPickList0"},
 				{element_name:"SalesStage"},
 				{element_name:"Probability"},
+				{element_name:"CloseDate"},
 				{element_name:"ModifiedDate"},
 				{element_name:"gadget_id"},
-				
+				{element_name:"OpportunityId"},
 				{element_name:"CustomText0"},
 				{element_name:"CustomText1"},
 				{element_name:"CustomText2"},
@@ -73,20 +80,38 @@
 				{element_name:"CustomText21"},
 				{element_name:"CustomText22"},
 				{element_name:"CustomText23"},
+				{element_name:"local_update"},
+				{element_name:"deleted"},
+				{element_name:"sync_number"},
+				{element_name:"ood_lastmodified"},
 				{element_name:"AccountName"}
+				
+				
 			]);
 			
 			
 			private static var mapFields:Object ={Oct:"CustomText0",Nov:"CustomText1",Dec:"CustomText2",Jan:"CustomText3",Feb:"CustomText4",Mar:"CustomText5",Apr:"CustomText6",May:"CustomText7",Jun:"CustomText8",Jul:"CustomText9",Aug:"CustomText10",Sep:"CustomText11",
 				OctNext:"CustomText12",NovNext:"CustomText13",DecNext:"CustomText14",JanNext:"CustomText15",FebNext:"CustomText16",MarNext:"CustomText17",AprNext:"CustomText18",MayNext:"CustomText19",JunNext:"CustomText20",JulNext:"CustomText21",AugNext:"CustomText22",SepNext:"CustomText23"};
 
+			private static var calMonth:ArrayCollection =new ArrayCollection(["CustomText0","CustomText1","CustomText2","CustomText3","CustomText4","CustomText5","CustomText6","CustomText7","CustomText8","CustomText9","CustomText10","CustomText11"]);
 			
-			private function init():void{
+			[Bindable]
+			public function get list():List
+			{
+				return _list;
+			}
+
+			public function set list(value:List):void
+			{
+				_list = value;
+			}
+
+			public function init():void{
 				initGridListAllOpportunities();
 				initGridTotalAllOpportunities();
 				initGridProductDetails();
 			}
-			private  function createColumn(header:String,dataField:String,editAble:Boolean=false,renderer:ClassFactory=null,itemEditEndListener:Function=null):AdvancedDataGridColumn{
+			private  function createColumn(header:String,dataField:String,editAble:Boolean=false,renderer:ClassFactory=null):AdvancedDataGridColumn{
 				
 				
 				var col:AdvancedDataGridColumn = new AdvancedDataGridColumn();
@@ -97,14 +122,7 @@
 //					col.itemRenderer = renderer;
 					col.itemEditor = renderer;
 				}
-				if(editAble && renderer==null){
-					var render:ClassFactory = new ClassFactory(ImpactText);
-					if(itemEditEndListener != null){
-						render.properties={focusOutHandler:itemEditEndListener,restrict:'0-9.,',maxChars:20};
-					}
-					col.itemEditor = render;
-					
-				}
+				
 				return col;
 			}
 			
@@ -220,151 +238,215 @@
 				
 			}
 			
-			private var opp_columns:ArrayCollection = new ArrayCollection([
-					{element_name:"OwnerFullName"},
-				]);
-			private function initGridListAllOpportunities():void{				
+			private var all_columns:ArrayCollection = new ArrayCollection([
+					{element_name:"OwnerFullName",display_name:"TM Name",itemRenderer:null,properties:null},
+					{element_name:"OpportunityName",display_name:"Opportunity Name",itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
+					{element_name:"AccountName",display_name:"Account Name",itemEditor:new ClassFactory(ItemFinderColRender),properties:{'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
+					{element_name:"SalesStage",display_name:"Sales Stage",itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
+					{element_name:"Probability",display_name:"Probability %",itemEditor:null,properties:null,editAble:true},
+					{element_name:"CloseDate",display_name:"Close Date",itemEditor:new ClassFactory(DateColumnRenderer),properties:null,labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+					{element_name:"OriginalCloseDate",display_name:"Original close date",itemEditor:new ClassFactory(DateColumnRenderer),properties:null,labelFunction : displayDataTime,editAble:true,editorDataField:"selectedDate"},
+					{element_name:"CustomPickList0",display_name:"Business Area",itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+					{element_name:"Curvetype",display_name:"Curve type",itemEditor:null,properties:null},
+					{element_name:"Membership",display_name:"Membership",itemEditor:null,properties:null},
+					{element_name:"TradingPartner ",display_name:"Trading partner ",itemEditor:null,properties:null},
+					{element_name:"StartDate",display_name:"Start Date",itemEditor:new ClassFactory(DateColumnRenderer),properties:null,editAble:true,editorDataField:"selectedDate"},
+					{element_name:"EndDate",display_name:"End Date",itemEditor:new ClassFactory(DateColumnRenderer),properties:null,editAble:true,editorDataField:"selectedDate"},
+					{element_name:"CustomPickList31",display_name:"Category",properties:null},
+					{element_name:"CustomPickList34",display_name:"Unit",properties:null},
+					{element_name:"CustomNumber0",display_name:"Quantity",properties:null},
+					{element_name:"CustomCurrency4",display_name:"Value",properties:null},
+					{element_name:"AnnualizedImpact",display_name:"Annualized impact"},
+					{element_name:"Q1",display_name:"Q1",itemEditor:new ClassFactory(QTextRenderer),properties:{focusOutHandler:itemQEditEndListener,dataField:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]])},editAble:true},
+					{element_name:"Q2",display_name:"Q2",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]])},editAble:true},
+					{element_name:"Q3",display_name:"Q3",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]])},editAble:true},
+					{element_name:"Q4",display_name:"Q4",itemEditor:new ClassFactory(QTextRenderer),properties:{columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]])},editAble:true},
+					{element_name:mapFields["Oct"],display_name:"Oct",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Nov"],display_name:"Nov",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Dec"],display_name:"Dec",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q1",columns:new ArrayCollection([mapFields["Oct"],mapFields["Nov"],mapFields["Dec"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Jan"],display_name:"Jan",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q2",columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Feb"],display_name:"Feb",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q2",columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Mar"],display_name:"Mar",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q2",columns:new ArrayCollection([mapFields["Jan"],mapFields["Feb"],mapFields["Mar"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Apr"],display_name:"Apr",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q3",columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["May"],display_name:"May",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q3",columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Jun"],display_name:"Jun",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q3",columns:new ArrayCollection([mapFields["Apr"],mapFields["May"],mapFields["Jun"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Jul"],display_name:"Jul",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q4",columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Aug"],display_name:"Aug",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q4",columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:mapFields["Sep"],display_name:"Sep",itemEditor:new ClassFactory(ImpactText),properties:{focusOutHandler:itemEditEndListener,columnTarget:"Q4",columns:new ArrayCollection([mapFields["Jul"],mapFields["Aug"],mapFields["Sep"]]),restrict:'0-9.,',maxChars:20},editAble:true},
+					{element_name:"CurrentFYImpact",display_name:"Current FY Impact",itemRenderer:new ClassFactory(CalculateColRender),properties:{columns:calMonth}},
+					{element_name:"PreviousFYImpact",display_name:"Previous FY Impact",itemRenderer:null,properties:null},
+					{element_name:"ChangeVsLastFY",display_name:"Change vs last FY",itemRenderer:null,properties:null},
+					{element_name:"TotalCALLSCurrentQuarter",display_name:"Total CALLS current quarter",itemRenderer:null,properties:null},
+					{element_name:"Expenses",display_name:"Expenses",itemRenderer:null,properties:null},
+					{element_name:"ModifiedDate",display_name:"Modified Date",itemRenderer:null,properties:null},
+			]);
+			private var ignoreCurrentFY:Object ={"OriginalCloseDate":true,"Curvetype":true,"Membership":true,"TradingPartner":true,"PreviousFYImpact":true,"ChangeVsLastFY":true,"TotalCALLSCurrentQuarter":true,"Expenses":true,"ModifiedDate":true};
+			private var ignoreAllCompact:Object ={"PreviousFYImpact":true,"ChangeVsLastFY":true,"ChangeVsLastFY":true};		
+			
+			public function showHideColumns():void{
+				var columns:Array = gridListAll.columns;
+				var type:int = -1;
+				if(filter != null){
+					type = filter.type;
+				}
+				for each(var col:AdvancedDataGridColumn in columns){
+					var col_name:String = col.dataField;
+					var show:Boolean = true;
+					if(type == -0 || type == -2){
+						if(ignoreCurrentFY[col_name]){
+							show = false;
+						}
+					}else if(type == -3){
+						if(ignoreAllCompact[col_name]){
+							show = false;
+						}
+					}
+					col.visible = show;
+				}
+			}
+			public function initGridListAllOpportunities():void{				
 				var columns:Array = new Array();
 				var col:AdvancedDataGridColumn = null;
-				/*
+				
+				var type:int = -1;
+				if(filter != null){
+					type = filter.type;
+				}
 				col = createColumn("","ButtonRenderer",false);
-				col.itemRenderer = new ClassFactory(ButtonExpandRenderer);
-				col.width = 15;
+				var render:ClassFactory = new ClassFactory(ButtonAddRenderer);
+				render.properties = new Object();
+				render.properties["list"]=list;
+				col.itemRenderer = render;
+				col.width = 30;
 				columns.push(col);
 				
-				
-				col = createColumn("RM Name","ManagerFullName",false);
-				col.itemRenderer = new ClassFactory(LabelColRenderer);
-				col.labelFunction = labelRMFunction;
-				col.width = 160;
-				columns.push(col);
-				*/
-				columns.push(createColumn("TM Name","OwnerFullName",false));
-				/*
-				var optTypeRenderer:ClassFactory = new ClassFactory(ComboboxColRender);
-				optTypeRenderer.properties = {'entity':Database.opportunityDao.entity};
-				col = createColumn("Opportunity Type","OpportunityType",true,optTypeRenderer);
-				col.editorDataField = "selectedItem";
-				col.labelFunction = displayPicklistValue;
-				columns.push(col);
-				*/
-//				var sub_renderer:ClassFactory = new ClassFactory(SubTableRenderer);
-//				sub_renderer.properties = new Object();
-//				sub_renderer.properties["list"]= list;
-				
-				
-				
-				var renderer:ClassFactory = new ClassFactory(LinkButtonRevenueColRenderer);
-				renderer.properties = new Object();
-				renderer.properties["list"]= list;
-				col = createColumn("Opportunity Name","OpportunityName",true);
-				col.itemRenderer = renderer;
-//				col.labelFunction = labelToolTipFunction;
-				columns.push(col);
-				renderer = new ClassFactory(ItemFinderColRender);
-				renderer.properties = {'entity':Database.opportunityDao.entity};
-				col = createColumn("Account Name","AccountName",true,renderer);
-				col.width = 120;
-				col.editorDataField = "selectedItem";
-				columns.push(col);
-				
+				for each(var objCol:Object in all_columns){
+					var col_name:String = objCol.element_name;
+					if(type == -0 || type == -2){
+						if(ignoreCurrentFY[col_name]){
+							continue;
+						}
+					}else if(type == -3){
+						if(ignoreAllCompact[col_name]){
+							continue;
+						}
+					}
+					var renderer:ClassFactory =objCol.itemRenderer==null?objCol.itemEditor : objCol.itemRenderer;
+					var editAble:Boolean = objCol.editAble==null?false:objCol.editAble;
+					if(renderer != null && objCol.properties != null){
+						var objPro:Object = objCol.properties;
+						if(objPro.hasOwnProperty("list")){
+							renderer.properties = new Object();
+							renderer.properties["list"]= list;
+						}else{
+							renderer.properties= objCol.properties;
+						}
+						
+					}
+					if(objCol.itemEditor != null){
+						col = createColumn(objCol.display_name,col_name,editAble,renderer);
+					}else{
+						col = createColumn(objCol.display_name,col_name,editAble);
+						col.itemRenderer = renderer;
+					}
+					
+					
+					if(objCol.width != null){
+						col.width = objCol.width;
+					}
+					if(objCol.editorDataField != null){
+						col.editorDataField = objCol.editorDataField;
+					}
+					col.labelFunction = objCol.labelFunction;
+					columns.push(col);
+				}
 
-				renderer = new ClassFactory(ComboboxColRender);
-				renderer.properties = {'entity':Database.opportunityDao.entity};
-				col = createColumn("Sales Stage","SalesStage",true,renderer);
-//				col.labelFunction = getFieldDisplayName;
-//				col.editorDataField = "selectedItem";
-				col.editorDataField = "selectedItem";
-				columns.push(col);
-				columns.push(createColumn("Probability %","Probability",true));
-				var dateRenderer:ClassFactory = new ClassFactory(DateColumnRenderer);
-				col = createColumn("Close Date","CloseDate",true,dateRenderer);
-				col.editorDataField = "selectedDate";
-				col.labelFunction = displayDataTime;
-				columns.push(col);
-				dateRenderer = new ClassFactory(DateColumnRenderer);
-				col = createColumn("Original close date","OriginalCloseDate",true,dateRenderer);
-				col.editorDataField = "selectedDate";
-				col.labelFunction = displayDataTime;
-				columns.push(col);
-				renderer = new ClassFactory(ComboboxColRender);
-				renderer.properties = {'entity':Database.opportunityDao.entity};
-				col = createColumn("Business Area","CustomPickList0",true,renderer);
-				col.editorDataField = "selectedItem";
-				col.labelFunction = displayPicklistValue;
-				columns.push(col);
-				columns.push(createColumn("Curve Type","CurveType",false));
-				col = createColumn("Category","CustomPickList31",false);
-				col.itemRenderer = new ClassFactory(SubTableRenderer);
-//				col.width = 450;
-				columns.push(col);
-				col = createColumn("Unit","CustomPickList34",false);
-				col.itemRenderer = new ClassFactory(SubTableRenderer);
-//				col.width = 450;
-				columns.push(col);
-				col = createColumn("Quantity","CustomNumber0",false);
-				col.itemRenderer = new ClassFactory(SubTableRenderer);
-				columns.push(col);
-				col = createColumn("Value","CustomCurrency4",false);
-				col.itemRenderer = new ClassFactory(SubTableRenderer);
-				columns.push(col);
-				//columns.push(createColumn("Last FY impact","LastFYImpact",false));
-//				columns.push(createColumn("Annualized impact","AnnualizedImpact",true));
-				col = createColumn("Annualized impact","AnnualizedImpact",false);
-				renderer = new ClassFactory(SubTableRenderer);
-				renderer.properties = {'isCalculate':true,'columnCalculate':new ArrayCollection(["CustomCurrency4","Quantity"])};
-				col.itemRenderer = renderer;
-				columns.push(col);
-				
-				columns.push(createColumn("Oct",mapFields["Oct"],true,null,itemEditEndListener));
-				columns.push(createColumn("Nov",mapFields["Nov"],true,null,itemEditEndListener));
-				columns.push(createColumn("Dec",mapFields["Dec"],true,null,itemEditEndListener));
-				columns.push(createColumn("Jan",mapFields["Jan"],true,null,itemEditEndListener));
-				columns.push(createColumn("Feb",mapFields["Feb"],true,null,itemEditEndListener));
-				columns.push(createColumn("Mar",mapFields["Mar"],true,null,itemEditEndListener));
-				columns.push(createColumn("Apr",mapFields["Apr"],true,null,itemEditEndListener));
-				columns.push(createColumn("May",mapFields["May"],true,null,itemEditEndListener));
-				columns.push(createColumn("Jun",mapFields["Jun"],true,null,itemEditEndListener));
-				columns.push(createColumn("Jul",mapFields["Jul"],true,null,itemEditEndListener));
-				columns.push(createColumn("Aug",mapFields["Aug"],true,null,itemEditEndListener));
-				columns.push(createColumn("Sep",mapFields["Sep"],true,null,itemEditEndListener));
-				columns.push(createColumn("Current FY Impact","CurrentFYImpact",false));
-				columns.push(createColumn("Change vs last FY","ChangeVsLastFY",false));
-				columns.push(createColumn("Total CALLS current quarter","TotalCALLSCurrentQuarter",false));
-				columns.push(createColumn("Investments","Investments",true));
-				columns.push(createColumn("Modified Date","ModifiedDate",false));
-				columns.push(createColumn("Oct",mapFields["OctNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Nov",mapFields["NovNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Dec",mapFields["DecNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jan",mapFields["JanNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Feb",mapFields["FebNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Mar",mapFields["MarNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Apr",mapFields["AprNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("May",mapFields["MayNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jun",mapFields["JunNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Jul",mapFields["JulNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Aug",mapFields["AugNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Sep",mapFields["SepNext"],true,null,itemNextEditEndListener));
-				columns.push(createColumn("Next FY Impact","NextFYImpact",false));
-				
 				gridListAll.columns = columns;
 				rows = Database.opportunityDao.findAll(opp_columns);
 				rows.addItem({AnnualizedImpact:"Forecast total",isTotal:true});
 				rows.addItem({AnnualizedImpact:"Actual revenue",isTotal:true});
-				calculateList(rows);
+				//calculateList(rows);
+				calculateCo7(rows);
 				if(rows == null){
 					rows = new ArrayCollection();
 					rows.addItem(createEmptyObject());
 				}else{
 					rows.addItemAt(createEmptyObject(),0);
 				}
-				
-				
-				
+
 				gridListAll.addEventListener(KeyboardEvent.KEY_DOWN,keyEnterHandler);
 				
 //				rows.addItem({AnnualizedImpact:"Variance"});
-				gridListAll.dataProvider = rows;
+				//gridListAll.dataProvider = rows;
+			}
+			
+			public static function cloneObject(ob:Object):Object{
+				var newObj:Object = new Object();
+				for(var key:String in ob){
+					newObj[key] = ob[key];
+				}
+				return newObj;
+			}
+			private function calculateCo7(ls:ArrayCollection):void{
+				var listMapObject:ArrayCollection = new ArrayCollection();
+				
+				if(ls != null && ls.length>0){
+					for(var i:int=0;i<ls.length;i++){
+						var item:Object =ls[i];
+						var map:Object = new Object();
+						var relation:Object =Relation.getRelation(Database.customObject7Dao.entity,Database.opportunityDao.entity);;
+						if(relation!=null){
+							var dataPro:ArrayCollection = GUIUtils.getRelationList(relation, item);
+							var isChild:Boolean = false;
+							if(dataPro != null && dataPro.length>0){
+								var listCo7:ArrayCollection = new ArrayCollection();
+								for each(var co7:Object in dataPro){
+									var qty:int = parseInt(co7['CustomNumber0']);
+									var val:int = parseInt(co7['CustomCurrency4']);
+									var total:int =  val * qty;
+									item["CustomPickList31"] = co7['CustomPickList31'];
+									item["CustomPickList34"] = co7['CustomPickList34'];
+									item["CustomNumber0"] = qty;
+									item["CustomCurrency4"] = val;
+									item["AnnualizedImpact"] = total;
+									if(!isChild){
+										isChild = true;
+									}else{
+										var objClone:Object = cloneObject(item);
+										objClone["isChild"] = isChild;
+										listCo7.addItem(objClone);
+										
+										//ls.addItemAt(objClone,i);
+									}
+								}
+								if(listCo7.length>0){
+									map["index"] = i;
+									map["list"] = listCo7;
+									listMapObject.addItem(map)
+								}
+								
+								
+							}
+						}
+						
+					}
+					
+					// loop map to add co7
+					var count:int = 1;
+					if(listMapObject.length>0){
+						for(var j:int=0;j<listMapObject.length;j++){
+							var obj:Object = listMapObject[j];
+							var idex:int = parseInt(obj["index"]) + count;
+							var list:ArrayCollection = obj["list"] as ArrayCollection;
+							for each(var co:Object in list){
+								ls.addItemAt(co,idex);
+								count++;
+							}
+							
+						}
+					}
+					
+				}
 			}
 			private function keyEnterHandler(evt:KeyboardEvent):void {
 				if(evt.keyCode == Keyboard.ENTER){
@@ -405,38 +487,19 @@
 				var closed:int = 0;
 				var notClosed:int = 0;
 				if(ls != null){
-					
 					for each(var item:Object in ls){
 						if(item.isTotal) continue;
-						var octVal:int =isNext? item[mapFields["OctNext"]] : item[mapFields["Oct"]]; 
-						var novVal:int = isNext? item[mapFields["NovNext"]] : item[mapFields["Nov"]];
-						var decVal:int = isNext? item[mapFields["DecNext"]] : item[mapFields["Dec"]];
-						var janVal:int = isNext? item[mapFields["JanNext"]] : item[mapFields["Jan"]];
-						var febVal:int = isNext? item[mapFields["FebNext"]] : item[mapFields["Feb"]];
-						var marVal:int = isNext? item[mapFields["MarNext"]] : item[mapFields["Mar"]];
-						var aprVal:int = isNext? item[mapFields["AprNext"]] : item[mapFields["Apr"]];
-						var mayVal:int = isNext? item[mapFields["MayNext"]] : item[mapFields["May"]];
-						var junVal:int = isNext? item[mapFields["JunNext"]] : item[mapFields["Jun"]];
-						var julVal:int = isNext? item[mapFields["JulNext"]] : item[mapFields["Jul"]];
-						var augVal:int = isNext? item[mapFields["AugNext"]] : item[mapFields["Aug"]];
-						var sepVal:int = isNext? item[mapFields["SepNext"]] : item[mapFields["Sep"]];
-						var total:int = octVal + novVal + decVal + janVal + febVal + marVal + aprVal + mayVal + junVal + julVal + augVal + sepVal; 
+						var total:int = item.CurrentFYImpact==null?0:item.CurrentFYImpact;
 						totalForeCast = totalForeCast + total;
-						if(isNext){
-							item.NextFYImpact = total;
+						if(item.SalesStage == SalesStageUtils.getCloseLostValue() || item.SalesStage == SalesStageUtils.getCloseWonValue()){
+							closed = closed + total;
 						}else{
-							if(item.SalesStage == SalesStageUtils.getCloseLostValue() || item.SalesStage == SalesStageUtils.getCloseWonValue()){
-								closed = closed + total;
-							}else{
-								notClosed = notClosed + total;
-							}
-							item.CurrentFYImpact = total;
-							calculateGridTotal(closed,notClosed,totalForeCast);
+							notClosed = notClosed + total;
 						}
 						
 					}
-			
 				}
+				calculateGridTotal(closed,notClosed,totalForeCast);
 				
 			}
 			private function calculateGridTotal(closed:int,notClosed:int,curImpact:int):void{
@@ -444,7 +507,8 @@
 				if(lstTotal != null && lstTotal.length>0){
 					var obj:Object = lstTotal[0];
 					obj.Forecast = curImpact;
-					obj.variance = obj.FYTarget - curImpact;
+					var fy:int = obj.FYTarget == null?0:obj.FYTarget;
+					obj.variance = fy - curImpact;
 					obj.closed = closed
 					obj.notclosed = notClosed
 					lstTotal.refresh();
@@ -455,6 +519,11 @@
 				}
 				
 	
+			}
+			private function itemQEditEndListener(cols:ArrayCollection,dataField:String):void{
+				if(cols != null && dataField != null){
+					
+				}
 			}
 			private function itemEditEndListener():void{
 				//				var grid:AdvancedDataGrid = e.currentTarget as AdvancedDataGrid;
@@ -506,12 +575,15 @@
 				var arrLst:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 				var item:Object = arrLst[0];
 				item["variance"] = Number(item.FYTarget) - item.Forecast;
+				arrLst.refresh();
 			}
 			private  function initGridTotalAllOpportunities():void{
 				
 				var columns:Array = new Array();
 				//				columns.push(createColumn("","Total"));
-				columns.push(createColumn("FY 13/14 Target","FYTarget",true,null,itemEditEndGridTotalListener));
+				var renderer:ClassFactory = new ClassFactory(ImpactText);
+				renderer.properties= {focusOutHandler:itemEditEndGridTotalListener,restrict:'0-9.,',maxChars:20};
+				columns.push(createColumn("FY 13/14 Target","FYTarget",true,renderer));
 				columns.push(createColumn("FY 13/14 Forecast","Forecast",false));
 				columns.push(createColumn("FY impact variance to target","variance",false));
 				columns.push(createColumn("FY impact, closed opportunities","closed",false));
@@ -557,44 +629,67 @@
 				list.showHomeOpportunity();
 			}
 			private function filterDataGridResult(item:Object):Boolean {
-			
+				if(item == null) return false;
+				
+				trace("-------------- Opp Name : " + item["OpportunityName"]);
+				
+				
 				var where:String = "";
 				var map:Object = new Object();
 				if(txtAccountName.text != ""){
-					if(item["AccountName"] != null){
-						map["AccountName"]=txtAccountName.text;
-					}
+					map["AccountName"]=txtAccountName.text;
 				}
 				if(cboBusinessArea.selectedItem != "" && cboBusinessArea.selectedItem.data != ""){
-					if(item["CustomPickList0"] != null){
-						map["CustomPickList0"]=cboBusinessArea.selectedItem.data;
-					}
+					map["CustomPickList0"]=cboBusinessArea.selectedItem.data;
 				}
 				if(txtTerritory.text != ""){
-					if(item["OwnerFullName"] != null){
-						map["OwnerFullName"]= txtTerritory.text;
-					}
-					
+					map["OwnerFullName"]= txtTerritory.text;
 				}
 				if(cboCategory.selectedItem != null && cboCategory.selectedItem.data != ""){
-					if(item["Category"] != null){
-						map["Category"]= cboCategory.selectedItem.data;
-					}
+					map["CustomPickList31"]= cboCategory.text;
 				}
-				if(cboSalesStage.selectedItem != null && cboSalesStage.selectedItem.data != ""){
-					if(item["SalesStage"] != null){
-						map["SalesStage"]=cboSalesStage.selectedItem.data;
-					}
+				if(cboSalesStage.selectedItem != null && cboSalesStage.selectedItem.data != "" && item["SalesStage"] != null){
+					map["SalesStage"]=cboSalesStage.selectedItem.data;
 				}
 				if(dtCloseDate.selectedDate != null){
-					if(item["CloseDate"] != null){
-						map["CloseDate"]=dtCloseDate.selectedDate.getTime();
-					}
+					map["CloseDate"]= DateUtils.format(dtCloseDate.selectedDate, DateUtils.DATABASE_DATE_FORMAT);
 				}
+				
 				var found:Boolean = true;
 				for(var key:String in map){
-					var value:String = item[key];
 					var textCompare:String = map[key];
+					/*if("CustomPickList31" == key){
+						var listCategory:ArrayCollection = null;
+						if( item.hasOwnProperty(SubTableRenderer.RELATION)){
+							listCategory = item[SubTableRenderer.RELATION] as ArrayCollection;
+						}else{
+							var relation:Object =Relation.getRelation(Database.customObject7Dao.entity,Database.opportunityDao.entity);;
+							if(relation!=null){
+								listCategory = GUIUtils.getRelationList(relation, item);
+//								item[SubTableRenderer.RELATION] = listCategory;
+							}
+							
+						}
+						
+						found = false;
+						if(listCategory != null && listCategory.length>0){
+							for each(var objCategory:Object in listCategory){
+								var data:String = objCategory["CustomPickList31"];
+								if(data.toLowerCase().indexOf(textCompare.toLowerCase()) != -1){
+									found = true;
+									break;
+								}
+							}
+						}
+						if(found){
+							continue;
+						}else{
+							break;
+						}
+						
+					}*/
+					var value:String = item[key];
+					
 					if(value != null && value.toLowerCase().indexOf(textCompare.toLowerCase()) != -1){
 						found = true;
 					}else{
@@ -610,9 +705,9 @@
 			
 			private function advanceSearch():void{
 				
-				
 				rows.filterFunction = filterDataGridResult;
 				rows.refresh();
+				
 				
 				
 			}
@@ -623,24 +718,33 @@
 					var lsItem:ArrayCollection = gridListAll.dataProvider as ArrayCollection;
 					if(lsItem != null){
 						for each(var item:Object in lsItem){
-							if(item.isTotal || item.isNew){
+							if(item.isTotal){
 								continue;
 							}
 							var cloneItem:Object = new Object();
+							var listField:Array = new Array();
 							for each(var objField:Object in opp_columns){
 								cloneItem[objField.element_name] = item[objField.element_name];
+								listField.push(objField.element_name);
 							}
 							if(StringUtils.isEmpty(item.gadget_id)){
 								Database.opportunityDao.insert(cloneItem);
 								var objLast:Object = Database.opportunityDao.selectLastRecord()[0];
 								var oidName:String = DAOUtils.getOracleId(Database.opportunityDao.entity);
 								item.gadget_id =  objLast.gadget_id;
-								cloneItem .gadget_id =  objLast.gadget_id;
+								cloneItem.gadget_id =  objLast.gadget_id;
+								cloneItem.local_update = new Date().getTime();
+								cloneItem.deleted = 0;
+								item[oidName] = "#" + item.gadget_id;
 								cloneItem[oidName] = "#" + item.gadget_id;
 								Database.opportunityDao.update(cloneItem);
+								item.isNew = false;
+							}else{
+								Database.opportunityDao.update(cloneItem);
 							}
-							Database.opportunityDao.update(cloneItem);
+							
 						}
+						
 						var total:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 						if(total != null){
 							var objTotal:Object = total[0];
@@ -648,9 +752,9 @@
 							newTotal.FYTarget = objTotal.newTotal;
 							newTotal.gadget_id = objTotal.gadget_id;
 							if(StringUtils.isEmpty(newTotal.gadget_id)){
-								Database.impactCalendarDao.insert(newTotal);
+							//	Database.impactCalendarDao.insert(newTotal);
 							}else{
-								Database.impactCalendarDao.update(newTotal,{gadget_id:newTotal.gadget_id});
+								//Database.impactCalendarDao.update(newTotal,{gadget_id:newTotal.gadget_id});
 							}
 							
 						}
@@ -669,7 +773,12 @@
 			private function openProductRevenue():void{
 				var data:Object = gridTotal.selectedItem;
 			}
-			
+			protected function clearDate(event:MouseEvent):void
+			{
+				dtCloseDate.selectedDate = null;
+				dtCloseDate.text = "";
+				advanceSearch();
+			}
 		]]>
 	</mx:Script>
 		<mx:VBox left="8" right="8" width="100%" height="100%">
@@ -685,31 +794,35 @@
 			<mx:HBox width="100%">
 				<mx:VBox>
 					<mx:Label text="Account Name"/>
-					<mx:TextInput id="txtAccountName" change="advanceSearch()" width="100"/>
+					<mx:TextInput id="txtAccountName" change="advanceSearch()" width="130"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Business Area"/>
-					<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'CustomPickList0')}" change="advanceSearch()" width="100"/>
+					<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'CustomPickList0')}" change="advanceSearch()" width="130"/>
 				</mx:VBox> 
 				<mx:VBox>
 					<mx:Label text="Sales Stage"/>
-					<mx:ComboBox dataProvider="{Utils.getSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="100"/>
+					<mx:ComboBox dataProvider="{Utils.getSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="130"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Close Date "/>
-					<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
+					<mx:HBox>
+						<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
+						<mx:LinkButton icon="{ImageUtils.deleteIcon}" height="100%" click="clearDate(event)"/>
+					</mx:HBox>
+					
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Category"/>
-					<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="100"/>
+					<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="130"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label text="Territory"/>
-					<mx:TextInput id="txtTerritory" change="advanceSearch()" width="100"/>
+					<mx:TextInput id="txtTerritory" change="advanceSearch()" width="130"/>
 				</mx:VBox>
 			</mx:HBox>
 			<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
-				<mx:AdvancedDataGrid height="100%" editable="true" verticalScrollPolicy="auto" id="gridListAll"/>
+				<mx:AdvancedDataGrid height="100%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
 			</mx:Canvas>
 		</mx:VBox>
 		

@@ -25,6 +25,7 @@ package gadget.dao
 		private var stmtUpdateByFieldRelation:SQLStatement;
 		private var stmtUpdateByField:SQLStatement;
 		private var stmtFindAll:SQLStatement;
+		protected var stmtFindAllWithCO7:SQLStatement;
 		private var stmtFindByOID:SQLStatement;
 		private var stmtInsert:SQLStatement;
 		private var stmtUpdate:SQLStatement;
@@ -128,7 +129,9 @@ package gadget.dao
 			// Find all the items, used in lists
 			stmtFindAll = new SQLStatement();
 			stmtFindAll.sqlConnection = sqlConnection;
-			
+			// Find all opportunities related with cutom object 7
+			stmtFindAllWithCO7 = new SQLStatement();
+			stmtFindAllWithCO7.sqlConnection = sqlConnection;
 			// Find by Oracle CRM Id
 			stmtFindByOID = new SQLStatement();
 			stmtFindByOID.sqlConnection = sqlConnection;

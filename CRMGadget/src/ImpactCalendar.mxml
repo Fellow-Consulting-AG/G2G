@@ -8,6 +8,10 @@
 	>
 	<mx:Script>
 		<![CDATA[
+			import com.as3xls.xls.Cell;
+			import com.as3xls.xls.ExcelFile;
+			import com.as3xls.xls.Sheet;
+			
 			import gadget.control.ButtonAddRenderer;
 			import gadget.control.CalculateColRender;
 			import gadget.control.CalculateGridTotalRender;
@@ -35,6 +39,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.AdvancedDataGrid;
+			import mx.controls.Alert;
 			import mx.controls.TextInput;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.core.UIComponent;
@@ -438,12 +443,12 @@
 						var item:Object =ls[i];
 						var map:Object = new Object();
 						if(item.isTotal) continue;
-						var total:int = item.CurrentFYImpact==null?0:item.CurrentFYImpact;
-						totalForeCast = totalForeCast + total;
+						var totalFy:int = item.CurrentFYImpact==null?0:item.CurrentFYImpact;
+						totalForeCast = totalForeCast + totalFy;
 						if(item.SalesStage == SalesStageUtils.getCloseLostValue() || item.SalesStage == SalesStageUtils.getCloseWonValue()){
 							closed = closed + total;
 						}else{
-							notClosed = notClosed + total;
+							notClosed = notClosed + totalFy;
 						}
 						var relation:Object =Relation.getRelation(Database.customObject7Dao.entity,Database.opportunityDao.entity);;
 						if(relation!=null){
@@ -774,12 +779,119 @@
 				dtCloseDate.text = "";
 				advanceSearch();
 			}
+			
+			private function exportToExcel():void
+			{
+				//windowedapplication1_creationCompleteHandler(null);
+				//var templet:ByteArray =  new xls_templet();
+				var xls:ExcelFile = new ExcelFile();
+				//xls.loadFromByteArray(templet);
+				var sheet:Sheet = new Sheet();
+				var cols:Array = gridListAll.columns;
+				var list:ArrayCollection = gridListAll.dataProvider as ArrayCollection;
+				sheet.resize(list.length+1,cols.length);
+				xls.sheets.addItem(sheet);
+				//var sheet:Sheet = excelFile.sheets[0];
+				var noOfRows:int;
+				var noOfColumns:int;
+				if(sheet!=null)
+				{
+					noOfRows=sheet.rows;
+					noOfColumns = 3;
+					
+					
+					for(var i:int =1;i<cols.length;i++){
+						var colHeader:AdvancedDataGridColumn = cols[i] as AdvancedDataGridColumn;
+						var header:String = colHeader.headerText;
+						sheet.setCell(row, i-1, header);
+					}
+					for(var row:int = 0; row<list.length;row++)
+					{
+						var item:Object = list[row];
+						
+						for(var j:int =1;j<cols.length;j++){
+							var col:AdvancedDataGridColumn = cols[j] as AdvancedDataGridColumn;
+							var dataField:String = col.dataField;
+							var val:String = item[dataField]==null?"":item[dataField]+"";
+							sheet.setCell(row+1, j-1, val);
+							//var cell:Cell = sheet.getCell(row+1, j-1);
+							
+						}
+						
+					} //for loop ends
+					
+					//	var exp:ExcelFile = new ExcelFile();
+					//	exp.sheets.addItem(sheet);
+					//sheet.values.dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REFRESH));
+					
+					var bytes: ByteArray = xls.saveToByteArray();
+					//var fr:FileReference = new FileReference();
+					//	fr.save(bytes,"SampleExport.xls");
+					
+					
+					var f:File = new File();
+					
+					f.addEventListener(Event.SELECT, function (event:Event):void{
+						var file:File = event.currentTarget as File;
+						if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".xls"); // Bug #543
+						var strStyle:String = "black";
+						var showText:String = "SUCCESSFULLY";
+						if(file!=null){
+							if(file.extension != null && (file.extension.toLowerCase()=="xls" || file.extension.toLowerCase()=="xlsx")){
+								var fileStream:FileStream = new FileStream();
+								fileStream.open(file, FileMode.WRITE);
+								
+								
+								//var gzEncoder:GZIPEncoder = new GZIPEncoder();
+								//var xmlName:String = file.name;
+								//	var fzip:FZip = new FZip(file.nativePath);
+								//fzip.addFile(xmlName.replace(".zip",".xml"),bytes);
+								var ba:ByteArray = new ByteArray(); 
+								//fzip.serialize(ba) ;
+								ba.position = 0; 
+								
+								fileStream.writeBytes(bytes);
+								fileStream.close();
+								/*
+								var zipEntry:ZipEntry = new ZipEntry(file.nativePath);
+								var zipOUt:ZipOutput = new ZipOutput();
+								zipOUt.putNextEntry(zipEntry);
+								zipOUt.write(bytes);
+								zipOUt.finish();
+								zipOUt.closeEntry();
+								*/
+								//gzEncoder.compressToFile(zipOUt.byteArray,file);
+								
+							} else {
+								
+								strStyle = "red";
+								showText = 'PREFERENCES_STRING_FILE_NAME_SHOULD_HAVE_XLS_EXTENSION';
+							}
+							finishExport(showText);
+						}
+						
+					});
+					//					f.addEventListener(Event.SELECT, exportFileSelectedHandler);
+					f.addEventListener(IOErrorEvent.IO_ERROR, exportErrorHandler);
+					f.addEventListener(SecurityErrorEvent.SECURITY_ERROR, exportErrorHandler);
+					f.browseForSave("Open Excel File");
+				}
+				
+			}
+			private function finishExport(showText:String):void{
+				Alert.show(showText,"", Alert.YES, this);
+			}
+			private function exportErrorHandler(event:ProgressEvent):void
+			{
+				Alert.show("Error while saving Excel file!");
+			}
+			
 		]]>
 	</mx:Script>
 		<mx:VBox left="8" right="8" width="100%" height="100%">
 			<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
 				<mx:LinkButton label="Normal Mode"  click="list.showHomeOpportunity()" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
-				<mx:LinkButton icon="{ImageUtils.excelIcon}" label="Export Excel" />
+				<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="Export Excel" />
 				<mx:LinkButton icon="{closeIcon}" label="Cancel"/>
 				<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="Save"/>
 			</mx:HBox>

@@ -15,7 +15,7 @@ package gadget.control
 		
 		
 		public var column:AdvancedDataGridColumn;
-		private var grid:AdvancedDataGrid = null;		
+		protected var grid:AdvancedDataGrid = null;		
 		public function ImpactText()
 		{
 			addEventListener(Event.CHANGE,onChange);
@@ -28,7 +28,7 @@ package gadget.control
 			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f()});
 		}
 		
-		private function onChange(e:Event):void{
+		protected function onChange(e:Event):void{
 			
 					
 					if(column != null){
@@ -41,6 +41,8 @@ package gadget.control
 								super.data[fields[0]]=q;
 							}
 							q[fields[1]]=super.text;
+						}else{
+							super.data[fields]=super.text;
 						}
 						
 						

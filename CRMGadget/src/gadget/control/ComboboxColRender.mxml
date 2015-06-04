@@ -60,7 +60,22 @@
 			}
 			private function itemChange(event:Event):void{
 				if(data!=null && column!=null && cborender.selectedItem != null){
-					this.data[column.dataField] = cborender.selectedItem.data + "";				
+					this.data[column.dataField] = cborender.selectedItem.data + "";		
+					if("SalesStage" == column.dataField){
+						this.data['Probability']=cborender.selectedItem.probability;
+						var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;
+						var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
+						if(grid is MyAdvancedDataGrid){							
+							for(var i:int=0;i<grid.columnCount;i++){
+								var c:AdvancedDataGridColumn = grid.columns[i];
+								if(c.dataField=='Probability'){
+									MyAdvancedDataGrid(grid).refreshCell(list.rowIndex,i);
+									break;
+								}
+							}
+							
+						}
+					}
 				}
 			}
 			public function get selectedItem():Object{

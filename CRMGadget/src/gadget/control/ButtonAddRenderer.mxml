@@ -126,7 +126,7 @@
 				*/
 				
 				var isVisible:Boolean = true;
-				if(item.isChild || item.isNew || item.isTotal){
+				if(item.isChild || item.isNew || item.isTotal || !item.editable){
 					isVisible = false;
 				}
 				

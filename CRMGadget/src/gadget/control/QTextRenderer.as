@@ -12,9 +12,8 @@ package gadget.control
 
 	public class QTextRenderer extends TextInput
 	{
-		private var _columns:ArrayCollection;
-		public var column:AdvancedDataGridColumn;
-		private var _dataField:String;
+		
+		public var column:AdvancedDataGridColumn;		
 		private var grid:AdvancedDataGrid = null;
 		public function QTextRenderer()
 		{
@@ -22,54 +21,39 @@ package gadget.control
 			super();
 		}
 
-		public function get dataField():String
-		{
-			return _dataField;
-		}
-
-		public function set dataField(value:String):void
-		{
-			_dataField = value;
-		}
+	
 		public function set focusOutHandler(f:Function):void{
 			
 			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f()});
 		}
+		
+		public function get quater():Object{
+			return super.data[column.dataField];
+		}
+		
 		private function onChange(e:Event):void{
 			if(column != null){
+				var quater:Object = super.data[column.dataField];
+				if(quater==null||quater==''){
+					quater = new Object();
+					super.data[column.dataField] = quater;
+				}
 				var q1:int = parseInt(super.text,0);
 				if(q1>0){
 					var val:Number = q1/3;
-					if(columns != null){
-						for each(var col:String in columns){
-							super.data[col] = val;
-						}
-					}
+					for each(var f:String in ImpactCalendar.MONTH_FIELD_FOR_EACH_Q){
+						
+						quater[f]=val.toFixed(2);
+					}					
 				}
-				if(grid != null){
-					grid.invalidateList();
+				if(grid is MyAdvancedDataGrid){
+					MyAdvancedDataGrid(grid).refreshRow(super.listData.rowIndex);
 				}
 			}
 		}
-		public function get columns():ArrayCollection
-		{
-			return _columns;
-		}
-
-		public function set columns(value:ArrayCollection):void
-		{
-			_columns = value;
-		}
-
-		override public function set data(value:Object):void
-		{
-			
-			super.data = value;
-		}
-		
+	
 		override public function set listData(value:BaseListData):void
-		{
-			// TODO Auto Generated method stub
+		{			
 			super.listData = value;
 			if(value!=null){
 				grid = value.owner as AdvancedDataGrid;

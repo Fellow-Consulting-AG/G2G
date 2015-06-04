@@ -466,7 +466,13 @@ package gadget.sync.incoming {
 							if(searchSpec !=''){
 								searchSpec+=' AND ';
 							}
-							searchSpec+="["+oodField+"] "+ childValue;
+							if(operator=="&lt;>"){
+								//ood cannot handle null with different criteria
+								searchSpec+="(["+oodField+"] "+ childValue +" OR ["+oodField+"] IS NULL)";
+							}else{
+								searchSpec+="["+oodField+"] "+ childValue;
+							}
+							
 						}else{
 							isFormulaError=true;						
 						}

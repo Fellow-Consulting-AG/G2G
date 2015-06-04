@@ -2414,8 +2414,15 @@ package gadget.util {
 		}
 		
 		public static function getSalesStage():ArrayCollection {
+			var cache:CacheUtils = new CacheUtils("picklist");
+			
+			
+			var picklist:ArrayCollection = cache.get("getSalesStage")as ArrayCollection;
+			if(picklist!=null){
+				return picklist;
+			}
 			var roleName:String = Database.rightDAO.getRole();
-			var picklist:ArrayCollection = new ArrayCollection();
+			picklist = new ArrayCollection();
 			var tmp:ArrayCollection ;
 			picklist.addItem({data:"", label:""});
 			if(!StringUtils.isEmpty(roleName)){
@@ -2431,6 +2438,7 @@ package gadget.util {
 			for each (var stage:Object in tmp) {
 				picklist.addItem({data: stage.name, other: "SalesStageId", key: stage.id, label: stage.name, probability: stage.probability, category: stage.sales_category_name});
 			}
+			cache.put("getSalesStage",picklist);
 			return picklist;
 		}
 		

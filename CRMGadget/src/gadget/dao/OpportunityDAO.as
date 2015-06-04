@@ -1,8 +1,18 @@
 package gadget.dao
 {
+	import com.adobe.protocols.dict.Dict;
+	
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.errors.SQLError;
+	import flash.utils.Dictionary;
+	
+	import flex.lang.reflect.Field;
+	
+	import gadget.service.UserService;
+	import gadget.util.StringUtils;
+	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -665,21 +675,120 @@ package gadget.dao
 			'IndexedShortText0',
 			'IndexedShortText1'
 		];
-		public function findAllWithCO7(columns:ArrayCollection):ArrayCollection {
-			
-			var cols:String = '';
-			for each (var column:Object in columns) {
-				cols += ", o." + column.element_name;
+		public function findImpactCalendar(opColumns:Array,co7Field:Array):ArrayCollection {
+			if(UserService.getCustomerId()==UserService.COLOPLAST){//should be work for coloplast only
+				var cols:String = '';
+				for each (var column:String in opColumns) {
+					cols += ", o." + column;
+				}
+				for each (var co7f:String in co7Field) {
+					cols += ", co." + co7f;
+				}
+				
+				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) order by o.OpportunityId,co.gadget_id, co.CustomPickList31,co.CustomPickList33";
+				exec(stmtFindAllWithCO7);
+				var result:SQLResult = stmtFindAllWithCO7.getResult();
+				var data:Array = result.data;
+				if (data != null && data.length>0) {
+					return plate2Row(data);
+				}
 			}
-			
-			stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",co.CustomPickList31,co.CustomPickList34,co.CustomNumber0,co.CustomCurrency4 FROM " + tableName + " as o LEFT OUTER JOIN sod_customobject7 as co ON o.OpportunityId = co.OpportunityId WHERE o.deleted != 1 LIMIT 1001";
-			exec(stmtFindAllWithCO7);
-			var result:SQLResult = stmtFindAllWithCO7.getResult();
-			if (result.data == null || result.data.length == 0) {
-				return new ArrayCollection();
-			}
-			return new ArrayCollection(result.data);
+			return new ArrayCollection();
 		}
+		protected function plate2Row(result:Array):ArrayCollection{
+			var dic:Dictionary = new Dictionary();
+			var rows:ArrayCollection = new ArrayCollection();
+			var opId2Row:Dictionary = new Dictionary();
+			//row idenfify is opportunityId and category
+			for each(var obj:Object in result){
+				if(!StringUtils.isEmpty(obj.co7_Id)){
+					var rId:String = obj.OpportunityId+"_"+obj.CustomPickList31;
+					var row:Object=dic[rId];
+					if(row==null){
+						row = new Object();
+						dic[rId]=row;
+						rows.addItem(row);
+						if(!opId2Row.hasOwnProperty(obj.OpportunityId)){
+							opId2Row[obj.OpportunityId]=obj.OpportunityId;
+							row.editable=true;
+						}else{
+							row.editable=false;
+						}
+					}
+					if(StringUtils.isEmpty(obj.CustomPickList33)){
+						//it is product
+						Utils.copyObject(row,obj);
+					}else{
+						//it is quater
+						row[obj.CustomPickList33]=obj;
+					}
+					
+				}else{
+					//opportunity no co7
+					obj.isNoCo7=true;
+					rows.addItem(obj);
+				}
+			}
+			
+			
+			
+			
+			return rows;
+		}
+		
+		private function saveCo7(fields:Array,obj:Object):void{
+			var objSav:Object = new Object();
+			for each(var f:String in fields){
+				objSav[f]=obj[f];
+			}
+			objSav['gadget_id']=obj['co7_gadget_id'];
+			delete objSav['co7_gadget_id'];
+			if(StringUtils.isEmpty(objSav['gadget_id'])){								
+				Database.customObject7Dao.insert(objSav);
+				var item:Object=Database.customObject7Dao.selectLastRecord();
+				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
+				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
+				obj.co7_gadget_id = item.gadget_id;
+			}else{
+				objSav.local_update = new Date().getTime();
+				objSav.ms_local_change = new Date().getTime();
+				Database.customObject7Dao.updateByField(fields,objSav);
+			}
+		}
+		
+		public function saveImpactCalendar(impactData:ArrayCollection,opField:Array,co7Fields:Array):void{
+			Database.begin();
+			try{
+				for(var row:Object in impactData){
+					if(row.isTotal){
+						continue;//total not save
+					}
+					if(row.editable){
+						//update opportunity
+						updateByField(opField,row);
+					}
+					//save product usage
+					saveCo7(co7Fields,row);
+					for(var f:String in row){
+						if(row[f] is String){
+							continue;
+						}else{
+							//save quater
+							saveCo7(co7Fields,row[f]);
+							
+						}
+					}
+				}
+				Database.commit();
+			}catch(e:SQLError){
+				
+				Database.rollback();
+			}
+			
+			
+		}
+		
+		
 		
 		override public function getOwnerFields():Array{
 			var mapfields:Array = [

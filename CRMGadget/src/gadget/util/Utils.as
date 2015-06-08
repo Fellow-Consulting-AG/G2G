@@ -1332,6 +1332,13 @@ package gadget.util {
 			}
 			return "";
 		}
+		public static function getSelectedCountry(countries:ArrayCollection, target:String):Object{
+			for(var i:int = 0; i < countries.length; i++){
+				if(countries.getItemAt(i).data == target || countries.getItemAt(i).label == target) return countries[i];
+			}
+			return null;
+		}
+		
 		
 		public static function copyModel(model:Object,addmodifiedDate:Boolean =true):Object {
 			var obj:Object = new Object();

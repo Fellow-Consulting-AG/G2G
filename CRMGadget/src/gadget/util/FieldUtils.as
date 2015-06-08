@@ -1457,7 +1457,7 @@ package gadget.util {
 				if(field.component is TextInput){
 					componentValue = (field.component as TextInput).text;
 				}else if(field.component is AutoComplete){
-					componentValue = (field.component as AutoComplete).typedText;
+					componentValue = (field.component as AutoComplete).text;
 				}else if(field.component is ComboBox){
 					componentValue = (field.component as ComboBox).selectedItem.data;
 				}else if(field.component is CheckBox){

@@ -63,9 +63,9 @@
 			private function ensureSelected(obj:Object):void{
 				if(obj!=null){
 					if(obj is String){
-						cborender.setSelectedItemByText(obj as String);
+						cborender.text=(obj as String);
 					}else{
-						cborender.setSelectedItemByText(obj[cborender.labelField]);
+						cborender.text=(obj[cborender.labelField]);
 					}
 				}else{
 					cborender.selectedItem = obj;
@@ -109,5 +109,5 @@
 		]]>
 		
 	</fx:Script>
-	<control:AutoComplete id="cborender" height="100%" change="itemChange(event)" lookAhead="true" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
+	<control:AutoComplete id="cborender" height="100%" change="itemChange(event)" updateRelateFieldOnSelected="{onSelectedItem}"  labelField="Name"/>
 </s:MXDataGridItemRenderer>

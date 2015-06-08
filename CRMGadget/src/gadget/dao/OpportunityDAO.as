@@ -738,14 +738,14 @@ package gadget.dao
 		
 		private function saveCo7(fields:Array,obj:Object):void{
 			var objSav:Object = new Object();
-			for each(var f:String in fields){
+			for each (var f:String in fields){
 				objSav[f]=obj[f];
 			}
 			objSav['gadget_id']=obj['co7_gadget_id'];
 			delete objSav['co7_gadget_id'];
 			if(StringUtils.isEmpty(objSav['gadget_id'])){								
 				Database.customObject7Dao.insert(objSav);
-				var item:Object=Database.customObject7Dao.selectLastRecord();
+				var item:Object=Database.customObject7Dao.selectLastRecord()[0];
 				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
 				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
 				obj.co7_gadget_id = item.gadget_id;
@@ -759,7 +759,7 @@ package gadget.dao
 		public function saveImpactCalendar(impactData:ArrayCollection,opField:Array,co7Fields:Array):void{
 			Database.begin();
 			try{
-				for(var row:Object in impactData){
+				for each(var row:Object in impactData){
 					if(row.isTotal){
 						continue;//total not save
 					}

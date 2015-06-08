@@ -16,7 +16,7 @@
 			import mx.controls.listClasses.BaseListData;
 			public var column:AdvancedDataGridColumn;
 			private var _entity:String;
-			
+			private var _updateFunction:Function;
 			
 			
 			
@@ -63,20 +63,28 @@
 					this.data[column.dataField] = cborender.selectedItem.data + "";		
 					if("SalesStage" == column.dataField){
 						this.data['Probability']=cborender.selectedItem.probability;
-						var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;
-						var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
-						if(grid is MyAdvancedDataGrid){							
-							for(var i:int=0;i<grid.columnCount;i++){
-								var c:AdvancedDataGridColumn = grid.columns[i];
-								if(c.dataField=='Probability'){
-									MyAdvancedDataGrid(grid).refreshCell(list.rowIndex,i);
-									break;
-								}
-							}
-							
-						}
+						
+						
 					}
+					if(updateFunction!=null){
+						updateFunction(super.data);
+					}
+					var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;
+					var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
+					if(grid is MyAdvancedDataGrid){							
+						MyAdvancedDataGrid(grid).refreshRow(list.rowIndex);						
+					}
+					
 				}
+			}
+			public function get updateFunction():Function
+			{
+				return _updateFunction;
+			}
+			
+			public function set updateFunction(value:Function):void
+			{
+				_updateFunction = value;
 			}
 			public function get selectedItem():Object{
 				return cborender.selectedLabel;

@@ -343,8 +343,12 @@ package gadget.util
 			for (var index:String in all_indices) {
 				if (!(index in known_index)) {
 					A.work("Create "+ A.dn +" index "+ index +" ...", function(params:Object):void {
-						A.stmt.text = "CREATE " + params.idx.unique + " INDEX " + params.name + " ON " + A.table + " ( " + params.idx.columns + " );";
-						exec(A.stmt, false);
+						try{
+							A.stmt.text = "CREATE " + params.idx.unique + " INDEX " + params.name + " ON " + A.table + " ( " + params.idx.columns + " );";
+							exec(A.stmt, false);
+						}catch(e:SQLError){
+							trace(e.getStackTrace());
+						}
 					},{name:index, idx:all_indices[index]});
 				}
 			}

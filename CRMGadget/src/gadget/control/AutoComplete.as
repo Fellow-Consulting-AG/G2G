@@ -28,8 +28,12 @@ public class AutoComplete extends AutoCompleteComboBox
 	public function AutoComplete()
 	{
 	    super();
+		//this.autoCompleteRemoteData=true;
 		autoCompleteEnabled=true;
-		initialize();
+		autoCompleteSelectOnEnter=true;
+		this.autoCompleteCursorLocationOnSelect=false;
+		//initialize();
+		//initialized=true;
 	
 		
 	  

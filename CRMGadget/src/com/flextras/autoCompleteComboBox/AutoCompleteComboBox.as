@@ -363,6 +363,7 @@ public class AutoCompleteComboBox extends ComboBox
 				var index : int = 0
 				var found : Boolean = false;
 				for ( index ; index < this.dataProvider.length; index++) {
+					trace(this.itemToData(this.dataProvider[index])+":"+this._selectedValue);
 					if(this.itemToData(this.dataProvider[index]) == this._selectedValue ){
 						found = true;
 						break;
@@ -926,7 +927,7 @@ public class AutoCompleteComboBox extends ComboBox
 						// JH DotComIt 11/10/2011 
 						// the cursor location was not being changed if the mouse was used to select items; only the keyboard
 						// this should hopefully fix it 
-//						this.setAutoCompleteCursorLocation();
+						this.setAutoCompleteCursorLocation();
 					}
 
 				}
@@ -967,7 +968,7 @@ public class AutoCompleteComboBox extends ComboBox
 						// JH DotComIt 11/10/2011 
 						// the cursor location was not being changed if the mouse was used to select items; only the keyboard
 						// this should hopefully fix it 
-//						this.setAutoCompleteCursorLocation();
+						this.setAutoCompleteCursorLocation();
 					}
 					
 				}
@@ -2233,6 +2234,15 @@ public class AutoCompleteComboBox extends ComboBox
     	}
     	return false;
     }
+	
+	override public function setFocus():void
+	{
+		if (autoCompleteTextInput !=null && editable)
+			autoCompleteTextInput.setFocus();
+		else
+			super.setFocus();
+	}
+
 
     /**
      *  Returns a string representing the <code>data</code> parameter, Modeled, conceptually, after <code>itemToLabel</code> 
@@ -2267,8 +2277,11 @@ public class AutoCompleteComboBox extends ComboBox
         {
             try
             {
-                if (item[valueField] != null)
+                if (item[valueField] != null){
                     item = item[valueField];
+				}else if(item[labelField]!=null){
+					item = item[labelField];
+				}
             }
             catch(e:Error)
             {
@@ -2547,7 +2560,8 @@ public class AutoCompleteComboBox extends ComboBox
     	if(this.autoCompleteResetIndex > ListCollectionView(this.dataProvider).length-1){
 			this.selectedIndex = -1;
     	} else {
-			this.selectedIndex = this.autoCompleteResetIndex;
+			//don't know what is autoCompleteResetIndex
+			//this.selectedIndex = this.autoCompleteResetIndex;
     	}
 
 /*  		if(this.selectedIndex == -1){
@@ -3083,6 +3097,7 @@ public class AutoCompleteComboBox extends ComboBox
 //			
 //			if drop down is open and keycode is Keyboard.ENTER; then select the first item in the list
 				if(this.autoCompleteSelectOnEnter == true){
+					filterDataProvider(event);
 					// be sure that there is at least one item in the dataProvider before trying to select it
 			 		if( (ListCollectionView(this.dataProvider).length >= 1) && 
 			 			(

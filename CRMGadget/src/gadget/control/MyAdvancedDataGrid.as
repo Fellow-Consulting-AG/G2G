@@ -44,9 +44,7 @@ package gadget.control
 					for each(var r:Object in colRenderers){
 						if (r is ButtonAddRenderer)
 						{
-							var ui:IInvalidating = IInvalidating(r);
-							ui.invalidateDisplayList();
-							ui.validateNow();
+							ButtonAddRenderer(r).data=ButtonAddRenderer(r).data;
 						}else{
 							var listData:AdvancedDataGridListData = AdvancedDataGridListData(IDropInListItemRenderer(r).listData);
 							listData.label = _columns[listData.columnIndex].itemToLabel(r.data);

@@ -934,7 +934,7 @@
 						var found:Boolean = false;
 						for each (var pickValue:Object in picklist) {
 							if (value.toLowerCase() == pickValue.label.toLowerCase()) {
-								(fields[i].component as AutoComplete).text = pickValue.label;
+								(fields[i].component as AutoComplete).selectedValue = pickValue.label;
 								if(existValue!=null){
 									setFieldValue(pickValue.data,fieldInfo.element_name,item,existValue);
 								}else{
@@ -2550,7 +2550,7 @@
 						(disObj as TextInput).text = selected[key];
 						}else if(disObj is AutoComplete) { 
 						//(disObj as AutoComplete).text = selected[key];
-						(disObj as AutoComplete).text = selected[key];
+						(disObj as AutoComplete).selectedValue = selected[key];
 						}
 						}
 						
@@ -2595,7 +2595,7 @@
 							if (childObj is TextInput) {		
 							(childObj as TextInput).text = "";
 							} else if (childObj is AutoComplete) {
-							(childObj as AutoComplete).text="";
+							(childObj as AutoComplete).selectedValue="";
 							} else if (childObj is ComboBox) {
 							(childObj as ComboBox).selectedItem = "";
 							} else if (childObj is CheckBox) {

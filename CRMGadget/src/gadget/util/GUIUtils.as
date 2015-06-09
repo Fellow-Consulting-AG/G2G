@@ -1754,7 +1754,7 @@ package gadget.util
 					(component as ImageTreeFinder).embedText.text = value.toString();
 					(component as ImageTreeFinder).text = value.toString();
 				} else if (component is AutoComplete) {
-					(component as AutoComplete).text = value.toString();
+					(component as AutoComplete).selectedValue = value.toString();
 					(component as AutoComplete).validateNow();
 					(component as AutoComplete).close();
 					//(component as AutoComplete).selectedIndex = Utils.getComboIndex((component as ComboBox), value.toString());
@@ -2317,7 +2317,7 @@ package gadget.util
 								|| ((fieldInfo.element_name.indexOf('CustomObject2Name') != - 1) && UserService.DIVERSEY==UserService.getCustomerId()) ) {
 								childObj = new AutoComplete();
 								(childObj as AutoComplete).dataProvider = picklist;
-								(childObj as AutoComplete).text = Utils.getLabelCountry(picklist,item[fieldInfo.element_name]);
+								(childObj as AutoComplete).selectedItem = Utils.getSelectedCountry(picklist,item[fieldInfo.element_name]);
 								//(childObj as AutoComplete).selectedItem=getSelectedCountry(picklist,item[fieldInfo.element_name]);
 								//(childObj as AutoComplete).lookAhead = true;
 								

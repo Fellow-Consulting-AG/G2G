@@ -17,7 +17,7 @@
 			public var column:AdvancedDataGridColumn;
 			private var _entity:String;
 			private var _updateFunction:Function;
-			
+			private var _hideItems:Function;
 			
 			
 			public function get entity():String
@@ -40,6 +40,9 @@
 					 }else{
 						 pickList = PicklistService.getPicklist(entity,column.dataField);
 					 }
+					 if(hideItems!=null){
+						 hideItems(pickList,data);
+					 }
 					 cborender.dataProvider = pickList;
 					 cborender.selectedIndex=getSelectedIndex(val);
 				 }			
@@ -60,6 +63,7 @@
 			}
 			private function itemChange(event:Event):void{
 				if(data!=null && column!=null && cborender.selectedItem != null){
+					var oldSelected:String = this.data[column.dataField];
 					this.data[column.dataField] = cborender.selectedItem.data + "";		
 					if("SalesStage" == column.dataField){
 						this.data['Probability']=cborender.selectedItem.probability;
@@ -67,7 +71,13 @@
 						
 					}
 					if(updateFunction!=null){
-						updateFunction(super.data);
+						try{
+							//try with tow parameters
+							updateFunction(super.data,oldSelected);
+						}catch(e:Error){
+							//some function hase only one paramter
+							updateFunction(super.data);
+						}
 					}
 					var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;
 					var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
@@ -101,6 +111,17 @@
 				
 				}
 			}
+
+			public function get hideItems():Function
+			{
+				return _hideItems;
+			}
+
+			public function set hideItems(value:Function):void
+			{
+				_hideItems = value;
+			}
+
 
 		]]>
 		

@@ -24,8 +24,9 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.listClasses.ListBase;
 			import flash.events.Event;
+			
+			import mx.controls.listClasses.ListBase;
 			import mx.events.FlexEvent;
 
 			public function init():void{
@@ -41,7 +42,7 @@
 				if(ld.typeAheadText != ''){
 					// adding G flag to the RegExp would replace all instances instead of just first one 
 					// removed it because it does not seem to be standard 
-					var regEx : RegExp = new RegExp(ld.typeAheadText ,'i');
+					var regEx : RegExp = new RegExp(AutoCompleteComboBox.replaceSpecialCh(ld.typeAheadText) ,'i');
 //					this.htmlText = data.label.replace(regEx , '<b>$&</b>');
 					this.htmlText = AutoCompleteComboBox(ld.autoCompleteComboBox).itemToLabel(data).replace(regEx , '<b>$&</b>');
 				} else {

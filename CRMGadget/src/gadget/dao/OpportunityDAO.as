@@ -699,6 +699,7 @@ package gadget.dao
 			var dic:Dictionary = new Dictionary();
 			var rows:ArrayCollection = new ArrayCollection();
 			var opId2Row:Dictionary = new Dictionary();
+			var opId2CategorySlected:Dictionary = new Dictionary();
 			//row idenfify is opportunityId and category
 			for each(var obj:Object in result){
 				if(!StringUtils.isEmpty(obj.co7_Id)){
@@ -706,17 +707,26 @@ package gadget.dao
 					var row:Object=dic[rId];
 					if(row==null){
 						row = new Object();
+						var categorySelected:ArrayCollection = opId2CategorySlected[obj.OpportunityId];
+						if(categorySelected==null){
+							categorySelected=new ArrayCollection();
+							opId2CategorySlected[obj.OpportunityId]=categorySelected;
+						}
+						row.categorySelected=categorySelected;
 						dic[rId]=row;
 						rows.addItem(row);
 						if(!opId2Row.hasOwnProperty(obj.OpportunityId)){
 							opId2Row[obj.OpportunityId]=obj.OpportunityId;
 							row.editable=true;
+						
 						}else{
 							row.editable=false;
 						}
 					}
+					//CustomPickList33 it is quater
 					if(StringUtils.isEmpty(obj.CustomPickList33)){
 						//it is product
+						ArrayCollection(row.categorySelected).addItem(obj.CustomPickList31);
 						Utils.copyObject(row,obj);
 					}else{
 						//it is quater
@@ -726,6 +736,7 @@ package gadget.dao
 				}else{
 					//opportunity no co7
 					obj.isNoCo7=true;
+					obj.categorySelected = new ArrayCollection();
 					rows.addItem(obj);
 				}
 			}
@@ -736,14 +747,19 @@ package gadget.dao
 			return rows;
 		}
 		
-		private function saveCo7(fields:Array,obj:Object):void{
+		private function saveCo7(fields:Array,obj:Object,quater:String=null):void{
 			var objSav:Object = new Object();
 			for each (var f:String in fields){
 				objSav[f]=obj[f];
 			}
 			objSav['gadget_id']=obj['co7_gadget_id'];
+			objSav.OpportunityId=obj.OpportunityId;
+			objSav.OpportunityName=obj.OpportunityName;
+			//CustomPickList33 it is quater
+			objSav.CustomPickList33=quater;
 			delete objSav['co7_gadget_id'];
-			if(StringUtils.isEmpty(objSav['gadget_id'])){								
+			if(StringUtils.isEmpty(objSav['gadget_id'])){
+				
 				Database.customObject7Dao.insert(objSav);
 				var item:Object=Database.customObject7Dao.selectLastRecord()[0];
 				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
@@ -770,12 +786,12 @@ package gadget.dao
 					//save product usage
 					saveCo7(co7Fields,row);
 					for(var f:String in row){
-						if(row[f] is String){
-							continue;
-						}else{
-							//save quater
-							saveCo7(co7Fields,row[f]);
-							
+						if(f!='categorySelected'){
+							if(row[f]!=null && typeof(row[f]) == "object"){
+								//save quater
+								saveCo7(co7Fields,row[f],f);
+								
+							}
 						}
 					}
 				}

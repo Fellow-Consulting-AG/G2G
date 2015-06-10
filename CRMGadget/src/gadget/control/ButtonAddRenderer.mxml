@@ -40,7 +40,8 @@
 				"CustomDate26",//Stard Date
 				"CustomDate25",//end date				
 				"ModifiedDate",	
-				"Status"
+				"Status",
+				"categorySelected"
 				
 			];
 			

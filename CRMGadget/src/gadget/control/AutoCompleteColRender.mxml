@@ -41,7 +41,7 @@
 
 			public function set dataProvider(value:ArrayCollection):void
 			{
-				this.cborender.dataProvider = value;
+				this.cborender.dataProvider = new ArrayCollection(value.source);
 				this.cborender.validateNow();
 			}
 			

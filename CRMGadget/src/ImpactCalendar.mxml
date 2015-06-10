@@ -167,11 +167,32 @@
 				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
 				{element_name:"CustomDate26",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:null,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomDate25",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:null,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object):void{
+				{element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
 					}
+					if(item.categorySelected!=null){
+						if(!StringUtils.isEmpty(oldSelected)){
+							var oldIndex:int = ArrayCollection(item.categorySelected).getItemIndex(oldSelected);
+							if(oldIndex>=0){
+								ArrayCollection(item.categorySelected).removeItemAt(oldIndex);
+							}
+						}
+						if(!StringUtils.isEmpty(item.CustomPickList31)){
+							ArrayCollection(item.categorySelected).addItem(item.CustomPickList31);
+						}
+					}
 				
+				},hideItems:function(pickList:ArrayCollection,item:Object):void{
+					if(pickList!=null){
+						if(item.categorySelected!=null){
+							pickList.filterFunction=function(e:Object):Boolean{
+								var hidenItems:ArrayCollection = item.categorySelected;
+								return (item.CustomPickList31==e.data||item.CustomPickList31==e.label ) || !(hidenItems.contains(e.data)||hidenItems.contains(e.label));
+							};
+							pickList.refresh();
+						}
+					}
 				},'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calculateMonthByAnnualizedImpact,restrict:'0-9',maxChars:20},editAble:true},
@@ -826,7 +847,7 @@
 				
 			}
 			private function save():void{
-				//Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
+				Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
 				
 			}
 			

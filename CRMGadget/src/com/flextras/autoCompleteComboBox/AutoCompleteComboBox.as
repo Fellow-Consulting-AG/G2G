@@ -211,6 +211,8 @@ public class AutoCompleteComboBox extends ComboBox
 		rowCount = 7;
 
 	}
+	
+	public static const SPECIAL_CHAR:Array=['+','.','(',')'];
 
 
     //--------------------------------------------------------------------------
@@ -2095,16 +2097,24 @@ public class AutoCompleteComboBox extends ComboBox
 		//  /i means ignore case sensitivity 
 		// 	\						 /typeAheadText/ 
 //		var regEx : RegExp = /  /i
-		var regEx : RegExp = new RegExp('.*' + this.typeAheadText + '.*' ,'i')
+		var strSearch:String = replaceSpecialCh(this.typeAheadText);
+		var regEx : RegExp = new RegExp('.*' + strSearch + '.*' ,'i')
 		
 		// probably want to use match on this string
 		var label : String = this.itemToLabel(item);
-		
 		if(label.match(regEx)){
 			return true;
 		}
 
 		return false;
+	}
+	
+	public static function replaceSpecialCh(str:String):String{
+		var strSearch:String = str;
+		for each(var sp:String in SPECIAL_CHAR){
+			strSearch=strSearch.replace(new RegExp("[\\"+sp+"]","gi"),"["+sp+"]");
+		}
+		return strSearch;
 	}
 
 	/**

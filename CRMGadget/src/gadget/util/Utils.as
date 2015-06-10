@@ -2446,7 +2446,7 @@ package gadget.util {
 				picklist.addItem({data: stage.name, other: "SalesStageId", key: stage.id, label: stage.name, probability: stage.probability, category: stage.sales_category_name});
 			}
 			cache.put("getSalesStage",picklist);
-			return picklist;
+			return new ArrayCollection(picklist.source);
 		}
 		
 		public static function getCboSalesStageParamIndex(value:String):int {

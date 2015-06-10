@@ -88,7 +88,8 @@ package gadget.dao
 		public static const ENABLE_VISITIT_CUSTOMER:String = "enable_visit_customer";
 		public static const ENABLE_FEED:String = "enable_feed";
 		public static const ENABLE_DAILY_AGENDA:String = "enable_daily_agenda";
-		
+		public static const ENABLE_SEGMENT_TARGETING_TAB:String = "enable_segmentation_targeting_tab";
+		public static const SEGMENT_TARGETING_URL:String = "segmentation_targeting_url";
 		public static const FEED_URL:String = "feed_url";
 		public static const FEED_PORT:String = "feed_port";
 		public static const AUTHOR:String = "";
@@ -283,7 +284,9 @@ package gadget.dao
 			ENABLE_SAMPLE_ORDER,
 			ENABLE_CHECKBOX_INLIST,
 			CHECKBOX_READONLY_WHEN_TRUE,
-			MODERN_ICON
+			MODERN_ICON,
+			ENABLE_SEGMENT_TARGETING_TAB,
+			SEGMENT_TARGETING_URL
 		];
 		
 		public function getGoolgeMapDistance():String{
@@ -311,6 +314,12 @@ package gadget.dao
 		}
 		public function isEnableRevenueReport():Boolean{
 			return getBooleanValue(ENABLE_REVENUE_REPORT);
+		}
+		public function isEnableSegmentTargeting():Boolean{
+			return getBooleanValue(ENABLE_SEGMENT_TARGETING_TAB);
+		}
+		public function getSegment_Targeting_URL():String{
+			return getStrValue(SEGMENT_TARGETING_URL);
 		}
 		public function isEnableImpactCalendar():Boolean{
 			return getBooleanValue(ENABLE_IMPACT_CALENDAR);

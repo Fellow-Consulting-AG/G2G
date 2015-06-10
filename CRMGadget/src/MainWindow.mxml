@@ -79,6 +79,8 @@
 			public static const LABEL_CHAT:String = i18n._("GLOBAL_CHAT");
 			public static const DASHBOARD:String = "Dashboard";
 			public static const REVENUE_REPORT:String = "RevenueReport";
+			public static const SEGMENTATION_TARGET:String = "SegmentationTarget";
+			public static const LABEL_SEGMENTATION_TARGET:String = "Segmentation and Targeting Dashboard";
 			public static const LABEL_REVENUE_REPORT:String = "Revenue Report";
 			// CH 24-July-2013
 			public static const DASHBOARD_REPORT:String = "DashboardReport";
@@ -89,7 +91,7 @@
 			
 			public static const CHAT:String = "Chat";
 			public static const DAILY_AGENDA:String = "DailyAgenda";
-			public static const mapCustomTab:Object = {Dashboard:"Dashboard",RevenueReport:"RevenueReport",Chat:"Chat",DailyAgenda:"DailyAgenda", DashboardReport: "DashboardReport",VisitCustomer:"VisitCustomer"}
+			public static const mapCustomTab:Object = {Dashboard:"Dashboard",RevenueReport:"RevenueReport",Chat:"Chat",DailyAgenda:"DailyAgenda", DashboardReport: "DashboardReport",VisitCustomer:"VisitCustomer",SegmentationTarget:"SegmentationTarget"}
 			//CRO 05.01.2011
 			private const MAINWINDOW_MENU_VIEW:String = 'GLOBAL_VIEW' ;
 			private const GLOBAL_CREATE:String = 'GLOBAL_CREATE';
@@ -844,6 +846,9 @@
 					createTabCustom(REVENUE_REPORT,navTabsData,revHeader);
 					
 				}
+				if(Database.preferencesDao.isEnableSegmentTargeting()){
+					createTabCustom(SEGMENTATION_TARGET,navTabsData,LABEL_SEGMENTATION_TARGET);
+				}
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					createTabCustom(CHAT,navTabsData,LABEL_CHAT);
 				}
@@ -1503,6 +1508,10 @@
 					navigator.addChild( createCustomList(REVENUE_REPORT));
 					
 				}
+				if(Database.preferencesDao.isEnableSegmentTargeting()){
+					navigator.addChild( createCustomList(SEGMENTATION_TARGET) );
+				}
+				
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					navigator.addChild( createCustomList(CHAT) );
 				}

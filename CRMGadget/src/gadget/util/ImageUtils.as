@@ -1013,7 +1013,7 @@ package gadget.util{
 				entity = entity.substring( entity.indexOf(".")+1);
 			}
 			
-			
+			if( entity == MainWindow.SEGMENTATION_TARGET ) return icon_icon_custtab;
 			
 			if( entity == MainWindow.VISIT_CUSTOMER ) return contactImg;
 			if( entity == MainWindow.DASHBOARD || entity == MainWindow.REVENUE_REPORT) return chartBar;

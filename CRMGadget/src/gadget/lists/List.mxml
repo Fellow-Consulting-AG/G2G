@@ -1716,7 +1716,11 @@
 						openLinkTo(list.selectedItem);
 						break;
 					case Keyboard.B:
-						batchUpdate();
+						var canUpdate:Boolean = RightService.canUpdate(entity);
+						if(canUpdate){
+							batchUpdate();
+						}
+						
 						break;
 					
 				}

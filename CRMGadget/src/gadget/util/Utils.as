@@ -873,7 +873,7 @@ package gadget.util {
 		}
 		
 		
-		private static function calculateDate(number:Number, date:Date, datepart:String ):Date {
+		public static function calculateDate(number:Number, date:Date, datepart:String ):Date {
 			if (date == null) {
 				/* Default to current date. */
 				date = new Date();

@@ -18,6 +18,8 @@
 			
 			private var grid:AdvancedDataGrid;
 			public var column:AdvancedDataGridColumn;
+			private var _updateFunction:Function;
+			
 			protected function clearDate(event:MouseEvent):void
 			{
 				currentDate.text = "";
@@ -62,12 +64,29 @@
 			}		
 			protected function currentDate_changeHandler(event:CalendarLayoutChangeEvent):void
 			{
+				
 				var value:String = null;
 				if (currentDate.text != '') {
 					value = DateUtils.format(currentDate.selectedDate, DateUtils.DATABASE_DATE_FORMAT);
 				}
-				data[column.dataField]=value + "";
+				if(updateFunction!=null){
+					updateFunction(data,column.dataField,value);
+				}else{
+					data[column.dataField]=value;
+				}
+				
 			}
+
+			public function get updateFunction():Function
+			{
+				return _updateFunction;
+			}
+
+			public function set updateFunction(value:Function):void
+			{
+				_updateFunction = value;
+			}
+
 
 		]]>
 	</fx:Script>

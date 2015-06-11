@@ -529,7 +529,7 @@ package gadget.dao
 				
 			}
 //			stmtFindAll.text = "SELECT '" + entity + "' gadget_type, local_update, gadget_id, error,sync_number, "+colOODLastModified + fieldOracleId + cols + " FROM " + tableName + " WHERE " + (StringUtils.isEmpty(filter) ? "" : filter + " AND ") + "deleted != 1 ORDER BY " + order_by + ( limit==0? "":" LIMIT " + limit );
-			stmtFindAll.text = "SELECT '" + entity + "' gadget_type, local_update, gadget_id, error,sync_number, "+colOODLastModified + fieldOracleId + cols + " FROM " + tableName + " WHERE " + (StringUtils.isEmpty(filter) ? "" : filter + " AND ") + "deleted != 1 " + hideByType + (StringUtils.isEmpty(group_by) ? "" : "GROUP BY " + group_by) +  order_by + ( limit==0? "":" LIMIT " + limit );
+			stmtFindAll.text = "SELECT '" + entity + "' gadget_type, local_update, gadget_id, error,sync_number, "+colOODLastModified + fieldOracleId + cols + " FROM " + tableName + " WHERE " + (StringUtils.isEmpty(filter) ? "" : filter + " AND ") + "(deleted = 0 OR deleted IS null) " + hideByType + (StringUtils.isEmpty(group_by) ? "" : "GROUP BY " + group_by) +  order_by + ( limit==0? "":" LIMIT " + limit );
 			exec(stmtFindAll, false);
 			var items:ArrayCollection = new ArrayCollection(stmtFindAll.getResult().data);
 			// add a specific item when selectedId arg is provided

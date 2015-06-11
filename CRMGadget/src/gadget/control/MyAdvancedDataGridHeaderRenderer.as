@@ -6,6 +6,7 @@ package gadget.control
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
+	import gadget.i18n.i18n;
 	import gadget.util.ImageUtils;
 	
 	import mx.containers.HBox;
@@ -52,10 +53,10 @@ package gadget.control
 		private function switchCol(e:Event):void{
 			if (_right) {
 				_switchCol.setStyle("icon", ImageUtils.rightIcon);
-				
+				_switchCol.toolTip = i18n._('SHOW_MONTHS@Show Months');
 			} else {
 				_switchCol.setStyle("icon", ImageUtils.leftIcon);
-				
+				_switchCol.toolTip = i18n._('HIDE_MONTHS@Hide Months');
 			}
 			if(colapOrExpandClick!=null){
 				colapOrExpandClick(!_right,_colName);
@@ -71,14 +72,29 @@ package gadget.control
 				//<mx:LinkButton id="switchFilter" width="12" height="24" icon="{ImageUtils.leftIcon}" click="switchFilterList(event)" />
 				_switchCol = new LinkButton();
 				_switchCol.width=12;
-				_switchCol.height=30;
+				_switchCol.height=20;
 				_switchCol.setStyle("icon", ImageUtils.leftIcon);
+				_switchCol.toolTip = i18n._('HIDE_MONTHS@Hide Months');
 				_switchCol.addEventListener(MouseEvent.CLICK,switchCol);
-				_switchCol.x=label.x+this.width;
+				
 				addChild(_switchCol);
 				
 				
 			}
+		}
+		
+		/**
+		 *  @private
+		 */
+		override protected function updateDisplayList(unscaledWidth:Number,
+													  unscaledHeight:Number):void
+		{
+			super.updateDisplayList(unscaledWidth,unscaledHeight);
+			if(_switchCol!=null){
+				
+				_switchCol.x=unscaledWidth-15;
+			}
+			
 		}
 
 		public function get colName():String

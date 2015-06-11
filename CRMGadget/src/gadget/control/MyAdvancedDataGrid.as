@@ -38,7 +38,7 @@ package gadget.control
 				super.drawRowBackground(s,rowIndex,y,height,color,dataIndex);		    
 			} 
 			
-			public function refreshRow(row:int):void{
+			public function refreshRow(row:int,refDependOnGrid:Boolean=true):void{
 				if(row>-1 && row<listItems.length){
 					var colRenderers:Array = listItems[row];
 					for each(var r:Object in colRenderers){
@@ -52,8 +52,21 @@ package gadget.control
 						}
 						
 					}
-					refreshDependOnGrid();
+					if(refDependOnGrid){
+						refreshDependOnGrid();
+					}
 				}
+			}
+			
+			public function refreshRowByRecordId(recId:String,idField:String):void{
+				for(var i:int=0;i<listItems.length;i++){
+					var firstCol:Object = listItems[i][0];
+					var row:Object = firstCol.data;
+					if(row!=null && row[idField]==recId){
+						refreshRow(i,false);
+					}
+				}
+				refreshDependOnGrid();
 			}
 			
 			public function refreshCols(col:int):void{

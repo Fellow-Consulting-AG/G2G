@@ -18,7 +18,7 @@
 			private var _entity:String;
 			private var _updateFunction:Function;
 			private var _hideItems:Function;
-			
+			private var _refreshRow:Boolean=true;
 			
 			public function get entity():String
 			{
@@ -79,10 +79,12 @@
 							updateFunction(super.data);
 						}
 					}
-					var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;
-					var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
-					if(grid is MyAdvancedDataGrid){							
-						MyAdvancedDataGrid(grid).refreshRow(list.rowIndex);						
+					if(refreshRow){
+						var list:AdvancedDataGridListData = super.listData as AdvancedDataGridListData;					
+						var grid:AdvancedDataGrid = list.owner as AdvancedDataGrid;
+						if(grid is MyAdvancedDataGrid){							
+							MyAdvancedDataGrid(grid).refreshRow(list.rowIndex);						
+						}
 					}
 					
 				}
@@ -121,6 +123,16 @@
 			{
 				_hideItems = value;
 			}
+			public function get refreshRow():Boolean
+			{
+				return _refreshRow;
+			}
+			
+			public function set refreshRow(value:Boolean):void
+			{
+				_refreshRow = value;
+			}
+		
 
 
 		]]>

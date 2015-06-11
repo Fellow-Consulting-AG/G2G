@@ -695,6 +695,7 @@ package gadget.dao
 			}
 			return new ArrayCollection();
 		}
+		
 		protected function plate2Row(result:Array):ArrayCollection{
 			var dic:Dictionary = new Dictionary();
 			var rows:ArrayCollection = new ArrayCollection();
@@ -747,14 +748,23 @@ package gadget.dao
 			return rows;
 		}
 		
-		private function saveCo7(fields:Array,obj:Object,quater:String=null):void{
+		private function saveCo7(fields:Array,obj:Object,quater:String=null,op:Object=null):void{
 			var objSav:Object = new Object();
 			for each (var f:String in fields){
 				objSav[f]=obj[f];
+				if(op!=null &&(objSav[f]==null||objSav[f]=='')){
+					objSav[f]=op[f];
+				}
 			}
 			objSav['gadget_id']=obj['co7_gadget_id'];
-			objSav.OpportunityId=obj.OpportunityId;
-			objSav.OpportunityName=obj.OpportunityName;
+			if(op!=null){
+				objSav.OpportunityId=op.OpportunityId;
+				objSav.OpportunityName=op.OpportunityName;
+			}else{
+				objSav.OpportunityId=obj.OpportunityId;
+				objSav.OpportunityName=obj.OpportunityName;
+			}
+			
 			//CustomPickList33 it is quater
 			objSav.CustomPickList33=quater;
 			delete objSav['co7_gadget_id'];
@@ -789,7 +799,7 @@ package gadget.dao
 						if(f!='categorySelected'){
 							if(row[f]!=null && typeof(row[f]) == "object"){
 								//save quater
-								saveCo7(co7Fields,row[f],f);
+								saveCo7(co7Fields,row[f],f,row);
 								
 							}
 						}

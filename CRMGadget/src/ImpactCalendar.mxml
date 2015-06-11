@@ -21,11 +21,13 @@
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
+			import gadget.control.ICHeaderColRenderer;
 			import gadget.control.ImpactText;
 			import gadget.control.ItemFinderColRender;
 			import gadget.control.LabelColRenderer;
 			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
+			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
 			import gadget.control.SubTableRenderer;
 			import gadget.dao.DAOUtils;
@@ -526,10 +528,10 @@
 				if(filter != null){
 					type = filter.type;
 				}
-				var hideCols:Object = MAP_HIDE_COLUMN[type.toFixed(0)];
+				var hideCols:Object = MAP_HIDE_COLUMN[type.toString()];
 				for each(var col:AdvancedDataGridColumn in columns){
 					var col_name:String = col.dataField;	
-					if(col_name.indexOf('')!=-1){
+					if(col_name.indexOf('.')!=-1){
 						col_name = col_name.split('.')[0];
 					}
 					if(hideCols!=null && hideCols.hasOwnProperty(col_name)){
@@ -540,6 +542,8 @@
 					
 				}
 			}
+			
+			
 			public function initGridListAllOpportunities():void{				
 				var columns:Array = new Array();
 				var col:AdvancedDataGridColumn = null;
@@ -569,6 +573,7 @@
 						
 						
 					}
+					
 					var displayName:String ="";
 					if(objCol.entity){
 						displayName = FieldUtils.getFieldDisplayName(objCol.entity,col_name);
@@ -581,6 +586,31 @@
 					}else{
 						col = createColumn(displayName,col_name,editAble);
 						col.itemRenderer = renderer;
+					}
+					if(col_name=="Q4" || col_name=="Q8"){
+						var headerRenderer:ClassFactory =new ClassFactory(MyAdvancedDataGridHeaderRenderer);
+						headerRenderer.properties={'colName':col_name,colapOrExpandClick:function expandOrColape(expandMonth:Boolean,name:String):void{
+							for each(var c:AdvancedDataGridColumn in gridListAll.columns){
+								var col_name2:String = c.dataField;	
+								if(col_name2.indexOf('.')!=-1){
+									col_name2 = col_name2.split('.')[0];
+									try{
+										var qIndx:int = parseInt(col_name2.charAt(col_name2.length-1));
+										if(name=="Q4"){
+											c.visible= qIndx<=4 && expandMonth;
+										}else if(name=="Q8"){
+											c.visible = qIndx>4 && expandMonth;
+										}
+									}catch(e:Error){
+										//nothing to do
+									}
+								}
+								
+							}
+						
+						},addColapeOrExpand:true};
+						col.headerRenderer=headerRenderer;
+						
 					}
 					var hidename:String = col_name;
 					if(hidename.indexOf('.')!=-1){

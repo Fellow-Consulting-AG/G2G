@@ -21,7 +21,6 @@
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
-			import gadget.control.ICHeaderColRenderer;
 			import gadget.control.ImpactText;
 			import gadget.control.ItemFinderColRender;
 			import gadget.control.LabelColRenderer;

@@ -71,10 +71,10 @@ package gadget.control
 				//<mx:LinkButton id="switchFilter" width="12" height="24" icon="{ImageUtils.leftIcon}" click="switchFilterList(event)" />
 				_switchCol = new LinkButton();
 				_switchCol.width=12;
-				_switchCol.percentHeight=100;
+				_switchCol.height=30;
 				_switchCol.setStyle("icon", ImageUtils.leftIcon);
 				_switchCol.addEventListener(MouseEvent.CLICK,switchCol);
-				_switchCol.scaleX=this.scaleX+label.width;
+				_switchCol.x=label.x+this.width;
 				addChild(_switchCol);
 				
 				

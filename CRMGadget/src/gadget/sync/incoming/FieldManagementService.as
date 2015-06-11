@@ -147,6 +147,8 @@ package gadget.sync.incoming {
 						fieldRec.entity = entity;
 						if(entity==Database.activityDao.entity && fieldRec.Name=='Alias'){
 							fieldRec.Name = 'Owner';//change alias to owner
+						}else if(entity==Database.activityDao.entity && fieldRec.Name=='CompletedDatetime'){
+							fieldRec.PostDefault = true;
 						}
 						if(StringUtils.isEmpty(fieldRec.Name)){
 							var name:String= getDataStr(field,"Name",false);

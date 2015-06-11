@@ -80,7 +80,7 @@
 			public static const DASHBOARD:String = "Dashboard";
 			public static const REVENUE_REPORT:String = "RevenueReport";
 			public static const SEGMENTATION_TARGET:String = "SegmentationTarget";
-			public static const LABEL_SEGMENTATION_TARGET:String = "Segmentation and Targeting Dashboard";
+			public static const LABEL_SEGMENTATION_TARGET:String = "S and T Dashboard";
 			public static const LABEL_REVENUE_REPORT:String = "Revenue Report";
 			// CH 24-July-2013
 			public static const DASHBOARD_REPORT:String = "DashboardReport";

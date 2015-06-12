@@ -1,6 +1,9 @@
 package gadget.control
 {
+		
 	import flash.display.Sprite;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	
 	import gadget.assessment.AssessmentSectionTotal;
 	
@@ -117,7 +120,23 @@ package gadget.control
 			_refreshFunction = value;
 		}
 			
+		override protected function editorKeyDownHandler(event:KeyboardEvent):void
+		{
+			if(editedItemPosition!=null){
+				super.editorKeyDownHandler(event);
+			}
+		}	
+		
+		override protected function keyDownHandler(event:KeyboardEvent):void
+		{
+			super.keyDownHandler(event);
+//			if(event.keyCode==Keyboard.TAB){
+//				if(editedItemPosition!=null){
+//					var renderer:Object = listItems[editedItemPosition.rowIndex][editedItemPosition.columnIndex];
+//				}
+//			}
 			
+		}
 		
 	}
 }

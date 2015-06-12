@@ -690,13 +690,30 @@ package gadget.dao
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;
 				if (data != null && data.length>0) {
-					return plate2Row(data);
+					return plate2Row(data,getCompititor());
 				}
 			}
 			return new ArrayCollection();
 		}
 		
-		protected function plate2Row(result:Array):ArrayCollection{
+		protected function getCompititor():Dictionary{
+			var map:Dictionary = new Dictionary();
+			var result:ArrayCollection = Database.opportunityCompetitorDao.findAll(new ArrayCollection([{element_name:'OpportunityId,CompetitorName,RelationshipRole,ReverseRelationshipRole'}]),null,null,0);
+			if(result!=null){
+				for each(var obj:Object in result){
+					//opportunity has only one compititor
+					obj.membershipgroup = obj.RelationshipRole=='Membership Group' || obj.ReverseRelationshipRole=='Membership Group';
+					obj.distributor=obj.RelationshipRole=='Distributor' || obj.ReverseRelationshipRole=='Distributor';
+					map[obj.OpportunityId]=obj;
+				}
+
+			}
+			
+			
+			return map;
+		}
+		
+		protected function plate2Row(result:Array,opid2Compititor:Dictionary):ArrayCollection{
 			var dic:Dictionary = new Dictionary();
 			var rows:ArrayCollection = new ArrayCollection();
 			var opId2Row:Dictionary = new Dictionary();
@@ -707,7 +724,18 @@ package gadget.dao
 					var rId:String = obj.OpportunityId+"_"+obj.CustomPickList31;
 					var row:Object=dic[rId];
 					if(row==null){
+						var compittitor:Object = opid2Compititor[obj.OpportunityId];
 						row = new Object();
+						if(compittitor!=null){
+							if(compittitor.membershipgroup){
+								row.Membership = compittitor.CompetitorName;
+							}
+							if(compittitor.distributor){
+								row.TradingPartner = compittitor.CompetitorName;
+							}
+						}
+						
+						
 						var categorySelected:ArrayCollection = opId2CategorySlected[obj.OpportunityId];
 						if(categorySelected==null){
 							categorySelected=new ArrayCollection();
@@ -737,6 +765,17 @@ package gadget.dao
 				}else{
 					//opportunity no co7
 					obj.isNoCo7=true;
+					var compittitor:Object = opid2Compititor[obj.OpportunityId];
+					
+					if(compittitor!=null){
+						if(compittitor.membershipgroup){
+							obj.Membership = compittitor.CompetitorName;
+						}
+						if(compittitor.distributor){
+							obj.TradingPartner = compittitor.CompetitorName;
+						}
+					}
+					
 					obj.categorySelected = new ArrayCollection();
 					rows.addItem(obj);
 				}

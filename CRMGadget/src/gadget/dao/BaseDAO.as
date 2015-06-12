@@ -739,7 +739,7 @@ package gadget.dao
 			stmtUpdateByField.text = sql + " WHERE "+ fieldCriteria +"=:"+fieldCriteria ;
 			stmtUpdateByField.parameters[":"+fieldCriteria] = object[fieldCriteria];
 			stmtUpdateByField.parameters[':local_update'] = object.local_update;
-			stmtUpdateByField.parameters[':deleted'] = object.deleted;
+			stmtUpdateByField.parameters[':deleted'] = object.deleted==null?false:object.deleted;
 			stmtUpdateByField.parameters[':error'] = object.error;
 			stmtUpdateByField.parameters[':sync_number'] = object.sync_number;
 			stmtUpdateByField.parameters[':ood_lastmodified']=object.ood_lastmodified;

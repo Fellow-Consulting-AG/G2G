@@ -16,6 +16,8 @@ package gadget.control
 		
 		public var column:AdvancedDataGridColumn;
 		protected var grid:AdvancedDataGrid = null;		
+		private var _refreshRow:Boolean = true;
+		private var _updateData:Function;
 		public function ImpactText()
 		{
 			addEventListener(Event.CHANGE,onChange);
@@ -42,12 +44,16 @@ package gadget.control
 							}
 							q[fields[1]]=super.text;
 						}else{
-							super.data[fields]=super.text;
+							super.data[colName]=super.text;
+						}
+						if(updateData!=null){
+							var newVal:Object = new Object();
+							newVal[colName]=super.text;
+							updateData(super.data,newVal);
 						}
 						
 						
-						
-						if(grid is MyAdvancedDataGrid){
+						if(grid is MyAdvancedDataGrid && refreshRow){
 							MyAdvancedDataGrid(grid).refreshRow(super.listData.rowIndex);
 						}
 						
@@ -70,5 +76,27 @@ package gadget.control
 				
 			}
 		}
+
+		public function get refreshRow():Boolean
+		{
+			return _refreshRow;
+		}
+
+		public function set refreshRow(value:Boolean):void
+		{
+			_refreshRow = value;
+		}
+
+		public function get updateData():Function
+		{
+			return _updateData;
+		}
+
+		public function set updateData(value:Function):void
+		{
+			_updateData = value;
+		}
+
+
 	}
 }

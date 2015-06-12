@@ -2,31 +2,95 @@ package gadget.control
 {
 	import flash.events.Event;
 	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
+	
+	import gadget.i18n.i18n;
+	import gadget.util.StringUtils;
+	import gadget.window.WindowManager;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.AdvancedDataGrid;
+	import mx.controls.Alert;
 	import mx.controls.TextInput;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 	import mx.controls.listClasses.BaseListData;
+	import mx.core.Window;
+	import mx.events.CloseEvent;
 
 	public class QTextRenderer extends TextInput
 	{
 		
-		public var column:AdvancedDataGridColumn;		
-		private var grid:AdvancedDataGrid = null;
+		private var column:AdvancedDataGridColumn;		
+		private var grid:MyAdvancedDataGrid = null;
+		private var tabOrEnterDown:Boolean = false;
+		private var isChanged:Boolean = false;
 		public function QTextRenderer()
 		{
-			addEventListener(Event.CHANGE,onChange);
+			addEventListener(Event.CHANGE,function(e:Event):void{
+				isChanged=true;
+			});
+			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{
+				if(tabOrEnterDown || !isChanged) return;
+				var oldValStr:String = column.labelFunction(data,column);
+				if(StringUtils.isEmpty(oldValStr)){
+					onChange(e);					
+				}else{
+					var oldVal:Number = parseFloat(oldValStr);
+					var newVal:Number = parseFloat(text);
+					if(oldVal!=newVal){
+					
+						Alert.show(i18n._("OVERRIDE_QUATER_MONTHS_MSSAGE@Do you want to override the existing monthly value based on this new quarterly value?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,Window(WindowManager.getTopWindow()),function(event:CloseEvent):void{
+							if(event.detail==Alert.YES){
+								onChange(e);							
+							}else{
+								text=oldValStr;
+							}
+							
+							
+						});
+						
+					}
+					isChanged=false;
+				}
+				
+				
+			
+			});
+			addEventListener(KeyboardEvent.KEY_DOWN,function(keyEvent:KeyboardEvent):void{
+				//fixed npe error when click tab
+				if(keyEvent.keyCode==Keyboard.TAB || keyEvent.keyCode==Keyboard.ENTER){
+					tabOrEnterDown=true;
+					var oldValStr:String = column.labelFunction(data,column);
+					if(StringUtils.isEmpty(oldValStr)){
+						onChange(keyEvent);			
+						tabOrEnterDown=false;
+					}else{
+						var oldVal:Number = parseFloat(oldValStr);
+						var newVal:Number = parseFloat(text);
+						if(oldVal!=newVal){
+							
+							Alert.show(i18n._("OVERRIDE_QUATER_MONTHS_MSSAGE@Do you want to override the existing monthly value based on this new quarterly value?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,Window(WindowManager.getTopWindow()),function(event:CloseEvent):void{
+								if(event.detail==Alert.YES){
+									onChange(keyEvent);							
+								}else{
+									text=oldValStr;
+								}
+								tabOrEnterDown=false;
+								
+							});
+							
+						}else{
+							tabOrEnterDown=false;
+						}
+					}
+				}
+			});
 			super();
 		}
 
 	
-		public function set focusOutHandler(f:Function):void{
-			
-			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{f()});
-		}
-		
 		public function get quater():Object{
 			return super.data[column.dataField];
 		}
@@ -46,9 +110,10 @@ package gadget.control
 						quater[f]=val.toFixed(2);
 					}					
 				}
-				if(grid is MyAdvancedDataGrid){
-					MyAdvancedDataGrid(grid).refreshRow(super.listData.rowIndex);
-				}
+				
+				grid.refreshRow(super.listData.rowIndex);
+				isChanged = false;
+				
 			}
 		}
 	
@@ -56,7 +121,7 @@ package gadget.control
 		{			
 			super.listData = value;
 			if(value!=null){
-				grid = value.owner as AdvancedDataGrid;
+				grid = value.owner as MyAdvancedDataGrid;
 				var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
 				if(list!=null){					
 					column = grid.columns[list.columnIndex];

@@ -1846,10 +1846,10 @@
 				var disable_list_layout:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_LIST_LAYOUT);
 				
 				buttons.addItem({label:i18n._(LIST_BUTTON_LABEL_EDIT_LAYOUT), icon:customIcon, disabled: disable_list_layout});
-//				if(entity == Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
-//					buttons.addItem({label:i18n._("IMPACT_CALENDAR@Impact Calendar"), icon:dailyIcon, disabled: false});
-//					
-//				}
+				if(entity == Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
+					buttons.addItem({label:i18n._("IMPACT_CALENDAR@Impact Calendar"), icon:dailyIcon, disabled: false});
+					
+				}
 				// Add OrgChat
 				/*
 				if (entity == "Account") {

@@ -17,6 +17,7 @@
 			public var column:AdvancedDataGridColumn;
 			private var grid:AdvancedDataGrid;
 			private var _entity:String;
+			private var _reloadFunc:Function;
 			public function get entity():String
 			{
 				return _entity;
@@ -44,7 +45,17 @@
 				itemFinder.relation = (event.currentTarget as TextInput).data;
 				itemFinder.textInput = (event.currentTarget as TextInput);
 				itemFinder.item = data;
-				//itemFinder.reload = setModifiedAndReload;
+				itemFinder.reload = function():void{
+					if(reloadFunc!=null){
+						var relation:Object = itemFinder.relation;
+						var newVal:Object = new Object();
+						newVal[relation.keySrc] = data[relation.keySrc];
+						for(var i:int=0; i<relation.labelSrc.length; i++){
+							newVal[relation.labelSrc[i]] = data[relation.labelSrc[i]];
+						}	
+						reloadFunc(data,newVal);
+					}				
+				};
 				WindowManager.openModal(itemFinder);
 			}
 			public function get selectedItem():Object{
@@ -58,6 +69,16 @@
 					finder.data = relation;
 					
 				}
+			}
+
+			public function get reloadFunc():Function
+			{
+				return _reloadFunc;
+			}
+
+			public function set reloadFunc(value:Function):void
+			{
+				_reloadFunc = value;
 			}
 			
 			

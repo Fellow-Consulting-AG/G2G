@@ -182,7 +182,7 @@ package gadget.dao {
 		
 		private function filterByDeleted(data:ArrayCollection):void {
 			data.filterFunction = function(item:Object):Boolean {
-				return item['deleted'] == false;
+				return (item['deleted'] == false||item['deleted']==null);
 			};
 			data.refresh();
 		}

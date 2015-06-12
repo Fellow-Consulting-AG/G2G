@@ -41,6 +41,8 @@
 				"CustomDate25",//end date				
 				"ModifiedDate",	
 				"Status",
+				"Membership",
+				"TradingPartner",
 				"categorySelected"
 				
 			];

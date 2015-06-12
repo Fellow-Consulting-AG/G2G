@@ -51,6 +51,8 @@
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			
+			import org.as3commons.logging.util.objectify;
+			
 			import spark.components.supportClasses.ItemRenderer;
 			private var _list:List;
 			[Embed(source='/assets/search.png')] [Bindable] public static var searchIcon:Class;
@@ -154,16 +156,24 @@
 			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
 			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
 			
-			
+			private function updateSaleStage(data:Object):void{
+				var newVal:Object= new Object();
+				newVal.SalesStage=data.SalesStage;
+				newVal.Probability = data.Probability;
+				this.updateData(data,newVal);
+			}
+			private function updateBSArea(data:Object,oldBA:String=null):void{
+				updateFieldValue(data,'CustomPickList0',data.CustomPickList0);
+			}
 			private var all_columns:ArrayCollection = new ArrayCollection([
 				{element_name:"OwnerFullName",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 				{element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
-				{element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
-				{element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
-				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:null,properties:null,editAble:true},
-				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:null,labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:null,labelFunction : displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
+				{element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
+				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{refreshRow:false,updateData:updateData},editAble:true},
+				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction : displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
@@ -239,33 +249,50 @@
 				{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 				{element_name:"CustomCurrency2",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 				{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-				{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:function(data:Object):void{
+					updateFieldValue(data,"Status",data["Status"]);
+				},'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 			]);
 			
+			private function updateFieldValue(data:Object,field:String,newVal:Object):void{
+				var obj:Object = new Object();
+				obj[field]=newVal;
+				updateData(data,obj);
+			}
 				
 			private function changeStartOrEndDate(data:Object,field:String,newVal:Object):void{
+				var updateVal:Object = new Object();
+				updateVal[field]=newVal;
 				if(StringUtils.isEmpty(data[field])){
-					updateData(data,field,newVal,true);
+					
+					updateData(data,updateVal,true);
 				}else{
-					Alert.show(i18n._("OVERRIDE_MONTHS_MSSAGE@Do you want to override the existing monthly data for this new curve?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,this,function(event:CloseEvent):void{
+					Alert.show(i18n._("OVERRIDE_DATE_MONTHS_MSSAGE@Do you want to override the existing monthly data based on this new start date?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,this,function(event:CloseEvent):void{
 						if(event.detail==Alert.YES){
-							updateData(data,field,newVal,true);
+							updateData(data,updateVal,true);
 							
+						}else{
+							gridListAll.refreshRowByRecordId(data.OpportunityId,'OpportunityId');
 						}
-						gridListAll.refreshRowByRecordId(data.OpportunityId,'OpportunityId');
 					});
 				}
 			}
 				
-			private function updateData(data:Object, field:String,newVal:Object,callCalMonth:Boolean=false):void{
-				data[field] = newVal;
+			private function updateData(data:Object, newVal:Object,callCalMonth:Boolean=false,refreshEachRow:Boolean = true):void{
+//				data[field] = newVal;
 				for each(var r:Object in gridListAll.dataProvider){
 					if(r.OpportunityId==data.OpportunityId){
-						r[field] = newVal;
+						for(var field:String in newVal){
+							r[field] = newVal[field];
+						}
+						
 						if(callCalMonth){
 							calMonth(r);
 						}
 					}
+				}
+				if(refreshEachRow){
+					gridListAll.refreshRowByRecordId(data.OpportunityId,'OpportunityId');
 				}
 			}	
 				
@@ -303,7 +330,7 @@
 			private function calculateMonthByAnnualizedImpact(row:Object,oldSelected:String=null):void{
 				if(!StringUtils.isEmpty(oldSelected)){
 					//
-					Alert.show(i18n._("OVERRIDE_MONTHS_MSSAGE@Do you want to override the existing monthly data for this new curve?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,this,function(event:CloseEvent):void{
+					Alert.show(i18n._("OVERRIDE_CURVE_MONTHS_MSSAGE@Do you want to override the existing monthly data for this new curve?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,this,function(event:CloseEvent):void{
 						if(event.detail==Alert.YES){
 							//calMonth(row);
 							//right now loop over all recs to check related data
@@ -320,7 +347,14 @@
 						gridListAll.refreshRowByRecordId(row.OpportunityId,'OpportunityId');
 					});
 				}else{
-					calMonth(row);
+					//right now loop over all recs to check related data
+					for each(var obj:Object in gridListAll.dataProvider){
+						if(obj!=row && row.OpportunityId==obj.OpportunityId){
+							obj.CustomPickList7 = row.CustomPickList7;
+						}
+						calMonth(obj);
+					}
+					gridListAll.refreshRowByRecordId(row.OpportunityId,'OpportunityId');
 				}
 			}
 			//"CustomDate26",//Stard Date

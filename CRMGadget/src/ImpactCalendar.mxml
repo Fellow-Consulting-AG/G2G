@@ -249,10 +249,12 @@
 				{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 				{element_name:"CustomCurrency2",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 				{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-				{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:function(data:Object):void{
-					updateFieldValue(data,"Status",data["Status"]);
-				},'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateStatus,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 			]);
+				
+			private function updateStatus(data:Object,oldSelected:String=null):void{
+				updateFieldValue(data,"Status",data["Status"]);
+			}
 			
 			private function updateFieldValue(data:Object,field:String,newVal:Object):void{
 				var obj:Object = new Object();

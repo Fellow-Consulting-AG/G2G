@@ -125,7 +125,7 @@
 								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
 								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
 								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q18.CustomCurrency1':0.0833333}],
+								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
 				'3 Month Curve':[{'Q1.CustomCurrency0':0.025},{'Q1.CustomCurrency2':0.05},{'Q1.CustomCurrency1':0.075},
 								{'Q2.CustomCurrency0':0.0833333},{'Q2.CustomCurrency2':0.0833333},{'Q2.CustomCurrency1':0.0833333},
 								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
@@ -133,7 +133,7 @@
 								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
 								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
 								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q18.CustomCurrency1':0.0833333}],
+								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
 				'6 Month Curve':[{'Q1.CustomCurrency0':0.02},{'Q1.CustomCurrency2':0.03},{'Q1.CustomCurrency1':0.04},
 								{'Q2.CustomCurrency0':0.05},{'Q2.CustomCurrency2':0.06},{'Q2.CustomCurrency1':0.07},
 								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
@@ -141,7 +141,7 @@
 								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
 								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
 								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q18.CustomCurrency1':0.0833333}],
+								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
 				'Up-front Purchase':[{'Q1.CustomCurrency0':0.32},{'Q1.CustomCurrency2':0.06},{'Q1.CustomCurrency1':0.04},
 								{'Q2.CustomCurrency0':0.0833333},{'Q2.CustomCurrency2':0.0833333},{'Q2.CustomCurrency1':0.0833333},
 								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
@@ -149,7 +149,7 @@
 								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
 								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
 								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q18.CustomCurrency1':0.0833333}]		
+								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}]		
 			
 			};
 			
@@ -1115,13 +1115,25 @@
 			}
 			
 			
+
+			protected function cancelAction(event:MouseEvent):void
+			{
+				Alert.show("Do you want to cancel?","GLOBAL_WARNING@Warning",Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
+					if(closeEvent.detail==Alert.YES){
+						reloadData();
+					}
+					
+				
+				});
+			}
+
 		]]>
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
 		<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
 			<mx:LinkButton label="{i18n._('NORMAL_MODE@Normal Mode')}"  click="list.showHomeOpportunity()" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
 			<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="{i18n._('EXPORT_EXCEL@Export Excel')}" />
-			<mx:LinkButton icon="{closeIcon}" label="Cancel"/>
+			<mx:LinkButton icon="{closeIcon}" label="Cancel" click="cancelAction(event)"/>
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>
 		</mx:HBox>
 		<mx:Label paddingTop="20" text="{i18n._('TOTAL_OF_ALL_OPPORTUNITY@Total of all Opportunities')}" />

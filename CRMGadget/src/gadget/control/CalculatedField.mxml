@@ -669,7 +669,9 @@
 								}
 							}
 							if(txtEntity.text == Database.businessPlanDao.entity||txtEntity.text==Database.objectivesDao.entity){
-								customField["column_name"] = txtFieldName.text;
+								if(!StringUtils.isEmpty(txtFieldName.text)){
+									customField["column_name"] = txtFieldName.text;
+								}
 							}
 							//dataField["customField"] = customField;		
 							

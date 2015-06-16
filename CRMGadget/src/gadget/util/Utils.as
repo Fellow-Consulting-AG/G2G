@@ -2215,14 +2215,22 @@ package gadget.util {
 			dao = Database.customFieldDao;
 			dao.delete_all();
 			commitObjects(dao,xml.elements("custom_fields").children(),true,function(obj:Object):void{
-				if(obj.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
-						Database.customFieldDao.addTableColumn(obj.entity,obj.fieldName,"TEXT");
-						if(obj.fieldType=='Formula') CalculatedField.refreshFormulaField(obj,false);
-				}
-				
-				if(obj.column_name.indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
-					PicklistService.getPicklist(obj.entity,obj.fieldName,true,true,true);
-					PicklistService.getBindPicklist(obj.entity,obj.fieldName,true,true);			
+				try{
+					if(!StringUtils.isEmpty(obj.column_name)){
+						if(obj.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
+								Database.customFieldDao.addTableColumn(obj.entity,obj.fieldName,"TEXT");
+								if(obj.fieldType=='Formula') CalculatedField.refreshFormulaField(obj,false);
+						}
+						
+						if(obj.column_name.indexOf(CustomLayout.BINDPICKLIST_CODE)>-1){
+							//refresh picklist in cache
+							PicklistService.getPicklist(obj.entity,obj.fieldName,true,true,true);
+							PicklistService.getBindPicklist(obj.entity,obj.fieldName,true,true);			
+						}
+					}
+						
+				}catch(e:Error){
+					trace(e.getStackTrace());
 				}
 				
 			});			

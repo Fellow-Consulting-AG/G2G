@@ -1113,9 +1113,7 @@
 				}
 				//				addRecentlyViewed(item);
 				if(isRefreshList){
-					list.filterData();
-					list.initGridColumns();
-					list.detail.loadData();
+					list.refreshList();					
 				}
 				
 				

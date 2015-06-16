@@ -137,7 +137,7 @@
 			
 			private const MAINWINDOW_TOOLTIP_LIST:String = 'GLOBAL_LIST';
 			
-			private const MAINWINDOW_MENUITEM_VIEW:String = 'GLOBAL_VIEW';
+			private const MAINWINDOW_MENUITEM_VIEW:String = 'GLOBAL_HOME_VIEW';
 			private const GLOBAL_NEW:String = 'GLOBAL_NEW';
 			private const MAINWINDOW_TOOLTIP_PLEASE_SETUP:String = 'MAINWINDOW_TOOLTIP_PLEASE_SETUP';
 			private const MAINWINDOW_TOOLTIP_NO_LOCAL_DATA:String = 'MAINWINDOW_TOOLTIP_NO_LOCAL_DATA';
@@ -1193,7 +1193,7 @@
 			private function createViewMenuItem(entity:String, display_plural_name:String):Object {
 				var x:Object =  new Object();
 				x.entity = entity;                                                                                               
-				x.label = i18n._(MAINWINDOW_MENUITEM_VIEW) + " " + display_plural_name;
+				x.label = i18n._(MAINWINDOW_MENUITEM_VIEW, display_plural_name);
 				x.data = "View " + entity;
 				x.type = "radio";
 				x.groupName = "one";

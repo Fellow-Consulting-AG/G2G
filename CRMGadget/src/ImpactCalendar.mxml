@@ -1057,7 +1057,7 @@
 					//	fr.save(bytes,"SampleExport.xls");
 					
 					
-					var f:File = new File();
+					var f:File = File.desktopDirectory.resolvePath("Opportunity Forecast");
 					
 					f.addEventListener(Event.SELECT, function (event:Event):void{
 						var file:File = event.currentTarget as File;
@@ -1102,7 +1102,7 @@
 					//					f.addEventListener(Event.SELECT, exportFileSelectedHandler);
 					f.addEventListener(IOErrorEvent.IO_ERROR, exportErrorHandler);
 					f.addEventListener(SecurityErrorEvent.SECURITY_ERROR, exportErrorHandler);
-					f.browseForSave("Open Excel File");
+					f.browseForSave(i18n._('GLOBAL_SAVE'));
 				}
 				
 			}

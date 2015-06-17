@@ -3,6 +3,8 @@ package gadget.control
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	
+	import gadget.util.StringUtils;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.AdvancedDataGrid;
 	import mx.controls.TextInput;
@@ -60,7 +62,13 @@ package gadget.control
 					}
 
 		}
-		
+		override public function set data(value:Object):void{
+			super.data = value;
+			setFocus();
+			if(!StringUtils.isEmpty(super.text)){
+				setSelection(super.text.length,super.text.length);
+			}
+		}
 		
 		override public function set listData(value:BaseListData):void
 		{

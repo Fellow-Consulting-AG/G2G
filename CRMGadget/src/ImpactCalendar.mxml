@@ -4,7 +4,7 @@
 	width="100%" height="100%"
 	verticalScrollPolicy="off"
 	
-	initialize="init()" xmlns:control="gadget.control.*"
+	initialize="init()" xmlns:control="gadget.control.*"	
 	>
 	<mx:Script>
 		<![CDATA[
@@ -50,7 +50,9 @@
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ScrollEvent;
+			import mx.states.OverrideBase;
 			
 			import org.as3commons.logging.util.objectify;
 			
@@ -297,7 +299,14 @@
 			}
 			
 			private function getChangeVsLastFY(item:Object,col:AdvancedDataGridColumn):String{
-				var total:Number = parseFloat(getCurrentFyImpact(item))- parseFloat(item.CustomCurrency3);
+			
+				var total:Number =0;
+				if(StringUtils.isEmpty(item.CustomCurrency3)){
+					total= parseFloat(getCurrentFyImpact(item));
+				}else{
+					total= parseFloat(getCurrentFyImpact(item))- parseFloat(item.CustomCurrency3);
+				}
+				
 				return total.toFixed(2);
 			}
 			private function getCurveTypevalue(curveType:String):Array{
@@ -374,7 +383,7 @@
 								}
 								if(cal){									
 									var monthVal:Number = 0;
-									if(currentMonthIdx>curveVal.length){
+									if(currentMonthIdx>=curveVal.length){
 										monthVal= annulizedInpact*curveVal[curveVal.length-1];
 									}else{
 										monthVal= annulizedInpact*curveVal[currentMonthIdx];
@@ -743,8 +752,8 @@
 			}
 			public function reloadData():void{
 				rows = Database.opportunityDao.findImpactCalendar(OP_FIELD,CO7_FIELD);
-				rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),isTotal:true});
-				rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),isTotal:true});
+//				rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),isTotal:true});
+//				rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),isTotal:true});
 				//refresh total
 				calculateTotalAllOpportunity();
 				//calculateList(rows);
@@ -1100,7 +1109,7 @@
 
 			protected function cancelAction(event:MouseEvent):void
 			{
-				Alert.show("Do you want to cancel?","GLOBAL_WARNING@Warning",Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
+				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("GLOBAL_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
 					if(closeEvent.detail==Alert.YES){
 						reloadData();
 					}
@@ -1109,17 +1118,6 @@
 				});
 			}
 
-			protected function blockGrid_scrollHandler(event:ScrollEvent):void
-			{
-				trace(event.detail);
-				trace(event.position);
-				trace(blockGrid.x);
-				if(gridListAll.verticalScroll!=null){
-					gridListAll.verticalScroll.x = (blockGrid.width+event.position)-18;
-				}
-				
-			}
-			
 		]]>
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
@@ -1162,8 +1160,9 @@
 				<mx:TextInput id="txtTerritory" change="advanceSearch()" width="130"/>
 			</mx:VBox>
 		</mx:HBox>
-		<mx:Canvas height="100%" id="blockGrid" scroll="blockGrid_scrollHandler(event)" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
-			<control:MyAdvancedDataGrid impactCalendarGrid="true" drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
+		
+		<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="off" width="100%" verticalScrollPolicy="off">
+			<control:MyAdvancedDataGrid impactCalendarGrid="true" horizontalScrollPolicy="auto" drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
 		</mx:Canvas>
 	</mx:VBox>
 	

@@ -846,9 +846,7 @@
 					createTabCustom(REVENUE_REPORT,navTabsData,revHeader);
 					
 				}
-				if(Database.preferencesDao.isEnableSegmentTargeting()){
-					createTabCustom(SEGMENTATION_TARGET,navTabsData,LABEL_SEGMENTATION_TARGET);
-				}
+				
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					createTabCustom(CHAT,navTabsData,LABEL_CHAT);
 				}
@@ -938,7 +936,10 @@
 						}		    		
 					}
 				}
-				
+				//add it as last tab
+				if(Database.preferencesDao.isEnableSegmentTargeting()){
+					createTabCustom(SEGMENTATION_TARGET,navTabsData,LABEL_SEGMENTATION_TARGET);
+				}
 				if(UserService.getCustomerId() == UserService.NESTLE){
 					createMenuData.push({ type:"separator"});
 					var rule:HRule = new HRule();

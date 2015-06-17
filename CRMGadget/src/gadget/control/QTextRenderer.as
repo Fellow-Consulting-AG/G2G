@@ -58,6 +58,7 @@ package gadget.control
 				
 			
 			});
+			
 			addEventListener(KeyboardEvent.KEY_DOWN,function(keyEvent:KeyboardEvent):void{
 				//fixed npe error when click tab
 				if(keyEvent.keyCode==Keyboard.TAB || keyEvent.keyCode==Keyboard.ENTER){
@@ -90,7 +91,14 @@ package gadget.control
 			super();
 		}
 
-	
+		override public function set data(value:Object):void{
+			super.data = value;
+			setFocus();
+			if(!StringUtils.isEmpty(super.text)){
+				setSelection(super.text.length,super.text.length);
+			}
+		}
+		
 		public function get quater():Object{
 			return super.data[column.dataField];
 		}

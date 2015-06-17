@@ -20,6 +20,7 @@
 			import gadget.service.PicklistService;
 			import gadget.util.FieldUtils;
 			import gadget.util.StringUtils;
+			import gadget.util.Utils;
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
@@ -178,7 +179,7 @@
 		<mx:VBox top="32" left="16" right="16" verticalGap="3">
 			<!--<mx:Label id="info" left="0"/>-->
 			<mx:Form width="100%">
-				<mx:FormItem label="User" required="true">
+				<mx:FormItem label="{Database.customLayoutDao.getDisplayName(Database.allUsersDao.entity)}" required="true">
 					<control:ImageTextInput  width="200" id="userInput"  />
 				</mx:FormItem>
 				<mx:FormItem label="{getLabel('TeamRole')}"  >					

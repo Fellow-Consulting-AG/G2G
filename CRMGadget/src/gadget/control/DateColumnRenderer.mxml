@@ -35,18 +35,21 @@
 				return data[column.dataField];
 			}
 			override public function set data(value:Object):void{		
-				super.data = value;				
-				if(data!=null){		
-					var dateObject:Date;
-					var tmpDate:Object = data[column.dataField];
-					if(tmpDate is Date){
-						dateObject = tmpDate as Date;
-					} else if(tmpDate != null && tmpDate != ""){
-						dateObject = DateUtils.guessAndParse(tmpDate as String);	
+				super.data = value;		
+				if(column!=null){
+					if(data!=null){		
+						var dateObject:Date;
+						var tmpDate:Object = data[column.dataField];
+						if(tmpDate is Date){
+							dateObject = tmpDate as Date;
+						} else if(tmpDate != null && tmpDate != ""){
+							dateObject = DateUtils.guessAndParse(tmpDate as String);	
+						}
+						currentDate.selectedDate = dateObject;
+						
+						
 					}
-					currentDate.selectedDate = dateObject;
-					
-					
+					currentDate.setFocus();
 				}
 			}
 			

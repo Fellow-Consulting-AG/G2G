@@ -134,14 +134,8 @@ package gadget.control
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{			
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			if(this.verticalScrollBar!=null && impactCalendarGrid){
-				if(parent is Canvas){
-					if(Canvas(parent).verticalScrollBar!=null){
-						this.verticalScrollBar.x = parent.width+Canvas(parent).verticalScrollPosition-18;
-					}else{
-						//this.verticalScrollBar.x = parent.width-18;
-					}
-				}
+			if(impactCalendarGrid){	
+				this.width= parent.width;
 			}
 		}
 		
@@ -158,6 +152,9 @@ package gadget.control
 //					var renderer:Object = listItems[editedItemPosition.rowIndex][editedItemPosition.columnIndex];
 //				}
 //			}
+			if(editedItemPosition!=null && impactCalendarGrid && event.keyCode==Keyboard.TAB){
+				
+			}
 			
 		}
 
@@ -168,7 +165,7 @@ package gadget.control
 
 		public function set impactCalendarGrid(value:Boolean):void
 		{
-			_impactCalendarGrid = value;
+			_impactCalendarGrid = value;			
 		}
 
 		

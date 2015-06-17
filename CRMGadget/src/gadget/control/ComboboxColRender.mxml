@@ -32,19 +32,22 @@
 
 			override public function set data(value:Object):void{		
 				 super.data = value;
-				 if(column!=null && value){
-					 var val:String = value[column.dataField];						
-					 var pickList:ArrayCollection = null;
-					 if("SalesStage" == column.dataField){
-						 pickList = Utils.getSalesStage();
-					 }else{
-						 pickList = PicklistService.getPicklist(entity,column.dataField);
+				 if(column!=null){
+					 if(value!=null){
+						 var val:String = value[column.dataField];						
+						 var pickList:ArrayCollection = null;
+						 if("SalesStage" == column.dataField){
+							 pickList = Utils.getSalesStage();
+						 }else{
+							 pickList = PicklistService.getPicklist(entity,column.dataField);
+						 }
+						 if(hideItems!=null){
+							 hideItems(pickList,data);
+						 }
+						 cborender.dataProvider = pickList;
+						 cborender.selectedIndex=getSelectedIndex(val);
 					 }
-					 if(hideItems!=null){
-						 hideItems(pickList,data);
-					 }
-					 cborender.dataProvider = pickList;
-					 cborender.selectedIndex=getSelectedIndex(val);
+					 cborender.setFocus();
 				 }			
 			 }		
 			private function getSelectedIndex(label:String):int{

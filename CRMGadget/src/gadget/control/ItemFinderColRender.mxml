@@ -40,6 +40,13 @@
 				}
 				
 			}	
+			override public function set data(value:Object):void{
+				super.data = value;
+				if(column!=null){
+					finder.setFocus();
+				}
+			}
+			
 			private function finderClick(event:MouseEvent):void{
 				var itemFinder:ItemFinder = new ItemFinder();
 				itemFinder.relation = (event.currentTarget as TextInput).data;

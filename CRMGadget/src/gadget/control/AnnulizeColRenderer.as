@@ -1,5 +1,7 @@
 package gadget.control
 {
+	import com.adobe.utils.StringUtil;
+	
 	import flash.events.Event;
 	
 	
@@ -19,7 +21,7 @@ package gadget.control
 			
 			if(column != null){
 				
-				super.data[column.dataField]=super.text;
+				super.data[column.dataField]=StringUtil.trim(super.text);
 				if(calculateMonth!=null){
 					calculateMonth(super.data);	
 				}				

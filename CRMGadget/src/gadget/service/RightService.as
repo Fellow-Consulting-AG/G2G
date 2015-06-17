@@ -90,11 +90,15 @@ package gadget.service
 		
 		private static function readRight(entity:String,forOwner:Boolean=true):Object {
 			if (entity != null) {
-				var role:String = Database.rightDAO.getRole();		
+				var role:String = Database.rightDAO.getRole();	
+				if(role != null && role != ""){
+					role = role.replace("[","").replace("]","");
+				}
 				var roleObject:Object=Database.roleServiceDao.getRole(role);	
 //				if(entity==Database.businessPlanDao.entity){
 //					entity = "CRMODLS_BusinessPlan";
 //				}
+				
 				var right:Object = Database.rightDAO.getRight(role, entity);
 				if(right==null){
 					var dao:BaseDAO = Database.getDao(entity,false);

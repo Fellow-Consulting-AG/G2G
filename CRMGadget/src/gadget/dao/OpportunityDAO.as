@@ -799,15 +799,32 @@ package gadget.dao
 			if(op!=null){
 				objSav.OpportunityId=op.OpportunityId;
 				objSav.OpportunityName=op.OpportunityName;
+				objSav.AccountName=op.AccountName;
+				objSav.AccountId = op.AccountId;
 			}else{
 				objSav.OpportunityId=obj.OpportunityId;
 				objSav.OpportunityName=obj.OpportunityName;
+				objSav.AccountName=obj.AccountName;
+				objSav.AccountId = obj.AccountId;
 			}
 			
 			//CustomPickList33 it is quater
 			objSav.CustomPickList33=quater;
 			delete objSav['co7_gadget_id'];
 			if(StringUtils.isEmpty(objSav['gadget_id'])){
+				//name is opportunityname_category_quater
+				var name:String = objSav.OpportunityName+'_'+objSav.CustomPickList31;
+				//CustomPickList33 is quater picklist
+				if(!StringUtils.isEmpty(objSav.CustomPickList33)){
+					name = name+'_'+objSav.CustomPickList33;
+				}
+				objSav.Name = name;
+				//set owner 
+				var dao:BaseDAO = Database.customObject7Dao;
+				for each(var obj:Object in dao.getOwnerFields()){						
+					objSav[obj.entityField] = Database.allUsersDao.ownerUser()[obj.userField];
+				}
+				
 				
 				Database.customObject7Dao.insert(objSav);
 				var item:Object=Database.customObject7Dao.selectLastRecord()[0];

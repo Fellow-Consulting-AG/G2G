@@ -8,17 +8,21 @@ package gadget.control
 	import gadget.assessment.AssessmentSectionTotal;
 	
 	import mx.collections.ArrayCollection;
+	import mx.containers.Canvas;
 	import mx.controls.AdvancedDataGrid;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 	import mx.controls.listClasses.IDropInListItemRenderer;
+	import mx.controls.scrollClasses.ScrollBar;
 	import mx.core.IInvalidating;
+	import mx.core.UIComponent;
 	
 	public class MyAdvancedDataGrid extends AdvancedDataGrid
 	{
 		
 		private var _drawBg:Boolean=true;
 		private var _refreshFunction:Function;
+		private var _impactCalendarGrid:Boolean=false;
 		
 		public function MyAdvancedDataGrid()
 		{
@@ -127,6 +131,25 @@ package gadget.control
 			}
 		}	
 		
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		{			
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			if(this.verticalScrollBar!=null && impactCalendarGrid){
+				if(parent is Canvas){
+					if(Canvas(parent).verticalScrollBar!=null){
+						this.verticalScrollBar.x = parent.width+Canvas(parent).verticalScrollPosition-18;
+					}else{
+						//this.verticalScrollBar.x = parent.width-18;
+					}
+				}
+			}
+		}
+		
+		public function get verticalScroll():ScrollBar{
+			return this.verticalScrollBar;
+		}
+		
+		
 		override protected function keyDownHandler(event:KeyboardEvent):void
 		{
 			super.keyDownHandler(event);
@@ -137,6 +160,17 @@ package gadget.control
 //			}
 			
 		}
+
+		public function get impactCalendarGrid():Boolean
+		{
+			return _impactCalendarGrid;
+		}
+
+		public function set impactCalendarGrid(value:Boolean):void
+		{
+			_impactCalendarGrid = value;
+		}
+
 		
 	}
 }

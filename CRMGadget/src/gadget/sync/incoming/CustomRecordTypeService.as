@@ -31,6 +31,8 @@ package gadget.sync.incoming {
 			if (allTransactions == null) {
 				var tmpTransaction:ArrayCollection = Database.transactionDao.listTransaction();
 				allTransactions = new ArrayCollection() ;
+				//should be add user
+				allTransactions.addItem(Database.allUsersDao.entity);
 				for each(var transaction:Object in tmpTransaction) {
 					if (transaction.enabled) {
 //						var entityTran:String = transaction.entity;

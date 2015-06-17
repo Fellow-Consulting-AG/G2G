@@ -50,6 +50,7 @@
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.ScrollEvent;
 			
 			import org.as3commons.logging.util.objectify;
 			
@@ -118,40 +119,14 @@
 			];
 			
 			private static const MAP_CURVE_TYPE_VALUE:Object={
-				'Straight Line':[{'Q1.CustomCurrency0':0.0833333},{'Q1.CustomCurrency2':0.0833333},{'Q1.CustomCurrency1':0.0833333},
-								{'Q2.CustomCurrency0':0.0833333},{'Q2.CustomCurrency2':0.0833333},{'Q2.CustomCurrency1':0.0833333},
-								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
-								{'Q4.CustomCurrency0':0.0833333},{'Q4.CustomCurrency2':0.0833333},{'Q4.CustomCurrency1':0.0833333},
-								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
-								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
-								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
-				'3 Month Curve':[{'Q1.CustomCurrency0':0.025},{'Q1.CustomCurrency2':0.05},{'Q1.CustomCurrency1':0.075},
-								{'Q2.CustomCurrency0':0.0833333},{'Q2.CustomCurrency2':0.0833333},{'Q2.CustomCurrency1':0.0833333},
-								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
-								{'Q4.CustomCurrency0':0.0833333},{'Q4.CustomCurrency2':0.0833333},{'Q4.CustomCurrency1':0.0833333},
-								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
-								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
-								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
-				'6 Month Curve':[{'Q1.CustomCurrency0':0.02},{'Q1.CustomCurrency2':0.03},{'Q1.CustomCurrency1':0.04},
-								{'Q2.CustomCurrency0':0.05},{'Q2.CustomCurrency2':0.06},{'Q2.CustomCurrency1':0.07},
-								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
-								{'Q4.CustomCurrency0':0.0833333},{'Q4.CustomCurrency2':0.0833333},{'Q4.CustomCurrency1':0.0833333},
-								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
-								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
-								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}],
-				'Up-front Purchase':[{'Q1.CustomCurrency0':0.32},{'Q1.CustomCurrency2':0.06},{'Q1.CustomCurrency1':0.04},
-								{'Q2.CustomCurrency0':0.0833333},{'Q2.CustomCurrency2':0.0833333},{'Q2.CustomCurrency1':0.0833333},
-								{'Q3.CustomCurrency0':0.0833333},{'Q3.CustomCurrency2':0.0833333},{'Q3.CustomCurrency1':0.0833333},
-								{'Q4.CustomCurrency0':0.0833333},{'Q4.CustomCurrency2':0.0833333},{'Q4.CustomCurrency1':0.0833333},
-								{'Q5.CustomCurrency0':0.0833333},{'Q5.CustomCurrency2':0.0833333},{'Q5.CustomCurrency1':0.0833333},
-								{'Q6.CustomCurrency0':0.0833333},{'Q6.CustomCurrency2':0.0833333},{'Q6.CustomCurrency1':0.0833333},
-								{'Q7.CustomCurrency0':0.0833333},{'Q7.CustomCurrency2':0.0833333},{'Q7.CustomCurrency1':0.0833333},
-								{'Q8.CustomCurrency0':0.0833333},{'Q8.CustomCurrency2':0.0833333},{'Q8.CustomCurrency1':0.0833333}]		
+				//last item is default value
+				'Straight Line':[0.0833333],
+				'3 Month Curve':[0.025,0.05,0.075,0.0833333],
+				'6 Month Curve':[0.02,0.03,0.04,0.05,0.06,0.07,0.0833333],
+				'Up-front Purchase':[0.32,0.06,0.04,0.0833333]		
 			
 			};
+			
 			
 			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
 			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
@@ -177,8 +152,8 @@
 				{element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
-				{element_name:"CustomDate26",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate25",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate26",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate25",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
@@ -369,19 +344,20 @@
 				var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
 				var currentMonth:Date = new Date(currentYear.fullYear-1,9,1,0,0,0,0)
 				if(curveVal!=null && minDate!=null && maxDate!=null){
+					var currentMonthIdx:int = 0;
 					//CustomCurrency0 is annulized
 					var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row));
 					if(annulizedInpact>0){
-						for each(var o:Object in curveVal){
-							for(var f:String in o){
-								var fields:Array = f.split('.');
-								var q:Object=row[fields[0]];
-								if(q==null){
-									q = new Object();
-									row[fields[0]]=q;
-								}
-								var cal:Boolean = false;
-								
+						var allQuater:ArrayCollection = new ArrayCollection(CURRENT_FY_QUATER);
+						allQuater.addAll(new ArrayCollection(NEXt_FY_QUATER));
+						for each(var qstr:String in allQuater){
+							var q:Object=row[qstr];
+							if(q==null){
+								q = new Object();
+								row[qstr]=q;
+							}
+							for each(var f:String in MONTH_FIELD_FOR_EACH_Q){								
+								var cal:Boolean = false;								
 								if(currentMonth.fullYear==maxDate.fullYear){
 									if(currentMonth.fullYear==minDate.fullYear){
 										cal=currentMonth.month>=minDate.month && currentMonth.month<=maxDate.month;
@@ -396,11 +372,17 @@
 										cal=currentMonth.month>=minDate.month;
 									}
 								}
-								if(cal){
-									var monthVal:Number = annulizedInpact*o[f];
-									q[fields[1]]= monthVal.toFixed(2);
+								if(cal){									
+									var monthVal:Number = 0;
+									if(currentMonthIdx>curveVal.length){
+										monthVal= annulizedInpact*curveVal[curveVal.length-1];
+									}else{
+										monthVal= annulizedInpact*curveVal[currentMonthIdx];
+									}
+									currentMonthIdx++;
+									q[f]= monthVal.toFixed(2);
 								}else{
-									q[fields[1]]="0.00";
+									q[f]="0.00";
 								}
 								currentMonth=Utils.calculateDate(1,currentMonth,"month");
 							}
@@ -1127,6 +1109,17 @@
 				});
 			}
 
+			protected function blockGrid_scrollHandler(event:ScrollEvent):void
+			{
+				trace(event.detail);
+				trace(event.position);
+				trace(blockGrid.x);
+				if(gridListAll.verticalScroll!=null){
+					gridListAll.verticalScroll.x = (blockGrid.width+event.position)-18;
+				}
+				
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
@@ -1169,8 +1162,8 @@
 				<mx:TextInput id="txtTerritory" change="advanceSearch()" width="130"/>
 			</mx:VBox>
 		</mx:HBox>
-		<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
-			<control:MyAdvancedDataGrid drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
+		<mx:Canvas height="100%" id="blockGrid" scroll="blockGrid_scrollHandler(event)" horizontalScrollPolicy="auto" width="100%" verticalScrollPolicy="off">
+			<control:MyAdvancedDataGrid impactCalendarGrid="true" drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
 		</mx:Canvas>
 	</mx:VBox>
 	

@@ -302,7 +302,7 @@ package gadget.dao
 				}
 				return display_name;
 			}
-			return entity;
+			return entity == "Note" ? i18n._("PREFERENCE_TRANSACTION_NOTE@Note") : i18n._("GLOBAL_" + entity.replace(/\s/gi,"_").toUpperCase());
 		}
 		
 		public function getPlural(entity:String, subtype:int=0):String{   

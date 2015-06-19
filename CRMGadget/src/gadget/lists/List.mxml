@@ -394,9 +394,13 @@
 							if(visibleHomeTask && homeTask.visible){
 								showHomeTasks();
 							}else{
-								filterData(); 
-								initGridColumns();
-								detail.loadData();	
+								if(boxImpactCalendar.visible && impactCalendar!=null){
+									impactCalendar.reloadData();
+								}else{
+									filterData(); 
+									initGridColumns();
+									detail.loadData();
+								}
 							}
 						}
 					}

@@ -46,8 +46,7 @@ package gadget.dao
 		private var stmtSetError:SQLStatement;
 		private var stmtSetErrorGid:SQLStatement;
 		private var stmtFindDuplicateByColumn:SQLStatement;
-		private var stmtUpdateRelationField:SQLStatement;
-		private var sqlConnection:SQLConnection;
+		private var stmtUpdateRelationField:SQLStatement;		
 		private var stmtFindMSId:SQLStatement;
 		private var stmtIncreaseImportant:SQLStatement;
 		private var stmtUpdateFavorite:SQLStatement;
@@ -57,6 +56,8 @@ package gadget.dao
 		private var stmtGetByParentId:SQLStatement;
 		protected var stmtFindRelatedSub:SQLStatement;
 		protected var stmtFindByListOID:SQLStatement;
+		
+		protected var sqlConnection:SQLConnection;
 		
 		public static function getUppernameCol(num:int):String {
 			if (num == 0) {
@@ -89,6 +90,7 @@ package gadget.dao
 		}
 
 		public function BaseDAO(work:Function, sqlConnection:SQLConnection, structure:Object) {
+			this.sqlConnection = sqlConnection;
 			var indexes:Array = getIndexColumns();
 			addRelationIndex(indexes);
 			this.sqlConnection=sqlConnection;

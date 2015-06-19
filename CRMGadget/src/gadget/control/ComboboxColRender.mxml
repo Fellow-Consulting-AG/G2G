@@ -33,6 +33,7 @@
 			override public function set data(value:Object):void{		
 				 super.data = value;
 				 if(column!=null){
+					 
 					 if(value!=null){
 						 var val:String = value[column.dataField];						
 						 var pickList:ArrayCollection = null;

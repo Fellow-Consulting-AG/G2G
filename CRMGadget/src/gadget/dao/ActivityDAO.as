@@ -1038,7 +1038,8 @@ package gadget.dao
 			"ModifiedByExt",
 			"CreatedByExt",
 			PARENTSURVEYID,
-			ASS_PAGE_NAME
+			ASS_PAGE_NAME,
+			"CompletedDatetime"
 		];
 	}
 }

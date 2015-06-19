@@ -87,24 +87,36 @@ package gadget.service
 			return right;
 		}
 	
+		private static function getRightFromDB(role:String,entity:String){
+			var right:Object = Database.rightDAO.getRight(role, entity);
+			if(right==null){
+				var dao:BaseDAO = Database.getDao(entity,false);
+				if(dao!=null){
+					right = Database.rightDAO.getRight(role, dao.metaDataEntity);
+				}
+			}
+			return right;
+		}
+		
 		
 		private static function readRight(entity:String,forOwner:Boolean=true):Object {
 			if (entity != null) {
 				var role:String = Database.rightDAO.getRole();	
-				if(role != null && role != ""){
-					role = role.replace("[","").replace("]","");
+				var origRole:String = role;
+				if(origRole != null && origRole != ""){
+					origRole = origRole.replace("[","").replace("]","");
 				}
-				var roleObject:Object=Database.roleServiceDao.getRole(role);	
+				var roleObject:Object=Database.roleServiceDao.getRole(origRole);	
+				if(roleObject==null){
+					roleObject = Database.roleServiceDao.getRole(role);	
+				}
 //				if(entity==Database.businessPlanDao.entity){
 //					entity = "CRMODLS_BusinessPlan";
 //				}
 				
-				var right:Object = Database.rightDAO.getRight(role, entity);
+				var right:Object = getRightFromDB(origRole, entity);
 				if(right==null){
-					var dao:BaseDAO = Database.getDao(entity,false);
-					if(dao!=null){
-						right = Database.rightDAO.getRight(role, dao.metaDataEntity);
-					}
+					right = getRightFromDB(role,entity);
 				}
 				
 				if(roleObject!=null){

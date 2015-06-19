@@ -26,7 +26,7 @@ package gadget.util
 		
 		public static function generateFilter(paramStartDate:String, paramEndDate:String):String{
 			var filter:String = "(StartTime >= '" + paramStartDate + "T00:00:00Z'" +
-				" AND StartTime<= '" + paramEndDate + "T00:00:00Z'" + 
+				" AND StartTime< '" + paramEndDate + "T00:00:00Z'" + 
 				" AND Activity = 'Appointment'" +
 				")";
 			
@@ -77,7 +77,7 @@ package gadget.util
 					break;
 				case SELECTED_MONTH:
 					startDate =  getFirstDateOfMonth(dateChooser);
-					endDate = new Date(startDate.getFullYear(),startDate.getMonth()+1,0);//set max date of the month
+					endDate = new Date(startDate.getFullYear(),startDate.getMonth()+1,1);//set first date of the next month
 					break;
 			}
 			var filter:String = CalendarUtils.generateFilter(DateUtils.format(startDate,DateUtils.DATABASE_DATE_FORMAT),DateUtils.format(endDate,DateUtils.DATABASE_DATE_FORMAT));
@@ -107,7 +107,7 @@ package gadget.util
 			]);			
 			
 			var startDate:String = DateUtils.format(new Date(dateCh.displayedYear,dateCh.displayedMonth,1),DateUtils.DATABASE_DATE_FORMAT);
-			var tempEndDate:Date = new Date(dateCh.displayedYear,dateCh.displayedMonth+1,0);
+			var tempEndDate:Date = new Date(dateCh.displayedYear,dateCh.displayedMonth+1,1);
 			var endDate:String = DateUtils.format(tempEndDate,DateUtils.DATABASE_DATE_FORMAT);
 			
 			return Database.activityDao.findAll(columns, "(" + generateFilter(startDate, endDate) + ")");

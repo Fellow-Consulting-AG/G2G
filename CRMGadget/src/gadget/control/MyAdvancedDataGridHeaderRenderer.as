@@ -2,6 +2,8 @@ package gadget.control
 {
 
 	
+	import com.google.analytics.debug._Style;
+	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -12,7 +14,9 @@ package gadget.control
 	import mx.containers.HBox;
 	import mx.controls.AdvancedDataGrid;
 	import mx.controls.LinkButton;
+	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridHeaderRenderer;
+	import mx.core.ClassFactory;
 	import mx.core.IUITextField;
 	import mx.core.UIComponent;
 	import mx.core.UITextField;
@@ -48,23 +52,35 @@ package gadget.control
 			super();
 		}
 		private var _switchCol:LinkButton;
-		private var _right:Boolean = true;
+		private var _expanded:Boolean = true;
 		private var _colName:String;
 		private function switchCol(e:Event):void{
-			if (_right) {
-				_switchCol.setStyle("icon", ImageUtils.rightIcon);
-				_switchCol.toolTip = i18n._('SHOW_MONTHS@Show Months');
-			} else {
-				_switchCol.setStyle("icon", ImageUtils.leftIcon);
-				_switchCol.toolTip = i18n._('HIDE_MONTHS@Hide Months');
-			}
+			
+			_expanded=!_expanded;
+			
+			setIcon(false);
 			if(colapOrExpandClick!=null){
-				colapOrExpandClick(!_right,_colName);
+				colapOrExpandClick(_expanded,_colName);
 			}
-			_right=!_right;
+			
+			storeStatusToProperties();
 			
 		}
 
+		private function storeStatusToProperties():void{
+			var col:AdvancedDataGridColumn = super.data as AdvancedDataGridColumn;
+			if(col!=null){
+				//save action to memory
+				ClassFactory(col.headerRenderer).properties.expanded = _expanded;
+			}
+		}
+		private function retrieveStatusFromProperties():void{
+			var col:AdvancedDataGridColumn = super.data as AdvancedDataGridColumn;
+			if(col!=null){
+				//get action to memory
+				 _expanded = ClassFactory(col.headerRenderer).properties.expanded;
+			}
+		}
 		
 		protected override function createChildren():void{
 			super.createChildren();
@@ -73,13 +89,29 @@ package gadget.control
 				_switchCol = new LinkButton();
 				_switchCol.width=12;
 				_switchCol.height=20;
-				_switchCol.setStyle("icon", ImageUtils.leftIcon);
-				_switchCol.toolTip = i18n._('HIDE_MONTHS@Hide Months');
+				setIcon(false);
+				
 				_switchCol.addEventListener(MouseEvent.CLICK,switchCol);
 				
 				addChild(_switchCol);
 				
 				
+			}
+		}
+		
+		
+		protected function setIcon(isCalRetrieveStatus:Boolean = true):void{
+			if(_switchCol!=null){
+				if(isCalRetrieveStatus){
+					retrieveStatusFromProperties();
+				}
+				if(!expanded){
+					_switchCol.setStyle("icon", ImageUtils.rightIcon);
+					_switchCol.toolTip = i18n._('SHOW_MONTHS@Show Months');					
+				}else{
+					_switchCol.setStyle("icon", ImageUtils.leftIcon);
+					_switchCol.toolTip = i18n._('HIDE_MONTHS@Hide Months');
+				}
 			}
 		}
 		
@@ -89,11 +121,14 @@ package gadget.control
 		override protected function updateDisplayList(unscaledWidth:Number,
 													  unscaledHeight:Number):void
 		{
+			trace(this.uid);
 			super.updateDisplayList(unscaledWidth,unscaledHeight);
 			if(_switchCol!=null){
 				
 				_switchCol.x=unscaledWidth-15;
 			}
+			
+			setIcon();
 			
 		}
 
@@ -106,6 +141,19 @@ package gadget.control
 		{
 			_colName = value;
 		}
+
+		public function get expanded():Boolean
+		{
+			return _expanded;
+		}
+
+		public function set expanded(value:Boolean):void
+		{
+			_expanded = value;
+		}
+
+		
+
 
 	}
 }

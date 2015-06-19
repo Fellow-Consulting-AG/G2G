@@ -1,6 +1,7 @@
 package gadget.dao
 {
 	import com.adobe.protocols.dict.Dict;
+	import com.adobe.utils.DateUtil;
 	
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
@@ -11,6 +12,7 @@ package gadget.dao
 	import flex.lang.reflect.Field;
 	
 	import gadget.service.UserService;
+	import gadget.util.DateUtils;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
@@ -19,7 +21,7 @@ package gadget.dao
 	public class OpportunityDAO extends BaseDAO {
 		
 		
-		public function OpportunityDAO(sqlConnection:SQLConnection, work:Function) {
+		public function OpportunityDAO(sqlConnection:SQLConnection, work:Function) {			
 			super(work, sqlConnection, {
 				table: 'opportunity',
 				oracle_id: 'OpportunityId',
@@ -675,6 +677,21 @@ package gadget.dao
 			'IndexedShortText0',
 			'IndexedShortText1'
 		];
+		protected static const MAP_MONTH:Object = {
+			'11':{min:9,max:11},
+			'10':{min:9,max:11},
+			'9':{min:9,max:11},
+			'8':{min:6,max:8},
+			'7':{min:6,max:8},
+			'6':{min:6,max:8},
+			'5':{min:3,max:5},
+			'4':{min:3,max:5},
+			'3':{min:3,max:5},
+			'2':{min:0,max:2},
+			'1':{min:0,max:2},
+			'0':{min:0,max:2}		
+		
+		};
 		public function findImpactCalendar(opColumns:Array,co7Field:Array):ArrayCollection {
 			if(UserService.getCustomerId()==UserService.COLOPLAST){//should be work for coloplast only
 				var cols:String = '';
@@ -690,7 +707,7 @@ package gadget.dao
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;
 				if (data != null && data.length>0) {
-					return plate2Row(data,getCompititor());
+					return plate2Row(data,getCompititor(),getCallExpensesForCurrentQuater());
 				}
 			}
 			return new ArrayCollection();
@@ -713,7 +730,55 @@ package gadget.dao
 			return map;
 		}
 		
-		protected function plate2Row(result:Array,opid2Compititor:Dictionary):ArrayCollection{
+		
+		
+		protected function getCallExpensesForCurrentQuater():Dictionary{
+			var today:Date = new Date();
+			
+			//quater cannot null
+			var q:Object = MAP_MONTH[today.month.toFixed()];
+			var minDate:Date = new Date(today.fullYear,q.min,1);//min date of the mon
+			var maxDate:Date = new Date(today.fullYear,q.max+1,0);//get max date of the month
+			
+			var paramStartDate:String = DateUtils.format(minDate,DateUtils.DATABASE_DATE_FORMAT);
+			var paramEndDate:String = DateUtils.format(maxDate,DateUtils.DATABASE_DATE_FORMAT);
+			
+			var stmt:SQLStatement = new SQLStatement();
+			stmt.sqlConnection = this.sqlConnection;
+			var dateFilter:String = "(CompletedDatetime >= '" + paramStartDate + "T00:00:00Z'" +
+				" AND CompletedDatetime<= '" + paramEndDate + "T23:59:59Z')";
+			stmt.text = "select AccountId,Type,count(accountid) NumCall, sum(CustomCurrency0) Expenses  from activity WHERE Type='Call' and Status='Completed' AND Activity = 'Appointment' AND "+dateFilter+"  group by accountid";
+			exec(stmt);
+			var items:ArrayCollection = new ArrayCollection(stmt.getResult().data);
+			var result:Dictionary = new Dictionary();
+			for each(var obj:Object in items){
+				result[obj.AccountId]=obj;	
+			}
+			return result;
+			
+		}
+		
+		private function setCompititor(row:Object,compititor:Object):void{
+			if(compititor!=null){
+				if(compititor.membershipgroup){
+					row.Membership = compititor.CompetitorName;
+				}
+				if(compititor.distributor){
+					row.TradingPartner = compititor.CompetitorName;
+				}
+			}
+		}
+		
+		private function setCallAndExpenses(row:Object,call:Object):void{
+			if(call!=null){
+				//"CustomText37",//Total Calls Current Quarter
+				//"CustomCurrency2",//Expenses
+				row.CustomText37= call.NumCall;
+				row.CustomCurrency2 = call.Expenses;
+			}
+		}
+		
+		protected function plate2Row(result:Array,opid2Compititor:Dictionary,accId2Call:Dictionary):ArrayCollection{
 			var dic:Dictionary = new Dictionary();
 			var rows:ArrayCollection = new ArrayCollection();
 			var opId2Row:Dictionary = new Dictionary();
@@ -724,16 +789,8 @@ package gadget.dao
 					var rId:String = obj.OpportunityId+"_"+obj.CustomPickList31;
 					var row:Object=dic[rId];
 					if(row==null){
-						var compittitor:Object = opid2Compititor[obj.OpportunityId];
+						
 						row = new Object();
-						if(compittitor!=null){
-							if(compittitor.membershipgroup){
-								row.Membership = compittitor.CompetitorName;
-							}
-							if(compittitor.distributor){
-								row.TradingPartner = compittitor.CompetitorName;
-							}
-						}
 						
 						
 						var categorySelected:ArrayCollection = opId2CategorySlected[obj.OpportunityId];
@@ -757,24 +814,19 @@ package gadget.dao
 						//it is product
 						ArrayCollection(row.categorySelected).addItem(obj.CustomPickList31);
 						Utils.copyObject(row,obj);
+						setCompititor(row,opid2Compititor[obj.OpportunityId]);
+						setCallAndExpenses(row,accId2Call[obj.AccountId]);
 					}else{
 						//it is quater
 						row[obj.CustomPickList33]=obj;
 					}
 					
+					
 				}else{
 					//opportunity no co7
 					obj.isNoCo7=true;
-					var compittitor:Object = opid2Compititor[obj.OpportunityId];
-					
-					if(compittitor!=null){
-						if(compittitor.membershipgroup){
-							obj.Membership = compittitor.CompetitorName;
-						}
-						if(compittitor.distributor){
-							obj.TradingPartner = compittitor.CompetitorName;
-						}
-					}
+					setCompititor(obj,opid2Compititor[obj.OpportunityId]);
+					setCallAndExpenses(obj,accId2Call[obj.AccountId]);
 					
 					obj.categorySelected = new ArrayCollection();
 					rows.addItem(obj);
@@ -801,11 +853,13 @@ package gadget.dao
 				objSav.OpportunityName=op.OpportunityName;
 				objSav.AccountName=op.AccountName;
 				objSav.AccountId = op.AccountId;
+				objSav.OpportunityAccountName=op.AccountName;
 			}else{
 				objSav.OpportunityId=obj.OpportunityId;
 				objSav.OpportunityName=obj.OpportunityName;
 				objSav.AccountName=obj.AccountName;
 				objSav.AccountId = obj.AccountId;
+				objSav.OpportunityAccountName=obj.AccountName;
 			}
 			
 			//CustomPickList33 it is quater

@@ -1509,9 +1509,7 @@
 					navigator.addChild( createCustomList(REVENUE_REPORT));
 					
 				}
-				if(Database.preferencesDao.isEnableSegmentTargeting()){
-					navigator.addChild( createCustomList(SEGMENTATION_TARGET) );
-				}
+				
 				
 				if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_FEED)){
 					navigator.addChild( createCustomList(CHAT) );
@@ -1527,6 +1525,9 @@
 					if(transaction.display){
 						navigator.addChild( createList(transaction.entity) );
 					}
+				}
+				if(Database.preferencesDao.isEnableSegmentTargeting()){
+					navigator.addChild( createCustomList(SEGMENTATION_TARGET) );
 				}
 				navigator.validateNow();
 			}	

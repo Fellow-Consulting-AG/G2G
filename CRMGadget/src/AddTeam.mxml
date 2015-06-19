@@ -174,8 +174,8 @@
 	</mx:Script>
 	<mx:Style source="styles.css"/>
 	
-	<mx:Canvas styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">
-		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{related + ' Team'}"/>
+	<mx:Canvas styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0">		
+		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{Database.customLayoutDao.getDisplayName(Database.allUsersDao.entity)}"/>
 		<mx:VBox top="32" left="16" right="16" verticalGap="3">
 			<!--<mx:Label id="info" left="0"/>-->
 			<mx:Form width="100%">

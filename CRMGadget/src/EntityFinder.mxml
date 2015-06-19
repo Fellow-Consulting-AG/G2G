@@ -13,6 +13,7 @@
 			import gadget.dao.Database;
 			import gadget.dao.LinkDAO;
 			import gadget.i18n.i18n;
+			import gadget.util.GUIUtils;
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
@@ -72,7 +73,7 @@
 	</mx:Script>
 	<mx:Style source="styles.css"/>
 	<mx:Canvas styleName="main" left="0" top="0" width="440" height="428" right="0" bottom="0">
-		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{Database.customLayoutDao.getDisplayName(entity) + ' ' + i18n._('GLOBAL_FINDER')}"/>
+		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{GUIUtils.getItemFinderLabel(Database.customLayoutDao.getDisplayName(entity) , i18n._('GLOBAL_FINDER'))}"/>
 		<mx:VBox top="32" left="16" right="16">
 			<mx:Form width="100%" paddingBottom="8">
 				<mx:Label id="info" left="0"/><!--CRO 05.01.2011-->

@@ -43,7 +43,9 @@
 				"Status",
 				"Membership",
 				"TradingPartner",
-				"categorySelected"
+				"categorySelected",
+				"CustomText37",//Total Calls Current Quarter
+				"CustomCurrency2",//Expenses
 				
 			];
 			

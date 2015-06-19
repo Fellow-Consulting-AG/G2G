@@ -109,7 +109,12 @@ package gadget.util
 			if("SVE" == languageCode){
 				return "Sök artikel";
 			}else{
-				return objName + finder;
+				if(UserService.getCustomerId()==UserService.COLOPLAST){
+					return objName;
+				}else{
+					return objName + finder;
+				}
+				
 			}
 		}
 		//CRO #1345

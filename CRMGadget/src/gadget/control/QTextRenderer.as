@@ -1,10 +1,13 @@
 package gadget.control
 {
+	import com.adobe.utils.StringUtil;
+	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	
+	import gadget.dao.OpportunityDAO;
 	import gadget.i18n.i18n;
 	import gadget.util.StringUtils;
 	import gadget.window.WindowManager;
@@ -90,6 +93,15 @@ package gadget.control
 			});
 			super();
 		}
+		
+		override  public function set text(value:String):void
+		{
+			if(value!=null){
+				value = StringUtil.trim(value);
+			}
+			super.text = value;
+		}
+		
 
 		override public function set data(value:Object):void{
 			super.data = value;
@@ -113,7 +125,7 @@ package gadget.control
 				var q1:int = parseInt(super.text,0);
 				if(q1>0){
 					var val:Number = q1/3;
-					for each(var f:String in ImpactCalendar.MONTH_FIELD_FOR_EACH_Q){
+					for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 						
 						quater[f]=val.toFixed(2);
 					}					

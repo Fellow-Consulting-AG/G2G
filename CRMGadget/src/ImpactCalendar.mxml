@@ -8,6 +8,7 @@
 	>
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.utils.StringUtil;
 			import com.as3xls.xls.Cell;
 			import com.as3xls.xls.ExcelFile;
 			import com.as3xls.xls.Sheet;
@@ -31,6 +32,7 @@
 			import gadget.control.SubTableRenderer;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
+			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
 			import gadget.lists.List;
 			import gadget.service.PicklistService;
@@ -97,11 +99,12 @@
 					var val:Number = parseFloat(item.CustomCurrency4);
 					var total:Number = qty*val;
 					//set annualized impact value;
-					
-					item['CustomCurrency0']=total.toFixed(2);
-					return item['CustomCurrency0'];
+					if(!isNaN(total)){
+						item['CustomCurrency0']=total.toFixed(2);
+						return item['CustomCurrency0'];
+					}
 				}
-				return null;
+				return "0";
 			}
 			private static const CO7_FIELD:Array =[
 				"CustomPickList31",//Category
@@ -114,11 +117,7 @@
 				"CustomCurrency1",//Monthly Revenue 3
 				
 			]; 
-			public static const MONTH_FIELD_FOR_EACH_Q:Array=[
-				"CustomCurrency0",//Monthly Revenue 1
-				"CustomCurrency2",//Monthly Revenue 2
-				"CustomCurrency1",//Monthly Revenue 3
-			];
+			
 			
 			private static const MAP_CURVE_TYPE_VALUE:Object={
 				//last item is default value
@@ -220,7 +219,7 @@
 				{element_name:"Q8.CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
 				{element_name:"Q8.CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
 				{element_name:"CustomCurrency1",labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
-				{element_name:"CustomCurrency3",display_name:"PREVIOUS_FY_IMPACT@Previous FY Impact",itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9',maxChars:20},editAble:true},
+				{element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9',maxChars:20},editAble:true},
 				{element_name:"ChangeVsLastFY",display_name:"CHANGE_VS_LAST_FY@Change vs last FY",labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 				{element_name:"CustomCurrency4",entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 				{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
@@ -284,6 +283,9 @@
 					}
 					
 				}
+				if(col!=null){
+					item[col.dataField]= total;
+				}
 				return total.toFixed(2);
 			}
 			private function getNextFyImpact(item:Object,col:AdvancedDataGridColumn=null):String{
@@ -295,16 +297,23 @@
 					}
 					
 				}
+				if(col!=null){
+					item[col.dataField]= total;
+				}
 				return total.toFixed(2);
 			}
 			
 			private function getChangeVsLastFY(item:Object,col:AdvancedDataGridColumn):String{
 			
 				var total:Number =0;
-				if(StringUtils.isEmpty(item.CustomCurrency3)){
+				var prefNumStr:String = null;
+				if(item.CustomCurrency3!=null){
+					prefNumStr = StringUtil.trim(item.CustomCurrency3);
+				}
+				if(StringUtils.isEmpty(prefNumStr)){
 					total= parseFloat(getCurrentFyImpact(item));
 				}else{
-					total= parseFloat(getCurrentFyImpact(item))- parseFloat(item.CustomCurrency3);
+					total= parseFloat(getCurrentFyImpact(item))- parseFloat(prefNumStr);
 				}
 				
 				return total.toFixed(2);
@@ -365,7 +374,7 @@
 								q = new Object();
 								row[qstr]=q;
 							}
-							for each(var f:String in MONTH_FIELD_FOR_EACH_Q){								
+							for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){								
 								var cal:Boolean = false;								
 								if(currentMonth.fullYear==maxDate.fullYear){
 									if(currentMonth.fullYear==minDate.fullYear){
@@ -566,7 +575,7 @@
 						//it is quater
 						if(colName.indexOf("Q")==0){
 							var total:Number =0;
-							for each(var f:String in MONTH_FIELD_FOR_EACH_Q){
+							for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 								try{
 									if(obj[f] is Number){
 										total +=Number(obj[f]);
@@ -694,6 +703,12 @@
 						col = createColumn(displayName,col_name,editAble);
 						col.itemRenderer = renderer;
 					}
+					//add editable for opportunityname
+					if(col_name=='OpportunityName'){
+						var oppEditor:ClassFactory = new ClassFactory(ImpactText);
+						oppEditor.properties = {refreshRow:false,updateData:updateData};
+						col.itemEditor = oppEditor;
+					}
 					if(col_name=="Q4" || col_name=="Q8"){
 						var headerRenderer:ClassFactory =new ClassFactory(MyAdvancedDataGridHeaderRenderer);
 						headerRenderer.properties={'colName':col_name,colapOrExpandClick:function expandOrColape(expandMonth:Boolean,name:String):void{
@@ -794,11 +809,11 @@
 				var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 				if(lstTotal != null && lstTotal.length>0){
 					var obj:Object = lstTotal[0];
-					obj.Forecast = curImpact;
+					obj.Forecast = curImpact.toFixed(2);
 					var fy:int = obj.FYTarget == null?0:obj.FYTarget;
-					obj.variance = fy - curImpact;
-					obj.closed = closed
-					obj.notclosed = notClosed
+					obj.variance = (fy - curImpact).toFixed(2);
+					obj.closed = closed.toFixed(2)
+					obj.notclosed = notClosed.toFixed(2)
 					lstTotal.refresh();
 				}else{
 					var data:ArrayCollection = new ArrayCollection();
@@ -862,11 +877,13 @@
 				var totalOpen:Number=0;
 				for each(var r:Object in gridListAll.dataProvider){
 					var currentTotalFy:Number = parseFloat(getCurrentFyImpact(r));
-					totalAll+=currentTotalFy;
-					if(r.SalesStage == SalesStageUtils.getCloseLostValue() || r.SalesStage == SalesStageUtils.getCloseWonValue()){
-						totalClosed += currentTotalFy;
-					}else{
-						totalOpen +=currentTotalFy;
+					if(!isNaN(currentTotalFy)){
+						totalAll+=currentTotalFy;
+						if(r.SalesStage == SalesStageUtils.getCloseLostValue() || r.SalesStage == SalesStageUtils.getCloseWonValue()){
+							totalClosed += currentTotalFy;
+						}else{
+							totalOpen +=currentTotalFy;
+						}
 					}
 					
 				}				

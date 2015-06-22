@@ -292,6 +292,7 @@
 				boxList.visible = true;
 				boxImpactCalendar.visible = false;
 				mainwindow.filterList.listFilters();
+				loadData();
 			}
 			private function init():void {
 				//bug #1679 CRO add new tab

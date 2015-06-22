@@ -84,7 +84,11 @@ package gadget.dao
 			
 			]);
 		
-		
+		public static const MONTH_FIELD_FOR_EACH_Q:Array=[
+			"CustomCurrency0",//Monthly Revenue 1
+			"CustomCurrency2",//Monthly Revenue 2
+			"CustomCurrency1",//Monthly Revenue 3
+		];
 		
 		private var textColumns:Array = [
 			'AccountExternalSystemId',
@@ -747,7 +751,7 @@ package gadget.dao
 			stmt.sqlConnection = this.sqlConnection;
 			var dateFilter:String = "(CompletedDatetime >= '" + paramStartDate + "T00:00:00Z'" +
 				" AND CompletedDatetime<= '" + paramEndDate + "T23:59:59Z')";
-			stmt.text = "select AccountId,Type,count(accountid) NumCall, sum(CustomCurrency0) Expenses  from activity WHERE Type='Call' and Status='Completed' AND Activity = 'Appointment' AND "+dateFilter+"  group by accountid";
+			stmt.text = "select AccountId,Type,count(accountid) NumCall, sum(CustomCurrency0) Expenses  from activity WHERE CallType='Account Call' and Status='Completed' AND Activity = 'Appointment' AND "+dateFilter+"  group by accountid";
 			exec(stmt);
 			var items:ArrayCollection = new ArrayCollection(stmt.getResult().data);
 			var result:Dictionary = new Dictionary();
@@ -814,10 +818,14 @@ package gadget.dao
 						//it is product
 						ArrayCollection(row.categorySelected).addItem(obj.CustomPickList31);
 						Utils.copyObject(row,obj);
+						//store original from db
+						row.origOP = Utils.copyModel(obj,false);
+						row.origCo7 = row.origOP;
 						setCompititor(row,opid2Compititor[obj.OpportunityId]);
 						setCallAndExpenses(row,accId2Call[obj.AccountId]);
 					}else{
 						//it is quater
+						obj.origCo7 = Utils.copyModel(obj,false);
 						row[obj.CustomPickList33]=obj;
 					}
 					
@@ -827,7 +835,8 @@ package gadget.dao
 					obj.isNoCo7=true;
 					setCompititor(obj,opid2Compititor[obj.OpportunityId]);
 					setCallAndExpenses(obj,accId2Call[obj.AccountId]);
-					
+					//store original from db
+					obj.origOP = Utils.copyModel(obj,false);
 					obj.categorySelected = new ArrayCollection();
 					rows.addItem(obj);
 				}
@@ -864,6 +873,17 @@ package gadget.dao
 			
 			//CustomPickList33 it is quater
 			objSav.CustomPickList33=quater;
+			if(!StringUtils.isEmpty(quater)){
+				var total:Number =0;
+				//save total of the quater
+				for each(var m:String in MONTH_FIELD_FOR_EACH_Q){
+					var strNum:String = obj[m];
+					if(!StringUtils.isEmpty(strNum)){
+						total+=parseFloat(strNum);
+					}
+				}
+				objSav.CustomCurrency3=total;
+			}
 			delete objSav['co7_gadget_id'];
 			if(StringUtils.isEmpty(objSav['gadget_id'])){
 				//name is opportunityname_category_quater
@@ -886,10 +906,26 @@ package gadget.dao
 				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
 				obj.co7_gadget_id = item.gadget_id;
 			}else{
-				objSav.local_update = new Date().getTime();
-				objSav.ms_local_change = new Date().getTime();
-				Database.customObject7Dao.updateByField(fields,objSav);
+				if(isChange(obj.origCo7,objSav,fields)){					
+					objSav.local_update = new Date().getTime();
+					objSav.ms_local_change = new Date().getTime();
+					Database.customObject7Dao.updateByField(fields,objSav);
+				}
 			}
+		}
+		
+		
+		protected function isChange(orig:Object,updatedObj:Object,fields:Array):Boolean{
+			for each (var f:String in fields) {
+				if (orig[f] != updatedObj[f]) {					
+					if (StringUtils.isEmpty(orig[f]) && StringUtils.isEmpty(updatedObj[f])) {
+						continue;
+					}	
+					return true;					
+				}
+			}
+			return false;
+			
 		}
 		
 		public function saveImpactCalendar(impactData:ArrayCollection,opField:Array,co7Fields:Array):void{
@@ -900,13 +936,15 @@ package gadget.dao
 						continue;//total not save
 					}
 					if(row.editable){
-						//update opportunity
-						updateByField(opField,row);
+						if(isChange(row.origOP,row,opField)){
+							//update opportunity
+							updateByField(opField,row);
+						}
 					}
 					//save product usage
 					saveCo7(co7Fields,row);
 					for(var f:String in row){
-						if(f!='categorySelected'){
+						if(f!='categorySelected' && f!='origCo7' && f!='origOP'){
 							if(row[f]!=null && typeof(row[f]) == "object"){
 								//save quater
 								saveCo7(co7Fields,row[f],f,row);

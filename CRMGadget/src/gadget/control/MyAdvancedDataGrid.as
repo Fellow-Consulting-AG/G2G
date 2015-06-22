@@ -51,7 +51,9 @@ package gadget.control
 					for each(var r:Object in colRenderers){
 						if (r is ButtonAddRenderer)
 						{
-							ButtonAddRenderer(r).data=ButtonAddRenderer(r).data;
+							ButtonAddRenderer(r).data=ButtonAddRenderer(r).data;//show/hihe button
+						}else if( r is LinkButtonRevenueColRenderer){
+							r.data = r.data;//refresh label
 						}else{
 							var listData:AdvancedDataGridListData = AdvancedDataGridListData(IDropInListItemRenderer(r).listData);
 							listData.label = _columns[listData.columnIndex].itemToLabel(r.data);

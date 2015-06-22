@@ -1,5 +1,7 @@
 package gadget.control
 {
+	import com.adobe.utils.StringUtil;
+	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	
@@ -44,13 +46,13 @@ package gadget.control
 								q=new Object();
 								super.data[fields[0]]=q;
 							}
-							q[fields[1]]=super.text;
+							q[fields[1]]=StringUtil.trim(super.text);
 						}else{
-							super.data[colName]=super.text;
+							super.data[colName]=StringUtil.trim(super.text);
 						}
 						if(updateData!=null){
 							var newVal:Object = new Object();
-							newVal[colName]=super.text;
+							newVal[colName]=StringUtil.trim(super.text);
 							updateData(super.data,newVal);
 						}
 						
@@ -65,9 +67,18 @@ package gadget.control
 		override public function set data(value:Object):void{
 			super.data = value;
 			setFocus();
-			if(!StringUtils.isEmpty(super.text)){
-				setSelection(super.text.length,super.text.length);
+			var str:String = StringUtil.trim(super.text);
+			if(!StringUtils.isEmpty(str)){
+				setSelection(str.length,str.length);
 			}
+		}
+		
+		override  public function set text(value:String):void
+		{
+			if(value!=null){
+				value = StringUtil.trim(value);
+			}
+			super.text = value;
 		}
 		
 		override public function set listData(value:BaseListData):void

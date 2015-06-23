@@ -128,6 +128,7 @@
 			
 			};
 			
+			private static const MANDATORY_FIELD:Array =["CustomPickList31","CustomPickList34","CustomNumber0","CustomCurrency4","CustomPickList7"];
 			
 			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
 			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
@@ -1000,8 +1001,15 @@
 				
 				
 			}
+			
+			private function checkMandatory():Boolean{
+				return false;
+			}
+			
 			private function save():void{
-				Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
+				if(!checkMandatory()){
+					Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
+				}
 				
 			}
 			

@@ -739,7 +739,7 @@ package gadget.dao
 					}
 					
 					if(obj.RelationshipRole=='Distributor' || obj.ReverseRelationshipRole=='Distributor'){
-						obj.distributor=obj;
+						existobj.distributor=obj;
 					}				
 					
 				}

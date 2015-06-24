@@ -307,8 +307,8 @@
 			
 				var total:Number =0;
 				var prefNumStr:String = null;
-				if(item.CustomCurrency3!=null){
-					prefNumStr = StringUtil.trim(item.CustomCurrency3);
+				if(item["co7_LastFYImpact"]!=null){
+					prefNumStr = StringUtil.trim(item["co7_LastFYImpact"]);
 				}
 				if(StringUtils.isEmpty(prefNumStr)){
 					total= parseFloat(getCurrentFyImpact(item));
@@ -697,7 +697,7 @@
 					}
 					var datafield:String = objCol.datafield==null?col_name:objCol.datafield;
 					if(objCol.isco7_field){
-						datafield=OpportunityDAO.CO7_PREFIX+col_name;
+						datafield=OpportunityDAO.CO7_PREFIX+datafield;
 					}
 					if(objCol.itemEditor != null){
 						col = createColumn(displayName,datafield,editAble,renderer);

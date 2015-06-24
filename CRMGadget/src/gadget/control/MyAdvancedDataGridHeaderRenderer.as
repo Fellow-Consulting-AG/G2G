@@ -76,7 +76,7 @@ package gadget.control
 		}
 		private function retrieveStatusFromProperties():void{
 			var col:AdvancedDataGridColumn = super.data as AdvancedDataGridColumn;
-			if(col!=null){
+			if(col!=null && ClassFactory(col.headerRenderer).properties.expanded!=null){
 				//get action to memory
 				 _expanded = ClassFactory(col.headerRenderer).properties.expanded;
 			}
@@ -90,7 +90,7 @@ package gadget.control
 				_switchCol.width=12;
 				_switchCol.height=20;
 				setIcon(false);
-				storeStatusToProperties();
+				//storeStatusToProperties();
 				_switchCol.addEventListener(MouseEvent.CLICK,switchCol);
 				
 				addChild(_switchCol);

@@ -90,7 +90,7 @@ package gadget.control
 				_switchCol.width=12;
 				_switchCol.height=20;
 				setIcon(false);
-				
+				storeStatusToProperties();
 				_switchCol.addEventListener(MouseEvent.CLICK,switchCol);
 				
 				addChild(_switchCol);

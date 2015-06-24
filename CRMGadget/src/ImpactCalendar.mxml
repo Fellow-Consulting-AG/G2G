@@ -99,9 +99,8 @@
 					var val:Number = parseFloat(item.co7_CustomCurrency4);
 					var total:Number = qty*val;
 					//set annualized impact value;
-					if(!isNaN(total)){
-						item['CustomCurrency0']=total.toFixed(2);
-						return item['CustomCurrency0'];
+					if(!isNaN(total)){						
+						return total.toFixed(2);
 					}
 				}
 				return "0";
@@ -116,7 +115,9 @@
 				"CustomCurrency2",//Monthly Revenue 2
 				"CustomCurrency1",//Monthly Revenue 3
 				"CustomCurrency3",//quater total
-				"Name"
+				"Name",
+				"LastFYImpact",
+				"Type"//product type
 				
 			]; 
 			
@@ -134,6 +135,8 @@
 			
 			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
 			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
+			private static const ALL_FY_QUATER:Array = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
+			
 			
 			private function updateSaleStage(data:Object):void{
 				var newVal:Object= new Object();
@@ -222,7 +225,7 @@
 				{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
 				{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
 				{element_name:"CustomCurrency1",labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
-				{element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9',maxChars:20},editAble:true},
+				{isco7_field:true,datafield:'LastFYImpact',element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9',maxChars:20},editAble:true},
 				{element_name:"ChangeVsLastFY",display_name:"CHANGE_VS_LAST_FY@Change vs last FY",labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 				{element_name:"CustomCurrency4",entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 				{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
@@ -285,10 +288,7 @@
 						total+=qVal;
 					}
 					
-				}
-				if(col!=null){
-					item[col.dataField]= total;
-				}
+				}				
 				return total.toFixed(2);
 			}
 			private function getNextFyImpact(item:Object,col:AdvancedDataGridColumn=null):String{
@@ -299,10 +299,7 @@
 						total+=qVal;
 					}
 					
-				}
-				if(col!=null){
-					item[col.dataField]= total;
-				}
+				}				
 				return total.toFixed(2);
 			}
 			
@@ -368,10 +365,8 @@
 					var currentMonthIdx:int = 0;
 					//CustomCurrency0 is annulized
 					var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row));
-					if(annulizedInpact>0){
-						var allQuater:ArrayCollection = new ArrayCollection(CURRENT_FY_QUATER);
-						allQuater.addAll(new ArrayCollection(NEXt_FY_QUATER));
-						for each(var qstr:String in allQuater){
+					if(annulizedInpact>0){						
+						for each(var qstr:String in ALL_FY_QUATER){
 							var q:Object=row[qstr];
 							if(q==null){
 								q = new Object();
@@ -700,7 +695,7 @@
 					}else{
 						displayName = i18n._(objCol.display_name);
 					}
-					var datafield:String = col_name;
+					var datafield:String = objCol.datafield==null?col_name:objCol.datafield;
 					if(objCol.isco7_field){
 						datafield=OpportunityDAO.CO7_PREFIX+col_name;
 					}
@@ -1008,6 +1003,19 @@
 				
 			}
 			
+			private function initOpTotal():void{
+				//"CustomCurrency0",//Annualized Impact
+				//"CustomCurrency1",//Current FY Impact
+				//"CustomCurrency3",//Previous FY Impact
+				//"CustomCurrency4",//Next FY Impact
+				for each(var r:Object in rows){
+					r.CustomCurrency0 = getAnnualizedInpact(r);
+					r.CustomCurrency1 = getCurrentFyImpact(r);
+					r.CustomCurrency3 = r[OpportunityDAO.CO7_PREFIX+'LastFYImpact'];
+					r.CustomCurrency4 = getNextFyImpact(r);
+				}
+			}
+			
 			private function checkMandatory():Boolean{				
 				for each(var r:Object in rows){
 					for each(var mf:String in MANDATORY_FIELD){
@@ -1020,7 +1028,8 @@
 			}
 			
 			private function save():void{
-				if(!checkMandatory()){					
+				if(!checkMandatory()){	
+					initOpTotal();
 					Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
 				}else{
 					Alert.show("Mandatory Field",i18n._('GLOBAL_ERROR@Error'),4,this);

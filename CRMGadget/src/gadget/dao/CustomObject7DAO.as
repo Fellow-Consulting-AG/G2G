@@ -2,6 +2,8 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	
+	import mx.collections.ArrayCollection;
 
 	public class CustomObject7DAO extends CustomeObjectBaseDao {
 
@@ -19,6 +21,15 @@ package gadget.dao
 
 		override public function get entity():String {
 			return "CustomObject7";
+		}
+		
+		protected override function getOutgoingIgnoreFields():ArrayCollection{
+			
+			return new ArrayCollection(["LastFYImpact"]);
+		}
+		protected override function getIncomingIgnoreFields():ArrayCollection{
+			
+			return new ArrayCollection(["LastFYImpact"]);
 		}
 		
 		private var textColumns:Array = [
@@ -721,6 +732,7 @@ package gadget.dao
 			"VehicleId",
 			"VehicleIntegrationId",
 			"VehicleVIN",
+			"LastFYImpact"
 			];
 	}
 }

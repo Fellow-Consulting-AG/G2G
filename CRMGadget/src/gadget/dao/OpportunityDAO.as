@@ -728,10 +728,20 @@ package gadget.dao
 			var result:ArrayCollection = Database.opportunityCompetitorDao.findAll(new ArrayCollection([{element_name:'OpportunityId,CompetitorName,RelationshipRole,ReverseRelationshipRole'}]),null,null,0);
 			if(result!=null){
 				for each(var obj:Object in result){
+					var existobj:Object = map[obj.OpportunityId];
+					if(existobj==null){
+						existobj = new Object();
+						map[obj.OpportunityId]=existobj;
+					}
 					//opportunity has only one compititor
-					obj.membershipgroup = obj.RelationshipRole=='Membership Group' || obj.ReverseRelationshipRole=='Membership Group';
-					obj.distributor=obj.RelationshipRole=='Distributor' || obj.ReverseRelationshipRole=='Distributor';
-					map[obj.OpportunityId]=obj;
+					if(obj.RelationshipRole=='Membership Group' || obj.ReverseRelationshipRole=='Membership Group'){
+						existobj.membershipgroup = obj;
+					}
+					
+					if(obj.RelationshipRole=='Distributor' || obj.ReverseRelationshipRole=='Distributor'){
+						obj.distributor=obj;
+					}				
+					
 				}
 
 			}
@@ -771,10 +781,10 @@ package gadget.dao
 		private function setCompititor(row:Object,compititor:Object):void{
 			if(compititor!=null){
 				if(compititor.membershipgroup){
-					row.Membership = compititor.CompetitorName;
+					row.Membership = compititor.membershipgroup.CompetitorName;
 				}
 				if(compititor.distributor){
-					row.TradingPartner = compititor.CompetitorName;
+					row.TradingPartner = compititor.distributor.CompetitorName;
 				}
 			}
 		}
@@ -885,6 +895,7 @@ package gadget.dao
 			
 			//CustomPickList33 it is quater
 			objSav.CustomPickList33=quater;
+			objSav.Type = 'Forecast';
 			if(!StringUtils.isEmpty(quater)){
 				var total:Number =0;
 				//save total of the quater
@@ -916,14 +927,15 @@ package gadget.dao
 				
 				//set owner 
 				var dao:BaseDAO = Database.customObject7Dao;
-				for each(var obj:Object in dao.getOwnerFields()){						
-					objSav[obj.entityField] = Database.allUsersDao.ownerUser()[obj.userField];
+				for each(var objf:Object in dao.getOwnerFields()){						
+					objSav[objf.entityField] = Database.allUsersDao.ownerUser()[objf.userField];
 				}
 				Database.customObject7Dao.insert(objSav);
 				var item:Object=Database.customObject7Dao.selectLastRecord()[0];
 				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
 				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
 				obj.co7_gadget_id = item.gadget_id;
+				obj.origCo7= objSav;
 			}else{
 				if(isChange(obj.origCo7,objSav,fields,true)){					
 					objSav.local_update = new Date().getTime();
@@ -994,7 +1006,7 @@ package gadget.dao
 						if(totalObj!=null){
 							for(var tf:String in totalObj){
 								var total:Number =totalObj[tf];
-								row[tf] = total.toFixed(4);
+								row[tf] = total.toFixed(2);
 							}
 						}
 						if(isChange(row.origOP,row,opField)){							

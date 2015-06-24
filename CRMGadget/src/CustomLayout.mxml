@@ -372,7 +372,7 @@
             	}
 				
             	Database.begin();
-            	Database.layoutDao.deleteLayout(entity, subtype);
+            	Database.layoutDao.deleteLayout(entity, subtype,false);
 				
 				for (var p:int = 0; p < mainPage.getChildren().length; p++) {
 					//save page header

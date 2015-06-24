@@ -151,9 +151,9 @@
 				}
 				*/
 				
-				var isVisible:Boolean = true;
-				if(item.isChild || item.isNew || item.isTotal || !item.editable){
-					isVisible = false;
+				var isVisible:Boolean = false;
+				if(item!=null && !item.isChild && !item.isNew && !item.isTotal && item.editable){
+					isVisible = true;
 				}
 				
 				buttonExpand.visible=isVisible;

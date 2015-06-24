@@ -104,8 +104,10 @@ package gadget.dao {
 			return result;
 		}
 		
-		public function deleteLayout(entity:String, subtype:int):void{
-			Database.customFieldDao.deleteLayout(entity, subtype);
+		public function deleteLayout(entity:String, subtype:int,deleteCustomField:Boolean=true):void{
+			if(deleteCustomField){
+				Database.customFieldDao.deleteLayout(entity, subtype);
+			}
 			Database.sqlListDAO.delete_({entity_src: entity});
 			delete_({entity:entity, subtype:subtype});
 		}

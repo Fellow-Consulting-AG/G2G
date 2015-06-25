@@ -2643,7 +2643,7 @@ package gadget.util
 			var childObj:DisplayObject;
 			if(readonly){
 				childObj = new TextInput();
-				(childObj as TextInput).text = item['AccountName'];
+				(childObj as TextInput).text = item[fieldName];
 				(childObj as TextInput).selectable = true;
 				(childObj as TextInput).enabled = false;
 				(childObj as TextInput).setStyle("fontWeight", "bold");

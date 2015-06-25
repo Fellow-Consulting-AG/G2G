@@ -199,7 +199,7 @@ package gadget.sync.task {
 			_param.warningHandler(mess, null,getCurrentRecordError());
 		}
 		
-		protected function info(mess:String){
+		protected function info(mess:String):void{
 			_param.infoHandler(mess);
 		}
 

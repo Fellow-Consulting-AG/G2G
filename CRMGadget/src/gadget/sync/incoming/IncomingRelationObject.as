@@ -42,7 +42,7 @@ package gadget.sync.incoming
 		{			
 			super.param = p;
 			//bug#8990
-			if(p.fullCompare && entityIDour==Database.accountDao.entity){
+			if((p.fullCompare||p.full) && entityIDour==Database.accountDao.entity){
 				_readParentIds = true;
 				_dependOnParent = true;
 			}

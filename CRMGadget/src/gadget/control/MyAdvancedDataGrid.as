@@ -70,9 +70,11 @@ package gadget.control
 			public function refreshRowByRecordId(recId:String,idField:String):void{
 				for(var i:int=0;i<listItems.length;i++){
 					var firstCol:Object = listItems[i][0];
-					var row:Object = firstCol.data;
-					if(row!=null && row[idField]==recId){
-						refreshRow(i,false);
+					if(firstCol!=null){
+						var row:Object = firstCol.data;
+						if(row!=null && row[idField]==recId){
+							refreshRow(i,false);
+						}
 					}
 				}
 				refreshDependOnGrid();

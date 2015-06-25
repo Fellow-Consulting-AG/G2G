@@ -1211,7 +1211,7 @@
 		</mx:HBox>
 		
 		<mx:Canvas height="100%" id="blockGrid" horizontalScrollPolicy="off" width="100%" verticalScrollPolicy="off">
-			<control:MyAdvancedDataGrid impactCalendarGrid="true" horizontalScrollPolicy="auto" drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
+			<control:MyAdvancedDataGrid groupId="OpportunityId" impactCalendarGrid="true" horizontalScrollPolicy="auto" drawBg="false" sortExpertMode="true" height="98%" displayItemsExpanded="true" dataProvider="{rows}" editable="true" variableRowHeight="true" verticalScrollPolicy="auto" id="gridListAll"/>
 		</mx:Canvas>
 	</mx:VBox>
 	

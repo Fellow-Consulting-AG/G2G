@@ -6,6 +6,7 @@ package gadget.control
 	import flash.ui.Keyboard;
 	
 	import gadget.assessment.AssessmentSectionTotal;
+	import gadget.util.StringUtils;
 	
 	import mx.collections.ArrayCollection;
 	import mx.containers.Canvas;
@@ -14,6 +15,7 @@ package gadget.control
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 	import mx.controls.listClasses.IDropInListItemRenderer;
 	import mx.controls.scrollClasses.ScrollBar;
+	import mx.core.FlexSprite;
 	import mx.core.IInvalidating;
 	import mx.core.UIComponent;
 	
@@ -23,7 +25,7 @@ package gadget.control
 		private var _drawBg:Boolean=true;
 		private var _refreshFunction:Function;
 		private var _impactCalendarGrid:Boolean=false;
-		
+		private var _groupId:String;
 		public function MyAdvancedDataGrid()
 		{
 			super();
@@ -170,6 +172,90 @@ package gadget.control
 		public function set impactCalendarGrid(value:Boolean):void
 		{
 			_impactCalendarGrid = value;			
+		}
+		
+		
+		override protected function drawRowBackgrounds():void
+		{
+			var rowBGs:Sprite = Sprite(listContent.getChildByName("rowBGs"));
+			if (!rowBGs)
+			{
+				rowBGs = new FlexSprite();
+				rowBGs.mouseEnabled = false;
+				rowBGs.name = "rowBGs";
+				listContent.addChildAt(rowBGs, 0);
+			}
+			
+			var colors:Array = getStyle("alternatingItemColors");
+			
+			if (!colors || colors.length == 0)
+				return;
+			
+			styleManager.getColorNames(colors);
+			
+			var curRow:int = 0;
+			
+			var i:int = 0;
+			var actualRow:int = verticalScrollPosition;
+			var actualLockedRow:int = 0;
+			var n:int = listItems.length;
+			var colorRow:int = 0;
+			// for Locked rows
+			while (curRow < lockedRowCount && curRow < n)
+			{
+				
+				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[colorRow % colors.length], actualLockedRow);
+				colorRow= changeColor(colorRow);
+				curRow++;
+				actualLockedRow++;
+				actualRow++;
+			}
+			
+			// for unlocked rows
+			while (curRow < n)
+			{
+				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[colorRow % colors.length], actualRow);
+				colorRow= changeColor(colorRow);
+				curRow++;
+				actualRow++;
+			}
+			
+			while (rowBGs.numChildren > i)
+			{
+				rowBGs.removeChildAt(rowBGs.numChildren - 1);
+			}
+		}
+		
+		
+		private function changeColor(colorRow:int):int{
+			
+			if(!StringUtils.isEmpty(groupId)){
+				var row:Object=rowNumberToData(colorRow);	
+				var nextRow:Object = rowNumberToData(colorRow+1);				
+				var nextGroup:String = null;
+				if(nextRow!=null){
+					nextGroup = nextRow[groupId];
+				}
+				var group:String = row[groupId];
+				if(group!= nextGroup){
+					colorRow++//change color when change group
+				}
+				
+			}else{
+				colorRow++;
+			}
+			
+			return colorRow;
+		}
+
+		public function get groupId():String
+		{
+			return _groupId;
+		}
+
+		public function set groupId(value:String):void
+		{
+			_groupId = value;
 		}
 
 		

@@ -807,6 +807,7 @@ package gadget.dao
 			var rows:ArrayCollection = new ArrayCollection();
 			var opId2Row:Dictionary = new Dictionary();
 			var opId2CategorySlected:Dictionary = new Dictionary();
+			var group:int =-1;
 			//row idenfify is opportunityId and category
 			for each(var obj:Object in result){
 				if(!StringUtils.isEmpty(obj.co7_Id)){
@@ -827,9 +828,12 @@ package gadget.dao
 						rows.addItem(row);
 						if(!opId2Row.hasOwnProperty(obj.OpportunityId)){
 							opId2Row[obj.OpportunityId]=obj.OpportunityId;
-							row.editable=true;
-						
+							row.editable=true;	
+							group++;
+							row.group=group;
+							
 						}else{
+							row.group=group;
 							row.editable=false;
 						}
 					}
@@ -856,6 +860,9 @@ package gadget.dao
 					obj.isNoCo7=true;
 					setCompititor(obj,opid2Compititor[obj.OpportunityId]);
 					setCallAndExpenses(obj,accId2Call[obj.AccountId]);
+					group++;
+					obj.group=group;
+					
 					//store original from db
 					obj.origOP = Utils.copyModel(obj,false);
 					obj.categorySelected = new ArrayCollection();
@@ -1001,7 +1008,7 @@ package gadget.dao
 					if(row.isTotal){
 						continue;//total not save
 					}
-					if(row.editable){
+					if(row.editable||row.isNoCo7){
 						var totalObj:Object = totalDic[row.OpportunityId];
 						if(totalObj!=null){
 							for(var tf:String in totalObj){

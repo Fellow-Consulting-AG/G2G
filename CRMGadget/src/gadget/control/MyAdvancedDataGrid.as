@@ -198,14 +198,11 @@ package gadget.control
 			var i:int = 0;
 			var actualRow:int = verticalScrollPosition;
 			var actualLockedRow:int = 0;
-			var n:int = listItems.length;
-			var colorRow:int = 0;
+			var n:int = listItems.length;			
 			// for Locked rows
 			while (curRow < lockedRowCount && curRow < n)
-			{
-				
-				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[colorRow % colors.length], actualLockedRow);
-				colorRow= changeColor(colorRow);
+			{				
+				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[getColorRow(actualLockedRow) % colors.length], actualLockedRow);				
 				curRow++;
 				actualLockedRow++;
 				actualRow++;
@@ -214,8 +211,7 @@ package gadget.control
 			// for unlocked rows
 			while (curRow < n)
 			{
-				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[colorRow % colors.length], actualRow);
-				colorRow= changeColor(colorRow);
+				drawRowBackground(rowBGs, i++, rowInfo[curRow].y, rowInfo[curRow].height, colors[getColorRow(actualRow) % colors.length], actualRow);				
 				curRow++;
 				actualRow++;
 			}
@@ -227,25 +223,21 @@ package gadget.control
 		}
 		
 		
-		private function changeColor(colorRow:int):int{
+		private function getColorRow(curRow:int):int{
 			
 			if(!StringUtils.isEmpty(groupId)){
-				var row:Object=rowNumberToData(colorRow);	
-				var nextRow:Object = rowNumberToData(colorRow+1);				
-				var nextGroup:String = null;
-				if(nextRow!=null){
-					nextGroup = nextRow[groupId];
-				}
-				var group:String = row[groupId];
-				if(group!= nextGroup){
-					colorRow++//change color when change group
+				
+				var row:Object = rowNumberToData(curRow);				
+			
+				if(row!=null){
+					//must be integer
+					return row[groupId];
 				}
 				
-			}else{
-				colorRow++;
+				
 			}
 			
-			return colorRow;
+			return curRow;
 		}
 
 		public function get groupId():String

@@ -43,7 +43,19 @@
 				_list = value;
 			}
 
-		
+			override public function getStyle(styleProp:String):*
+			{
+				if("alternatingItemColors"==styleProp && super.data!=null){
+					var colors:Array = super.getStyle(styleProp);
+					if(!isNaN(super.data.group)&& colors!=null && colors.length>0){
+						var realCol:Array = new Array();
+						realCol.push(colors[super.data.group%colors.length]);
+						return realCol;
+					}
+				}
+				
+				return super.getStyle(styleProp);
+			}
 
 			private function clickFunction(e:Event):void{
 				if(column!=null){

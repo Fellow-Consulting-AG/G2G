@@ -1,6 +1,9 @@
 package gadget.control
 {
 		
+	import flash.display.DisplayObject;
+	import flash.display.Graphics;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
@@ -222,7 +225,97 @@ package gadget.control
 			}
 		}
 		
-		
+//		/**
+//		 *  @private
+//		 * 
+//		 *  Get the 'lines' Sprite 
+//		 */
+//		private function getLines():Sprite
+//		{
+//			var lines:Sprite = Sprite(listSubContent.getChildByName("lines"));
+//			if (!lines)
+//			{
+//				lines = new UIComponent();
+//				lines.name = "lines";
+//				lines.cacheAsBitmap = true;
+//				lines.mouseEnabled = false;
+//				listSubContent.addChild(lines);
+//			}
+//			listSubContent.setChildIndex(lines, listSubContent.numChildren - 1);
+//			
+//			return lines;
+//		}	
+//	override	protected function drawLinesAndColumnBackgrounds():void
+//		{
+//			var lines:Sprite = getLines();
+//			lines.graphics.clear();
+//			
+//			var len:uint = getNumColumns();
+//			len = (len != -1)? len : getOptimumColumns().length;
+//			// defend against degenerate case when width == 0
+//			var optimumColumns:Array = getOptimumColumns();
+//			if (len > optimumColumns.length)
+//				len = optimumColumns.length;
+//			
+//			// draw horizontal lines
+//			drawHorizontalSeparators();
+//			
+//			// draw vertical lines
+//			drawVerticalSeparators();
+//			
+//			// draw column backgrounds
+//			if (headerInfos && hasHeaderItemsCreated(0) && hasHeaderItemsCreated(len-1))
+//			{
+//				var colBGs:Sprite = Sprite(listContent.getChildByName("colBGs"));
+//				// traverse the columns, set the sizes, draw the column backgrounds
+//				var lastChild:int = -1;
+//				for (var i:int = 0; i < len; i++)
+//				{
+//					var col:AdvancedDataGridColumn = optimumColumns[i];
+//					var bgCol:Object;
+//					if (enabled)
+//						bgCol = col.getStyle("backgroundColor");
+//					else
+//						bgCol = col.getStyle("backgroundDisabledColor");
+//					
+//					if (bgCol !== null && !isNaN(Number(bgCol)))
+//					{
+//						if (!colBGs)
+//						{
+//							colBGs = new FlexSprite();
+//							colBGs.mouseEnabled = false;
+//							colBGs.name = "colBGs";
+//							listContent.addChildAt(colBGs, listContent.getChildIndex(listContent.getChildByName("rowBGs")) + 1);
+//						}
+//						drawColumnBackground(colBGs, i, Number(bgCol), col);
+//						lastChild = i;
+//					}
+//					else if (colBGs)
+//					{
+//						var background:Shape = Shape(colBGs.getChildByName(i.toString()));
+//						if (background)
+//						{
+//							var g:Graphics = background.graphics;
+//							g.clear();
+//							colBGs.removeChild(background);
+//						}
+//					}
+//				}
+//				if (colBGs && colBGs.numChildren)
+//				{
+//					while (colBGs.numChildren)
+//					{
+//						var bg:DisplayObject = colBGs.getChildAt(colBGs.numChildren - 1);
+//						if (parseInt(bg.name) > lastChild)
+//							colBGs.removeChild(bg);
+//						else
+//							break;
+//					}
+//				}
+//			}
+//		}
+//		
+//		
 		private function getColorRow(curRow:int):int{
 			
 			if(!StringUtils.isEmpty(groupId)){

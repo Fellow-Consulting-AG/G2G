@@ -1019,34 +1019,34 @@
 			
 			private function checkMandatory():Boolean{
 				
-				for(var i:int=0;i<rows.length;i++){
-					var r:Object = rows.getItemAt(i);
-					var errorMessageArray:Array=[];
-					for (var entity:String in MANDATORY_FIELD){
-						var fields:Array = MANDATORY_FIELD[entity];
-						var isco7:Boolean = entity==Database.customObject7Dao.entity;
-						for each(var mf:String in fields){
-							var datafield:String = mf;
-							if(isco7){
-								datafield = OpportunityDAO.CO7_PREFIX+mf;
-							}
-							if(StringUtils.isEmpty(r[datafield])   ){
-								
-								errorMessageArray.push(FieldUtils.getFieldDisplayName(entity,mf)+ " "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
-								
-								
-							}
-						}
-					}
-					if(errorMessageArray.length>0){
-						Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_ERROR@Error'), Alert.OK, this,function(e:Event):void{
-							
-							gridListAll.editedItemPosition={rowIndex:i,columnIndex:1};
-						});
-						return true;
-					}
-					
-				}
+//				for(var i:int=0;i<rows.length;i++){
+//					var r:Object = rows.getItemAt(i);
+//					var errorMessageArray:Array=[];
+//					for (var entity:String in MANDATORY_FIELD){
+//						var fields:Array = MANDATORY_FIELD[entity];
+//						var isco7:Boolean = entity==Database.customObject7Dao.entity;
+//						for each(var mf:String in fields){
+//							var datafield:String = mf;
+//							if(isco7){
+//								datafield = OpportunityDAO.CO7_PREFIX+mf;
+//							}
+//							if(StringUtils.isEmpty(r[datafield])   ){
+//								
+//								errorMessageArray.push(FieldUtils.getFieldDisplayName(entity,mf)+ " "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
+//								
+//								
+//							}
+//						}
+//					}
+//					if(errorMessageArray.length>0){
+//						Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_ERROR@Error'), Alert.OK, this,function(e:Event):void{
+//							
+//							gridListAll.editedItemPosition={rowIndex:i,columnIndex:1};
+//						});
+//						return true;
+//					}
+//					
+//				}
 			
 				
 				return false;

@@ -696,12 +696,15 @@ package gadget.dao
 			'0':{min:0,max:2}		
 		
 		};
-		protected static const TOTAL_FIELD:Array=[	
+		public static const TOTAL_FIELD:Array=[	
 			"CustomCurrency0",//Annualized Impact
 			"CustomCurrency1",//Current FY Impact
 			"CustomCurrency3",//Previous FY Impact
 			"CustomCurrency4",//Next FY Impact
 		];
+		
+		public static const ALL_FY_QUATER:Array = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
+		
 		public function findImpactCalendar(opColumns:Array,co7Field:Array):ArrayCollection {
 			if(UserService.getCustomerId()==UserService.COLOPLAST){//should be work for coloplast only
 				var cols:String = '';
@@ -942,33 +945,19 @@ package gadget.dao
 				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
 				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
 				obj.co7_gadget_id = item.gadget_id;
-				obj.origCo7= objSav;
+				
 			}else{
-				if(isChange(obj.origCo7,objSav,fields,true)){					
+				//if(isChange(obj.origCo7,objSav,fields,true)){					
 					objSav.local_update = new Date().getTime();
 					objSav.ms_local_change = new Date().getTime();
 					Database.customObject7Dao.updateByField(fields,objSav);
-				}
+				//}
 			}
+			obj.origCo7= obj;
 		}
 		
 		
-		protected function isChange(orig:Object,updatedObj:Object,fields:Array,isco7:Boolean = false):Boolean{
-			for each (var f:String in fields) {
-				var origF:String = f;
-				if(isco7){
-					origF=CO7_PREFIX+f;
-				}
-				if (orig[origF] != updatedObj[f]) {					
-					if (StringUtils.isEmpty(orig[origF]) && StringUtils.isEmpty(updatedObj[f])) {
-						continue;
-					}	
-					return true;					
-				}
-			}
-			return false;
-			
-		}
+	
 		
 		//calculate total 
 		protected function calculateOpportunityTotal(data:ArrayCollection):Dictionary{
@@ -1016,22 +1005,26 @@ package gadget.dao
 								row[tf] = total.toFixed(2);
 							}
 						}
-						if(isChange(row.origOP,row,opField)){							
+						if(row.opChange){							
 							//update opportunity
 							updateByField(opField,row);
+							row.origOP=row;
 						}
 					}
 					//save product usage
-					saveCo7(co7Fields,row);
+					if(row.co7Change){
+						saveCo7(co7Fields,row);					
+					}
 					
-					for(var f:String in row){
-						if(f!='categorySelected' && f!='origCo7' && f!='origOP'){
-							if(row[f]!=null && typeof(row[f]) == "object"){
+					for each(var f:String in ALL_FY_QUATER){
+						var qObj:Object = row[f];
+						//if(f!='categorySelected' && f!='origCo7' && f!='origOP'){
+							if(qObj!=null && qObj.co7Change){
 								//save quater
-								saveCo7(co7Fields,row[f],f,row);
+								saveCo7(co7Fields,qObj,f,row);
 								
 							}
-						}
+						//}
 					}
 				}
 				Database.commit();

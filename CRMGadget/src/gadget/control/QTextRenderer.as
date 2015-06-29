@@ -31,6 +31,7 @@ package gadget.control
 		private var isChanged:Boolean = false;
 		public function QTextRenderer()
 		{
+			
 			addEventListener(Event.CHANGE,function(e:Event):void{
 				isChanged=true;
 			});

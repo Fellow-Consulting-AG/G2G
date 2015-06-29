@@ -4,7 +4,7 @@
 	width="100%" height="100%"
 	verticalScrollPolicy="off"
 	
-	initialize="init()" xmlns:control="gadget.control.*"	
+	initialize="init()"  xmlns:control="gadget.control.*"	
 	>
 	<mx:Script>
 		<![CDATA[
@@ -27,6 +27,7 @@
 			import gadget.control.LabelColRenderer;
 			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
+			import gadget.control.MandatoryColRenderer;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
 			import gadget.control.SubTableRenderer;
@@ -132,11 +133,17 @@
 			
 			};
 			
-			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList31"],CustomObject7:["CustomPickList34","CustomNumber0","CustomCurrency4","CustomPickList7"]};
+			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7"],CustomObject7:["CustomPickList31",//Category
+				"CustomPickList34",//unit
+				"CustomNumber0",//Quantity
+				"CustomCurrency4"//value
+			]};
+			
+			private static const ENTITY_CHECKS:Array = ['Opportunity','CustomObject7'];
 			
 			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
 			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
-			private static const ALL_FY_QUATER:Array = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
+			
 			
 			
 			private function updateSaleStage(data:Object):void{
@@ -157,12 +164,12 @@
 				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction : displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-				{element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
 				{element_name:"CustomDate26",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomDate25",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
+				{mandatory:true,isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
 					}
@@ -189,9 +196,9 @@
 						}
 					}
 				},'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-				{isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-				{isco7_field:true,element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
-				{isco7_field:true,element_name:"CustomCurrency4",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
+				{mandatory:true,isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{mandatory:true,isco7_field:true,element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
+				{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
 				{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,editAble:false,labelFunction:getAnnualizedInpact},
 				{element_name:"Q1",display_name:"QUATER1@Q1",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
 				{element_name:"Q2",display_name:"QUATER2@Q2",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
@@ -367,7 +374,7 @@
 					//CustomCurrency0 is annulized
 					var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row));
 					if(annulizedInpact>0){						
-						for each(var qstr:String in ALL_FY_QUATER){
+						for each(var qstr:String in OpportunityDAO.ALL_FY_QUATER){
 							var q:Object=row[qstr];
 							if(q==null){
 								q = new Object();
@@ -706,6 +713,10 @@
 						col = createColumn(displayName,datafield,editAble);
 						col.itemRenderer = renderer;
 					}
+					if(objCol.mandatory){
+						var mandatoryCls:ClassFactory = new ClassFactory(MandatoryColRenderer);
+						col.itemRenderer = mandatoryCls;
+					}
 					//add editable for opportunityname
 					if(col_name=='OpportunityName'){
 						var oppEditor:ClassFactory = new ClassFactory(ImpactText);
@@ -1017,45 +1028,102 @@
 				}
 			}
 			
-			private function checkMandatory():Boolean{
+			private function checkMandatory(recChangs:ArrayCollection):Boolean{
 				
-//				for(var i:int=0;i<rows.length;i++){
-//					var r:Object = rows.getItemAt(i);
-//					var errorMessageArray:Array=[];
-//					for (var entity:String in MANDATORY_FIELD){
-//						var fields:Array = MANDATORY_FIELD[entity];
-//						var isco7:Boolean = entity==Database.customObject7Dao.entity;
-//						for each(var mf:String in fields){
-//							var datafield:String = mf;
-//							if(isco7){
-//								datafield = OpportunityDAO.CO7_PREFIX+mf;
-//							}
-//							if(StringUtils.isEmpty(r[datafield])   ){
-//								
-//								errorMessageArray.push(FieldUtils.getFieldDisplayName(entity,mf)+ " "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
-//								
-//								
-//							}
-//						}
-//					}
-//					if(errorMessageArray.length>0){
-//						Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_ERROR@Error'), Alert.OK, this,function(e:Event):void{
-//							
-//							gridListAll.editedItemPosition={rowIndex:i,columnIndex:1};
-//						});
-//						return true;
-//					}
-//					
-//				}
+				for(var i:int=0;i<recChangs.length;i++){
+					var r:Object = recChangs.getItemAt(i);
+					
+					var errorMessageArray:Array=[];
+					var firstMandatoryCol:String = null;
+					for each (var entity:String in ENTITY_CHECKS){
+						if(!r.opChange && entity==Database.opportunityDao.entity){
+							continue;
+						}
+						if(!r.co7Change && entity==Database.customObject7Dao.entity){
+							continue;
+						}
+						var fields:Array = MANDATORY_FIELD[entity];
+						var isco7:Boolean = entity==Database.customObject7Dao.entity;
+						for each(var mf:String in fields){
+							var datafield:String = mf;
+							if(isco7){
+								datafield = OpportunityDAO.CO7_PREFIX+mf;
+							}
+							if(StringUtils.isEmpty(r[datafield])   ){
+								r.isError=true;		
+								if(StringUtils.isEmpty(firstMandatoryCol)){
+									firstMandatoryCol = datafield;
+								}
+								errorMessageArray.push(FieldUtils.getFieldDisplayName(entity,mf)+ " "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
+								
+								
+							}
+						}
+					}
+					
+					if(errorMessageArray.length>0){
+						Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_ERROR@Error'), Alert.OK, this,function(e:Event):void{
+							
+							gridListAll.editedItemPosition={rowIndex:rows.getItemIndex(r),columnIndex:gridListAll.getColumnIndex(firstMandatoryCol)};
+						});
+						return true;
+					}
+					
+				}
 			
 				
 				return false;
 			}
 			
+			private function getRecChanges():ArrayCollection{
+				var recChanges:ArrayCollection = new ArrayCollection();
+				for each(var row:Object in rows){
+					if(row.editable||row.isNoCo7){
+						var added:Boolean = false;
+						if(Utils.isChange(row.origOP,row,OP_FIELD)){
+							row.opChange=true;
+							recChanges.addItem(row);
+							added = true;
+						}
+						
+						if(Utils.isChange(row.origCo7,row,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
+							if(!added){
+								recChanges.addItem(row);
+								added = true;
+							}
+							row.co7Change=true;
+						}
+							
+						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
+							var objQ:Object = row[q];
+							if(objQ!=null){
+								if(objQ.origCo7==null || Utils.isChange(objQ.origCo7,objQ,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
+									objQ.co7Change=true;
+									if(!added){
+										recChanges.addItem(row);
+										added = true;
+									}									
+								}
+							}
+						}
+							
+							
+					}
+				}
+				
+				return recChanges;
+				
+			}
+			
 			private function save():void{
-				if(!checkMandatory()){	
-					initOpTotal();
-					Database.opportunityDao.saveImpactCalendar(rows,OP_FIELD,CO7_FIELD);
+				var recchanges:ArrayCollection = getRecChanges();
+				if(recchanges!=null && recchanges.length>0){
+					if(!checkMandatory(recchanges)){	
+						initOpTotal();
+						Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD);
+					}
+				}else{
+					//TODO alert no data change
 				}
 				
 			}

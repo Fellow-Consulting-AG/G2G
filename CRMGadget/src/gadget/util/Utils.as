@@ -174,6 +174,39 @@ package gadget.util {
 				
 			return 	strError;
 		}
+		
+		public static function isChange(orig:Object,updatedObj:Object,fields:Array,prefix:String=null):Boolean{
+			if(orig!=updatedObj){
+				if(orig==null ){
+					//need to check that all field has a value not empty
+					orig= new Object();
+				}
+			
+				for each (var f:String in fields) {
+					var origF:String = f;
+					if(!StringUtils.isEmpty(prefix)){
+						origF=prefix+f;
+					}
+					if (orig[origF] != updatedObj[origF]) {					
+						if (StringUtils.isEmpty(orig[origF]) && StringUtils.isEmpty(updatedObj[origF])) {
+							continue;
+						}	
+						try{
+							//try to compare as number
+							if(parseFloat(orig[origF])==parseFloat(updatedObj[origF])){
+								continue;
+							}
+						}catch(e:Error){
+							//nothing todo
+						}
+						
+						return true;					
+					}
+				}
+			}
+			return false;
+			
+		}
 		//replace German Character for searching both AE or Ä
 		public static function replaceGermanCharacter(str:String,oldChars:Array,newChars:Array):String{
 			

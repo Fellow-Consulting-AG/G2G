@@ -11,11 +11,16 @@
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.listClasses.BaseListData;
 			private var col:AdvancedDataGridColumn=null;
+			public static const REPLACE_STYLE:Array = [
+				"selectionColor","rollOverColor","alternatingItemColors"
+			];
+			
+			
 			override public function getStyle(styleProp:String):*
 			{
 				if(col!=null && super.data!=null){//always red if an error
 					var realCol:Array = new Array();
-					if(super.data.isError){										
+					if(super.data.isError && REPLACE_STYLE.indexOf(styleProp)!=-1 ){										
 						var val:Object = super.data[col.dataField];
 						if(val==null || StringUtils.isEmpty(val.toString())){
 							realCol.push(0xFF0000);
@@ -37,6 +42,21 @@
 				return super.getStyle(styleProp);
 			}
 			
+			override public function set data(value:Object):void{		
+				super.data = value;		
+				if(col!=null){
+					if(data!=null){		
+						if(col.labelFunction!=null){
+						lblData.text = col.labelFunction(value,col);
+						}else{
+							lblData.text = value[col.dataField];
+						}
+						
+					}
+					
+				}
+			}
+			
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
@@ -47,5 +67,5 @@
 			}
 		]]>
 	</fx:Script>
-	<s:Label id="lblData" top="0" left="3" right="3" bottom="0" verticalAlign="middle" text="{listData.label}" />
+	<s:Label id="lblData" top="4" left="5" right="5" bottom="5" verticalAlign="justify"/>
 </s:MXAdvancedDataGridItemRenderer>

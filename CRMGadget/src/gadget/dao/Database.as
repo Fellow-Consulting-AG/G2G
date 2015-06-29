@@ -201,6 +201,7 @@ package gadget.dao {
 		private var _divisionDao:DivisionDAO;
 		private var _pvgDao:PicklistValueGroupDAO;
 		private var _defaultFieldValueDao:DefaultFieldValueDAO;
+		private var _icManualTotal:ImpactManualTotalInput;
 		
 		public static function get templateDao():OrderTemplate
 		{
@@ -1679,6 +1680,7 @@ package gadget.dao {
 			_divisionDao = new DivisionDAO(_sqlConnection,_work);
 			_pvgDao = new PicklistValueGroupDAO(_sqlConnection,_work);
 			_defaultFieldValueDao= new DefaultFieldValueDAO(_sqlConnection,_work);
+			_icManualTotal = new ImpactManualTotalInput(_sqlConnection,_work);
 			
 		}
 		
@@ -3800,6 +3802,11 @@ package gadget.dao {
 		public static function get defaultFieldValueDao():DefaultFieldValueDAO
 		{
 			return database._defaultFieldValueDao;
+		}
+		
+		public static function get icManualTotal():ImpactManualTotalInput
+		{
+			return database._icManualTotal;
 		}
 
 

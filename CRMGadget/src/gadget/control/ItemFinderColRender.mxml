@@ -37,6 +37,9 @@
 						column = grid.columns[list.columnIndex];
 						
 					}
+					
+					
+					
 				}
 				
 			}	
@@ -44,6 +47,9 @@
 				super.data = value;
 				if(column!=null){
 					finder.setFocus();
+				}
+				if(value.hasOwnProperty("isTotal") && value.isTotal){
+					finder.enabled = false;
 				}
 			}
 			

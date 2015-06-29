@@ -857,7 +857,11 @@
 				
 				
 				//if(refreshHomTask != null) refreshHomTask(); //1243 CRO
-				refreshFunction(item);
+				try{
+					refreshFunction(item,create);
+				}catch(e:Error){
+					refreshFunction(item);
+				}
 				if(calendar && entity == Database.activityDao.entity) calendar.loadData();
 				if(calendarIlog && entity == Database.activityDao.entity) calendarIlog.loadData();
 				modified == false; //reset the value

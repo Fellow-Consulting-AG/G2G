@@ -50,6 +50,9 @@
 						 }
 						 cborender.dataProvider = pickList;
 						 cborender.selectedIndex=getSelectedIndex(val);
+						 if(value.hasOwnProperty("isTotal") && value.isTotal){
+							 cborender.enabled=false;
+						 }
 					 }
 					 cborender.setFocus();
 				 }			

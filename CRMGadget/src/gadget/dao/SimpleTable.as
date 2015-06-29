@@ -27,7 +27,7 @@ package gadget.dao
 			check_if("index","Array", "String");
 			check_if("unique","Array", "String");
 
-			TableFactory.create(work, conn, structure);
+			TableFactory.create(work, conn, structure,getSpecial());
 
 			stmt				= new SQLStatement();
 			stmt.sqlConnection	= conn;
@@ -35,6 +35,10 @@ package gadget.dao
 			stmtSelectLastRecord = new SQLStatement();
 			stmtSelectLastRecord.sqlConnection = conn;
 			stmtSelectLastRecord.text = "SELECT * FROM "+structure.table+" ORDER BY gadget_id desc limit 1";
+		}
+		
+		protected function getSpecial():Object{
+			return null;
 		}
 
 		private function check(entry:String, type:String, subtype:String=null):void {

@@ -730,7 +730,7 @@ package gadget.dao
 			exec(stmtUpdateByFieldRelation);
 		}
 		
-		public function updateByField(fields:Array,object:Object,fieldCriteria:String = 'gadget_id'):void{
+		public function updateByField(fields:Array,object:Object,fieldCriteria:String = 'gadget_id',addLocalUpdate:Boolean=false):void{
 			stmtUpdateByField.clearParameters();
 			var sql:String  =  'UPDATE ' + tableName + " SET local_update = :local_update, deleted = :deleted, error = :error";
 			
@@ -740,7 +740,7 @@ package gadget.dao
 			}
 			stmtUpdateByField.text = sql + " WHERE "+ fieldCriteria +"=:"+fieldCriteria ;
 			stmtUpdateByField.parameters[":"+fieldCriteria] = object[fieldCriteria];
-			stmtUpdateByField.parameters[':local_update'] = object.local_update==null?new Date().getTime():object.local_update;
+			stmtUpdateByField.parameters[':local_update'] = addLocalUpdate?new Date().getTime():object.local_update;
 			stmtUpdateByField.parameters[':deleted'] = object.deleted==null?false:object.deleted;
 			stmtUpdateByField.parameters[':error'] = object.error==null?false:object.error;
 			//stmtUpdateByField.parameters[':sync_number'] = object.sync_number;

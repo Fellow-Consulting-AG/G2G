@@ -46,6 +46,9 @@
 							dateObject = DateUtils.guessAndParse(tmpDate as String);	
 						}
 						currentDate.selectedDate = dateObject;
+						if(value.hasOwnProperty("isTotal") && value.isTotal){
+							hBoxCell.enabled=false;
+						}
 						
 						
 					}

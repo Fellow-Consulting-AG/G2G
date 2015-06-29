@@ -715,7 +715,7 @@ package gadget.dao
 					cols += ", co." + co7f +" co7_"+co7f;
 				}
 				
-				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) order by o.OpportunityId, co.CustomPickList31,co.CustomPickList33";
+				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id, co.CustomPickList31,co.CustomPickList33";
 				exec(stmtFindAllWithCO7);
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;
@@ -950,7 +950,7 @@ package gadget.dao
 				//if(isChange(obj.origCo7,objSav,fields,true)){					
 					objSav.local_update = new Date().getTime();
 					objSav.ms_local_change = new Date().getTime();
-					Database.customObject7Dao.updateByField(fields,objSav);
+					Database.customObject7Dao.updateByField(fields,objSav,'gadget_id',true);
 				//}
 			}
 			obj.origCo7= obj;
@@ -1007,7 +1007,7 @@ package gadget.dao
 						}
 						if(row.opChange){							
 							//update opportunity
-							updateByField(opField,row);
+							updateByField(opField,row,'gadget_id',true);
 							row.origOP=row;
 						}
 					}

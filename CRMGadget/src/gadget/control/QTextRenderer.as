@@ -110,6 +110,21 @@ package gadget.control
 			if(!StringUtils.isEmpty(super.text)){
 				setSelection(super.text.length,super.text.length);
 			}
+			if(value!=null && column!=null){
+				if(value.hasOwnProperty("isTotal") && value.isTotal){
+					var editable:Boolean = false;
+					if(value.editFields!=null){
+						var f:String = column.dataField;
+						if(f.indexOf('.')!=-1){
+							f=f.split('.')[0];
+							
+						}
+						editable = value.editFields[f];
+						
+					}
+					this.enabled = editable;
+				}
+			}
 		}
 		
 		public function get quater():Object{

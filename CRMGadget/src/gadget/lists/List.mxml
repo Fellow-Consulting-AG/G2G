@@ -1671,7 +1671,14 @@
 			public function showMessageSynchronize():void {
 				Alert.show(i18n._(LIST_ALERT_MSG_PLEASE_DO_SYNCHRONIZE),i18n._(LIST_ALERT_MSG_TITLE_ERROR_INIT_FORM), Alert.OK, this);
 			}
-			public function selectItem(selectedItem:Object):void {
+			public function selectItem(selectedItem:Object,created:Boolean=true):void {
+				
+				if(boxImpactCalendar.visible && impactCalendar!=null){
+					
+					impactCalendar.addNewOrUpdate(selectedItem,created);
+					return;
+				}
+				
 				selectedId = selectedItem.gadget_id;
 				entityLetterBar.selectedIndex = 0;
 				entityFilterInput.text = '';

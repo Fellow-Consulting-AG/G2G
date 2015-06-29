@@ -71,6 +71,19 @@ package gadget.control
 			if(!StringUtils.isEmpty(str)){
 				setSelection(str.length,str.length);
 			}
+			if(value!=null && column!=null){
+				if(value.hasOwnProperty("isTotal") && value.isTotal){
+					var editable:Boolean = false;
+					if(value.editFields!=null){
+						var f:String = column.dataField;
+						if(f.indexOf('.')!=-1){
+							f=f.split('.')[0];							
+						}
+						editable = value.editFields[f];
+					}
+					this.enabled = editable;
+				}
+			}
 		}
 		
 		override  public function set text(value:String):void

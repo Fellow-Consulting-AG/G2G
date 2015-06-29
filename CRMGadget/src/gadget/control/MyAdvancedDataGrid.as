@@ -57,7 +57,7 @@ package gadget.control
 						if (r is ButtonAddRenderer)
 						{
 							ButtonAddRenderer(r).data=ButtonAddRenderer(r).data;//show/hihe button
-						}else if( r is LinkButtonRevenueColRenderer){
+						}else if( r is LinkButtonRevenueColRenderer||r is MandatoryColRenderer){
 							r.data = r.data;//refresh label
 						}else{
 							var listData:AdvancedDataGridListData = AdvancedDataGridListData(IDropInListItemRenderer(r).listData);

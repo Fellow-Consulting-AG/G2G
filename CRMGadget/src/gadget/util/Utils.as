@@ -175,7 +175,7 @@ package gadget.util {
 			return 	strError;
 		}
 		
-		public static function isChange(orig:Object,updatedObj:Object,fields:Array,prefix:String=null):Boolean{
+		public static function isChange(orig:Object,updatedObj:Object,fields:Array,prefix:String=null,compare:Function=null):Boolean{
 			if(orig!=updatedObj){
 				if(orig==null ){
 					//need to check that all field has a value not empty
@@ -191,16 +191,22 @@ package gadget.util {
 						if (StringUtils.isEmpty(orig[origF]) && StringUtils.isEmpty(updatedObj[origF])) {
 							continue;
 						}	
-						try{
-							//try to compare as number
-							if(parseFloat(orig[origF])==parseFloat(updatedObj[origF])){
-								continue;
+						if(compare!=null){
+							return compare(orig[origF],updatedObj[origF]);
+						}else{
+							
+							try{
+								//try to compare as number
+								if(parseFloat(orig[origF])==parseFloat(updatedObj[origF])){
+									continue;
+								}
+							}catch(e:Error){
+								//nothing todo
 							}
-						}catch(e:Error){
-							//nothing todo
+							
+							return true;
 						}
-						
-						return true;					
+											
 					}
 				}
 			}

@@ -26,7 +26,7 @@
 			private var grid:AdvancedDataGrid= null;
 			private var rowIndex:int= -1;
 			private var _list:List;
-			private static const OP_COPY_FIELD:Array=[
+			public static const OP_COPY_FIELD:Array=[
 				"OwnerFullName",
 				"OpportunityId",
 				"OpportunityName",

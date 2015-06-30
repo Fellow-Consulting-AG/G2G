@@ -11,10 +11,10 @@
 		{
 			if(super.data!=null){//always red if an error
 				var realCol:Array = new Array();
-				if((super.data.type==ImpactCalendar.FORECAST_TYPE||super.data.type==ImpactCalendar.VARIANCE_TYPE) && MandatoryColRenderer.REPLACE_STYLE.indexOf(styleProp)!=-1 ){										
-						realCol.push(0xFF0000);
-						return realCol;				
-				}
+//				if((super.data.type==ImpactCalendar.FORECAST_TYPE||super.data.type==ImpactCalendar.VARIANCE_TYPE) && MandatoryColRenderer.REPLACE_STYLE.indexOf(styleProp)!=-1 ){										
+//						realCol.push(0xFF0000);
+//						return realCol;				
+//				}
 				
 				if("alternatingItemColors"==styleProp){
 					//return normal color
@@ -28,6 +28,14 @@
 			}
 			
 			return super.getStyle(styleProp);
+		}
+		override public function set data(value:Object):void{
+			super.data = value;
+			if(super.data!=null){
+				if(super.data.type==ImpactCalendar.FORECAST_TYPE||super.data.type==ImpactCalendar.VARIANCE_TYPE||super.data.type==ImpactCalendar.ACTUAL_TYPE){
+					lblData.setStyle("fontWeight","bold");
+				}
+			}
 		}
 	]]>
 </fx:Script>

@@ -2083,6 +2083,12 @@
 				addHistory();
 					
 			}
+			public function saveImpactCalendar(endFunction:Function):void{
+				if(boxImpactCalendar.visible && impactCalendar!=null){
+					impactCalendar.save(endFunction);
+				}
+			}
+			
 			private function addHistory():void{
 				if(backHistory != null && list.selectedItem != null){
 					backHistory.listIndex = list.selectedIndex;

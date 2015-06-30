@@ -386,7 +386,7 @@
 						upperBarMenu.id = (menuToolbar.dataProvider as ArrayCollection).getItemAt(index) + "menuToolbar";
 						var children:LinkButton  = menuToolbar.getChildAt(index) as LinkButton;
 						var p:Point = menuToolbar.localToGlobal(new Point(children.x, children.y + children.height));
-						upperBarMenu.addEventListener(MenuEvent.ITEM_CLICK, menuAction);
+						upperBarMenu.addEventListener(MenuEvent.ITEM_CLICK, function(e:Event):void{checkAction(e,menuAction)});
 						upperBarMenu.show(p.x, p.y);
 					}
 				}
@@ -987,7 +987,7 @@
 				button.label = name;
 				button.width = 140;
 				button.data = "IF " + id;
-				button.addEventListener(MouseEvent.CLICK, navButtonDoubleClick);
+				button.addEventListener(MouseEvent.CLICK, function(e:Event):void{checkAction(e,navButtonDoubleClick)});
 				return button;
 			}
 			
@@ -1007,12 +1007,14 @@
 			private var tabSelected:int = 0;
 			
 			private function tabEvent(event:ItemClickEvent):void {
-				oBookmark = null; // set default filter list
-				var tabBar:TabBar = TabBar(event.currentTarget);				
-				var data:String = tabBar.dataProvider.source[event.index].data;
-				// if(activityEntityIsEnabled) tabSelected = event.index;
-				tabSelected = event.index;
-				selectList(data);
+				checkAction(event,function(e:ItemClickEvent):void{
+						oBookmark = null; // set default filter list
+						var tabBar:TabBar = TabBar(e.currentTarget);				
+						var data:String = tabBar.dataProvider.source[e.index].data;
+						// if(activityEntityIsEnabled) tabSelected = event.index;
+						tabSelected = e.index;
+						selectList(data);
+				});
 			}                
 			
 			private function createNavPanel(entity:String, subtype:int=0, activityStr:String=""):LinkButton{
@@ -1028,7 +1030,7 @@
 				}
 				button.width = 140;
 				button.data = entity + "/" + subtype;
-				button.addEventListener(MouseEvent.CLICK, navButtonDoubleClick);
+				button.addEventListener(MouseEvent.CLICK, function(e:Event):void{checkAction(e,navButtonDoubleClick)});
 				var canCreateOrDelete:Boolean = RightService.canCreate(entity);
 				button.enabled = canCreateOrDelete;
 				return button;
@@ -1055,8 +1057,8 @@
 				button.alpha = 0.25;
 				button.data = entity;
 				button.doubleClickEnabled = true;
-				button.addEventListener(MouseEvent.DOUBLE_CLICK, navButtonDoubleClick);
-				button.addEventListener(MouseEvent.CLICK, navButtonClick);
+				button.addEventListener(MouseEvent.DOUBLE_CLICK,  function(e:Event):void{checkAction(e,navButtonDoubleClick)});
+				button.addEventListener(MouseEvent.CLICK, function(e:Event):void{checkAction(e,navButtonClick)});
 				button.addEventListener(MouseEvent.MOUSE_OVER, navButtonOver);
 				button.addEventListener(MouseEvent.MOUSE_OUT, navButtonOut);
 				return button;
@@ -1230,6 +1232,7 @@
 				x.label = display_name;
 				x.data = "New " + entity + "/" + subtype;
 				x.icon = returnIcon(entity, subtype);
+				x.entity=entity;
 				x.enabled = canCreate;
 				return x;
 			}
@@ -1720,12 +1723,15 @@
 			
 			
 			public function openSyncWindow(isSRSycnow:Boolean=false,records:Array=null):void {
-				var synchronize:Synchronize = new Synchronize();
-				synchronize.isSRSyncnow=isSRSycnow;				
-				isUpdateTransaction=!isSRSycnow;
-				synchronize.records=records;
-				synchronize.mainWindow = this;
-				WindowManager.openModal(synchronize);
+				var mainWindow:MainWindow = this;
+				checkAction(null,function(e:Event):void{
+					var synchronize:Synchronize = new Synchronize();
+					synchronize.isSRSyncnow=isSRSycnow;				
+					isUpdateTransaction=!isSRSycnow;
+					synchronize.records=records;
+					synchronize.mainWindow = mainWindow;
+					WindowManager.openModal(synchronize);
+				});
 			}
 			
 			public function openSyncWindowAuto():void {
@@ -1737,15 +1743,21 @@
 			}
 			
 			private function openQuickSearchWindow():void {
-				var quickSearch:QuickSearch = new QuickSearch();
-				quickSearch.mainWindow = this;
-				WindowManager.openModal(quickSearch);
+				var mainWindow:MainWindow = this;
+				checkAction(null,function(e:Event):void{
+					var quickSearch:QuickSearch = new QuickSearch();
+					quickSearch.mainWindow = mainWindow;
+					WindowManager.openModal(quickSearch);
+				});
 			}
 			
 			private function openPreferenceWindow():void{
-				var preferences:Preferences = new Preferences();
-				preferences.mainWindow = this;
-				WindowManager.openModal(preferences);
+				var mainWindow:MainWindow = this;
+				checkAction(null,function(e:Event):void{
+					var preferences:Preferences = new Preferences();
+					preferences.mainWindow = mainWindow;
+					WindowManager.openModal(preferences);
+				});
 			}
 			
 			
@@ -1782,7 +1794,7 @@
 				upperBarMenu.labelField="label";
 				var children:LinkButton = event.target.getChildAt(event.index);
 				var p:Point = event.target.localToGlobal(new Point(children.x, children.y + children.height));
-				upperBarMenu.addEventListener(MenuEvent.ITEM_CLICK, menuAction);
+				upperBarMenu.addEventListener(MenuEvent.ITEM_CLICK, function(e:Event):void{checkAction(e,menuAction)});
 				upperBarMenu.show(p.x, p.y);
 			}
 			
@@ -1838,6 +1850,55 @@
 				editBatchItemXML.enabled = right.canUpdate;
 				return toolsMenuData;
 			}
+			
+			private function getEntityFromEvent(e:Event):String{
+				if(e!=null){
+					if(e is MenuEvent){
+						var item:Object = MenuEvent(e).item;
+						if(item!=null){
+							return item.entity;
+						}
+					}else if(e is MouseEvent){
+						var index:int = e.target.data.toString().indexOf("/");
+						var subtype:int = 0;
+						if(index==-1){
+							index = e.target.data.toString().length;
+						}
+						return e.target.data.toString().substr(0, index);
+					}
+				}
+				return null;
+			}
+			
+			private function  checkAction(event:Event,callFunction:Function):void{
+				var entity:String = getEntityFromEvent(event);
+				if(selectedEntity==Database.opportunityDao.entity && entity!=Database.opportunityDao.entity && getSelectedList().boxImpactCalendar.visible){
+					Alert.show(i18n._("CHANGE_TAB_MSSAGE@Do you want to save your entries before moving on?"),i18n._("GLOBAL_INFO@Info"),Alert.YES|Alert.NO,this,function(e:CloseEvent):void{
+						if(e.detail==Alert.YES){
+							getSelectedList().saveImpactCalendar(function():void{
+							
+								callFunction(event);
+							});
+						}else{
+							callFunction(event);
+						}
+						
+					
+					});
+					
+				}else{
+					if(callFunction!=null){
+						try{
+							callFunction(event);
+						}catch(e:Error){
+							//may the function no param
+							callFunction();
+						}
+					}
+				}
+			}
+			
+			
 			
 			private function menuAction(event:MenuEvent):void{
 				if (StringUtils.startsWith(event.item.data, "IF ")) {
@@ -2090,7 +2151,10 @@
 				tabMenu.labelField="label";
 				var child:Button = event.target as Button;
 				var p:Point = event.target.localToGlobal(new Point(child.x, child.y + child.height));
-				tabMenu.addEventListener(MenuEvent.ITEM_CLICK, menuDownAction);
+				tabMenu.addEventListener(MenuEvent.ITEM_CLICK, function(e:MouseEvent):void{
+				checkAction(e,menuDownAction);
+				
+				});
 				var list:List = navigator.selectedChild as List;
 				var x:Number=list.width-tabMenu.width;
 				if(Database.preferencesDao.getBooleanValue("navPanel.show",0)){
@@ -2304,22 +2368,24 @@
 			}
 			private var tmpPreferences:Object;
 			private function importPref():void{
-				impFromOOD.enabled = false;
-				tmpPreferences = new Object()
-				var username:String = '';
-				var passwornd:String ='';
-				
-				if(Database.preferencesDao.getBooleanValue("use_sso")){
-					username = Database.preferencesDao.getValue("tech_username") +"";
-					passwornd = Database.preferencesDao.getValue("tech_password") +"";
-				}else{
-					username = Database.preferencesDao.getValue("sodlogin")+"";
-					passwornd = Database.preferencesDao.getValue("sodpass")+"";
-				}
-				tmpPreferences.sodhost =Database.preferencesDao.getValue("sodhost");
-				tmpPreferences.sodlogin = username;
-				tmpPreferences.sodpass = passwornd;
-				testConnection();
+				checkAction(null,function(e:Event):void{
+					impFromOOD.enabled = false;
+					tmpPreferences = new Object()
+					var username:String = '';
+					var passwornd:String ='';
+					
+					if(Database.preferencesDao.getBooleanValue("use_sso")){
+						username = Database.preferencesDao.getValue("tech_username") +"";
+						passwornd = Database.preferencesDao.getValue("tech_password") +"";
+					}else{
+						username = Database.preferencesDao.getValue("sodlogin")+"";
+						passwornd = Database.preferencesDao.getValue("sodpass")+"";
+					}
+					tmpPreferences.sodhost =Database.preferencesDao.getValue("sodhost");
+					tmpPreferences.sodlogin = username;
+					tmpPreferences.sodpass = passwornd;
+					testConnection();
+				});
 				//	Utils.showLoadingProgressWindow(function importPref():void{testConnection();}, "Importing Data","Importing Data");
 				
 			}

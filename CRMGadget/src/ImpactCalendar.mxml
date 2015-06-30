@@ -22,6 +22,7 @@
 			import gadget.control.ItemFinderColRender;
 			import gadget.control.LinkButtonRevenueColRenderer;
 			import gadget.control.MandatoryColRenderer;
+			import gadget.control.MyAdvancedDataGridColumn;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
 			import gadget.dao.Database;
@@ -77,6 +78,16 @@
 				"ModifiedDate",	
 				"Status"
 				
+			];
+			
+			private static var IGNORE_CHECK_FIELD:Array=[
+				"CustomCurrency0",//Annualized Impact
+				"CustomCurrency1",//Current FY Impact
+				"CustomCurrency3",//Previous FY Impact
+				"CustomCurrency4",//Next FY Impact
+				"CustomText37",//Total Calls Current Quarter
+				"CustomCurrency2",//Expenses
+				"ModifiedDate",	
 			];
 			
 			private function getAnnualizedInpact(item:Object,col:AdvancedDataGridColumn=null):String{
@@ -187,7 +198,7 @@
 				{mandatory:true,isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{mandatory:true,isco7_field:true,element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
 				{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
-				{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(AnnualizedColorRenderer),editAble:false,labelFunction:getAnnualizedInpact},
+				{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:null,editAble:false,labelFunction:getAnnualizedInpact},
 				{element_name:"Q1",display_name:"QUATER1@Q1",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
 				{element_name:"Q2",display_name:"QUATER2@Q2",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
 				{element_name:"Q3",display_name:"QUATER3@Q3",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
@@ -430,7 +441,7 @@
 			private  function createColumn(header:String,dataField:String,editAble:Boolean=false,renderer:ClassFactory=null):AdvancedDataGridColumn{
 				
 				
-				var col:AdvancedDataGridColumn = new AdvancedDataGridColumn();
+				var col:AdvancedDataGridColumn = new MyAdvancedDataGridColumn();
 				col.dataField = dataField;
 				col.headerText = header;
 				col.editable = editAble;		
@@ -566,7 +577,7 @@
 					if(q!=null){
 						obj = parseFloat(q[fields[1]]);
 						if(isNaN(Number(obj))){
-							obj=0;
+							obj="";
 						}
 					}
 				}
@@ -868,7 +879,7 @@
 				var columns:Array = new Array();
 				//				columns.push(createColumn("","Total"));
 				var renderer:ClassFactory = new ClassFactory(ImpactText);
-				renderer.properties= {restrict:'0-9.,',maxChars:20};
+				renderer.properties= {restrict:'0-9.,',maxChars:20,updateData:updateFYTarget};
 				columns.push(createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer));
 				columns.push(createColumn(i18n._("CURRENT_FY_FORECAST@Current FY Forecast"),"Forecast",false));
 				var col:AdvancedDataGridColumn = createColumn(i18n._("FY_IMPACT_VARIANCE_TO_TARGET@FY impact variance to target"),"variance",false);
@@ -913,19 +924,12 @@
 				}
 				if(saveTotal!=null && !actualTotal.loaded){
 					for(var f:String in saveTotal){
-//						if(f.indexOf('')!=-1){
-//							var separateField:Array = f.split('.');
-//							var acQ:Object = actualTotal[separateField[0]];
-//							if(acQ==null){
-//								acQ = {};
-//								actualTotal[separateField[0]]=acQ;
-//							}
-//							acQ[separateField[1]]=saveTotal[f];
-//						}else{
-							actualTotal[f] = saveTotal[f];
-//						}
+						actualTotal[f] = saveTotal[f];
 					}
 					actualTotal.loaded=true;
+					if(!StringUtils.isEmpty(saveTotal.FYTarget)){
+						currentFyTarget = parseFloat(saveTotal.FYTarget);
+					}
 				}
 				
 				for each(var r:Object in gridListAll.dataProvider){
@@ -988,11 +992,7 @@
 				forCaseTotal.co7_LastFYImpact = lastFyTotal.toFixed(2);
 				forCaseTotal.CustomCurrency2 = expenseTotal;
 				forCaseTotal.CustomText37 = callTotal;
-				if(saveTotal!=null){
-					if(!StringUtils.isEmpty(saveTotal.FYTarget)){
-						currentFyTarget = parseFloat(saveTotal.FYTarget);
-					}
-				}
+				
 				//calculate variance's total
 				for each(var vq:String in OpportunityDAO.ALL_FY_QUATER){
 					var vqObj:Object = varianceTotal[q];
@@ -1268,26 +1268,30 @@
 			
 			private function getRecChanges():ArrayCollection{
 				var recChanges:ArrayCollection = new ArrayCollection();
+				var opCheckFields:Array = [];
+				for each(var opf:String in OP_FIELD){
+					if(IGNORE_CHECK_FIELD.indexOf(opf)==-1){
+						opCheckFields.push(opf);
+					}
+				}
 				for each(var row:Object in rows.source){
+					if(row.isTotal) continue;
 					if(row.editable||row.isNoCo7){
 						var added:Boolean = false;
-						if(Utils.isChange(row.origOP,row,OP_FIELD)){
+						if(Utils.isChange(row.origOP,row,opCheckFields)){
 							row.opChange=true;
 							recChanges.addItem(row);
 							added = true;
 						}
-						
-						if(Utils.isChange(row.origCo7,row,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
-							if(!added){
-								recChanges.addItem(row);
-								added = true;
-							}
-							row.co7Change=true;
+							
+					}
+					
+					if(Utils.isChange(row.origCo7,row,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
+						if(!added){
+							recChanges.addItem(row);
+							added = true;
 						}
-							
-						
-							
-							
+						row.co7Change=true;
 					}
 					for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
 						var objQ:Object = row[q];
@@ -1307,7 +1311,7 @@
 				
 			}
 			
-			private function save():void{
+			public function save(endFunction:Function=null):void{
 				var recchanges:ArrayCollection = getRecChanges();
 				
 				if(recchanges!=null && recchanges.length>0){
@@ -1315,9 +1319,18 @@
 						saveACTotal();
 						initOpTotal();						
 						Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD);
+						Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
+							if(endFunction!=null){
+								endFunction();
+							}
+						});
 					}
 				}else{
-					//TODO alert no data change
+					Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
+						if(endFunction!=null){
+							endFunction();
+						}
+					});
 				}
 				
 			}
@@ -1339,6 +1352,12 @@
 				dtCloseDate.selectedDate = null;
 				dtCloseDate.text = "";
 				advanceSearch();
+			}
+			
+			
+			private function updateFYTarget(item:Object,newVal:Object):void{
+				var acTotal:Object = rows.getItemAt(rows.length-2);
+				acTotal.FYTarget=newVal.FYTarget;
 			}
 			
 			
@@ -1461,17 +1480,28 @@
 				});
 			}
 
+
+			protected function showNormalMode(event:MouseEvent):void
+			{
+				Alert.show(i18n._("CHANGE_TAB_MSSAGE@Do you want to save your entries before moving on?"),i18n._("GLOBAL_INFO@Info"),Alert.YES|Alert.NO,this,function(e:CloseEvent):void{
+					if(e.detail==Alert.YES){
+						save();
+					}
+					list.showHomeOpportunity();
+				});
+			}
+
 		]]>
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
 		<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
-			<mx:LinkButton label="{i18n._('NORMAL_MODE@Normal Mode')}"  click="list.showHomeOpportunity()" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
+			<mx:LinkButton label="{i18n._('NORMAL_MODE@Normal Mode')}"  click="showNormalMode(event)" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
 			<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="{i18n._('EXPORT_EXCEL@Export Excel')}" />
 			<mx:LinkButton icon="{closeIcon}" label="Cancel" click="cancelAction(event)"/>
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>
 		</mx:HBox>
 		<mx:Label paddingTop="20" text="{i18n._('TOTAL_OF_ALL_OPPORTUNITY@Total of all Opportunities')}" />
-		<mx:AdvancedDataGrid sortExpertMode="true" doubleClickEnabled="true" doubleClick="{openProductRevenue()}" height="44" editable="true" width="100%" id="gridTotal"/>
+		<control:MyAdvancedDataGrid sortExpertMode="true" doubleClickEnabled="true" doubleClick="{openProductRevenue()}" height="44" editable="true" width="100%" id="gridTotal"/>
 		<mx:Label text="{i18n._('LIST_OF_ALL_OPPORTUNITY@List of all Opportunities')}" />
 		<mx:HBox width="100%">
 			<mx:VBox>

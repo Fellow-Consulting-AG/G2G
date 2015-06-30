@@ -57,7 +57,7 @@ package gadget.control
 						if (r is ButtonAddRenderer)
 						{
 							ButtonAddRenderer(r).data=ButtonAddRenderer(r).data;//show/hihe button
-						}else if( r is LinkButtonRevenueColRenderer||r is MandatoryColRenderer){
+						}else if( r is LinkButtonRevenueColRenderer||r is MandatoryColRenderer || r is CalculateGridTotalRender){
 							r.data = r.data;//refresh label
 						}else{
 							var listData:AdvancedDataGridListData = AdvancedDataGridListData(IDropInListItemRenderer(r).listData);
@@ -150,6 +150,13 @@ package gadget.control
 		
 		public function get verticalScroll():ScrollBar{
 			return this.verticalScrollBar;
+		}
+		
+		override public function getStyle(styleProp:String):*{
+			if("defaultDataGridItemRenderer"==styleProp){
+				return MyAdvancedDataGridItemRenderer;
+			}
+			return super.getStyle(styleProp);
 		}
 		
 		

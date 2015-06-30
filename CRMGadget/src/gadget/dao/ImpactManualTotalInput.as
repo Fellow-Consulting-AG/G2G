@@ -18,7 +18,7 @@ package gadget.dao
 		public override function getColumns():Array{
 			var cols:Array =  ["FYTarget"];
 			for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
-				cols.push(q);
+				//cols.push(q);
 				for each(var m:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 					cols.push(q+"_"+m);
 				}
@@ -30,9 +30,16 @@ package gadget.dao
 			var result:Object = super.selectLastRecord();
 			if(result!=null){
 				var obj:Object ={};
-				for(var f:String in result){
-					obj[f.replace("_",".")]=result[f];
+				
+				for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
+					var qObj:Object = {};
+					obj[q]=  qObj;
+					for each(var m:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+						qObj[m]=result[q+"_"+m]
+					}
+					
 				}
+				obj.gadget_id = result['gadget_id'];
 				return obj;
 			}
 			return null;
@@ -40,16 +47,28 @@ package gadget.dao
 		
 		public function replaceRec(obj:Object):void{
 			var lastRec:Object = selectLastRecord();
-			if(lastRec==null){
-				lastRec = new Object();
+			
+			var saveRec:Object = new Object();
+			saveRec.FYTarget = obj.FYTarget;
+			if(lastRec!=null){
+				saveRec.gadget_id = lastRec.gadget_id;
 			}
-			for each(var f:String in getColumns()){
-				lastRec[f.replace(".","_")] = obj[f];
+			for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
+				var qObj:Object =obj[q];
+				
+				for each(var m:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+					if(qObj){
+						saveRec[q+"_"+m]=qObj[m];
+					}else{
+						saveRec[q+"_"+m]="0";
+					}
+				}
+				
 			}
-			if(lastRec.hasOwnProperty('gadget_id')){
-				update(lastRec,{'gadget_id':lastRec['gadget_id']});
+			if(saveRec.hasOwnProperty('gadget_id')){
+				update(saveRec,{'gadget_id':saveRec['gadget_id']});
 			}else{
-				insert(lastRec);
+				insert(saveRec);
 			}
 		}
 	}

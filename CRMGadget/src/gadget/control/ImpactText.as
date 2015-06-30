@@ -65,6 +65,9 @@ package gadget.control
 
 		}
 		override public function set data(value:Object):void{
+			if(column!=null){
+				listData.label=column.itemToLabel(value);
+			}
 			super.data = value;
 			setFocus();
 			var str:String = StringUtil.trim(super.text);

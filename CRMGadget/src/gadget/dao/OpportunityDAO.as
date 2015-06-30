@@ -715,7 +715,7 @@ package gadget.dao
 					cols += ", co." + co7f +" co7_"+co7f;
 				}
 				
-				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id, co.CustomPickList31,co.CustomPickList33";
+				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id desc";
 				exec(stmtFindAllWithCO7);
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;
@@ -726,9 +726,9 @@ package gadget.dao
 			return new ArrayCollection();
 		}
 		
-		protected function getCompititor():Dictionary{
+		public function getCompititor(filter:String=null):Dictionary{
 			var map:Dictionary = new Dictionary();
-			var result:ArrayCollection = Database.opportunityCompetitorDao.findAll(new ArrayCollection([{element_name:'OpportunityId,CompetitorName,RelationshipRole,ReverseRelationshipRole'}]),null,null,0);
+			var result:ArrayCollection = Database.opportunityCompetitorDao.findAll(new ArrayCollection([{element_name:'OpportunityId,CompetitorName,RelationshipRole,ReverseRelationshipRole'}]),filter,null,0);
 			if(result!=null){
 				for each(var obj:Object in result){
 					var existobj:Object = map[obj.OpportunityId];
@@ -755,7 +755,7 @@ package gadget.dao
 		
 		
 		
-		protected function getCallExpensesForCurrentQuater():Dictionary{
+		public function getCallExpensesForCurrentQuater(filter:String=null):Dictionary{
 			var today:Date = new Date();
 			
 			//quater cannot null
@@ -770,7 +770,7 @@ package gadget.dao
 			stmt.sqlConnection = this.sqlConnection;
 			var dateFilter:String = "(CompletedDatetime >= '" + paramStartDate + "T00:00:00Z'" +
 				" AND CompletedDatetime<= '" + paramEndDate + "T23:59:59Z')";
-			stmt.text = "select AccountId,Type,count(accountid) NumCall, sum(CustomCurrency0) Expenses  from activity WHERE CallType='Account Call' and Status='Completed' AND Activity = 'Appointment' AND "+dateFilter+"  group by accountid";
+			stmt.text = "select AccountId,Type,count(accountid) NumCall, sum(CustomCurrency0) Expenses  from activity WHERE " + (StringUtils.isEmpty(filter) ? "" : filter + " AND ")+ "CallType='Account Call' and Status='Completed' AND Activity = 'Appointment' AND "+dateFilter+"  group by accountid";
 			exec(stmt);
 			var items:ArrayCollection = new ArrayCollection(stmt.getResult().data);
 			var result:Dictionary = new Dictionary();

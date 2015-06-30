@@ -9,30 +9,21 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.utils.StringUtil;
-			import com.as3xls.xls.Cell;
 			import com.as3xls.xls.ExcelFile;
 			import com.as3xls.xls.Sheet;
 			
-			import flashx.textLayout.formats.Float;
-			
 			import gadget.control.AnnulizeColRenderer;
 			import gadget.control.ButtonAddRenderer;
-			import gadget.control.CalculateColRender;
 			import gadget.control.CalculateGridTotalRender;
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
 			import gadget.control.ImpactText;
 			import gadget.control.ItemFinderColRender;
-			import gadget.control.LabelColRenderer;
-			import gadget.control.LinkButtonColRenderer;
 			import gadget.control.LinkButtonRevenueColRenderer;
 			import gadget.control.MandatoryColRenderer;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
-			import gadget.control.SubTableRenderer;
-			import gadget.dao.CustomObject7DAO;
-			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
@@ -40,9 +31,7 @@
 			import gadget.service.PicklistService;
 			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
-			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
-			import gadget.util.Relation;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -54,22 +43,15 @@
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
-			import mx.events.ScrollEvent;
-			import mx.states.OverrideBase;
-			
-			import org.as3commons.logging.util.objectify;
-			
-			import spark.components.supportClasses.ItemRenderer;
 			private var _list:List;
 			[Embed(source='/assets/search.png')] [Bindable] public static var searchIcon:Class;
 			[Embed(source='/assets/cancel.png')] [Bindable] public var closeIcon:Class;
 			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
 			[Bindable] public var rows:ArrayCollection;
 			[Bindable] public var filter:Object;
-			public static const FORECAST_TYPE = "forecast"; 
-			public static const ACTUAL_TYPE = "Actual";
-			public static const VARIANCE_TYPE = "Variance";
+			public static const FORECAST_TYPE:String = "forecast"; 
+			public static const ACTUAL_TYPE:String = "Actual";
+			public static const VARIANCE_TYPE:String = "Variance";
 			
 			private static const OP_FIELD:Array=[
 				"OwnerFullName",
@@ -583,6 +565,9 @@
 					var q:Object = data[fields[0]];
 					if(q!=null){
 						obj = parseFloat(q[fields[1]]);
+						if(isNaN(Number(obj))){
+							obj=0;
+						}
 					}
 				}
 				
@@ -928,17 +913,17 @@
 				}
 				if(saveTotal!=null && !actualTotal.loaded){
 					for(var f:String in saveTotal){
-						if(f.indexOf('')!=-1){
-							var separateField:Array = f.split('.');
-							var acQ:Object = actualTotal[separateField[0]];
-							if(acQ==null){
-								acQ = {};
-								actualTotal[separateField[0]]=acQ;
-							}
-							acQ[separateField[1]]=saveTotal[f];
-						}else{
+//						if(f.indexOf('')!=-1){
+//							var separateField:Array = f.split('.');
+//							var acQ:Object = actualTotal[separateField[0]];
+//							if(acQ==null){
+//								acQ = {};
+//								actualTotal[separateField[0]]=acQ;
+//							}
+//							acQ[separateField[1]]=saveTotal[f];
+//						}else{
 							actualTotal[f] = saveTotal[f];
-						}
+//						}
 					}
 					actualTotal.loaded=true;
 				}
@@ -1046,27 +1031,55 @@
 					}
 				}
 				//refres total
-				gridListAll.refreshRow(rows.length-1,false);
+				for (var i:int=rows.length-3;i<rows.length;i++){
+					gridListAll.refreshRow(i,false);
+				}
 				calculateGridTotal(currentFyTarget,totalClosed,totalOpen,totalAll);
 				
 			}
 			
+			private function setCompititor(row:Object,compititor:Object):void{
+				if(compititor!=null){
+					if(compititor.membershipgroup){
+						row.Membership = compititor.membershipgroup.CompetitorName;
+					}
+					if(compititor.distributor){
+						row.TradingPartner = compititor.distributor.CompetitorName;
+					}
+				}
+			}
 			
+			private function setCallAndExpenses(row:Object,call:Object):void{
+				if(call!=null){
+					//"CustomText37",//Total Calls Current Quarter
+					//"CustomCurrency2",//Expenses
+					row.CustomText37= call.NumCall;
+					row.CustomCurrency2 = call.Expenses;
+				}
+			}
 			
 			public function addNewOrUpdate(item:Object,isnew:Boolean):void{
+				if(item.gadget_type!=Database.opportunityDao.entity) return;
+				var comititor:Dictionary = Database.opportunityDao.getCompititor("OpportunityId='"+item.OpportunityId+"'");
+				setCompititor(item,comititor[item.OpportunityId]);
+				var call:Dictionary =null;
+				if(!StringUtils.isEmpty(item.AccountId)){
+					call = Database.opportunityDao.getCallExpensesForCurrentQuater("AccountId='"+item.AccountId+"'");
+					setCallAndExpenses(item,call[item.AccountId]);
+				}
 				if(isnew){
 					if(item.OpportunityType=='Forecast'){
 						item.origOP=item;
 						item.isNoCo7=true;
-						var totalGroup:int = rows.getItemAt(rows.length-1)[gridListAll.groupId];
-						item[gridListAll.groupId]=totalGroup;
-						for (var i:int=rows.length-3;i<rows.length;i++){
-							rows.getItemAt(i)[gridListAll.groupId]= totalGroup+1;
-						}					
-						rows.addItemAt(item,rows.length-3);
+//						var totalGroup:int = rows.getItemAt(rows.length-1)[gridListAll.groupId];
+//						item[gridListAll.groupId]=totalGroup;
+//						for (var i:int=rows.length-3;i<rows.length;i++){
+//							rows.getItemAt(i)[gridListAll.groupId]= totalGroup+1;
+//						}					
+						rows.addItemAt(item,0);
 					}
 				}else{
-					gridListAll.editedItemPosition=null;
+					
 					var newValue:Object = {};
 					for each(var opf:String in ButtonAddRenderer.OP_COPY_FIELD){
 						if(opf!=gridListAll.groupId){
@@ -1075,8 +1088,11 @@
 						
 					}
 					updateData(item,newValue,true,true);
-					
+					if(gridListAll.editedItemRenderer!=null){//refresh edited cell
+						gridListAll.itemEditorInstance.data = gridListAll.editedItemRenderer.data;
+					}
 				}
+				calculateTotalAllOpportunity();
 			}
 			
 			private  function initGridProductDetails():void{
@@ -1185,7 +1201,7 @@
 				
 				rows.filterFunction = filterDataGridResult;
 				rows.refresh();
-				
+				calculateTotalAllOpportunity();
 				
 				
 			}
@@ -1252,7 +1268,7 @@
 			
 			private function getRecChanges():ArrayCollection{
 				var recChanges:ArrayCollection = new ArrayCollection();
-				for each(var row:Object in rows){
+				for each(var row:Object in rows.source){
 					if(row.editable||row.isNoCo7){
 						var added:Boolean = false;
 						if(Utils.isChange(row.origOP,row,OP_FIELD)){
@@ -1269,20 +1285,21 @@
 							row.co7Change=true;
 						}
 							
-						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
-							var objQ:Object = row[q];
-							if(objQ!=null){
-								if(objQ.origCo7==null || Utils.isChange(objQ.origCo7,objQ,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
-									objQ.co7Change=true;
-									if(!added){
-										recChanges.addItem(row);
-										added = true;
-									}									
-								}
+						
+							
+							
+					}
+					for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
+						var objQ:Object = row[q];
+						if(objQ!=null){
+							if(objQ.origCo7==null || Utils.isChange(objQ.origCo7,objQ,CO7_FIELD,OpportunityDAO.CO7_PREFIX)){
+								objQ.co7Change=true;
+								if(!added){
+									recChanges.addItem(row);
+									added = true;
+								}									
 							}
 						}
-							
-							
 					}
 				}
 				
@@ -1292,8 +1309,10 @@
 			
 			private function save():void{
 				var recchanges:ArrayCollection = getRecChanges();
+				
 				if(recchanges!=null && recchanges.length>0){
-					if(!checkMandatory(recchanges)){	
+					if(!checkMandatory(recchanges)){
+						saveACTotal();
 						initOpTotal();						
 						Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD);
 					}
@@ -1301,6 +1320,15 @@
 					//TODO alert no data change
 				}
 				
+			}
+			
+			private function saveACTotal():void{
+				var acTotal:Object = rows.getItemAt(rows.length-2);
+				var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+				if(lstTotal != null && lstTotal.length>0){
+					acTotal.FYTarget= lstTotal.getItemAt(0).FYTarget;
+				}
+				Database.icManualTotal.replaceRec(acTotal);
 			}
 			
 			private function openProductRevenue():void{

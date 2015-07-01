@@ -397,6 +397,7 @@
 							}else{
 								if(boxImpactCalendar.visible && impactCalendar!=null){
 									impactCalendar.reloadData();
+									impactCalendar.showHideColumns();
 								}else{
 									filterData(); 
 									initGridColumns();

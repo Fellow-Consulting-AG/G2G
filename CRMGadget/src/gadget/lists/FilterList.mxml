@@ -42,14 +42,19 @@
 					filterList = Utils.getAllFilters(list.entity);
 				}
 				
-
-				filterGrid.dataProvider = filterList;
 				
-				if( filterSelectedIndices[list.entity] != null ){
-					filterGrid.selectedIndex = filterSelectedIndices[list.entity];
-				}else if(Database.opportunityDao.entity == list.entity && list.boxImpactCalendar.visible){
+				filterGrid.dataProvider = filterList;
+				if(Database.opportunityDao.entity == list.entity && list.boxImpactCalendar.visible){
+					
 					filterGrid.selectedIndex =0;//this default selected
+					
+					
+				}else{
+					if( filterSelectedIndices[list.entity] != null ){
+						filterGrid.selectedIndex = filterSelectedIndices[list.entity];
+					}
 				}
+				
 			}	
 			
 			public function getTransactionObject():Object{

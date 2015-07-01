@@ -28,6 +28,7 @@
 			import gadget.dao.Database;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
+			import gadget.lists.FilterList;
 			import gadget.lists.List;
 			import gadget.service.PicklistService;
 			import gadget.util.DateUtils;
@@ -380,7 +381,7 @@
 					var currentMonthIdx:int = 0;
 					//CustomCurrency0 is annulized
 					var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row));
-					if(annulizedInpact>0){						
+					if(!isNaN(annulizedInpact)){						
 						for each(var qstr:String in OpportunityDAO.ALL_FY_QUATER){
 							var q:Object=row[qstr];
 							if(q==null){
@@ -790,6 +791,20 @@
 				//gridListAll.dataProvider = rows;
 			}
 			public function reloadData():void{
+				var filterList:FilterList = list.mainwindow.filterList;
+				if(filter!=null){
+					var filters:ArrayCollection =  ArrayCollection(filterList.filterGrid.dataProvider);
+					
+					for(var i:int=0;i<filters.length;i++){
+						var of:Object = filters.getItemAt(i);
+						if(of.type==filter.type){
+							filterList.filterGrid.selectedIndex=i;
+							break;
+						}
+					}
+				}else{
+					filterList.filterGrid.selectedIndex=0;
+				}
 				rows = Database.opportunityDao.findImpactCalendar(OP_FIELD,CO7_FIELD);
 				
 				rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),isTotal:true,type:FORECAST_TYPE});
@@ -977,7 +992,9 @@
 										qObj[mf]=parseFloat(rv);
 									}
 								}else{
-									qObj[mf]="0";
+									if(!qObj.hasOwnProperty(mf)){
+										qObj[mf]="0";
+									}
 								}
 							}
 						}
@@ -1224,7 +1241,7 @@
 				for(var i:int=0;i<recChangs.length;i++){
 					var r:Object = recChangs.getItemAt(i);
 					
-					var errorMessageArray:Array=[];
+					var errorMessageArray:ArrayCollection=new ArrayCollection();
 					var firstMandatoryCol:String = null;
 					for each (var entity:String in ENTITY_CHECKS){
 						if(!r.opChange && entity==Database.opportunityDao.entity){
@@ -1245,15 +1262,30 @@
 								if(StringUtils.isEmpty(firstMandatoryCol)){
 									firstMandatoryCol = datafield;
 								}
-								errorMessageArray.push(FieldUtils.getFieldDisplayName(entity,mf)+ " "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
+								errorMessageArray.addItem(FieldUtils.getFieldDisplayName(entity,mf)+ ": "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"));
 								
 								
 							}
 						}
+						
 					}
-					
+					if(!r.opChange && isco7 && errorMessageArray.length>0){
+						var opMfs:Array = MANDATORY_FIELD[Database.opportunityDao.entity];
+						var changedFirstCol:Boolean=false;
+						for (var j:int=0;j<opMfs.length;j++){
+							var f:String = opMfs[j];
+							if(StringUtils.isEmpty(r[f])){
+								if(!changedFirstCol){
+									firstMandatoryCol = f;
+									changedFirstCol=true;
+								}
+								errorMessageArray.addItemAt(FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,f)+ ": "+ i18n._("GLOBAL_THIS_FIELD_IS_REQUIRED"),j);
+							}
+						}
+						
+					}
 					if(errorMessageArray.length>0){
-						Alert.show(errorMessageArray.join("\n"), i18n._('GLOBAL_ERROR@Error'), Alert.OK, this,function(e:Event):void{
+						Alert.show(errorMessageArray.source.join("\n"), i18n._('SYNCHRONIZE_ALERT_WARNING@Warning'), Alert.OK, this,function(e:Event):void{
 							
 							gridListAll.editedItemPosition={rowIndex:rows.getItemIndex(r),columnIndex:gridListAll.getColumnIndex(firstMandatoryCol)};
 						});
@@ -1310,7 +1342,7 @@
 				return recChanges;
 				
 			}
-			
+			//enfunction call when there is no error after save
 			public function save(endFunction:Function=null):void{
 				var recchanges:ArrayCollection = getRecChanges();
 				
@@ -1471,7 +1503,7 @@
 
 			protected function cancelAction(event:MouseEvent):void
 			{
-				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("GLOBAL_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
+				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("SYNCHRONIZE_ALERT_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
 					if(closeEvent.detail==Alert.YES){
 						reloadData();
 					}
@@ -1485,9 +1517,14 @@
 			{
 				Alert.show(i18n._("CHANGE_TAB_MSSAGE@Do you want to save your entries before moving on?"),i18n._("GLOBAL_INFO@Info"),Alert.YES|Alert.NO,this,function(e:CloseEvent):void{
 					if(e.detail==Alert.YES){
-						save();
+						save(function():void{
+							list.showHomeOpportunity();
+						
+						});
+					}else{
+						list.showHomeOpportunity();
 					}
-					list.showHomeOpportunity();
+					
 				});
 			}
 

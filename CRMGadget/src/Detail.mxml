@@ -1347,7 +1347,11 @@
 						Database.getDao(entity).updateByField([],item);
 					}
 					if(refreshFunction!=null){
-						refreshFunction(item);
+						try{
+							refreshFunction(item,false);
+						}catch(e:Error){
+							refreshFunction(item);
+						}
 					}
 				}
 				setTitleAsEdit();
@@ -2672,7 +2676,12 @@
 								item.local_update = new Date().getTime();
 								item.deleted = 0;
 								Database.getDao(entity).update(item);
-								refreshFunction(item);
+								try{
+									refreshFunction(item,false);
+								}catch(e:Error){
+									refreshFunction(item);
+								}
+								
 							}
 									
 							//called when the user drops an item over the component

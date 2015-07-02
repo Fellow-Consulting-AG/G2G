@@ -14,7 +14,7 @@ package gadget.control
 		}
 		
 		public override function set data(value:Object):void{
-			if(value!=null){
+			if(value!=null && col!=null){
 				if(value.type == ImpactCalendar.ACTUAL_TYPE || value.type==ImpactCalendar.FORECAST_TYPE||value.type==ImpactCalendar.VARIANCE_TYPE){
 					//annulized
 					if(col.dataField=='CustomCurrency0'){
@@ -32,8 +32,10 @@ package gadget.control
 		
 		public override function set listData(value:BaseListData):void{
 			super.listData = value;
-			var grid:AdvancedDataGrid = value.owner as AdvancedDataGrid;
-			col = grid.columns[value.columnIndex];			
+			if(value!=null){
+				var grid:AdvancedDataGrid = value.owner as AdvancedDataGrid;
+				col = grid.columns[value.columnIndex];
+			}
 		}
 		
 //		public override function getStyle(styleProp:String):*{

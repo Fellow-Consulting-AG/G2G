@@ -270,14 +270,16 @@
 				}
 			}
 				
-			private function updateData(data:Object, newVal:Object,callCalMonth:Boolean=false,refreshEachRow:Boolean = true):void{
+			private function updateData(data:Object, newVal:Object,callCalMonth:Boolean=false,refreshEachRow:Boolean = true,changeOrig:Boolean=false):void{
 //				data[field] = newVal;
 				for each(var r:Object in gridListAll.dataProvider){
 					if(r.OpportunityId==data.OpportunityId){
 						for(var field:String in newVal){
 							r[field] = newVal[field];
 						}
-						
+						if(changeOrig && (r.editable||r.isNoCo7)){
+							r.origOP = Utils.copyModel(r,false);
+						}
 						if(callCalMonth){
 							calMonth(r);
 						}
@@ -1086,7 +1088,7 @@
 				}
 				if(isnew){
 					if(item.OpportunityType=='Forecast'){
-						item.origOP=item;
+						item.origOP=Utils.copyModel(item,false);
 						item.isNoCo7=true;
 //						var totalGroup:int = rows.getItemAt(rows.length-1)[gridListAll.groupId];
 //						item[gridListAll.groupId]=totalGroup;
@@ -1104,7 +1106,7 @@
 						}
 						
 					}
-					updateData(item,newValue,true,true);
+					updateData(item,newValue,true,true,true);
 					if(gridListAll.editedItemRenderer!=null){//refresh edited cell
 						gridListAll.itemEditorInstance.data = gridListAll.editedItemRenderer.data;
 					}
@@ -1229,6 +1231,7 @@
 				//"CustomCurrency3",//Previous FY Impact
 				//"CustomCurrency4",//Next FY Impact
 				for each(var r:Object in rows){
+					if(r.isTotal) continue;
 					r.CustomCurrency0 = getAnnualizedInpact(r);
 					r.CustomCurrency1 = getCurrentFyImpact(r);
 					r.CustomCurrency3 = r[OpportunityDAO.CO7_PREFIX+'LastFYImpact'];
@@ -1269,7 +1272,7 @@
 						}
 						
 					}
-					if(!r.opChange && isco7 && errorMessageArray.length>0){
+					if(!r.opChange && isco7 && r.co7Change){//always check curve type if has co7
 						var opMfs:Array = MANDATORY_FIELD[Database.opportunityDao.entity];
 						var changedFirstCol:Boolean=false;
 						for (var j:int=0;j<opMfs.length;j++){
@@ -1532,12 +1535,21 @@
 				Alert.show("Error while saving Excel file!");
 			}
 			
-			
+			protected function clearCirteria():void{
+				txtAccountName.text ="";
+				txtTerritory.text = "";
+				cboCategory.selectedIndex=-1;
+				cboSalesStage.selectedIndex=-1;
+				cboBusinessArea.selectedIndex-1;
+				dtCloseDate.selectedDate=null;
+				dtCloseDate.text = "";
+			}
 
 			protected function cancelAction(event:MouseEvent):void
 			{
 				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("SYNCHRONIZE_ALERT_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
 					if(closeEvent.detail==Alert.YES){
+						clearCirteria();
 						reloadData();
 					}
 					

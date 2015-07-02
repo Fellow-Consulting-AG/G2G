@@ -895,6 +895,8 @@ package gadget.dao
 				objSav.AccountName=op.AccountName;
 				objSav.AccountId = op.AccountId;
 				objSav.OpportunityAccountName=op.AccountName;
+				//curve type should be alway get from real product
+				objSav.CustomPickList31 = op[CO7_PREFIX+'CustomPickList31'];
 			}else{
 				objSav.OpportunityId=obj.OpportunityId;
 				objSav.OpportunityName=obj.OpportunityName;
@@ -953,7 +955,7 @@ package gadget.dao
 					Database.customObject7Dao.updateByField(fields,objSav,'gadget_id',true);
 				//}
 			}
-			obj.origCo7= obj;
+			obj.origCo7= Utils.copyModel(obj,false);
 		}
 		
 		
@@ -963,6 +965,7 @@ package gadget.dao
 		protected function calculateOpportunityTotal(data:ArrayCollection):Dictionary{
 			var totaldic:Dictionary = new Dictionary();
 			for each(var row:Object in data){
+				if(row.isTotal) continue;
 				var totalObj:Object = totaldic[row.OpportunityId];
 				if(totalObj==null){
 					totalObj = new Object();
@@ -1008,7 +1011,7 @@ package gadget.dao
 						if(row.opChange){							
 							//update opportunity
 							updateByField(opField,row,'gadget_id',true);
-							row.origOP=row;
+							row.origOP=Utils.copyModel(row,false);
 						}
 					}
 					//save product usage
@@ -1019,7 +1022,7 @@ package gadget.dao
 					for each(var f:String in ALL_FY_QUATER){
 						var qObj:Object = row[f];
 						//if(f!='categorySelected' && f!='origCo7' && f!='origOP'){
-							if(qObj!=null && qObj.co7Change){
+							if(qObj!=null && (qObj.co7Change||row.co7Change)){
 								//save quater
 								saveCo7(co7Fields,qObj,f,row);
 								

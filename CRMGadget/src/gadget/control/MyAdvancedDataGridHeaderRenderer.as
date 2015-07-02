@@ -121,7 +121,7 @@ package gadget.control
 		override protected function updateDisplayList(unscaledWidth:Number,
 													  unscaledHeight:Number):void
 		{
-			trace(this.uid);
+			//trace(this.uid);
 			super.updateDisplayList(unscaledWidth,unscaledHeight);
 			if(_switchCol!=null){
 				

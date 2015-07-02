@@ -4,6 +4,7 @@ package gadget.sync.tasklists
 	
 	import gadget.dao.Database;
 	import gadget.service.UserService;
+	import gadget.sync.incoming.ColoplastIncomingWithoutMD;
 	import gadget.sync.incoming.IncomingObject;
 	import gadget.sync.incoming.IncomingRelationObject;
 	import gadget.util.Relation;
@@ -109,6 +110,10 @@ package gadget.sync.tasklists
 		}
 		
 		protected function createParentProcess(entity:String):IncomingObject{
+			if(UserService.getCustomerId()==UserService.COLOPLAST && entity==Database.customObject13Dao.entity){
+				//bug#10703
+				return new ColoplastIncomingWithoutMD(entity);
+			}
 			return new IncomingObject(entity);
 		}
 		protected function createProcess(entity:String,parentTask:IncomingObject,pFields:Object,dependOn:Boolean=true):IncomingRelationObject{

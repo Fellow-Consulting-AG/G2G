@@ -1258,7 +1258,7 @@
 								datafield = OpportunityDAO.CO7_PREFIX+mf;
 							}
 							if(StringUtils.isEmpty(r[datafield])   ){
-								r.isError=true;		
+								
 								if(StringUtils.isEmpty(firstMandatoryCol)){
 									firstMandatoryCol = datafield;
 								}
@@ -1285,11 +1285,14 @@
 						
 					}
 					if(errorMessageArray.length>0){
+						r.isError=true;		
 						Alert.show(errorMessageArray.source.join("\n"), i18n._('SYNCHRONIZE_ALERT_WARNING@Warning'), Alert.OK, this,function(e:Event):void{
 							
 							gridListAll.editedItemPosition={rowIndex:rows.getItemIndex(r),columnIndex:gridListAll.getColumnIndex(firstMandatoryCol)};
 						});
 						return true;
+					}else{
+						r.isError=false;		
 					}
 					
 				}
@@ -1306,7 +1309,7 @@
 						opCheckFields.push(opf);
 					}
 				}
-				for each(var row:Object in rows.source){
+				for each(var row:Object in rows){
 					if(row.isTotal) continue;
 					if(row.editable||row.isNoCo7){
 						var added:Boolean = false;
@@ -1314,6 +1317,8 @@
 							row.opChange=true;
 							recChanges.addItem(row);
 							added = true;
+						}else{
+							row.opChange=false;
 						}
 							
 					}
@@ -1324,7 +1329,17 @@
 							added = true;
 						}
 						row.co7Change=true;
+					}else{
+						row.co7Change=false;
 					}
+					//clear the new data from object
+					if(!row.co7Change && StringUtils.isEmpty(row.co7_Id)){
+						for each(var clearQ:String in OpportunityDAO.ALL_FY_QUATER){
+							row[q]=null;
+						}
+						continue;
+					}
+					//check quater
 					for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
 						var objQ:Object = row[q];
 						if(objQ!=null){
@@ -1342,8 +1357,16 @@
 				return recChanges;
 				
 			}
-			//enfunction call when there is no error after save
+			//reset filter before save 
+			private function clearFilter():void{
+				rows.filterFunction=null;
+				rows.refresh();
+			}
+			
+			//endfunction call when there is no error after save
 			public function save(endFunction:Function=null):void{
+				clearFilter();
+				try{
 				var recchanges:ArrayCollection = getRecChanges();
 				
 				if(recchanges!=null && recchanges.length>0){
@@ -1356,6 +1379,7 @@
 								endFunction();
 							}
 						});
+						advanceSearch();
 					}
 				}else{
 					Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
@@ -1363,6 +1387,10 @@
 							endFunction();
 						}
 					});
+					advanceSearch();
+				}
+				}catch(e:Error){
+					//
 				}
 				
 			}

@@ -1310,6 +1310,8 @@
 					}
 				}
 				for each(var row:Object in rows){
+					//reset all record error
+					row.isError=false;
 					if(row.isTotal) continue;
 					if(row.editable||row.isNoCo7){
 						var added:Boolean = false;
@@ -1453,7 +1455,10 @@
 						for(var j:int =1;j<cols.length;j++){
 							var col:AdvancedDataGridColumn = cols[j] as AdvancedDataGridColumn;
 							var dataField:String = col.dataField;
-							var val:String = item[dataField]==null?"":item[dataField]+"";
+							var val:String = col.itemToLabel(item);// item[dataField]==null?"":item[dataField]+"";
+							if(val!=null){
+								val = StringUtil.trim(val);
+							}
 							sheet.setCell(row+1, j-1, val);
 							//var cell:Cell = sheet.getCell(row+1, j-1);
 							
@@ -1476,7 +1481,7 @@
 						var file:File = event.currentTarget as File;
 						if(!file.extension) file = File.applicationStorageDirectory.resolvePath(file.nativePath + ".xls"); // Bug #543
 						var strStyle:String = "black";
-						var showText:String = "SUCCESSFULLY";
+						var showText:String = "PREFERENCES_STRING_FILE_SAVED_SUCCESSFULLY";
 						if(file!=null){
 							if(file.extension != null && (file.extension.toLowerCase()=="xls" || file.extension.toLowerCase()=="xlsx")){
 								var fileStream:FileStream = new FileStream();
@@ -1520,7 +1525,7 @@
 				
 			}
 			private function finishExport(showText:String):void{
-				Alert.show(showText,"", Alert.YES, this);
+				Alert.show(i18n._(showText),"", Alert.OK, this);
 			}
 			private function exportErrorHandler(event:ProgressEvent):void
 			{

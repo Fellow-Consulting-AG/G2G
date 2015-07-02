@@ -6,6 +6,7 @@ package gadget.sync.incoming
 		{
 			super(entity);
 			isUnboundedTask = true;
+			linearTask=true;
 		}
 		
 		override protected function generateSearchSpec(byModiDate:Boolean=true):String{

@@ -40,6 +40,7 @@ package gadget.dao
 					
 				}
 				obj.gadget_id = result['gadget_id'];
+				obj.FYTarget = result.FYTarget;
 				return obj;
 			}
 			return null;

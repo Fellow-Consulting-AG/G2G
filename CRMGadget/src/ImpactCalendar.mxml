@@ -946,6 +946,11 @@
 					actualTotal.loaded=true;
 					if(!StringUtils.isEmpty(saveTotal.FYTarget)){
 						currentFyTarget = parseFloat(saveTotal.FYTarget);
+						actualTotal.FYTarget = currentFyTarget;
+					}
+				}else{
+					if(actualTotal.loaded){
+						currentFyTarget = actualTotal.FYTarget
 					}
 				}
 				
@@ -1159,7 +1164,7 @@
 					map["OwnerFullName"]= txtTerritory.text;
 				}
 				if(cboCategory.selectedItem != null && cboCategory.selectedItem.data != ""){
-					map["CustomPickList31"]= cboCategory.text;
+					map["co7_CustomPickList31"]= cboCategory.selectedItem.data;
 				}
 				if(cboSalesStage.selectedItem != null && cboSalesStage.selectedItem.data != "" && item["SalesStage"] != null){
 					map["SalesStage"]=cboSalesStage.selectedItem.data;

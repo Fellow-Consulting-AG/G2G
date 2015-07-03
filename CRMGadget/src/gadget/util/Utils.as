@@ -555,9 +555,16 @@ package gadget.util {
 		public static function doEvaluateForFilter(criteria:Object,entity:String):String{
 			
 			if(criteria.param != null && criteria.param != ""){
-				var param:String =  Evaluator.evaluate(criteria.param, Database.allUsersDao.ownerUser(), entity, null, null, PicklistService.getValue,PicklistService.getId,Database.preferencesDao.getValue,true,null,getFieldNameFromIntegrationTag,null,DAOUtils.getOracleId);
-				//if(param == "<ERROR>") return null;
-				return param;
+				var field:Object = FieldUtils.getField(entity,criteria.column_name);
+				if(field!=null && (field.data_type=='Picklist' || field.data_type=='Multi-Select Picklist')){
+					return criteria.param;//piclist cannot edit
+				}else{					
+					
+					var param:String =  Evaluator.evaluate(criteria.param, Database.allUsersDao.ownerUser(), entity, null, null, PicklistService.getValue,PicklistService.getId,Database.preferencesDao.getValue,true,null,getFieldNameFromIntegrationTag,null,DAOUtils.getOracleId);
+					//if(param == "<ERROR>") return null;
+					return param;	
+				}
+				
 			}
 			
 			return "";	

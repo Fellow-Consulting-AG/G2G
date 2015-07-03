@@ -162,7 +162,7 @@
 				{element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{refreshRow:false,updateData:updateData},editAble:true},
 				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction : displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
 				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
@@ -793,6 +793,7 @@
 				//gridListAll.dataProvider = rows;
 			}
 			public function reloadData():void{
+				clearCirteria();
 				var filterList:FilterList = list.mainwindow.filterList;
 				if(filter!=null){
 					var filters:ArrayCollection =  ArrayCollection(filterList.filterGrid.dataProvider);
@@ -1392,6 +1393,7 @@
 						advanceSearch();
 					}
 				}else{
+					saveACTotal();
 					Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
 						if(endFunction!=null){
 							endFunction();
@@ -1554,7 +1556,7 @@
 			{
 				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("SYNCHRONIZE_ALERT_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
 					if(closeEvent.detail==Alert.YES){
-						clearCirteria();
+						//clearCirteria();
 						reloadData();
 					}
 					

@@ -19,7 +19,7 @@
 			private var grid:AdvancedDataGrid;
 			public var column:AdvancedDataGridColumn;
 			private var _updateFunction:Function;
-			
+			private var _isDateTime:Boolean = false;
 			protected function clearDate(event:MouseEvent):void
 			{
 				currentDate.text = "";
@@ -91,6 +91,16 @@
 			public function set updateFunction(value:Function):void
 			{
 				_updateFunction = value;
+			}
+
+			public function get isDateTime():Boolean
+			{
+				return _isDateTime;
+			}
+
+			public function set isDateTime(value:Boolean):void
+			{
+				_isDateTime = value;
 			}
 
 

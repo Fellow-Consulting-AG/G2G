@@ -54,7 +54,7 @@
 			public static const FORECAST_TYPE:String = "forecast"; 
 			public static const ACTUAL_TYPE:String = "Actual";
 			public static const VARIANCE_TYPE:String = "Variance";
-			
+			private var mapShowMonth:Object = {"-1":false};
 			private static const OP_FIELD:Array=[
 				"OwnerFullName",
 				"OpportunityId",
@@ -656,14 +656,15 @@
 			
 			};
 			
-			
+			var type:int = CURRENT_FY_ALL_COLUMNS;
 			public function showHideColumns():void{
 				var columns:Array = gridListAll.columns;
-				var type:int = CURRENT_FY_ALL_COLUMNS;
+				
 				if(filter != null){
 					type = filter.type;
 				}
 				var hideCols:Object = MAP_HIDE_COLUMN[type.toString()];
+				var show:Boolean = false;
 				for each(var col:AdvancedDataGridColumn in columns){
 					var col_name:String = col.dataField;	
 					if(col_name.indexOf('.')!=-1){
@@ -674,7 +675,25 @@
 					}else{
 						col.visible=true;
 					}
+					try{
+						
+						
+						if(mapShowMonth[type.toString()] == null && (col.dataField=="Q4" || col.dataField=="Q8")){
+							show = false;
+							mapShowMonth[type.toString()] = show;
+						}else{
+							show = mapShowMonth[type.toString()];
+						}
+					}catch(e:Error){
+						//nothing to do
+					}
 					
+					
+				}
+				if(type.toString()=="0" || type.toString()=="-1"){
+					colapExpandMonth(show,"Q4",columns);
+				}else{
+					colapExpandMonth(show,"Q8",columns);
 				}
 			}
 			
@@ -739,24 +758,7 @@
 					if(col_name=="Q4" || col_name=="Q8"){
 						var headerRenderer:ClassFactory =new ClassFactory(MyAdvancedDataGridHeaderRenderer);
 						headerRenderer.properties={'colName':col_name,colapOrExpandClick:function expandOrColape(expandMonth:Boolean,name:String):void{
-							for each(var c:AdvancedDataGridColumn in gridListAll.columns){
-								var col_name2:String = c.dataField;	
-								if(col_name2.indexOf('.')!=-1){
-									col_name2 = col_name2.split('.')[0];
-									try{
-										var qIndx:int = parseInt(col_name2.charAt(col_name2.length-1));
-										if(name=="Q4"){
-											c.visible= qIndx<=4 && expandMonth;
-										}else if(name=="Q8"){
-											c.visible = qIndx>4 && expandMonth;
-										}
-									}catch(e:Error){
-										//nothing to do
-									}
-								}
-								
-							}
-						
+							colapExpandMonth(expandMonth,name,gridListAll.columns);
 						},addColapeOrExpand:true};
 						col.headerRenderer=headerRenderer;
 						
@@ -777,8 +779,8 @@
 					columns.push(col);
 				}
 				reloadData();
+				colapExpandMonth(false,"Q4",columns);
 				gridListAll.columns = columns;
-				
 				/*
 				if(rows == null){
 				rows = new ArrayCollection();
@@ -791,6 +793,32 @@
 				
 				//				rows.addItem({AnnualizedImpact:"Variance"});
 				//gridListAll.dataProvider = rows;
+			}
+			private function colapExpandMonth(expandMonth:Boolean,name:String,columns:Array):void{
+				for each(var c:AdvancedDataGridColumn in columns){
+					var col_name2:String = c.dataField;	
+					if((col_name2=="Q4" || col_name2=="Q8") && ClassFactory(c.headerRenderer).properties != null){
+						mapShowMonth[type.toString()] = expandMonth;
+						ClassFactory(c.headerRenderer).properties.expanded = expandMonth;
+					}
+					if(col_name2.indexOf('.')!=-1){
+						col_name2 = col_name2.split('.')[0];
+						try{
+							var qIndx:int = parseInt(col_name2.charAt(col_name2.length-1));
+							
+							
+							if(name=="Q4"){
+								c.visible= qIndx<=4 && expandMonth;
+							}else if(name=="Q8"){
+								c.visible = qIndx>4 && expandMonth;
+							}
+						}catch(e:Error){
+							//nothing to do
+						}
+					}
+					
+				}
+				
 			}
 			public function reloadData():void{
 				clearCirteria();

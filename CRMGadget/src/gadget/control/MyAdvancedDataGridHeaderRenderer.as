@@ -52,7 +52,7 @@ package gadget.control
 			super();
 		}
 		private var _switchCol:LinkButton;
-		private var _expanded:Boolean = true;
+		private var _expanded:Boolean = false;
 		private var _colName:String;
 		private function switchCol(e:Event):void{
 			
@@ -150,6 +150,7 @@ package gadget.control
 		public function set expanded(value:Boolean):void
 		{
 			_expanded = value;
+			setIcon(value);
 		}
 
 		

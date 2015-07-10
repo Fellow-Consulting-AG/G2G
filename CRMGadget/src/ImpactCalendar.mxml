@@ -160,7 +160,7 @@
 				{element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
 				{element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
 				{element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
-				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{refreshRow:false,updateData:updateData},editAble:true},
+				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.',refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
 				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
 				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
@@ -200,40 +200,40 @@
 				{mandatory:true,isco7_field:true,element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
 				{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
 				{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:null,editAble:false,labelFunction:getAnnualizedInpact},
-				{element_name:"Q1",display_name:"QUATER1@Q1",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q2",display_name:"QUATER2@Q2",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q3",display_name:"QUATER3@Q3",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q4",display_name:"QUATER4@Q4",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q5",display_name:"QUATER5@Q5",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q6",display_name:"QUATER6@Q6",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q7",display_name:"QUATER7@Q7",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q8",display_name:"QUATER8@Q8",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,',maxChars:20},editorDataField:"quater",editAble:true},
-				{element_name:"Q1.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q1.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q1.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q2.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q2.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q2.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q3.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q3.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q3.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q4.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q4.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q4.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q5.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q5.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q5.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q6.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q6.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q6.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q7.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q7.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q7.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q8.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
-				{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,',maxChars:20},editAble:true},
+				{element_name:"Q1",display_name:"QUATER1@Q1",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q2",display_name:"QUATER2@Q2",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q3",display_name:"QUATER3@Q3",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q4",display_name:"QUATER4@Q4",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q5",display_name:"QUATER5@Q5",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q6",display_name:"QUATER6@Q6",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q7",display_name:"QUATER7@Q7",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q8",display_name:"QUATER8@Q8",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+				{element_name:"Q1.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q1.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q1.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q2.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q2.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q2.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q3.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q3.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q3.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q4.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q4.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q4.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q5.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q5.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q5.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q6.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q6.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q6.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q7.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q7.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q7.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q8.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+				{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
 				{element_name:"CustomCurrency1",labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
-				{isco7_field:true,datafield:'LastFYImpact',element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9',maxChars:20},editAble:true},
+				{isco7_field:true,datafield:'LastFYImpact',element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
 				{element_name:"ChangeVsLastFY",display_name:"CHANGE_VS_LAST_FY@Change vs last FY",labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 				{element_name:"CustomCurrency4",entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 				{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
@@ -455,7 +455,13 @@
 				col.sortable=false;
 				return col;
 			}
-			
+			private  function displayPercentag(item:Object,col:AdvancedDataGridColumn):String{
+				var fieldValue:String = item[col.dataField];	
+				if(fieldValue != "" && fieldValue != null && fieldValue.indexOf("%") == -1){
+					fieldValue = fieldValue + "%";
+				}
+				return fieldValue;
+			}
 			private  function displayDataTime(item:Object,col:AdvancedDataGridColumn):String{
 				
 				
@@ -1582,7 +1588,7 @@
 
 			protected function cancelAction(event:MouseEvent):void
 			{
-				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Do you want to cancel?"),i18n._("SYNCHRONIZE_ALERT_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
+				Alert.show(i18n._("IMPACT_CALENDAR_CANCEL_MSG@Are you sure you want to discard changes?"),i18n._("SYNCHRONIZE_ALERT_WARNING@Warning"),Alert.YES|Alert.NO,this,function(closeEvent:CloseEvent):void{
 					if(closeEvent.detail==Alert.YES){
 						//clearCirteria();
 						reloadData();
@@ -1612,9 +1618,9 @@
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
 		<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
-			<mx:LinkButton label="{i18n._('NORMAL_MODE@Normal Mode')}"  click="showNormalMode(event)" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
-			<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="{i18n._('EXPORT_EXCEL@Export Excel')}" />
-			<mx:LinkButton icon="{closeIcon}" label="Cancel" click="cancelAction(event)"/>
+			<mx:LinkButton label="{i18n._('GLOBAL_LIST_MODE@List mode')}"  click="showNormalMode(event)" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
+			<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="{i18n._('GLOBAL_EXPORT_EXCEL@Export Excel')}" />
+			<mx:LinkButton icon="{closeIcon}" label="{i18n._('GLOBAL_DISCARD_CHANGES')}" click="cancelAction(event)"/>
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>
 		</mx:HBox>
 		<mx:Label paddingTop="20" text="{i18n._('TOTAL_OF_ALL_OPPORTUNITY@Total of all Opportunities')}" />

@@ -139,7 +139,7 @@ package gadget.control
 					super.data[column.dataField] = quater;
 				}
 				var q1:int = parseInt(super.text,0);
-				if(q1>0){
+				if(!isNaN(q1)){
 					var val:Number = q1/3;
 					for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 						

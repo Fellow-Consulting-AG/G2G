@@ -153,6 +153,7 @@
 			private var cboService:ComboBox;
 			private var fieldsDB:ArrayCollection;
 			private static const MS_EXCHANGE:String = 'MS Exchange';
+			private static const GLOBAL_FORECAST:String = "GLOBAL_FORECAST@Forecast";
 			public static  var sortedColumn:String;
 			public var visibleHomeTask:Boolean = false;
 			[Bindable] public var backHistory:Object;
@@ -984,7 +985,7 @@
 					msProcess.entity = entity;
 					WindowManager.openModal(msProcess);
 				}
-				if(event.label == "Impact Calendar"){
+				if(event.label == i18n._(GLOBAL_FORECAST)){
 					showImpactCalendar();
 				}
 			}
@@ -1867,7 +1868,7 @@
 				buttons.addItem({label:i18n._(LIST_BUTTON_LABEL_EDIT_LAYOUT), icon:customIcon, disabled: disable_list_layout});
 				if(Database.preferencesDao.isEnableImpactCalendar()){
 					if(entity == Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
-						buttons.addItem({label:i18n._("IMPACT_CALENDAR@Impact Calendar"), icon:dailyIcon, disabled: false});
+						buttons.addItem({label:i18n._(GLOBAL_FORECAST), icon:dailyIcon, disabled: false});
 						
 					}
 				}

@@ -345,10 +345,18 @@ package com.crmgadget.eval
 						criteria = foriegnKey + "='"+ valueForeignKey +"'";
 					}
 					var fieldName:String = replaceSpecialCh(String(nonEvaluatedParams.getItemAt(2)));
-	//				if (StringUtils.endsWith(fieldName, "_ITAG")) {
-	//					fieldName = opPars.getFieldNameFromIntegrationTag(entity, fieldName);
-	//				} 
-					return opPars.doGetJoinField(jentity,criteria,fieldName);
+					try{
+						var result:String = opPars.doGetJoinField(jentity,criteria,fieldName);
+						if(StringUtils.isEmpty(result)){
+							//try to get value from it
+							result = opPars.doGetJoinField(jentity,(foriegnKey + "='"+ valueForeignKey +"'"),fieldName);
+						}
+						return result;
+						
+					}catch(e:Error){
+						return "";
+					}					
+	
 				}
 			}
 			if(upperName == "FINDONEOF"){

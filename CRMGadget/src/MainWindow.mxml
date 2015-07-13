@@ -1878,6 +1878,11 @@
 							getSelectedList().saveImpactCalendar(function():void{
 							
 								callFunction(event);
+							},function():void{
+								if(event.currentTarget is TabBar){
+									var tabBar:TabBar = TabBar(event.currentTarget);	
+									tabBar.selectedIndex = tabSelected;
+								}
 							});
 						}else{
 							callFunction(event);

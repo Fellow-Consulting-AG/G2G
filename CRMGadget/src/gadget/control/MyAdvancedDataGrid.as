@@ -72,7 +72,7 @@ package gadget.control
 				}
 			}
 			
-			public function refreshRowByRecordId(recId:String,idField:String):void{
+			public function refreshRowByRecordId(recId:String,idField:String,refDependOnGrid:Boolean=true):void{
 				for(var i:int=0;i<listItems.length;i++){
 					var firstCol:Object = listItems[i][0];
 					if(firstCol!=null){
@@ -82,7 +82,9 @@ package gadget.control
 						}
 					}
 				}
-				refreshDependOnGrid();
+				if(refDependOnGrid){
+					refreshDependOnGrid();
+				}
 			}
 			
 			public function refreshCols(col:int):void{

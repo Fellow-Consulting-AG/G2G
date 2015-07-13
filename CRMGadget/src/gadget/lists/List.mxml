@@ -2085,9 +2085,9 @@
 				addHistory();
 					
 			}
-			public function saveImpactCalendar(endFunction:Function):void{
+			public function saveImpactCalendar(endFunction:Function,errorFunction:Function=null):void{
 				if(boxImpactCalendar.visible && impactCalendar!=null){
-					impactCalendar.save(endFunction);
+					impactCalendar.save(endFunction,errorFunction);
 				}
 			}
 			

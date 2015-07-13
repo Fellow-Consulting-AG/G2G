@@ -23,14 +23,14 @@ package gadget.dao
 			return "CustomObject7";
 		}
 		
-		protected override function getOutgoingIgnoreFields():ArrayCollection{
-			
-			return new ArrayCollection(["LastFYImpact"]);
-		}
-		protected override function getIncomingIgnoreFields():ArrayCollection{
-			
-			return new ArrayCollection(["LastFYImpact"]);
-		}
+//		protected override function getOutgoingIgnoreFields():ArrayCollection{
+//			
+//			return new ArrayCollection(["LastFYImpact"]);
+//		}
+//		protected override function getIncomingIgnoreFields():ArrayCollection{
+//			
+//			return new ArrayCollection(["LastFYImpact"]);
+//		}
 		
 		private var textColumns:Array = [
 			"AccountExternalSystemId",
@@ -731,8 +731,7 @@ package gadget.dao
 			"VehicleExternalSystemId",
 			"VehicleId",
 			"VehicleIntegrationId",
-			"VehicleVIN",
-			"LastFYImpact"
+			"VehicleVIN"
 			];
 	}
 }

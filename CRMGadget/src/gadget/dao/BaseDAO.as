@@ -847,8 +847,6 @@ package gadget.dao
 				if(!found){
 					allFields.addItem({element_name:"FullName"});
 				}
-			}else if(entity==Database.customObject7Dao.entity && updateFF){
-				allFields.addItem({element_name:"LastFYImpact"});
 			}
 			
 			return allFields;

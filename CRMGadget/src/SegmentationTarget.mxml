@@ -14,7 +14,7 @@
 			import gadget.lists.List;
 			import gadget.sync.incoming.GetContentCustomTab;
 			[Bindable] public var list:List;
-			private function onError(htmlText:String):void{
+			private function onError(htmlText:String,error:Object=null):void{
 				myHtml.htmlText = htmlText;
 			}
 			private function callback(urlReq:URLRequest):void{

@@ -138,12 +138,12 @@ package gadget.control
 					quater = new Object();
 					super.data[column.dataField] = quater;
 				}
-				var q1:int = parseInt(super.text,0);
+				var q1:Number = parseFloat(super.text);
 				if(!isNaN(q1)){
 					var val:Number = q1/3;
 					for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 						
-						quater[f]=val.toFixed(2);
+						quater[f]=val.toFixed(4);//store 4digit after .
 					}					
 				}
 				

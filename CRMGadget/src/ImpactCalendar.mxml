@@ -308,7 +308,7 @@
 						var total:Number = 0;
 						for each(var q:String in CURRENT_FY_QUATER){
 							var qVal:Number = parseFloat(colValue(item,null,q));
-							if(qVal>0){
+							if(!isNaN(qVal)){
 								total+=qVal;
 							}
 							
@@ -322,7 +322,7 @@
 						var total:Number = 0;
 						for each(var q:String in NEXt_FY_QUATER){
 							var qVal:Number = parseFloat(colValue(item,null,q));
-							if(qVal>0){
+							if(!isNaN(qVal)){
 								total+=qVal;
 							}
 							
@@ -1084,7 +1084,7 @@
 										if(isNaN(mv)){
 											mv=0;
 										}
-										vqObj[m]=mv.toFixed(2);
+										vqObj[m]=mv;
 									}else{
 										var acv:Number = parseFloat(acQ[m]);
 										if(isNaN(acv)){
@@ -1095,7 +1095,7 @@
 											fcv=0;
 										}
 										var vc:Number = acv-fcv;
-										vqObj[m]=vc.toFixed(2);
+										vqObj[m]=vc;
 									}
 								}
 							}

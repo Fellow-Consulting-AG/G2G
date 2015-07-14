@@ -2156,7 +2156,7 @@
 				tabMenu.labelField="label";
 				var child:Button = event.target as Button;
 				var p:Point = event.target.localToGlobal(new Point(child.x, child.y + child.height));
-				tabMenu.addEventListener(MenuEvent.ITEM_CLICK, function(e:MouseEvent):void{
+				tabMenu.addEventListener(MenuEvent.ITEM_CLICK, function(e:MenuEvent):void{
 				checkAction(e,menuDownAction);
 				
 				});

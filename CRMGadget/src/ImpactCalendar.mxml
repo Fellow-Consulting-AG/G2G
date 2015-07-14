@@ -975,6 +975,7 @@
 						var callTotal:Number=0;
 						var lastFyTotal:Number=0;				
 						var mapGroup:Dictionary = new Dictionary();
+						var mapAccountAdded:Dictionary = new Dictionary();
 						var saveTotal:Object = Database.icManualTotal.selectLastRecord();
 						var currentFyTarget:Number=0;
 						var actualTotal:Object = rows.getItemAt(rows.length-2);
@@ -1006,9 +1007,17 @@
 								
 								if(!mapGroup.hasOwnProperty(r.OpportunityId)){							
 									mapGroup[r.OpportunityId]= currentGroup++;
-									if(!StringUtils.isEmpty(r.CustomText37)){
-										expenseTotal+=parseFloat(r.CustomCurrency2);
-										callTotal+=parseFloat(r.CustomText37);
+									if(!mapAccountAdded.hasOwnProperty(r.AccountId)&& !StringUtils.isEmpty(r.CustomText37)){
+										mapAccountAdded[r.AccountId]=r.AccountId;
+										var expense:Number = parseFloat(r.CustomCurrency2);
+										if(!isNaN(expense)){
+											expenseTotal+=expense
+										}
+										//call cannot nan
+										var cal:Number = parseFloat(r.CustomText37);
+										if(!isNaN(cal)){
+											callTotal+=cal;
+										}
 									}
 								}		
 								if(!StringUtils.isEmpty(r.co7_CustomCurrency6)){

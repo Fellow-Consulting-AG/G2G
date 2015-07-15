@@ -141,7 +141,9 @@
 			
 			
 			public static function getEntityDisplayName(item:Object):String{
-				
+				if(StringUtils.isEmpty(item.data)){
+					return "";
+				}
 				return Database.customLayoutDao.getDisplayName(item.data);				
 				
 			}

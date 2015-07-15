@@ -172,16 +172,18 @@
 							r =  Relation.getRelation(child.entity_name,entity);
 						}
 						if(r!=null){
+							r.entity_name = child.entity_name;
 							relations.addItem(r);
 						}
 					}
 					iconCbo.dataProvider =relations;
 					iconCbo.labelFunction = function(rl:Object):String{
-						if(rl.supportTable){
-							return Database.customLayoutDao.getDisplayName(rl.entityDest);
-						}else{
-							return Database.customLayoutDao.getDisplayName(rl.entitySrc);
-						}
+//						if(rl.supportTable){
+//							return Database.customLayoutDao.getDisplayName(rl.entity_name);
+//						}else{
+//							return Database.customLayoutDao.getDisplayName(rl.entity_name);
+//						}
+						return Database.customLayoutDao.getDisplayName(rl.entity_name);
 					
 					};
 					

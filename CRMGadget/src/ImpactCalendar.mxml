@@ -25,7 +25,7 @@
 			import gadget.control.MyAdvancedDataGridColumn;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
-			import gadget.control.ReqireFieldHeaderRenderer;
+			import gadget.control.MandatoryFieldHeaderRenderer;
 			import gadget.dao.Database;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
@@ -246,7 +246,7 @@
 					{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
 					{element_name:"CustomCurrency1",labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
 					{isco7_field:true,datafield:'CustomCurrency6',element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
-					{isco7_field:true,element_name:"CustomCurrency7",entity:Database.opportunityDao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
+					{isco7_field:true,element_name:"CustomCurrency7",entity:Database.customObject7Dao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 					{element_name:"CustomCurrency4",entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 					{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 					{element_name:"CustomCurrency2",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
@@ -767,10 +767,7 @@
 							if(objCol.mandatory){
 								var mandatoryCls:ClassFactory = new ClassFactory(MandatoryColRenderer);
 								col.itemRenderer = mandatoryCls;
-							}
-							if(col_name=="CustomPickList7" || col_name== "CustomDate26"|| col_name== "CustomDate25"|| col_name=="CustomPickList31"|| col_name== "CustomPickList34" || col_name==
-								"CustomNumber0"|| col_name== "CustomCurrency4"){
-								var rendererHeaderColor:ClassFactory = new ClassFactory(ReqireFieldHeaderRenderer);		
+								var rendererHeaderColor:ClassFactory = new ClassFactory(MandatoryFieldHeaderRenderer);		
 								col.headerRenderer = rendererHeaderColor;
 							}
 							//add editable for opportunityname

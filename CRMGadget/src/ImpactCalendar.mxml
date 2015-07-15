@@ -25,6 +25,7 @@
 			import gadget.control.MyAdvancedDataGridColumn;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
+			import gadget.control.ReqireFieldHeaderRenderer;
 			import gadget.dao.Database;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
@@ -178,8 +179,8 @@
 				{mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
-				{element_name:"CustomDate26",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate25",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{mandatory:true,isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
@@ -766,6 +767,11 @@
 							if(objCol.mandatory){
 								var mandatoryCls:ClassFactory = new ClassFactory(MandatoryColRenderer);
 								col.itemRenderer = mandatoryCls;
+							}
+							if(col_name=="CustomPickList7" || col_name== "CustomDate26"|| col_name== "CustomDate25"|| col_name=="CustomPickList31"|| col_name== "CustomPickList34" || col_name==
+								"CustomNumber0"|| col_name== "CustomCurrency4"){
+								var rendererHeaderColor:ClassFactory = new ClassFactory(ReqireFieldHeaderRenderer);		
+								col.headerRenderer = rendererHeaderColor;
 							}
 							//add editable for opportunityname
 							if(col_name=='OpportunityName'){

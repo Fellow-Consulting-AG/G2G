@@ -23,7 +23,7 @@
 					if(super.data.isError && REPLACE_STYLE.indexOf(styleProp)!=-1 ){										
 						var val:Object = super.data[col.dataField];
 						if(val==null || StringUtils.isEmpty(val.toString())){
-							realCol.push(0xFF0000);
+							realCol.push("#40E0D0");
 							return realCol;
 						}
 						
@@ -46,11 +46,12 @@
 				super.data = value;		
 				if(col!=null){
 					if(data!=null){		
-						if(col.labelFunction!=null){
-						lblData.text = col.labelFunction(value,col);
-						}else{
-							lblData.text = value[col.dataField];
-						}
+//						if(col.labelFunction!=null){
+//						lblData.text = col.labelFunction(value,col);
+//						}else{
+//							lblData.text = value[col.dataField];
+//						}
+						lblData.text = col.itemToLabel(value);
 						
 					}
 					

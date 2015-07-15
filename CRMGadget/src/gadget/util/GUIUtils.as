@@ -812,7 +812,7 @@ package gadget.util
 				}
 			}
 			var renderer:ClassFactory = null;
-			if((item.gadget_type == "Account" && related=="Contact") || (item.gadget_type == "Contact" && related=="Account")){
+			if((item.gadget_type == Database.opportunityDao.entity && ( related=="Contact" || related == "Competitor" )) || (item.gadget_type == "Account" && related=="Contact") || (item.gadget_type == "Contact" && related=="Account")){
 				renderer = new ClassFactory(LinkButtonColRenderer);
 				renderer.properties = new Object();
 				renderer.properties["listDetail"]=detail.list;
@@ -914,7 +914,7 @@ package gadget.util
 //						//	field.element_name = "Product";
 //						//}
 //						dgCol2.dataField = field.element_name;
-						if(renderer != null && (dgCol2.dataField=="ContactLastName" || dgCol2.dataField=="AccountName")){
+						if(renderer != null && (dgCol2.dataField=="ContactLastName" || dgCol2.dataField=="AccountName" || dgCol2.dataField == "CompetitorName")){
 							dgCol2.itemRenderer = renderer;
 						}
 						columns.push(dgCol2);

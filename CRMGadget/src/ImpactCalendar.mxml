@@ -34,6 +34,7 @@
 			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.NumberUtils;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -143,8 +144,7 @@
 				'Up-front Purchase':[0.32,0.06,0.04,0.0833333]		
 				
 			};
-			
-			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7"],CustomObject7:["CustomPickList31",//Category
+			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7","CustomDate26","CustomDate25"],CustomObject7:["CustomPickList31",//Category
 				"CustomPickList34",//unit
 				"CustomNumber0",//Quantity
 				"CustomCurrency4"//value
@@ -501,6 +501,7 @@
 						obj.isNew=true;
 						return obj;
 					}
+					
 					private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
 						if(rows!=null){
 							var lastRow:Object = rows.getItemAt(rows.length-1);
@@ -906,8 +907,8 @@
 							obj.Forecast = curImpact.toFixed(2);
 							obj.FYTarget=FYTarget.toFixed(2);					
 							obj.variance = (FYTarget - curImpact).toFixed(2);
-							obj.closed = closed.toFixed(2)
-							obj.notclosed = notClosed.toFixed(2)
+							obj.closed = closed.toFixed(2);
+							obj.notclosed = notClosed.toFixed(2);
 							lstTotal.refresh();
 						}else{
 							var data:ArrayCollection = new ArrayCollection();
@@ -937,16 +938,24 @@
 						item["variance"] = Number(item.FYTarget) - item.Forecast;
 						arrLst.refresh();
 					}
+					private function labelNumberDisplay(item:Object,col:AdvancedDataGridColumn):String{
+						
+						return Number(item[col.dataField]).toFixed(2);
+						
+					}
 					private  function initGridTotalAllOpportunities():void{
 						
 						var columns:Array = new Array();
 						//				columns.push(createColumn("","Total"));
 						var renderer:ClassFactory = new ClassFactory(ImpactText);
 						renderer.properties= {restrict:'0-9.,',maxChars:20,updateData:updateFYTarget};
-						columns.push(createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer));
+						var col:AdvancedDataGridColumn = createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer);
+						col.labelFunction = labelNumberDisplay;
+						columns.push(col);
 						columns.push(createColumn(i18n._("CURRENT_FY_FORECAST@Current FY Forecast"),"Forecast",false));
-						var col:AdvancedDataGridColumn = createColumn(i18n._("FY_IMPACT_VARIANCE_TO_TARGET@FY impact variance to target"),"variance",false);
+						col = createColumn(i18n._("FY_IMPACT_VARIANCE_TO_TARGET@FY impact variance to target"),"variance",false);
 						col.itemRenderer = new ClassFactory(CalculateGridTotalRender);
+						//col.labelFunction = labelNumberDisplay;
 						columns.push(col);
 						col = createColumn(i18n._("FY_IMPACT_CLOSED_OPPORTUNITIES@FY impact, closed Opportunities"),"closed",false);				
 						columns.push(col);

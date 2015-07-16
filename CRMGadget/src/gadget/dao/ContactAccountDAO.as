@@ -4,6 +4,7 @@ package gadget.dao
 	
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
+	import flash.utils.Dictionary;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -60,6 +61,14 @@ package gadget.dao
 				
 			}
 			return result;
+		}
+		
+		public override function getLinkFields():Dictionary{
+			var fields:Dictionary = new Dictionary();
+			fields["AccountName"]=null;
+			fields["ContactLastName"]=null;
+			return fields;
+			
 		}
 
 		private const TEXTCOLUMNS:Array = [

@@ -12,12 +12,14 @@
 			import com.as3xls.xls.ExcelFile;
 			import com.as3xls.xls.Sheet;
 			
+			import gadget.control.AdvancedDataGridColorHeaderRenderer;
 			import gadget.control.AnnulizeColRenderer;
 			import gadget.control.ButtonAddRenderer;
 			import gadget.control.CalculateGridTotalRender;
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
+			import gadget.control.ImpactCalendarColumnGroup;
 			import gadget.control.ImpactText;
 			import gadget.control.ItemFinderColRender;
 			import gadget.control.LinkButtonRevenueColRenderer;
@@ -25,7 +27,6 @@
 			import gadget.control.MyAdvancedDataGridColumn;
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.QTextRenderer;
-			import gadget.control.MandatoryFieldHeaderRenderer;
 			import gadget.dao.Database;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
@@ -45,6 +46,7 @@
 			import mx.controls.Alert;
 			import mx.controls.TextInput;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumnGroup;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			private var _list:List;
@@ -168,19 +170,19 @@
 				updateFieldValue(data,'CustomPickList0',data.CustomPickList0);
 			}
 			private var all_columns:ArrayCollection = new ArrayCollection([
-				{element_name:"OwnerFullName",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-				{element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
-				{element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
-				{element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
-				{element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.',refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
-				{element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
-				{element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-				{mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-				{element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
-				{element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
-				{element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"OwnerFullName",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
+				{isop_field:true,element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
+				{isop_field:true,element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
+				{isop_field:true,element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
+				{isop_field:true,element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.',refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
+				{isop_field:true,element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
+				{isop_field:true,element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{isop_field:true,mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+				{isop_field:true,element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
+				{isop_field:true,element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
+				{isop_field:true,element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{mandatory:true,isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
@@ -675,15 +677,9 @@
 						
 					};
 					
-					var type:int = CURRENT_FY_ALL_COLUMNS;
-					public function showHideColumns():void{
-						var columns:Array = gridListAll.columns;
-						
-						if(filter != null){
-							type = filter.type;
-						}
-						var hideCols:Object = MAP_HIDE_COLUMN[type.toString()];
-						var show:Boolean = false;
+					private var type:int = CURRENT_FY_ALL_COLUMNS;
+					
+					protected function visibleColumn(hideCols:Object,columns:Array):void{
 						for each(var col:AdvancedDataGridColumn in columns){
 							var col_name:String = col.dataField;	
 							if(col_name.indexOf('.')!=-1){
@@ -694,26 +690,41 @@
 							}else{
 								col.visible=true;
 							}
-							try{
-								
-								
-								if(mapShowMonth[type.toString()] == null && (col.dataField=="Q4" || col.dataField=="Q8")){
-									show = false;
-									mapShowMonth[type.toString()] = show;
-								}else{
-									show = mapShowMonth[type.toString()];
+						}
+					}
+					public function showHideColumns():void{
+						var columns:Array = gridListAll.columns;
+						
+						if(filter != null){
+							type = filter.type;
+						}
+						var hideCols:Object = MAP_HIDE_COLUMN[type.toString()];						
+						for each(var col:AdvancedDataGridColumn in columns){
+							if(col is AdvancedDataGridColumnGroup){
+								visibleColumn(hideCols,AdvancedDataGridColumnGroup(col).children);
+								continue;
+							}else{
+								var col_name:String = col.dataField;	
+								if(col_name.indexOf('.')!=-1){
+									col_name = col_name.split('.')[0];
 								}
-							}catch(e:Error){
-								//nothing to do
+								if(hideCols!=null && hideCols.hasOwnProperty(col_name)){
+									col.visible=false;
+								}else{
+									col.visible=true;
+								}								
 							}
 							
 							
+							
 						}
-						if(type.toString()=="0" || type.toString()=="-1"){
-							colapExpandMonth(show,"Q4",columns);
+						if(type==CURRENT_FY_ALL_COLUMNS || type==CURRENT_FY_COMPACT){
+							colapExpandMonth(mapShowMonth[type.toString()],"Q4",columns);
 						}else{
-							colapExpandMonth(show,"Q8",columns);
+							colapExpandMonth(mapShowMonth[type.toString()],"Q8",columns);
 						}
+						
+						
 					}
 					
 					
@@ -733,6 +744,17 @@
 						col.sortable=false;
 						columns.push(col);
 						var hidCols:Object = MAP_HIDE_COLUMN[type.toFixed(0)];
+						var co7groupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.customObject7Dao.entity));
+						var hdRenderer:ClassFactory =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
+						hdRenderer.properties ={bgColor: 0xB8CF95};
+						co7groupColumns.headerRenderer = hdRenderer;
+						co7groupColumns.setStyle("fontWeight","bold");
+						
+						var opgroupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.opportunityDao.entity));
+						hdRenderer =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
+						hdRenderer.properties ={bgColor: 0xADAFC3};
+						opgroupColumns.headerRenderer = hdRenderer;						
+						opgroupColumns.setStyle("fontWeight","bold");						
 						for each(var objCol:Object in all_columns){
 							var col_name:String = objCol.element_name;		
 							
@@ -767,7 +789,7 @@
 							if(objCol.mandatory){
 								var mandatoryCls:ClassFactory = new ClassFactory(MandatoryColRenderer);
 								col.itemRenderer = mandatoryCls;
-								var rendererHeaderColor:ClassFactory = new ClassFactory(MandatoryFieldHeaderRenderer);		
+								var rendererHeaderColor:ClassFactory = new ClassFactory(AdvancedDataGridColorHeaderRenderer);		
 								col.headerRenderer = rendererHeaderColor;
 							}
 							//add editable for opportunityname
@@ -797,11 +819,23 @@
 								col.editorDataField = objCol.editorDataField;
 							}
 							col.labelFunction = objCol.labelFunction;
-							columns.push(col);
+							if(objCol.isop_field){
+								if(opgroupColumns.children.length==0){
+									columns.push(opgroupColumns);
+								}
+								opgroupColumns.children.push(col);
+							}else{
+								//we have only two group for all columns
+								if(co7groupColumns.children.length==0){
+									columns.push(co7groupColumns);									
+								}
+								co7groupColumns.children.push(col);
+							}
+							
 						}
 						reloadData();
 						colapExpandMonth(false,"Q4",columns);
-						gridListAll.columns = columns;
+						gridListAll.groupedColumns = columns;
 						/*
 						if(rows == null){
 						rows = new ArrayCollection();
@@ -817,6 +851,10 @@
 					}
 					private function colapExpandMonth(expandMonth:Boolean,name:String,columns:Array):void{
 						for each(var c:AdvancedDataGridColumn in columns){
+							if(c is AdvancedDataGridColumnGroup){//need to check child of the group
+								colapExpandMonth(expandMonth,name,AdvancedDataGridColumnGroup(c).children);
+								continue;
+							}
 							var col_name2:String = c.dataField;	
 							if((col_name2=="Q4" || col_name2=="Q8") && ClassFactory(c.headerRenderer).properties != null){
 								mapShowMonth[type.toString()] = expandMonth;
@@ -1019,7 +1057,7 @@
 								
 								if(!mapGroup.hasOwnProperty(r.OpportunityId)){							
 									mapGroup[r.OpportunityId]= currentGroup++;
-									if(!mapAccountAdded.hasOwnProperty(r.AccountId)&& !StringUtils.isEmpty(r.CustomText37)){
+									if( !StringUtils.isEmpty(r.CustomText37)){
 										mapAccountAdded[r.AccountId]=r.AccountId;
 										var expense:Number = parseFloat(r.CustomCurrency2);
 										if(!isNaN(expense)){

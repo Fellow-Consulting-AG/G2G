@@ -751,7 +751,14 @@ package gadget.util
 			WindowManager.openModal(screenDetail);
 		}
 		
-		
+		public static function createLinkFieldRenderer(parentEnttiy:String,lst:List):ClassFactory{
+			var renderer:ClassFactory = new ClassFactory(LinkButtonColRenderer);
+			renderer.properties = new Object();
+			renderer.properties["listDetail"]=lst;
+			renderer.properties["parentEntity"]=parentEnttiy;	
+			
+			return renderer;
+		}
 		/**
 		 * Displays a "relation grid", i.e. a grid that allows to link items from a detail.
 		 * This currently only supports MxN relations.   
@@ -811,13 +818,16 @@ package gadget.util
 					}
 				}
 			}
-			var renderer:ClassFactory = null;
-			if((item.gadget_type == Database.opportunityDao.entity && ( related=="Contact" || related == "Competitor" )) || (item.gadget_type == "Account" && related=="Contact") || (item.gadget_type == "Contact" && related=="Account")){
-				renderer = new ClassFactory(LinkButtonColRenderer);
-				renderer.properties = new Object();
-				renderer.properties["listDetail"]=detail.list;
-				
-			}
+			
+			var linkFields:Dictionary = subDao.getLinkFields();
+			
+//			var renderer:ClassFactory = null;
+//			if((item.gadget_type == Database.opportunityDao.entity && ( related=="Contact" || related == "Competitor" )) || (item.gadget_type == "Account" && related=="Contact") || (item.gadget_type == "Contact" && related=="Account")){
+//				renderer = new ClassFactory(LinkButtonColRenderer);
+//				renderer.properties = new Object();
+//				renderer.properties["listDetail"]=detail.list;
+//				
+//			}
 			/*
 			if(relation.supportTable != Database.contactAccountDao.entity){
 				cfields = Database.subColumnLayoutDao.fetchColumnLayout(item.gadget_type,relation.supportTable);
@@ -844,41 +854,22 @@ package gadget.util
 						if((obj==null || obj!=null && obj.display_name==colname) && i<labelDest.length ){//try to get display name from destination label
 							obj = FieldUtils.getField(relation.entityDest, labelDest[i]);
 						}
-//						if(subDao!=null){
-//							obj = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),colname);
-//						}else{
-//							obj = Database.fieldDao.findFieldByPrimaryKey(related, colname);
-//						}
+
 						if(obj!=null){
 							dgCol.headerText = obj.display_name;
 						}else{
 							dgCol.headerText=colname;
 						}					
-						//dgCol.headerRenderer = new GridHeaderRendererFactory(dgCol.headerText,relation.entityDest);
+						
 						dgCol.dataField = colname;
-						if(renderer != null && (dgCol.dataField=="ContactLastName" || dgCol.dataField=="AccountName")){
-							dgCol.itemRenderer = renderer;
+
+						if(linkFields.hasOwnProperty(dgCol.dataField)){
+							dgCol.itemRenderer = createLinkFieldRenderer(linkFields[dgCol.dataField],detail.list);
 						}
 						columns.push(dgCol);
 						//i=i+1;
-					}
-					
-//				}else{
-//					for each(var colname1:String in relation.labelSupport) {
-//						var dgCol1:DataGridColumn = new DataGridColumn();
-//						var objField:Object = Database.fieldDao.findFieldByPrimaryKey(related, relation.labelDest[i]);
-//						if(objField!=null){
-//							dgCol1.headerText = objField.display_name;
-//						}else{
-//							dgCol1.headerText = relation.labelDest[i];
-//						}
-//						
-//						dgCol1.headerRenderer = new GridHeaderRendererFactory(dgCol1.headerText,relation.entityDest);
-//						dgCol1.dataField = colname1;
-//						columns.push(dgCol1);
-//						i++;
-//					}
-//				}
+					}					
+
 			}else{
 				//if(cfields != null || cfields.length >0){
 					for each (var field:Object in cfields ){				
@@ -887,35 +878,9 @@ package gadget.util
 						},function(row:Object,col:AdvancedDataGridColumn):String{
 							return List.displayPicklistValue(row,col,subDao.entity);
 						});
-//						//var obj2:Object = null;
-//						var obj2:Object = null;
-//						if(field.entity!=null){
-//							obj2 = FieldUtils.getField(field.entity, field.element_name);
-//						}
-//						if(obj2==null){
-//							if(relation.supportTable == "Contact.CustomObject2"){
-//								obj2 = FieldUtils.getField(relation.entityDest, field.element_name);
-//							}else{
-//								obj2 = FieldUtils.getField(relation.supportTable, field.element_name);
-//							}
-//						}
-////						if(subDao!=null){
-////							obj2 = Database.fieldDao.findFieldByPrimaryKey(DAOUtils.getRecordType(subDao.entity),field.element_name);
-////						}else{
-////							obj2 = Database.fieldDao.findFieldByPrimaryKey(related, field.element_name);
-////						}
-//						if(obj2!=null){
-//							dgCol2.headerText = obj2.display_name;
-//						}else{
-//							dgCol2.headerText=field.element_name;
-//						}					
-//						//dgCol.headerRenderer = new GridHeaderRendererFactory(dgCol.headerText,relation.entityDest);
-//						//if(field.element_name == "Name" && "Activity.Product" == relation.supportTable){
-//						//	field.element_name = "Product";
-//						//}
-//						dgCol2.dataField = field.element_name;
-						if(renderer != null && (dgCol2.dataField=="ContactLastName" || dgCol2.dataField=="AccountName" || dgCol2.dataField == "CompetitorName")){
-							dgCol2.itemRenderer = renderer;
+
+						if(linkFields.hasOwnProperty(dgCol2.dataField)){
+							dgCol2.itemRenderer = createLinkFieldRenderer(linkFields[dgCol2.dataField],detail.list);
 						}
 						columns.push(dgCol2);
 						

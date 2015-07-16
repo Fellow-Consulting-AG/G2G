@@ -2,6 +2,7 @@ package gadget.dao
 {
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
+	import flash.utils.Dictionary;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -50,6 +51,13 @@ package gadget.dao
 		
 		override protected function getIncomingIgnoreFields():ArrayCollection{
 			return new ArrayCollection(["OpportunityId","OpportunityName"]);
+		}
+		
+		public override function getLinkFields():Dictionary{
+			var fields:Dictionary = new Dictionary();			
+			fields["CompetitorName"]=Database.accountDao.entity;			
+			return fields;
+			
 		}
 		override public function getLayoutFields():Array{
 			var layoutFields:Array = [

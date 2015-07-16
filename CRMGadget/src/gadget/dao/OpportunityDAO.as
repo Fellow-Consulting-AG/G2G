@@ -798,6 +798,10 @@ package gadget.dao
 				//"CustomCurrency2",//Expenses
 				row.CustomText37= call.NumCall;
 				row.CustomCurrency2 = call.Expenses;
+			}else{
+				//clear value
+				row.CustomText37= '';
+				row.CustomCurrency2 = '';
 			}
 		}
 		

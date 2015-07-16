@@ -3,6 +3,7 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.utils.Dictionary;
 	
 	import mx.collections.ArrayCollection;
 
@@ -108,6 +109,13 @@ package gadget.dao
 */		
 		override public function get entity():String {
 			return "Account";
+		}
+		
+		public override function getLinkFields():Dictionary{
+			var fields:Dictionary = new Dictionary();
+			fields["AccountName"]=null;
+			return fields;
+			
 		}
 		
 		private var textColumns:Array = [

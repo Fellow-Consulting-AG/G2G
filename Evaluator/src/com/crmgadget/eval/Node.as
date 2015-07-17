@@ -32,5 +32,14 @@ package com.crmgadget.eval
 		public function getChildren():ArrayCollection {
 			return children;
 		}
+		
+		public function getChildAt(idx:int):Node{
+			if(children!=null){
+				if(idx>=0 && idx<children.length){
+					return children[idx] as Node;	
+				}
+			}
+			return null;
+		}
 	}
 }

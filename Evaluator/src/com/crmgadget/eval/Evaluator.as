@@ -111,8 +111,10 @@ package com.crmgadget.eval
 				optionalParam.sqlLists = sqlLists;
 				optionalParam.current_field = elment_name;
 				optionalParam.doGetOracleId = getOracleId;
+				optionalParam.entity = entity;
+				optionalParam.owner = owner;
 				optionalParam.addExecuting(elment_name);
-				return doEvaluate(node,owner,entity,elment_name,optionalParam);
+				return doEvaluate(node,elment_name,optionalParam);
 			} catch(e:Error){
 				if(isFiltered){ 
 					for(var i:int=0 ;i<FILTER_FUNCTION.length;i++){
@@ -128,7 +130,7 @@ package com.crmgadget.eval
 			return "";
 		}
 		
-		private static function doExecuteRelatedField(strExp:String,owner:Object,entity:String,elment_name:String, optionalParam:OptionalParams):String{
+		private static function doExecuteRelatedField(strExp:String,elment_name:String, optionalParam:OptionalParams):String{
 			if(strExp.charAt(0) == '"' && strExp.charAt(strExp.length-1) == '"'){
 				return strExp.replace(/\"/gi, '');
 			}
@@ -139,7 +141,7 @@ package com.crmgadget.eval
 				var formula:String=Functionalizer.functionalize(strExp);
 				var node:Node=Parser.parse(formula);
 				optionalParam.addExecuting(elment_name);
-				return doEvaluate(node,owner,entity,elment_name,optionalParam);
+				return doEvaluate(node,elment_name,optionalParam);
 			}catch(e:Error){
 				return strExp; 
 			}
@@ -167,7 +169,7 @@ package com.crmgadget.eval
 		}
 		
 		
-		private static function doEvaluate(node:Node,owner:Object,entity:String,elment_name:String,opPars:OptionalParams):String {
+		private static function doEvaluate(node:Node,elment_name:String,opPars:OptionalParams):String {
 			
  			var params:ArrayCollection = new ArrayCollection();
 			// non evaluated params are params, but not evaluated
@@ -177,7 +179,7 @@ package com.crmgadget.eval
 			var objEntity:Object = opPars.objEntity;
 			for each (var child:Node in node.getChildren()) {	
 				nonEvaluatedParams.addItem(child.getName());
-				params.addItem(doEvaluate(child, owner, entity, elment_name, opPars));
+				params.addItem(doEvaluate(child, elment_name, opPars));
 				
 			}
 			
@@ -190,16 +192,16 @@ package com.crmgadget.eval
 			}
 			
 			if(upperName=="FIELDVALUE"){
-				return getFieldValue(entity,owner,String(params.getItemAt(0)),opPars);
+				return getFieldValue(String(params.getItemAt(0)),opPars);
 			}
 			//Bug fixing 214 CRO 07.02.2011
 			if(isProperty(upperName)){
-				return String(getFieldValue(entity,owner,name,opPars));
+				return String(getFieldValue(name,opPars));
 			}
 			if(upperName=="USERVALUE") {
 				var p:String =String(params.getItemAt(0));
 				p=replaceSpecialCh(p);
-				var val:String=owner[p];
+				var val:String=opPars.owner[p];
 				return (opPars.isFiltered == true && val == null) ? "<ERROR>" : val;
 			}
 			
@@ -208,11 +210,11 @@ package com.crmgadget.eval
 			}
 			
 			if (STRING_FUNCTION[upperName]) {
-				return doStringFunction(entity,owner, upperName, params, opPars);
+				return doStringFunction(upperName, params, opPars);
 			}
 			
 			if (DATE_FUNCTION[upperName]) {
-				return doDateFunction(entity,owner, upperName, params, opPars);
+				return doDateFunction(upperName, params, opPars);
 			}
 			
 			if(upperName=="LIKE"){
@@ -232,7 +234,7 @@ package com.crmgadget.eval
 			
 			if(COMP_AND_CAL_FUNCTION[upperName]){
 				// return doCompareAndCalculate(name,String(params.getItemAt(0)),String(params.getItemAt(1)));
-				return doCompareAndCalculate(upperName, params);
+				return doCompareAndCalculate(upperName, params,node,opPars);
 			}			
 			
 			if(upperName=="IIF"){
@@ -284,22 +286,22 @@ package com.crmgadget.eval
 				var lang_ind_code:String=String(params.getItemAt(1));
 				var picklist:String=type;
 				// step 1 : get the Id
-				var id:String = opPars.doGetPickListId(entity,type,lang_ind_code);
+				var id:String = opPars.doGetPickListId(opPars.entity,type,lang_ind_code);
 				
 				if(elment_name != null && StringUtils.isEmpty(id)){
 					picklist=elment_name;
-					id =  opPars.doGetPickListId(entity,elment_name,lang_ind_code);					
+					id =  opPars.doGetPickListId(opPars.entity,elment_name,lang_ind_code);					
 				}
 				if(id==null || id==""){
-					var value:String= opPars.doGetPickList(entity, type, lang_ind_code,objEntity);
+					var value:String= opPars.doGetPickList(opPars.entity, type, lang_ind_code,objEntity);
 					if(value!=null && value.length>0){
 						return value;
 					}
-					return opPars.doGetPickList(entity, elment_name, lang_ind_code,objEntity); 
+					return opPars.doGetPickList(opPars.entity, elment_name, lang_ind_code,objEntity); 
 					
 				}
 				// step 2 : get the translated value
-				return opPars.doGetPickList(entity, picklist, id,objEntity);
+				return opPars.doGetPickList(opPars.entity, picklist, id,objEntity);
 				
 			}
 			if(upperName =="LOOKUPNAME"){
@@ -322,11 +324,11 @@ package com.crmgadget.eval
 				return DateUtils.format(new Date(),DateUtils.DATABASE_DATETIME_FORMAT);
 			}
 			if(upperName=="ORGANISATIONNAME"){
-				return owner["Company"] == null ? "" : owner["Company"];
+				return opPars.owner["Company"] == null ? "" : opPars.owner["Company"];
 				
 			}
 			if(upperName=="LOCALE"){
-				return owner["Locale"] == null ? "" : owner["Locale"];
+				return opPars.owner["Locale"] == null ? "" : opPars.owner["Locale"];
 			}
 			if(upperName=="JOINFIELDVALUE"){
 				var jentity:String =replaceSpecialCh(String(nonEvaluatedParams.getItemAt(0)));
@@ -377,22 +379,22 @@ package com.crmgadget.eval
 				return (opPars.isFiltered == true && v == null) ? "<ERROR>" : v; //Return <ERROR> when do filter criteria
 			}
 			if(upperName=="USERLANGUAGE"){
-				return owner["LanguageCode"] == null ? "" : owner["LanguageCode"];
+				return opPars.owner["LanguageCode"] == null ? "" : opPars.owner["LanguageCode"];
 			}
 			//Only use in filter
 			if(upperName == "COUNTRY"){
-				return owner["LanguageCode"] == null ? "<ERROR>" : owner["LanguageCode"];
+				return opPars.owner["LanguageCode"] == null ? "<ERROR>" : opPars.owner["LanguageCode"];
 			}
 			//Only use in filter
 			if(upperName == "LOCALELANG"){
-				if (owner["Locale"]== null) return "<ERROR>";
-				var vl:Array = owner["Locale"].toString().split("-");
+				if (opPars.owner["Locale"]== null) return "<ERROR>";
+				var vl:Array = opPars.owner["Locale"].toString().split("-");
 				return StringUtil.trim(vl[0].toString());
 			}
 			//Only use in filter
 			if(upperName == "LOCALEAREA"){
-				if (owner["Locale"]== null) return "<ERROR>";
-				var va:Array = owner["Locale"].toString().split("-");
+				if (opPars.owner["Locale"]== null) return "<ERROR>";
+				var va:Array = opPars.owner["Locale"].toString().split("-");
 				return StringUtil.trim(va[1].toString());
 			}
 			
@@ -517,13 +519,13 @@ package com.crmgadget.eval
 			return -1;
 		}
 		
-		private static function doDateFunction(entity:String,owner:Object,oper:String,params:ArrayCollection,opPars:OptionalParams):String{
+		private static function doDateFunction(oper:String,params:ArrayCollection,opPars:OptionalParams):String{
 			// trace("Date Format : " + dtFormat);		
 			try{
 				var objEntity:Object = opPars.objEntity;
 				var strDate:String=(oper == "NOW")?"":String(params.getItemAt(0));
 				if(isPropertyField(strDate, objEntity)){
-					strDate = getFieldValue(entity,owner, strDate, opPars);
+					strDate = getFieldValue(strDate, opPars);
 				}
 				// if(StringUtils.isEmpty(strDate)) return "";
 				// if(!DateUtils.isDate(strDate)) return strDate;
@@ -605,7 +607,7 @@ package com.crmgadget.eval
 			return "";
 		}
 		
-		private static function doStringFunction(entity:String,owner:Object,oper:String,params:ArrayCollection,opPars:OptionalParams):String{
+		private static function doStringFunction(oper:String,params:ArrayCollection,opPars:OptionalParams):String{
 			var error:String = "";
 			try{
 				var param1:String = String(params.getItemAt(0));
@@ -638,7 +640,7 @@ package com.crmgadget.eval
 				}
 				
 				if(oper=="LEN"){
-					var v :String = isPropertyValueLength(entity,owner, param1, opPars);
+					var v :String = isPropertyValueLength(param1, opPars);
 					if( v != ""){
 						return String(v.length);
 					}
@@ -729,7 +731,7 @@ package com.crmgadget.eval
 			}
 			return value;
 		}
-		private static function doCompareAndCalculate(operator:String, params:ArrayCollection):String{
+		private static function doCompareAndCalculate(operator:String, params:ArrayCollection,curentNode:Node,opPars:OptionalParams):String{
 			try{
 				var str1:String = params.getItemAt(0)==null?"":params.getItemAt(0).toString();
 				var str2:String = params.getItemAt(1)==null?"":params.getItemAt(1).toString();
@@ -808,7 +810,31 @@ package com.crmgadget.eval
 				}else if(operator=="ADD"){
 					return (str1 == null ? "" : str1) + (str2 == null ? "" :str2);
 				}else if(operator=="EQ"){
-					return StringUtils.equal(str1,str2)?"true":"false";
+					if(StringUtils.equal(str1,str2)){						
+						return "true";
+					}else{
+						//try to compare code is it is picklist
+						str1 = curentNode.getChildAt(0).getName();//first value
+						str2 = curentNode.getChildAt(1).getName();//second value
+						if(isProperty(str1)){
+							str1 = getFieldValue(str1,opPars,false);
+						}else{
+							str1 = doEvaluate(curentNode.getChildAt(0),null,opPars);
+						}
+						if(isProperty(str2)){
+							str2 = getFieldValue(str2,opPars,false);
+							
+						}else{
+							str2 = doEvaluate(curentNode.getChildAt(1),null,opPars);
+						}
+						if(StringUtils.equal(str1,str2)){	
+							return "true";
+						}
+						
+					}
+				
+					
+					return "false";
 				}
 			}catch(e:Error){
 				trace( "doCompareAndCalculate \n" + e.getStackTrace());
@@ -891,18 +917,18 @@ package com.crmgadget.eval
 			}
 			return false;
 		}	
-		private static function isPropertyValueLength(entity:String,owner:Object,pro:String,opPars:OptionalParams):String{
+		private static function isPropertyValueLength(pro:String,opPars:OptionalParams):String{
 			if(pro.indexOf('<')!= -1 && pro.indexOf('>')!= -1){
-				return getFieldValue(entity,owner,pro,opPars);
+				return getFieldValue(pro,opPars);
 			}
 			return "";
 		}
 		
-		private static function getFieldValue(entity:String,owner:Object,name:String,opPars:OptionalParams):String{
+		private static function getFieldValue(name:String,opPars:OptionalParams,isGetPickListValue:Boolean = true):String{
 			if (opPars.objEntity == null) return "";
 			var str:String =replaceSpecialCh(name);
 			str = str.replace(BRACE_PATTERN,"");
-			var fieldManagement:Object = opPars.getFieldNameFromIntegrationTag(entity, str);
+			var fieldManagement:Object = opPars.getFieldNameFromIntegrationTag(opPars.entity, str);
 			var fieldType:String = "";
 			if(fieldManagement!=null){
 				str = fieldManagement.Name;
@@ -921,7 +947,7 @@ package com.crmgadget.eval
 						if(opPars.isExecuting(fieldManagement.Name)){
 							return null;
 						}else{
-							return doExecuteRelatedField(defaultValue,owner,entity,fieldManagement.Name,opPars);
+							return doExecuteRelatedField(defaultValue,fieldManagement.Name,opPars);
 						}						
 				
 					}
@@ -930,8 +956,8 @@ package com.crmgadget.eval
 			}
 		
 			//check if field is picklist
-			if(fieldType!=null && fieldType.indexOf("Picklist")!=-1){
-				var pickValue:String = opPars.doGetPickList(entity, str, opPars.objEntity[str],opPars.objEntity);
+			if(fieldType!=null && fieldType.indexOf("Picklist")!=-1 && isGetPickListValue){
+				var pickValue:String = opPars.doGetPickList(opPars.entity, str, opPars.objEntity[str],opPars.objEntity);
 				if(!StringUtils.isEmpty(pickValue)){
 					return pickValue;
 				}

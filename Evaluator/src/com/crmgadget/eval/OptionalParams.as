@@ -17,6 +17,8 @@ package com.crmgadget.eval
 		public	var sqlLists:ArrayCollection=null;
 		public var current_field:String = null;
 		public var doGetOracleId:Function;
+		public var entity:String;
+		public var owner:Object;
 		public function OptionalParams()
 		{
 			existExecuteField=new Dictionary();

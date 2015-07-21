@@ -871,26 +871,24 @@ package gadget.util {
 				field.data_type = '{' + CustomLayout.GOOGLEMAP_CODE + '}';
 				return field;	
 			}else {
-				var fields:ArrayCollection = null;
+				var fields:ArrayCollection =  allFields(orginalEnity);				
 				
-				if(sqlCustomField || column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
-					fields = Database.customFieldDao.customField(entity,LocaleService.getLanguageInfo().LanguageCode);
-					isCustomField = true;
-				}else{
-					fields = allFields(orginalEnity);
+				field = findField(column_name,fields,sqlCustomField,column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1,changeElementName);
+				
+				if(field==null){
+					if(sqlCustomField || column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1){
+						fields = Database.customFieldDao.customField(entity,LocaleService.getLanguageInfo().LanguageCode);
+						isCustomField = true;
+					}	
 				}
-				if (fields != null) {
-					field = findField(column_name,fields,sqlCustomField,isCustomField,changeElementName);
-				}
+				field = findField(column_name,fields,sqlCustomField,isCustomField,changeElementName);
+				
 			}
 			
 			
 			if(field==null){//try with 
-				fields = allFields(orginalEnity);
-				if(fields!=null){
-					field = findField(column_name,fields,sqlCustomField,isCustomField,changeElementName);
-				}
-				
+				fields = allFields(orginalEnity);				
+				field = findField(column_name,fields,sqlCustomField,isCustomField,changeElementName);
 			}
 			// set required fields
 			if (field != null) {
@@ -904,6 +902,9 @@ package gadget.util {
 		}		
 		
 		private static function findField(column_name:String,fields:ArrayCollection,sqlCustomField:Boolean,isCustomField:Boolean,changeElementName:Boolean):Object{
+			if(fields==null){
+				return null;
+			}
 			var field:Object;
 			for each (var tmp:Object in fields) {
 				var elementName:String = isCustomField?tmp.column_name:tmp.element_name;

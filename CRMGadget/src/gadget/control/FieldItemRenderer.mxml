@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox creationComplete="init()" xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4" xmlns:control="gadget.control.*">
+<mx:HBox creationComplete="init()" xmlns:mx="http://www.adobe.com/2006/mxml" height="30" width="100%" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4" xmlns:control="gadget.control.*">
 
 	<mx:Script>
 	    <![CDATA[
@@ -18,10 +18,37 @@
 			import gadget.window.WindowManager;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.CheckBox;
+			import mx.controls.ComboBox;
 			import mx.controls.DateField;
+			import mx.controls.Image;
+			import mx.controls.Label;
 			import mx.controls.NumericStepper;
 			import mx.controls.TextInput;
+			import mx.core.Container;
 			import mx.events.FlexEvent;
+			protected var addedFunctionChange:Boolean = false;
+			protected var firstTime:Boolean = true;
+			private var mapComponent:Array =[
+				initTextType,
+				initTextWithLabel,
+				initDateTime,
+				initMultiPicklist,
+				initCheckBox,
+				initPicture,
+				createUnknowType,
+				initSqlList,
+				initSqlfield,
+				initHtmlCode,
+				initHtmlCode,
+				initRelation,
+				initPercent,
+				initCalculateField,
+				initHeaderField,
+				initDynamicBlock
+			];
+			
+			
 			
             private function getIndex(data:Object):int {
             	if (data.custom != null) {
@@ -54,102 +81,35 @@
 				return (parentApplication as CustomLayout).item[field];            
 			}
 
-            
+//          public override function invalidateDisplayList():void{
+//			  super.invalidateDisplayList();
+//			  removeAllChildren();
+//			  init();
+//		  }
 			private function init():void {
 				if( data){
-					if(datetimeField){
-						var df:DateField = new DateField();
-						var objField:Object = FieldUtils.getField(data.entity, data.column_name);
-						if(objField){
-							df.text = objField.display_name;
-							var hr:NumericStepper = new NumericStepper();
-							var mm:NumericStepper = new NumericStepper();
-							df.enabled = false;
-							hr.enabled = false;
-							mm.enabled = false;
-							dataChanged(null);
-							datetimeField.addChild(df);
-							datetimeField.addChild(hr);
-							datetimeField.addChild(mm);
-						}
-					}else if(dynamicblock && data.column_name.indexOf(CustomLayout.BLOCK_DYNAMIC_CODE)>-1){
-						dynamicblock.text = getBlockValue();
-//						var column_name:String = data.column_name;						
-//						var dynamicId:String = column_name.split('_')[1];
-//						var blockObj:Object = Database.blockLayoutDao.getByGadgetId(dynamicId);
-//						dynamicblock.addChild(createSampleItem(blockObj.parent_field,data.entity));
-//						var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 
-//						if(dependField!=null){
-//							var dfields:Array = Detail.getDefaultDependField(dependField);
-//							if(dfields!=null){
-//								for each(var f:String in dfields){
-//									dynamicblock.addChild(createSampleItem(f,data.entity));
-//								}
-//							}
-//						}
+					var f:Function = mapComponent[getIndex(data)];
+					if(f!=null){
+						f();
 					}
+					
 				}
 					
+				if(!addedFunctionChange){
+					this.addEventListener(FlexEvent.DATA_CHANGE, dataChanged);
+					this.addedFunctionChange=true;
+				}
 				
-				
-				this.addEventListener(FlexEvent.DATA_CHANGE, dataChanged);
+				//this.addEventListener(FlexEvent.DATA_CHANGE, dataChanged);
 
 				
 				
 			}
 			
 			
-			private function createSampleItem(colName:String,entity:String):HBox{
-				var fieldInfo:Object = FieldUtils.getField(entity, colName);
-				var row:HBox = new HBox();
-				row.percentWidth=100;
-				row.autoLayout=true;
-				var lbl:Label;
-				if(fieldInfo==null){
-					lbl = new Label();
-					lbl.text = getSampleValue(fieldInfo.element_name);
-					row.addChild(lbl);
-					
-				}else{
-					lbl = new Label();
-					lbl.text = fieldInfo.display_name; 
-					lbl.percentWidth=30;
-					row.addChild(lbl);
-					switch (fieldInfo.data_type) {
-						case "Text (Short)":
-						case "Text (Long)":
-						case "Phone":
-						case "Number":
-						case "Currency":
-						case "Integer":
-						case "Date/Time":
-							var txt:TextInput = new TextInput();
-							txt.percentWidth=70;
-							txt.text = getSampleValue(fieldInfo.element_name);
-							txt.enabled=false;
-							row.addChild(txt);
-							break;					
-						case 'Picklist': 
-							var cbo:ComboBox = new ComboBox();
-							cbo.percentWidth=70;
-							cbo.text = getSampleValue(fieldInfo.element_name);
-							cbo.enabled=false;
-							row.addChild(cbo);
-							break;
-						case 'Checkbox': 
-							var chk:CheckBox = new CheckBox();
-							chk.enabled = false;
-							chk.percentWidth=70;
-							chk.selected = StringUtils.isTrue(getSampleValue(fieldInfo.element_name));
-							row.addChild(chk);
-							break;
-						
-					}
-				}
-				return  row;
-			}
 			
-			private function initComboRelation():void {
+			
+			private function initComboRelation(cboHBox:HBox):void {
 				
 				//Create iconcomboboxs
 				if(cboHBox && data){
@@ -270,32 +230,37 @@
 			}
 			
 			private function dataChanged(value:Object):void {
-				if(datetimeFieldLockImage){
-					datetimeFieldLockImage.includeInLayout = data.readonly;
-					datetimeFieldLockImage.visible = data.readonly;
+				if(!firstTime){
+					removeAllChildren();
+					init();
 				}
-				if(datetimeFieldMandatoryImage){
-					datetimeFieldMandatoryImage.includeInLayout = data.mandatory;
-					datetimeFieldMandatoryImage.visible = data.mandatory;
-				}
-				
-				// when play drag drop,sometime value in text Input is confuse.
-				// it happen with text field that can create more than one on layout.
-				if(headerField){
-					headerField.text = data.custom;
-				}else if(calculateField){
-					calculateField.text = data.customField==null?"":data.customField.value;
-				}else if(newsField){
-					newsField.text = data.custom;
-				}else if(htmlField){
-					htmlField.text = data.custom;
-				}else if(sqlField){
-					sqlField.text = data.custom;
-				}else if(sqlListField){
-					sqlListField.text = data.custom;
-				}else if(dynamicblock){
-					dynamicblock.text = getBlockValue();
-				}
+				firstTime=false;
+//				if(datetimeFieldLockImage){
+//					datetimeFieldLockImage.includeInLayout = data.readonly;
+//					datetimeFieldLockImage.visible = data.readonly;
+//				}
+//				if(datetimeFieldMandatoryImage){
+//					datetimeFieldMandatoryImage.includeInLayout = data.mandatory;
+//					datetimeFieldMandatoryImage.visible = data.mandatory;
+//				}
+//				
+//				// when play drag drop,sometime value in text Input is confuse.
+//				// it happen with text field that can create more than one on layout.
+//				if(headerField){
+//					headerField.text = data.custom;
+//				}else if(calculateField){
+//					calculateField.text = data.customField==null?"":data.customField.value;
+//				}else if(newsField){
+//					newsField.text = data.custom;
+//				}else if(htmlField){
+//					htmlField.text = data.custom;
+//				}else if(sqlField){
+//					sqlField.text = data.custom;
+//				}else if(sqlListField){
+//					sqlListField.text = data.custom;
+//				}else if(dynamicblock){
+//					dynamicblock.text = getBlockValue();
+//				}
 			}
 			
 			private function getComboEntityIndex(combo:ComboBox, value:String):int {
@@ -354,6 +319,322 @@
 				sqlCreate._data = data;
 				WindowManager.openModal(sqlCreate);
 			}
+			//idx=0
+			private  function initTextType():void{
+				var txt:TextInput = new TextInput();
+				txt.percentWidth=100;
+				if(data!=null){
+					txt.text = getValue(data);
+				}
+				this.addChild(txt);
+			}
+			private function createHBox():HBox{
+				var hb:HBox = new HBox();
+				hb.percentWidth=100;
+				return hb;
+			}
+			
+			private function createLabel():Label{
+				var lb:Label = new Label();
+				lb.setStyle("textAlign","right");
+				lb.percentWidth=30;
+				if(data!=null){
+					lb.text = FieldUtils.getFieldDisplayName(data.entity, data.column_name);
+				}
+				return lb;
+			}
+			private function createImgMandatory(parentObj:Container):void{
+				if(data!=null && data.mandatory){
+					var img:Image = createImage(ImageUtils.mandatoryImg);					
+					parentObj.addChild(img);
+				}
+			}
+			
+			private function createImage(src:Class):Image{
+				var img:Image = new Image();
+				img.source = src;
+				return img;
+			}
+			
+			private function createImgReadonly(parentObj:Container):void{
+				if(data!=null && data.readonly){
+					var img:Image = createImage(ImageUtils.lockImg);					
+					parentObj.addChild(img);
+				}				
+			}
+			private function createTextInput():TextInput{
+				var txt:TextInput = new TextInput();
+				txt.enabled = false;
+				txt.percentWidth=70;
+				if(data!=null){
+					txt.text = getValue(data);
+				}
+				return txt;
+			}
+			//idx=1
+			private function initTextWithLabel():void{
+				/*
+				<mx:HBox width="100%">
+				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>		
+				<!--<mx:TextInput backgroundDisabledColor="{Utils.getDisableColorLayout(data.readonly)}" enabled="false" width="70%" text="{getValue(data)}"/>-->
+				<mx:TextInput enabled="false" width="70%" text="{getValue(data)}"/>
+				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
+				<mx:Image visible="{data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
+				</mx:HBox>
+				*/
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				hb.addChild(createTextInput());
+				createImgReadonly(hb);
+				createImgMandatory(hb);
+			}
+			
+			
+			//idx=2
+			private function initDateTime():void{
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				var df:DateField = new DateField();
+				if(data!=null){
+					var objField:Object = FieldUtils.getField(data.entity, data.column_name);
+					if(objField){
+						df.text = objField.display_name;
+						var hr:NumericStepper = new NumericStepper();
+						var mm:NumericStepper = new NumericStepper();
+						df.enabled = false;
+						hr.enabled = false;
+						mm.enabled = false;
+						//dataChanged(null);
+						hb.addChild(df);
+						hb.addChild(hr);
+						hb.addChild(mm);
+					}
+					
+				}
+				createImgReadonly(hb);
+				createImgMandatory(hb);
+			}
+			
+			private function createCombobox():ComboBox{
+				var cbo:ComboBox = new ComboBox();
+				cbo.text = getValue(data);
+				cbo.percentWidth=70;
+				cbo.enabled = false;
+				return cbo;
+			}
+			//idx=3
+			private function initMultiPicklist():void{
+				/*
+				<mx:Canvas width="100%">
+				<mx:HBox width="100%">
+				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
+				<!--<mx:ComboBox fillAlphas="[1,1,1,1]" fillColors="{[Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly)]}" enabled="false" width="70%" text="{getValue(data)}"/>-->
+				<mx:ComboBox enabled="false" width="70%" text="{getValue(data)}"/>
+				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
+				<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
+				</mx:HBox>
+				</mx:Canvas>
+				*/
+				
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				hb.addChild(createCombobox());
+				createImgReadonly(hb);
+				createImgMandatory(hb);
+			}
+			//idx=4
+			private function initCheckBox():void{
+				/*
+				<mx:Canvas width="100%">
+				<mx:HBox width="100%">
+				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
+				<!--<mx:CheckBox fillAlphas="[1,1,1,1]" fillColors="{[Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly)]}" enabled="false" width="70%" selected="{getValue(data) == 'true'}"/>-->
+				<mx:CheckBox enabled="false" width="70%" selected="{getValue(data) == 'true'}"/>
+				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
+				<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
+				</mx:HBox>
+				</mx:Canvas>
+				*/
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				var chk:CheckBox = new CheckBox();
+				chk.enabled = false;
+				chk.percentWidth=70;
+				hb.addChild(chk);
+				if(data!=null){
+					chk.selected=StringUtils.isTrue(getValue(data));
+				}
+				createImgReadonly(hb);
+				createImgMandatory(hb);
+			}
+			//idx=5;
+			private function initPicture():void{
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+			}
+			//idx=6
+			private function createUnknowType():void{
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				var lb:Label = new Label();				
+				lb.percentWidth=70;
+				if(data!=null){
+					lb.text = getValue(data);
+				}
+				hb.addChild(lb);
+			}
+			//idx=7
+			private function initSqlList():void{
+				/*<mx:Canvas width="100%">
+					<mx:HBox width="100%">
+						<mx:Image source="{ImageUtils.sqlListImg}" />
+						<mx:TextInput id='sqlListField' doubleClickEnabled="true" width="100%" text="{data.custom}" styleName="backgroundQuery" change="data.custom = (event.target as TextInput).text" doubleClick="openSQLCreate(event)" />
+					</mx:HBox>
+				</mx:Canvas>*/
+				this.addChild(createImage(ImageUtils.sqlListImg));
+				var txtSql:TextInput = new TextInput();
+				txtSql.doubleClickEnabled=true;
+				if(data!=null){
+					txtSql.text = data.custom;
+				}
+				txtSql.percentWidth=100;
+				txtSql.styleName = "backgroundQuery";
+				txtSql.addEventListener(Event.CHANGE,function(e:Event):void{
+					data.custom=txtSql.text;
+				});
+				txtSql.addEventListener(MouseEvent.DOUBLE_CLICK,openSQLCreate);
+				this.addChild(txtSql);
+			}
+			//idx=8
+			private function initSqlfield():void{
+				/**
+				 * <mx:Canvas width="100%">
+						<mx:HBox width="100%">
+							<mx:Image source="{ImageUtils.sqlFieldImg}" />
+							<mx:TextInput id='sqlField' width="100%" text="{data.custom}" styleName="backgroundField" change="data.custom = (event.target as TextInput).text" />
+						</mx:HBox>
+					</mx:Canvas>
+				 * */
+				
+				this.addChild(createImage(ImageUtils.sqlFieldImg));
+				var txtSql:TextInput = new TextInput();				
+				txtSql.percentWidth=100;
+				if(data!=null){
+					txtSql.text = data.custom;
+				}
+				txtSql.styleName = "backgroundField";
+				txtSql.addEventListener(Event.CHANGE,function(e:Event):void{
+					data.custom=txtSql.text;
+				});				
+				this.addChild(txtSql);
+			}
+			//idx=9,10
+			private function initHtmlCode():void{
+				/**<mx:HBox width="100%">
+						<mx:Image source="{ImageUtils.htmlFieldImg}" />
+						<mx:TextInput id='htmlField' width="100%" text="{data.custom}" styleName="backgroundHtmlField" change="data.custom = (event.target as TextInput).text" />
+					</mx:HBox>
+				 * */
+				this.addChild(createImage(ImageUtils.sqlFieldImg));
+				var html:TextInput = new TextInput();				
+				html.percentWidth=100;
+				if(data!=null){
+					html.text = data.custom;
+				}
+				html.styleName = "backgroundHtmlField";
+				html.addEventListener(Event.CHANGE,function(e:Event):void{
+					data.custom=html.text;
+				});				
+				this.addChild(html);
+				
+			}
+			//idx=11
+			private function initRelation():void{
+				initComboRelation(this);	
+			}
+			
+			//idx=12
+			private function initPercent():void{
+				/**
+				 * <mx:HBox width="100%">
+						<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>	
+						<mx:NumericStepper enabled="false" width="50" value="{parseInt(getValue(data))}" />
+						<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
+						<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
+					</mx:HBox>
+				 * */
+				
+				var hb:HBox = this;				
+				hb.addChild(createLabel());
+				var numStep:NumericStepper = new NumericStepper();
+				numStep.enabled = false;
+				numStep.width=50;
+				if(data!=null){
+					numStep.value = parseInt(getValue(data));
+				}
+				createImgReadonly(hb);
+				createImgMandatory(hb);
+			}
+			
+			//idx=13
+			private function initCalculateField():void{
+				/**
+				 * <mx:Canvas width="100%" height="100%">
+					<mx:HBox width="100%">
+						<mx:Image source="{ImageUtils.formulaIcon}" />
+						<mx:TextInput id='calculateField' width="100%" doubleClickEnabled="true" enabled="false" text="{getCalculatedValue()}" styleName="backgroundQuery" doubleClick="initCalculatedField(event)" />
+					</mx:HBox>
+					</mx:Canvas>
+				 * */
+				
+				this.addChild(createImage(ImageUtils.sqlFieldImg));
+				var calculateField:TextInput = new TextInput();				
+				calculateField.percentWidth=100;
+				calculateField.doubleClickEnabled=true
+				calculateField.text = getCalculatedValue();
+				calculateField.enabled=false;
+				calculateField.styleName = "backgroundQuery";
+				calculateField.addEventListener(MouseEvent.DOUBLE_CLICK,initCalculatedField);				
+				this.addChild(calculateField);
+			}
+			
+			//idx =14
+			private function initHeaderField():void{
+				/**
+				 * <mx:TextInput id='headerField' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true" editable="false" text="{getHeaderValue()}" doubleClick="initCalculatedField(event)" />
+				 * */
+				
+				var headerField:TextInput = new TextInput();			
+				headerField.toolTip = i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE');
+				headerField.percentWidth=100;
+				headerField.doubleClickEnabled=true
+				headerField.text = getHeaderValue();
+				headerField.editable=false;				
+				headerField.addEventListener(MouseEvent.DOUBLE_CLICK,initCalculatedField);				
+				this.addChild(headerField);
+			}
+			
+			//idx=15
+			
+			private function initDynamicBlock():void{
+				/**
+				 * <mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" doubleClickEnabled="true" doubleClick="initCalculatedField(event,true)" />
+					<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
+				 * */
+				
+				var dynamicField:TextInput = new TextInput();	
+				dynamicField.percentWidth=100;				
+				dynamicField.text =getBlockValue();
+				dynamicField.enabled=false;			
+				dynamicField.doubleClickEnabled = true;
+				dynamicField.addEventListener(MouseEvent.DOUBLE_CLICK,function(e:MouseEvent):void{initCalculatedField(e,true);});				
+				this.addChild(dynamicField);
+				createImgReadonly(this);
+				
+			}
+				
+			
+		
 
         ]]>
     </mx:Script>
@@ -374,115 +655,5 @@
 		
 	</mx:Style>
 	
-	<mx:ViewStack width="100%" selectedIndex="{getIndex(data)}">
-		<mx:Canvas width="100%">
-			<mx:TextInput width="100%" text="{data.custom}" change="data.custom = (event.target as TextInput).text"/>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>		
-				<!--<mx:TextInput backgroundDisabledColor="{Utils.getDisableColorLayout(data.readonly)}" enabled="false" width="70%" text="{getValue(data)}"/>-->
-				<mx:TextInput enabled="false" width="70%" text="{getValue(data)}"/>
-				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-				<mx:Image visible="{data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>		
-				<mx:HBox id="datetimeField"/>
-				<mx:Image id="datetimeFieldLockImage" visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-				<mx:Image id="datetimeFieldMandatoryImage" visible="{data.mandatory}" includeInLayout="{data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
-			</mx:HBox>
-		</mx:Canvas>		
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
-				<!--<mx:ComboBox fillAlphas="[1,1,1,1]" fillColors="{[Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly)]}" enabled="false" width="70%" text="{getValue(data)}"/>-->
-				<mx:ComboBox enabled="false" width="70%" text="{getValue(data)}"/>
-				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-				<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
-				<!--<mx:CheckBox fillAlphas="[1,1,1,1]" fillColors="{[Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly), Utils.getDisableColorLayout(data.readonly)]}" enabled="false" width="70%" selected="{getValue(data) == 'true'}"/>-->
-				<mx:CheckBox enabled="false" width="70%" selected="{getValue(data) == 'true'}"/>
-				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-				<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>
-				<mx:Label enabled="false" width="70%" text="{getValue(data)}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Image source="{ImageUtils.sqlListImg}" />
-				<mx:TextInput id='sqlListField' doubleClickEnabled="true" width="100%" text="{data.custom}" styleName="backgroundQuery" change="data.custom = (event.target as TextInput).text" doubleClick="openSQLCreate(event)" />
-			</mx:HBox>
-		</mx:Canvas>
-		
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Image source="{ImageUtils.sqlFieldImg}" />
-				<mx:TextInput id='sqlField' width="100%" text="{data.custom}" styleName="backgroundField" change="data.custom = (event.target as TextInput).text" />
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Image source="{ImageUtils.htmlFieldImg}" />
-				<mx:TextInput id='htmlField' width="100%" text="{data.custom}" styleName="backgroundHtmlField" change="data.custom = (event.target as TextInput).text" />
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Image source="{ImageUtils.newsFieldImg}" />
-				<mx:TextInput id='newsField' width="100%" text="{data.custom}" styleName="backgroundHtmlField" change="data.custom = (event.target as TextInput).text" />
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%" height="100%">
-			<mx:HBox width="100%" id="cboHBox" height="25" creationComplete="initComboRelation()">
-				<!--
-				<mx:Image source="{ImageUtils.linkIcon}" />
-				<control:IconComboBox width="100%" styleName="backgroundRelation" change="data.custom = (event.target as ComboBox).selectedLabel"
-					creationComplete="initComboEntity(event.target as ComboBox, data)"
-					dataProvider="{Relation.getMNReferenced(data.entity)}" labelField="entityDest"/>-->
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%">
-			<mx:HBox width="100%">
-				<mx:Label enabled="false" textAlign="right" width="30%" text="{FieldUtils.getField(data.entity, data.column_name).display_name}"/>	
-				<mx:NumericStepper enabled="false" width="50" value="{parseInt(getValue(data))}" />
-				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-				<mx:Image visible="{ data.mandatory}" includeInLayout="{ data.mandatory}" source="{ImageUtils.mandatoryImg}"/>
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%" height="100%">
-			<mx:HBox width="100%">
-				<mx:Image source="{ImageUtils.formulaIcon}" />
-				<mx:TextInput id='calculateField' width="100%" doubleClickEnabled="true" enabled="false" text="{getCalculatedValue()}" styleName="backgroundQuery" doubleClick="initCalculatedField(event)" />
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%" height="100%">
-			<mx:HBox width="100%">
-				<mx:TextInput id='headerField' width="100%" toolTip="{i18n._('GLOBAL_DOUBLE_CLICK_TO_CHANGE_VALUE')}" doubleClickEnabled="true" editable="false" text="{getHeaderValue()}" doubleClick="initCalculatedField(event)" />
-			</mx:HBox>
-		</mx:Canvas>
-		<mx:Canvas width="100%" height="100%">
-			<mx:HBox width="100%">
-				<mx:TextInput width="100%" id="dynamicblock" text="{getBlockValue()}" enabled="false" doubleClickEnabled="true" doubleClick="initCalculatedField(event,true)" />
-				<mx:Image visible="{data.readonly}" includeInLayout="{data.readonly}" source="{ImageUtils.lockImg}"/>
-			</mx:HBox>
-			
-		</mx:Canvas>
-	</mx:ViewStack>
+	
 </mx:HBox>

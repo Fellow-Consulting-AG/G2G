@@ -7,6 +7,7 @@
 		<![CDATA[
 			import gadget.dao.Database;
 			import gadget.service.PicklistService;
+			import gadget.util.NumberLocaleUtils;
 			import gadget.util.NumberUtils;
 			import gadget.util.Utils;
 			
@@ -24,12 +25,12 @@
 			{
 				super.data = value;
 				if(value != null){
-					var fyTarget:Number = value.FYTarget==null?0:Number(value.FYTarget);
-					var forecast:Number = value.Forecast==null?0:Number(value.Forecast);
+					var fyTarget:Number = value.FYTarget==null?0:NumberLocaleUtils.parse(value.FYTarget);
+					var forecast:Number = value.Forecast==null?0:NumberLocaleUtils.parse(value.Forecast);
 					var totalVaiance:Number = fyTarget - forecast;
-					super.data["variance"] = totalVaiance.toFixed(2);
+					super.data["variance"] = totalVaiance;
 					grid.invalidateList();
-					cal.text = super.data["variance"];
+					cal.text = NumberLocaleUtils.format(super.data["variance"]);
 				}
 				
 			}

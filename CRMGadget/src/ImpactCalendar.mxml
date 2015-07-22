@@ -36,6 +36,7 @@
 			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.NumberLocaleUtils;
 			import gadget.util.NumberUtils;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
@@ -106,7 +107,7 @@
 						var total:Number = qty*val;
 						//set annualized impact value;
 						if(!isNaN(total)){						
-							return total.toFixed(2);
+							return NumberLocaleUtils.format(total);
 						}
 					}
 					return "0";
@@ -211,47 +212,47 @@
 						}
 					},'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 					{mandatory:true,isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
-					{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
+					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
+					{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
 					{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:null,editAble:false,labelFunction:getAnnualizedInpact},
-					{element_name:"Q1",display_name:"QUATER1@Q1",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q2",display_name:"QUATER2@Q2",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q3",display_name:"QUATER3@Q3",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q4",display_name:"QUATER4@Q4",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q5",display_name:"QUATER5@Q5",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q6",display_name:"QUATER6@Q6",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q7",display_name:"QUATER7@Q7",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q8",display_name:"QUATER8@Q8",labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
-					{element_name:"Q1.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q1.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q1.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q2.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q2.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q2.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q3.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q3.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q3.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q4.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q4.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q4.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q5.co7_CustomCurrency0",display_name:"OCT@Oct",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q5.co7_CustomCurrency2",display_name:"NOV@Nov",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q5.co7_CustomCurrency1",display_name:"DEC@Dec",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q6.co7_CustomCurrency0",display_name:"JAN@Jan",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q6.co7_CustomCurrency2",display_name:"FEB@Feb",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q6.co7_CustomCurrency1",display_name:"MAR@Mar",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q7.co7_CustomCurrency0",display_name:"APR@Apr",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q7.co7_CustomCurrency2",display_name:"MAY@May",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q7.co7_CustomCurrency1",display_name:"JUN@Jun",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q8.co7_CustomCurrency0",display_name:"JUL@Jul",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
-					{element_name:"CustomCurrency1",labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
-					{isco7_field:true,datafield:'CustomCurrency6',element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
-					{isco7_field:true,element_name:"CustomCurrency7",entity:Database.customObject7Dao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
-					{element_name:"CustomCurrency4",entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
-					{element_name:"CustomText37",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-					{element_name:"CustomCurrency2",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
+					{element_name:"Q1",display_name:"QUATER1@Q1",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q2",display_name:"QUATER2@Q2",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q3",display_name:"QUATER3@Q3",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q4",display_name:"QUATER4@Q4",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q5",display_name:"QUATER5@Q5",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q6",display_name:"QUATER6@Q6",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q7",display_name:"QUATER7@Q7",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q8",display_name:"QUATER8@Q8",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
+					{element_name:"Q1.co7_CustomCurrency0",display_name:"OCT@Oct",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q1.co7_CustomCurrency2",display_name:"NOV@Nov",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q1.co7_CustomCurrency1",display_name:"DEC@Dec",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q2.co7_CustomCurrency0",display_name:"JAN@Jan",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q2.co7_CustomCurrency2",display_name:"FEB@Feb",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q2.co7_CustomCurrency1",display_name:"MAR@Mar",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q3.co7_CustomCurrency0",display_name:"APR@Apr",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q3.co7_CustomCurrency2",display_name:"MAY@May",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q3.co7_CustomCurrency1",display_name:"JUN@Jun",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q4.co7_CustomCurrency0",display_name:"JUL@Jul",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q4.co7_CustomCurrency2",display_name:"AUG@Aug",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q4.co7_CustomCurrency1",display_name:"SEP@Sep",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q5.co7_CustomCurrency0",display_name:"OCT@Oct",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q5.co7_CustomCurrency2",display_name:"NOV@Nov",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q5.co7_CustomCurrency1",display_name:"DEC@Dec",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q6.co7_CustomCurrency0",display_name:"JAN@Jan",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q6.co7_CustomCurrency2",display_name:"FEB@Feb",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q6.co7_CustomCurrency1",display_name:"MAR@Mar",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q7.co7_CustomCurrency0",display_name:"APR@Apr",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q7.co7_CustomCurrency2",display_name:"MAY@May",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q7.co7_CustomCurrency1",display_name:"JUN@Jun",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q8.co7_CustomCurrency0",display_name:"JUL@Jul",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{element_name:"CustomCurrency1",alignRight:true,labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
+					{isco7_field:true,datafield:'CustomCurrency6',alignRight:true,element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
+					{isco7_field:true,element_name:"CustomCurrency7",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
+					{element_name:"CustomCurrency4",alignRight:true,entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
+					{element_name:"CustomText37",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
+					{element_name:"CustomCurrency2",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 					{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 					{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateStatus,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 			]);
@@ -316,7 +317,7 @@
 							}
 							
 						}				
-						return total.toFixed(2);
+						return NumberLocaleUtils.format(total);
 					}
 					private function getNextFyImpact(item:Object,col:AdvancedDataGridColumn=null):String{
 						if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
@@ -330,7 +331,7 @@
 							}
 							
 						}				
-						return total.toFixed(2);
+						return NumberLocaleUtils.format(total);
 					}
 					
 					private function getChangeVsLastFY(item:Object,col:AdvancedDataGridColumn=null):String{
@@ -348,7 +349,7 @@
 							total= parseFloat(getCurrentFyImpact(item))- parseFloat(prefNumStr);
 						}
 						
-						return total.toFixed(2);
+						return NumberLocaleUtils.format(total);
 					}
 					private function getCurveTypevalue(curveType:String):Array{
 						return MAP_CURVE_TYPE_VALUE[curveType];
@@ -428,7 +429,7 @@
 												monthVal= annulizedInpact*curveVal[currentMonthIdx];
 											}
 											currentMonthIdx++;
-											q[f]= monthVal.toFixed(2);
+											q[f]= NumberLocaleUtils.format(monthVal);
 										}else{
 											q[f]="0.00";
 										}
@@ -610,7 +611,7 @@
 							if(obj is String  || obj is Boolean){					
 								return obj.toString();
 							}else if( obj is Number){
-								return Number(obj).toFixed(2);
+								return NumberLocaleUtils.format(obj);
 							}else{
 								//it is quater
 								if(colName.indexOf("Q")==0){
@@ -630,7 +631,7 @@
 											//nothing to to
 										}
 									}
-									return total.toFixed(2);
+									return NumberLocaleUtils.format(total);
 								}
 							}
 							
@@ -792,6 +793,9 @@
 								var rendererHeaderColor:ClassFactory = new ClassFactory(AdvancedDataGridColorHeaderRenderer);		
 								col.headerRenderer = rendererHeaderColor;
 							}
+							if(objCol.alignRight){
+								col.setStyle("textAlign","right");
+							}
 							//add editable for opportunityname
 							if(col_name=='OpportunityName'){
 								var oppEditor:ClassFactory = new ClassFactory(ImpactText);
@@ -945,11 +949,11 @@
 						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 						if(lstTotal != null && lstTotal.length>0){
 							var obj:Object = lstTotal[0];
-							obj.Forecast = curImpact.toFixed(2);
-							obj.FYTarget=FYTarget.toFixed(2);					
-							obj.variance = (FYTarget - curImpact).toFixed(2);
-							obj.closed = closed.toFixed(2);
-							obj.notclosed = notClosed.toFixed(2);
+							obj.Forecast =curImpact;
+							obj.FYTarget=FYTarget;					
+							obj.variance = (FYTarget - curImpact);
+							obj.closed = closed;
+							obj.notclosed = notClosed;
 							lstTotal.refresh();
 						}else{
 							var data:ArrayCollection = new ArrayCollection();
@@ -980,8 +984,12 @@
 						arrLst.refresh();
 					}
 					private function labelNumberDisplay(item:Object,col:AdvancedDataGridColumn):String{
+						if("co7_CustomNumber0" == col.dataField){
+							return NumberLocaleUtils.format(item[col.dataField],0);
+						}else{
+							return NumberLocaleUtils.format(item[col.dataField]);
+						}
 						
-						return Number(item[col.dataField]).toFixed(2);
 						
 					}
 					private  function initGridTotalAllOpportunities():void{
@@ -992,15 +1000,26 @@
 						renderer.properties= {restrict:'0-9.,',maxChars:20,updateData:updateFYTarget};
 						var col:AdvancedDataGridColumn = createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer);
 						col.labelFunction = labelNumberDisplay;
+						col.setStyle("textAlign","right");
 						columns.push(col);
-						columns.push(createColumn(i18n._("CURRENT_FY_FORECAST@Current FY Forecast"),"Forecast",false));
+						col = createColumn(i18n._("CURRENT_FY_FORECAST@Current FY Forecast"),"Forecast",false);
+						col.labelFunction = labelNumberDisplay;
+						col.setStyle("textAlign","right");
+						columns.push(col);
 						col = createColumn(i18n._("FY_IMPACT_VARIANCE_TO_TARGET@FY impact variance to target"),"variance",false);
 						col.itemRenderer = new ClassFactory(CalculateGridTotalRender);
 						//col.labelFunction = labelNumberDisplay;
+						col.labelFunction = labelNumberDisplay;
+						col.setStyle("textAlign","right");
 						columns.push(col);
-						col = createColumn(i18n._("FY_IMPACT_CLOSED_OPPORTUNITIES@FY impact, closed Opportunities"),"closed",false);				
+						col = createColumn(i18n._("FY_IMPACT_CLOSED_OPPORTUNITIES@FY impact, closed Opportunities"),"closed",false);	
+						col.labelFunction = labelNumberDisplay;
+						col.setStyle("textAlign","right");
 						columns.push(col);
-						columns.push(createColumn(i18n._("FY_IMPACT_NOT_CLOSED_OPPORTUNITIES@FY impact, not-closed Opportunities"),"notclosed",false));
+						col = createColumn(i18n._("FY_IMPACT_NOT_CLOSED_OPPORTUNITIES@FY impact, not-closed Opportunities"),"notclosed",false);
+						col.setStyle("textAlign","right");
+						col.labelFunction = labelNumberDisplay;
+						columns.push(col);
 						gridTotal.columns = columns;
 						
 						//var arr:Array = Database.impactCalendarDao.fetch();
@@ -1118,7 +1137,7 @@
 							}
 							
 						}			
-						forCaseTotal.co7_CustomCurrency6 = lastFyTotal.toFixed(2);
+						forCaseTotal.co7_CustomCurrency6 = NumberLocaleUtils.format(lastFyTotal);
 						forCaseTotal.CustomCurrency2 = expenseTotal;
 						forCaseTotal.CustomText37 = callTotal;
 						

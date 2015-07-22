@@ -161,7 +161,10 @@ package gadget.control
 				var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
 				if(list!=null){					
 					column = grid.columns[list.columnIndex];
-					
+					column = grid.columns[list.columnIndex];
+					if(column != null){
+						column.setStyle("textAlign","right");
+					}
 				}
 				
 			}

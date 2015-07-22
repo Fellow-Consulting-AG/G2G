@@ -5,6 +5,7 @@ package gadget.control
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	
+	import gadget.util.NumberLocaleUtils;
 	import gadget.util.StringUtils;
 	
 	import mx.collections.ArrayCollection;
@@ -48,11 +49,11 @@ package gadget.control
 							}
 							q[fields[1]]=StringUtil.trim(super.text);
 						}else{
-							super.data[colName]=StringUtil.trim(super.text);
+							super.data[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
 						}
 						if(updateData!=null){
 							var newVal:Object = new Object();
-							newVal[colName]=StringUtil.trim(super.text);
+							newVal[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
 							updateData(super.data,newVal);
 						}
 						
@@ -106,7 +107,9 @@ package gadget.control
 				var list:AdvancedDataGridListData = value as AdvancedDataGridListData;
 				if(list!=null){					
 					column = grid.columns[list.columnIndex];
-					
+					if(column != null){
+						column.setStyle("textAlign","right");
+					}
 				}
 				
 			}

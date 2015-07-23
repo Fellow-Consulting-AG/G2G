@@ -212,7 +212,7 @@
 						}
 					},'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 					{mandatory:true,isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
+					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelIntDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9',maxChars:20},editAble:true},
 					{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,',maxChars:20},editAble:true},
 					{isco7_field:false,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:null,editAble:false,labelFunction:getAnnualizedInpact},
 					{element_name:"Q1",display_name:"QUATER1@Q1",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
@@ -248,7 +248,7 @@
 					{element_name:"Q8.co7_CustomCurrency2",display_name:"AUG@Aug",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
 					{element_name:"Q8.co7_CustomCurrency1",display_name:"SEP@Sep",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9.,\\-',maxChars:20},editAble:true},
 					{element_name:"CustomCurrency1",alignRight:true,labelFunction : getCurrentFyImpact,entity:Database.opportunityDao.entity,properties:{}},
-					{isco7_field:true,datafield:'CustomCurrency6',alignRight:true,element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
+					{isco7_field:true,datafield:'CustomCurrency6',labelFunction : labelIntDisplay,alignRight:true,element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactText),properties:{restrict:'0-9\\-',maxChars:20},editAble:true},
 					{isco7_field:true,element_name:"CustomCurrency7",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 					{element_name:"CustomCurrency4",alignRight:true,entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 					{element_name:"CustomText37",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
@@ -986,13 +986,11 @@
 						arrLst.refresh();
 					}
 					private function labelNumberDisplay(item:Object,col:AdvancedDataGridColumn):String{
-						if("co7_CustomNumber0" == col.dataField){
-							return NumberLocaleUtils.format(item[col.dataField],0);
-						}else{
-							return NumberLocaleUtils.format(item[col.dataField]);
-						}
-						
-						
+					
+						return NumberLocaleUtils.format(item[col.dataField]);
+					}
+					private function labelIntDisplay(item:Object,col:AdvancedDataGridColumn):String{
+						return NumberLocaleUtils.format(item[col.dataField],0);
 					}
 					private  function initGridTotalAllOpportunities():void{
 						

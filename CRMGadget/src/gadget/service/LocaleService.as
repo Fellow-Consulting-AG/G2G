@@ -31,12 +31,12 @@ package gadget.service
 			var currencyCode:String = "USD";
 			var language:String = "English-American";
 			var local:String = "English - United Kingdom";
-			
+			var localeCode:String = "0-111";
 			if (Database.userDao) {
 				var user:Object = Database.userDao.read();
 				if (user != null && user.user_sign_in_id != null) {
 					var userInfos:ArrayCollection = Database.allUsersDao.findAll(
-						new ArrayCollection([{element_name:"LanguageCode"}, {element_name:"Language"}, {element_name:"Locale"}]), 
+						new ArrayCollection([{element_name:"LanguageCode"}, {element_name:"Language"}, {element_name:"Locale"}, {element_name:"LocaleCode"}]), 
 						"userSignInId = '" + user.user_sign_in_id + "'",null,1,null,false);
 					if (userInfos.length > 0) {
 						if(!StringUtils.isEmpty(userInfos[0].LanguageCode))
@@ -49,7 +49,9 @@ package gadget.service
 							language = userInfos[0].Language;
 						
 						if(!StringUtils.isEmpty(userInfos[0].Locale))
-							local = userInfos[0].Locale;						
+							local = userInfos[0].Locale;		
+						if(!StringUtils.isEmpty(userInfos[0].LocaleCode))
+							localeCode = userInfos[0].LocaleCode;	
 					
 					}
 				}
@@ -58,6 +60,7 @@ package gadget.service
 			currentUserLanguageInfo.LanguageCode = languageCode;
 			currentUserLanguageInfo.CurrencyCode = currencyCode;
 			currentUserLanguageInfo.Locale = local;
+			currentUserLanguageInfo.LocaleCode = localeCode;
 			return currentUserLanguageInfo;
 		}
 		

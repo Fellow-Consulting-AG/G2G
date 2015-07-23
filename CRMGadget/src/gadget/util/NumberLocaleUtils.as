@@ -14,9 +14,9 @@ package gadget.util
 		{
 		}
 		public static function format(value:Object,precison:int=2):String {
-			if(value == null) value=0;
+			if(value == null) return "";
 			var languageInfo:Object = LocaleService.getLanguageInfo();
-			var code:String = LocaleUtils.getLocaleCode(languageInfo.LanguageCode);
+			var code:String = LocaleUtils.getLocaleCode(languageInfo.LocaleCode);
 			var numfomatter:NumberFormatter = new NumberFormatter(code);
 			numfomatter.fractionalDigits = precison;
 //			numfomatter.precision = 0;
@@ -29,7 +29,7 @@ package gadget.util
 		}
 		public static function parse(value:Object):Number {
 			var languageInfo:Object = LocaleService.getLanguageInfo();
-			var code:String = LocaleUtils.getLocaleCode(languageInfo.LanguageCode);
+			var code:String = LocaleUtils.getLocaleCode(languageInfo.LocaleCode);
 			var numfomatter:NumberFormatter = new NumberFormatter(code);
 			var val:NumberParseResult = numfomatter.parse(value+"");
 			return val.value;

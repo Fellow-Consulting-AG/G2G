@@ -2229,7 +2229,7 @@ package gadget.util
 							for each (var stage:Object in tmp) {
 								picklist.addItem({data:stage.name, other:"SalesStageId", key:stage.id, label:stage.name, probability:stage.probability, category:stage.sales_category_name});
 							}*/
-							picklist = Utils.getSalesStage();
+							picklist = Utils.getSalesStageByOpptType(item.OpportunityType);
 						}
 						else if (fieldInfo.element_name == "Industry") {
 							picklist = Database.industryDAO.getIndustrylists(LocaleService.getLanguageInfo().LanguageCode);

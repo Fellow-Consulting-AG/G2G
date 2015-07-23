@@ -2474,7 +2474,7 @@ package gadget.util {
 				NativeApplication.nativeApplication.startAtLogin = startAtLogin;
 		}
 		
-		public static function getSalesStage():ArrayCollection {
+		public static function getDefaultSalesStage():ArrayCollection {
 			var cache:CacheUtils = new CacheUtils("picklist");
 			
 			
@@ -2503,8 +2503,36 @@ package gadget.util {
 			return new ArrayCollection(picklist.source);
 		}
 		
+		public static function getSalesStageByOpptType(opptType:String):ArrayCollection {
+			var cache:CacheUtils = new CacheUtils("picklist");
+			var key:String  = "getSalesStage_"+opptType;
+			
+			var picklist:ArrayCollection = cache.get(key)as ArrayCollection;
+			if(picklist!=null){
+				return picklist;
+			}			
+			picklist = new ArrayCollection();
+			var tmp:ArrayCollection ;
+			picklist.addItem({data:"", label:""});
+			if(!StringUtils.isEmpty(opptType)){
+				var saleProId:String = Database.processOpportunityDao.getSalesProIdByOpptType(opptType);
+				if(!StringUtils.isEmpty(saleProId)){
+					tmp= Database.salesStageDao.findBySalesProId(saleProId); 
+					
+				}
+			}
+			if(tmp == null || tmp.length  == 0 ){
+				return getDefaultSalesStage();
+			}
+			for each (var stage:Object in tmp) {
+				picklist.addItem({data: stage.name, other: "SalesStageId", key: stage.id, label: stage.name, probability: stage.probability, category: stage.sales_category_name});
+			}
+			cache.put(key,picklist);
+			return new ArrayCollection(picklist.source);
+		}
+		
 		public static function getCboSalesStageParamIndex(value:String):int {
-			var params:ArrayCollection = Utils.getSalesStage();
+			var params:ArrayCollection = Utils.getDefaultSalesStage();
 			for(var i:int = 0; i < params.length; i++) {
 				if(value == params[i].data)
 					return i;

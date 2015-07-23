@@ -1551,7 +1551,7 @@
 					var contaain:int = checkContains(data);
 					if(contaain != -1){
 						subtype = contaain;
-						item[cond] = data;
+						//item[cond] = data;
 					}
 				}
 				
@@ -1892,7 +1892,26 @@
 								textInputProbability.text = picklistSalesStage.selectedItem.probability;
 							}
 						}
-						
+						// salesstage picklist
+						// set value to probability textinput
+						if((childObj is ComboBox) && fieldInfo.element_name=='SalesStage') {
+							picklistSalesStage = (childObj as ComboBox);
+							(childObj as ComboBox).addEventListener(Event.CHANGE, function(e:Event):void {
+								var salesStage:Object =(e.currentTarget as ComboBox).selectedItem;
+								if(salesStage && textInputProbability) textInputProbability.text = salesStage.probability;
+							});
+						}
+						//bug#10832
+						if(entity==Database.opportunityDao.entity && fieldInfo.element_name=='OpportunityType'){
+							(childObj as ComboBox).addEventListener(Event.CHANGE, function(e:Event):void {
+								var type:Object =(e.currentTarget as ComboBox).selectedItem;
+								if(type && picklistSalesStage){
+									item.OpportunityType=type.data;
+									picklistSalesStage.dataProvider = Utils.getSalesStageByOpptType(type.data);
+									picklistSalesStage.selectedIndex=Utils.getCboSelectedIndex(item.SalesStage,ArrayCollection(picklistSalesStage.dataProvider));
+								}
+							});
+						}
 						var isAcction:Boolean =mapLayoutDependOn[fieldInfo.element_name]!=null;
 						// action combo RecordType 
 						if( isAcction){
@@ -1935,7 +1954,7 @@
 									*/
 								}
 								combo.addEventListener(Event.CHANGE,function(e:Event):void{
-									if(!isNew){
+									if(!isNew){										
 										fireEventRecordTypeChange(e.target as ComboBox);
 									}
 								});
@@ -1984,15 +2003,7 @@
 							
 							
 						}
-						// salesstage picklist
-						// set value to probability textinput
-						if((childObj is ComboBox) && fieldInfo.element_name=='SalesStage') {
-							picklistSalesStage = (childObj as ComboBox);
-							(childObj as ComboBox).addEventListener(Event.CHANGE, function(e:Event):void {
-								var salesStage:Object =(e.currentTarget as ComboBox).selectedItem;
-								if(salesStage && textInputProbability) textInputProbability.text = salesStage.probability;
-							});
-						}
+						
 						//bug #74
 						if((childObj is ComboBox) && fieldInfo.element_name=='Status' && entity=="Account" && create==true) {
 							(childObj as ComboBox).selectedIndex = 1;

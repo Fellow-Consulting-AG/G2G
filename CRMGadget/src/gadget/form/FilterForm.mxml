@@ -210,7 +210,7 @@
 				var isSalesStage:Boolean = (filter.entity == "Opportunity" && criteria.column_name == "SalesStage");
 				setOperator(filterCol);
 				filterParam.text = criteria.param;
-				cboFilterParam.dataProvider = isSalesStage ? Utils.getSalesStage() : PicklistService.getPicklist(filter.entity, criteria.column_name);
+				cboFilterParam.dataProvider = isSalesStage ? Utils.getDefaultSalesStage() : PicklistService.getPicklist(filter.entity, criteria.column_name);
 				cboFilterParam.selectedIndex = isSalesStage ? Utils.getCboSalesStageParamIndex(criteria.param) : Utils.getComboParamIndex(criteria.column_name, filter.entity, criteria.param);
 				cboFilterParam.labelField="label";				
 			}
@@ -220,7 +220,7 @@
 				var object:Object = currentComboBox.selectedItem;
 				// Change Request #1011
 				setOperator(currentComboBox);
-				var dataSource:ArrayCollection = (object.entity == "Opportunity" && object.column == "SalesStage") ? Utils.getSalesStage() : PicklistService.getPicklist(object.entity, object.column);
+				var dataSource:ArrayCollection = (object.entity == "Opportunity" && object.column == "SalesStage") ? Utils.getDefaultSalesStage() : PicklistService.getPicklist(object.entity, object.column);
 				isPickList(object.type == "Picklist" && dataSource.length > 1 ? true : false, currentComboBox.id, dataSource);
 			}
 			
@@ -266,7 +266,7 @@
 						return;
 					}
 					// Change Request #1011
-					var dataSource:ArrayCollection = (object.entity == "Opportunity" && object.column == "SalesStage") ? Utils.getSalesStage() : PicklistService.getPicklist(object.entity, object.column);
+					var dataSource:ArrayCollection = (object.entity == "Opportunity" && object.column == "SalesStage") ? Utils.getDefaultSalesStage() : PicklistService.getPicklist(object.entity, object.column);
 					isPickList(object.type == "Picklist" && dataSource.length > 1 ? true : false, colComboBox.id, dataSource);
 				}				
 			}

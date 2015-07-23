@@ -8,8 +8,8 @@ package gadget.dao
 
 		private var stmtInsert:SQLStatement;
 		private var stmtUpdate:SQLStatement;
-		private var stmtFind:SQLStatement;
-		private var stmtRead:SQLStatement;
+		private var stmtFindById:SQLStatement;
+		private var stmtReadDefault:SQLStatement;
 		private var stmtGetSalePro:SQLStatement;
 		public function SalesProcDAO(sqlConnection:SQLConnection)
 		{
@@ -18,18 +18,18 @@ package gadget.dao
 			stmtInsert.text = "INSERT INTO salesproc (id, name, description,default_stage)" +
 				" VALUES (:id, :name, :description,:default_stage)";
 				
-			stmtFind = new SQLStatement();
-			stmtFind.sqlConnection = sqlConnection;
-			stmtFind.text = "SELECT * FROM salesproc WHERE id = :id and default_stage ='Y'";
+			stmtFindById = new SQLStatement();
+			stmtFindById.sqlConnection = sqlConnection;
+			stmtFindById.text = "SELECT * FROM salesproc WHERE id = :id";
 
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
 			stmtUpdate.text = "UPDATE salesproc SET name = :name, description = :description, default_stage = :default_stage" +
 				" WHERE id = :id";
 				
-			stmtRead = new SQLStatement();
-			stmtRead.sqlConnection = sqlConnection;
-			stmtRead.text = "SELECT * FROM salesproc Where default_stage ='Y'";
+			stmtReadDefault = new SQLStatement();
+			stmtReadDefault.sqlConnection = sqlConnection;
+			stmtReadDefault.text = "SELECT * FROM salesproc Where default_stage ='Y'";
 			
 			stmtGetSalePro = new SQLStatement();
 			stmtGetSalePro.sqlConnection = sqlConnection;
@@ -53,12 +53,12 @@ package gadget.dao
 			executeStatement(stmtInsert,salesProc);
 		}
 		
-		public function find(salesProc:Object):Object
+		public function findById(id:String):Object
 		{
-			stmtFind.parameters[":id"] = salesProc.id;
-			exec(stmtFind);
+			stmtFindById.parameters[":id"] = id;
+			exec(stmtFindById);
 			
-			var result:SQLResult = stmtFind.getResult();
+			var result:SQLResult = stmtFindById.getResult();
 			if (result.data == null || result.data.length == 0) {
 				return null;
 			}
@@ -79,10 +79,10 @@ package gadget.dao
 			exec(stmt);
 		}
 		
-		public function read():Object
+		public function readDefault():Object
 		{
-			exec(stmtRead);
-			var result:SQLResult = stmtRead.getResult();
+			exec(stmtReadDefault);
+			var result:SQLResult = stmtReadDefault.getResult();
 			if (result.data == null) {
 				return null;
 			}

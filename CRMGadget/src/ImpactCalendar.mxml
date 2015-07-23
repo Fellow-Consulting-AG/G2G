@@ -1457,8 +1457,8 @@
 							//reset all record error
 							row.isError=false;
 							if(row.isTotal) continue;
-							if(row.editable||row.isNoCo7){
-								var added:Boolean = false;
+							var added:Boolean = false;
+							if(row.editable||row.isNoCo7){								
 								if(Utils.isChange(row.origOP,row,opCheckFields)){
 									row.opChange=true;
 									recChanges.addItem(row);
@@ -1742,7 +1742,7 @@
 			</mx:VBox> 
 			<mx:VBox>
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'SalesStage')}"/>
-				<mx:ComboBox dataProvider="{Utils.getSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="130"/>
+				<mx:ComboBox dataProvider="{Utils.getDefaultSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="130"/>
 			</mx:VBox>
 			<mx:VBox>
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'CloseDate')}"/>

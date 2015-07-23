@@ -54,7 +54,7 @@ package gadget.sync.incoming {
 				tmpSalesProc.description = salesProc.ns2::Description[0].toString();
 				tmpSalesProc.default_stage = salesProc.ns2::Default[0].toString();
 				
-				var localSalesProc:Object = Database.salesProcDao.find(tmpSalesProc);
+				var localSalesProc:Object = Database.salesProcDao.findById(tmpSalesProc.id);
 				if (localSalesProc == null) {
 					Database.salesProcDao.insert(tmpSalesProc);
 					notifyCreation(false, tmpSalesProc.name);

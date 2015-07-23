@@ -213,7 +213,7 @@
 					
 					if(condition.entity==Database.opportunityDao.entity){
 						if (condition.column_name == "SalesStage") {							
-							picklist = Utils.getSalesStage();
+							picklist = Utils.getDefaultSalesStage();
 						}
 					}
 					
@@ -542,7 +542,7 @@
 				var datasource:ArrayCollection = PicklistService.getPicklist(objectField.entity, objectField.column);
 				if(objectField.entity==Database.opportunityDao.entity){
 					if (objectField.column == "SalesStage") {							
-						datasource = Utils.getSalesStage();
+						datasource = Utils.getDefaultSalesStage();
 					}
 				}
 				if(objectField.type == "Checkbox"){
@@ -598,7 +598,7 @@
 				var list:ArrayCollection = PicklistService.getPicklist(entity, field);
 				if(obj.entity==Database.opportunityDao.entity){
 					if (obj.column == "SalesStage") {							
-						list = Utils.getSalesStage();
+						list = Utils.getDefaultSalesStage();
 					}
 				}
 				var arr:Array = keys.split(";");
@@ -629,7 +629,7 @@
 				
 				if(obj.entity==Database.opportunityDao.entity){
 					if (obj.column == "SalesStage") {							
-						dataPicklist = Utils.getSalesStage();
+						dataPicklist = Utils.getDefaultSalesStage();
 					}
 				}
 				

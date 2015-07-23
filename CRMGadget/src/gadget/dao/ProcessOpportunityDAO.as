@@ -11,7 +11,7 @@ package gadget.dao
 		private var stmtUpdate:SQLStatement;
 		private var stmtFindAll:SQLStatement;
 		private var stmtFind:SQLStatement;
-		
+		private var stmtFindByOpptType:SQLStatement;
 		public function ProcessOpportunityDAO(sqlConnection:SQLConnection){
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
@@ -29,6 +29,10 @@ package gadget.dao
 			stmtFind = new SQLStatement();
 			stmtFind.sqlConnection = sqlConnection;
 			stmtFind.text = "SELECT * FROM process_opportunity WHERE process_id = :process_id AND opportunity_type_id = :opportunity_type_id";
+			
+			stmtFindByOpptType = new SQLStatement();
+			stmtFindByOpptType.sqlConnection = sqlConnection;
+			stmtFindByOpptType.text="SELECT * FROM process_opportunity WHERE  opportunity_type_name = :opportunity_type_name";
 		}
 		
 		
@@ -61,6 +65,15 @@ package gadget.dao
 			if(result.data==null || result.data.length==0)
 				return null;
 			return result.data[0];
+		}
+		
+		public function getSalesProIdByOpptType(opptType:String):String{		
+			stmtFindByOpptType.parameters[":opportunity_type_name"] = opptType;
+			exec(stmtFindByOpptType);
+			var result:SQLResult = stmtFindByOpptType.getResult();
+			if(result.data==null || result.data.length==0)
+				return null;
+			return result.data[0].process_id;
 		}
 
 	}

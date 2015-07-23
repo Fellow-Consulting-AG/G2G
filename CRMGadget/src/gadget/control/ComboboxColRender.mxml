@@ -41,7 +41,7 @@
 						 var colName:String = column.dataField;
 						 colName = colName.replace(OpportunityDAO.CO7_PREFIX,"");
 						 if("SalesStage" == colName){
-							 pickList = Utils.getSalesStage();
+							 pickList = Utils.getDefaultSalesStage();
 						 }else{
 							 pickList = PicklistService.getPicklist(entity,colName);
 						 }

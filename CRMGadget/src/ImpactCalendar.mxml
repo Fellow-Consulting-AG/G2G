@@ -745,17 +745,17 @@
 						col.sortable=false;
 						columns.push(col);
 						var hidCols:Object = MAP_HIDE_COLUMN[type.toFixed(0)];
-						var co7groupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.customObject7Dao.entity));
-						var hdRenderer:ClassFactory =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
-						hdRenderer.properties ={bgColor: 0xB8CF95};
-						co7groupColumns.headerRenderer = hdRenderer;
-						co7groupColumns.setStyle("fontWeight","bold");
+//						var co7groupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.customObject7Dao.entity));
+//						var hdRenderer:ClassFactory =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
+//						hdRenderer.properties ={bgColor: 0xB8CF95};
+//						co7groupColumns.headerRenderer = hdRenderer;
+//						co7groupColumns.setStyle("fontWeight","bold");
 						
-						var opgroupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.opportunityDao.entity));
-						hdRenderer =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
-						hdRenderer.properties ={bgColor: 0xADAFC3};
-						opgroupColumns.headerRenderer = hdRenderer;						
-						opgroupColumns.setStyle("fontWeight","bold");						
+//						var opgroupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.opportunityDao.entity));
+//						hdRenderer =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
+//						hdRenderer.properties ={bgColor: 0xADAFC3};
+//						opgroupColumns.headerRenderer = hdRenderer;						
+//						opgroupColumns.setStyle("fontWeight","bold");						
 						for each(var objCol:Object in all_columns){
 							var col_name:String = objCol.element_name;		
 							
@@ -823,23 +823,25 @@
 								col.editorDataField = objCol.editorDataField;
 							}
 							col.labelFunction = objCol.labelFunction;
-							if(objCol.isop_field){
-								if(opgroupColumns.children.length==0){
-									columns.push(opgroupColumns);
-								}
-								opgroupColumns.children.push(col);
-							}else{
-								//we have only two group for all columns
-								if(co7groupColumns.children.length==0){
-									columns.push(co7groupColumns);									
-								}
-								co7groupColumns.children.push(col);
-							}
+//							if(objCol.isop_field){
+//								if(opgroupColumns.children.length==0){
+//									columns.push(opgroupColumns);
+//								}
+//								opgroupColumns.children.push(col);
+//							}else{
+//								//we have only two group for all columns
+//								if(co7groupColumns.children.length==0){
+//									columns.push(co7groupColumns);									
+//								}
+//								co7groupColumns.children.push(col);
+//							}
+							
+							columns.push(col);	
 							
 						}
 						reloadData();
 						colapExpandMonth(false,"Q4",columns);
-						gridListAll.groupedColumns = columns;
+						gridListAll.columns = columns;
 						/*
 						if(rows == null){
 						rows = new ArrayCollection();

@@ -27,7 +27,7 @@
 				if(value != null){
 					var fyTarget:Number = value.FYTarget==null?0:Number(value.FYTarget);
 					var forecast:Number = value.Forecast==null?0:Number(value.Forecast);
-					var totalVaiance:Number = fyTarget - forecast;
+					var totalVaiance:Number = forecast-fyTarget  ;
 					super.data["variance"] = totalVaiance;
 					grid.invalidateList();
 					cal.text = NumberLocaleUtils.format(super.data["variance"]);

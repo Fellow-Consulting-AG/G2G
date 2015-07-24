@@ -4,6 +4,8 @@ package gadget.control
 	
 	import flash.events.Event;
 	
+	import gadget.util.NumberLocaleUtils;
+	
 	
 	public class AnnulizeColRenderer extends ImpactText
 	{
@@ -21,7 +23,7 @@ package gadget.control
 			
 			if(column != null){
 				
-				super.data[column.dataField]=StringUtil.trim(super.text);
+				super.data[column.dataField]= NumberLocaleUtils.parse(StringUtil.trim(super.text));
 				if(calculateMonth!=null){
 					calculateMonth(super.data);	
 				}				

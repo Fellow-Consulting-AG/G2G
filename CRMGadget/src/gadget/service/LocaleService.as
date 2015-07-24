@@ -11,7 +11,7 @@ package gadget.service
 		/**
 		 * This is a cache !
 		 */
-		private static var currentUserLanguageInfo:Object;
+	//	private static var currentUserLanguageInfo:Object;
 		
 //		private static var isReadFromDB:Boolean = false;
 		/**
@@ -22,38 +22,32 @@ package gadget.service
 		 * 
 		 */
 		public static function getLanguageInfo():Object {
-			if (currentUserLanguageInfo != null) {
-				return currentUserLanguageInfo;
-			}
-			currentUserLanguageInfo = new Object();
+//			if (currentUserLanguageInfo != null) {
+//				return currentUserLanguageInfo;
+//			}
+			var currentUserLanguageInfo:Object = new Object();
 			// Default value for Language, LanguageCode and Locale are empty
 			var languageCode:String = "ENU";
 			var currencyCode:String = "USD";
 			var language:String = "English-American";
 			var local:String = "English - United Kingdom";
 			var localeCode:String = "0-111";
-			if (Database.userDao) {
-				var user:Object = Database.userDao.read();
-				if (user != null && user.user_sign_in_id != null) {
-					var userInfos:ArrayCollection = Database.allUsersDao.findAll(
-						new ArrayCollection([{element_name:"LanguageCode"}, {element_name:"Language"}, {element_name:"Locale"}, {element_name:"LocaleCode"}]), 
-						"userSignInId = '" + user.user_sign_in_id + "'",null,1,null,false);
-					if (userInfos.length > 0) {
-						if(!StringUtils.isEmpty(userInfos[0].LanguageCode))
-							languageCode = userInfos[0].LanguageCode;
-						
-						if(!StringUtils.isEmpty(userInfos[0].CurrencyCode))
-							currencyCode = userInfos[0].CurrencyCode;
-						
-						if(!StringUtils.isEmpty(userInfos[0].Language))
-							language = userInfos[0].Language;
-						
-						if(!StringUtils.isEmpty(userInfos[0].Locale))
-							local = userInfos[0].Locale;		
-						if(!StringUtils.isEmpty(userInfos[0].LocaleCode))
-							localeCode = userInfos[0].LocaleCode;	
+			if (Database.allUsersDao!=null) {
+				var user:Object = Database.allUsersDao.ownerUser();
+				if (user != null) {
+					if(!StringUtils.isEmpty(user.LanguageCode))
+						languageCode = user.LanguageCode;
 					
-					}
+					if(!StringUtils.isEmpty(user.CurrencyCode))
+						currencyCode = user.CurrencyCode;
+					
+					if(!StringUtils.isEmpty(user.Language))
+						language = user.Language;
+					
+					if(!StringUtils.isEmpty(user.Locale))
+						local = user.Locale;		
+					if(!StringUtils.isEmpty(user.LocaleCode))
+						localeCode = user.LocaleCode;	
 				}
 			}
 			currentUserLanguageInfo.Language = language;
@@ -68,20 +62,20 @@ package gadget.service
 			return getLanguageInfo().LanguageCode;
 		}
 		
-		public static function updateLanguageInfo(userInfos:Object):void{
-			if(currentUserLanguageInfo==null){
-				currentUserLanguageInfo= new Object();
-			}
-			currentUserLanguageInfo.Language = userInfos.Language;
-			currentUserLanguageInfo.LanguageCode = userInfos.LanguageCode;;
-			currentUserLanguageInfo.Locale = userInfos.Locale;
-		}
+//		public static function updateLanguageInfo(userInfos:Object):void{
+//			if(currentUserLanguageInfo==null){
+//				currentUserLanguageInfo= new Object();
+//			}
+//			currentUserLanguageInfo.Language = userInfos.Language;
+//			currentUserLanguageInfo.LanguageCode = userInfos.LanguageCode;;
+//			currentUserLanguageInfo.Locale = userInfos.Locale;
+//		}
 		
 		/**
 		 * Resets the cache. 
 		 */
 		public static function reset():void {
-			currentUserLanguageInfo = null;
+			//currentUserLanguageInfo = null;
 		}
 	}
 }

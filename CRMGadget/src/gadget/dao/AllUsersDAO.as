@@ -4,6 +4,7 @@ package gadget.dao{
 	import flash.data.SQLStatement;
 	
 	import gadget.util.CacheUtils;
+	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -81,6 +82,9 @@ package gadget.dao{
 			var cache_owner:CacheUtils = new CacheUtils("owner_user");
 			
 			var owner:Object =cache_owner.put("currentUser",owner);
+			//change resource when change the user
+			Utils.doChangeLocale();
+			
 		}
 		
 		private var textColumns:Array = [

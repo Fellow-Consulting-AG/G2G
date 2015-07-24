@@ -29,8 +29,9 @@
 					var forecast:Number = value.Forecast==null?0:Number(value.Forecast);
 					var totalVaiance:Number = forecast-fyTarget  ;
 					super.data["variance"] = totalVaiance;
-					grid.invalidateList();
+					
 					cal.text = NumberLocaleUtils.format(super.data["variance"]);
+					grid.invalidateList();
 				}
 				
 			}
@@ -53,5 +54,5 @@
 		]]>
 		
 	</fx:Script>
-	<mx:Label id="cal" />
+	<mx:Label id="cal" textAlign="right"/>
 </s:MXAdvancedDataGridItemRenderer>

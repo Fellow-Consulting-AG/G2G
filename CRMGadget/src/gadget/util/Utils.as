@@ -68,6 +68,9 @@ package gadget.util {
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.core.UIComponent;
 	import mx.core.Window;
+	import mx.resources.IResourceBundle;
+	import mx.resources.IResourceManager;
+	import mx.resources.ResourceManager;
 	import mx.utils.ObjectProxy;
 	import mx.utils.StringUtil;
 	
@@ -2501,6 +2504,61 @@ package gadget.util {
 			}
 			cache.put("getSalesStage",picklist);
 			return new ArrayCollection(picklist.source);
+		}
+		
+		private static const INGNORE_VALIDATORS_COPY:Array = ['allowNegative',
+			'creditCardValidatorAllowedFormatChars',
+			'currencyValidatorPrecision',
+			'dateValidatorAllowedFormatChars',
+			'decimalSeparator',
+			'maxLength',
+			'maxValue',
+			'minDigitsPNV',
+			'minLength',
+			'minValue',
+			'numberValidatorDomain',
+			'numberValidatorPrecision',
+			'phoneNumberValidatorAllowedFormatChars',
+			'socialSecurityValidatorAllowedFormatChars',
+			'thousandsSeparator',
+			'validateAsString',
+			'zipCodeValidatorAllowedFormatChars',
+			'zipCodeValidatorDomain'];
+		
+		public static function doChangeLocale():void{
+			// "formatters", "monthNamesShort"
+			//"formatters", "dayNamesShort"
+			// var am:String = resourceManager.getString("formatters", "am");
+			//var pm:String = resourceManager.getString("formatters", "pm");
+			//var resource:IResourceManager = ResourceManager.getInstance();
+			//defaultInvalidValueError
+			//defaultInvalidFormatError
+			var resourceManager:IResourceManager = ResourceManager.getInstance()
+			var currentUser:Object = Database.allUsersDao.ownerUser()
+			var languageCode:String = currentUser.LanguageCode==null?"":currentUser.LanguageCode;	
+			resourceManager.localeChain = [LocaleUtils.getLocaleCode()];
+			var resourceBundle:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCodeByLanguage(languageCode),"SharedResources");
+			var resourceBundleChangeTo:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCode(),"SharedResources");
+			resourceBundleChangeTo.content["monthNames"] = resourceBundle.content["monthNames"];
+			resourceBundleChangeTo.content["dayNames"] = resourceBundle.content["dayNames"];
+			//formatters
+			var resourceBundleFormatter:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCodeByLanguage(languageCode),"formatters");
+			var resourceBundleFormatterTo:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCode(),"formatters");
+			resourceBundleFormatterTo.content["monthNamesShort"] = resourceBundleFormatter.content["monthNamesShort"];
+			resourceBundleFormatterTo.content["dayNamesShort"] = resourceBundleFormatter.content["dayNamesShort"];
+			resourceBundleFormatterTo.content["am"] = resourceBundleFormatter.content["am"];
+			resourceBundleFormatterTo.content["pm"] = resourceBundleFormatter.content["pm"];
+			resourceBundleFormatterTo.content["defaultInvalidValueError"] = resourceBundleFormatter.content["defaultInvalidValueError"];
+			resourceBundleFormatterTo.content["defaultInvalidFormatError"] = resourceBundleFormatter.content["defaultInvalidFormatError"];
+			
+			//change validators mesage
+			var validatorsTemp:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCodeByLanguage(languageCode),"validators");
+			var validatorsReal:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCode(),"validators");
+			for (var f:String in validatorsTemp.content){
+				if(INGNORE_VALIDATORS_COPY.indexOf(f)==-1){
+					validatorsReal.content[f] = validatorsTemp.content[f];
+				}
+			}
 		}
 		
 		public static function getSalesStageByOpptType(opptType:String):ArrayCollection {

@@ -1704,6 +1704,10 @@ package gadget.util
 				var text:String = (component as ImageTreeFinder).embedText.text;
 				value = !StringUtils.isEmpty(text) ? ((component as ImageTreeFinder).embedText.data as XML).toXMLString() : "";
 			}
+			
+			if('Integer'==fieldInfo.data_type||fieldInfo.data_type=='Currency'||fieldInfo.data_type=='Number'){
+				value = NumberLocaleUtils.parse(value,-1);
+			}
 			return value;
 		}
 		

@@ -309,31 +309,7 @@
 				};
 			}
 			
-			private function changeLocale():void{
-				// "formatters", "monthNamesShort"
-				//"formatters", "dayNamesShort"
-				// var am:String = resourceManager.getString("formatters", "am");
-				//var pm:String = resourceManager.getString("formatters", "pm");
-				//var resource:IResourceManager = ResourceManager.getInstance();
-				//defaultInvalidValueError
-				//defaultInvalidFormatError
-				var currentUser:Object = Database.allUsersDao.ownerUser()
-				var languageCode:String = currentUser.LanguageCode==null?"":currentUser.LanguageCode;	
-				resourceManager.localeChain = [LocaleUtils.getLocaleCode()];
-				var resourceBundle:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCodeByLanguage(languageCode),"SharedResources");
-				var resourceBundleChangeTo:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCode(),"SharedResources");
-				resourceBundleChangeTo.content["monthNames"] = resourceBundle.content["monthNames"];
-				resourceBundleChangeTo.content["dayNames"] = resourceBundle.content["dayNames"];
-				//formatters
-				var resourceBundleFormatter:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCodeByLanguage(languageCode),"formatters");
-				var resourceBundleFormatterTo:IResourceBundle = resourceManager.getResourceBundle(LocaleUtils.getLocaleCode(),"formatters");
-				resourceBundleFormatterTo.content["monthNamesShort"] = resourceBundleFormatter.content["monthNamesShort"];
-				resourceBundleFormatterTo.content["dayNamesShort"] = resourceBundleFormatter.content["dayNamesShort"];
-				resourceBundleFormatterTo.content["am"] = resourceBundleFormatter.content["am"];
-				resourceBundleFormatterTo.content["pm"] = resourceBundleFormatter.content["pm"];
-				resourceBundleFormatterTo.content["defaultInvalidValueError"] = resourceBundleFormatter.content["defaultInvalidValueError"];
-				resourceBundleFormatterTo.content["defaultInvalidFormatError"] = resourceBundleFormatter.content["defaultInvalidFormatError"];
-			}
+			
 			
 			private function cleanDatabaseAndExit():void{
 				
@@ -485,6 +461,7 @@
 			}
 			
 			public function syncEnd(isUpdateTrans:Boolean=true):void {
+				
 				createLastSync();
 				syncBtn1.visible = false;
 				syncBtn1.includeInLayout = false;
@@ -499,6 +476,7 @@
 				//					list.detail.init();
 				//				}
 				if(isUpdateTransaction && isUpdateTrans){
+					Utils.doChangeLocale();
 					updateTransactions();	
 					if(this._currentSelectedList!=null){
 						selectList(_currentSelectedList.entity);//refresh selected list
@@ -565,7 +543,7 @@
 			}
 			
 			private function initial():void{
-				changeLocale();
+				Utils.doChangeLocale();
 				var nativeApp:NativeApplication = NativeApplication.nativeApplication;				
 				//nativeApp.idleThreshold = 10;				
 				nativeApp.addEventListener(Event.DEACTIVATE, userIdleHandler);

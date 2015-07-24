@@ -9,6 +9,7 @@ package gadget.control
 	
 	import gadget.dao.OpportunityDAO;
 	import gadget.i18n.i18n;
+	import gadget.util.NumberLocaleUtils;
 	import gadget.util.StringUtils;
 	import gadget.window.WindowManager;
 	
@@ -138,7 +139,7 @@ package gadget.control
 					quater = new Object();
 					super.data[column.dataField] = quater;
 				}
-				var q1:Number = parseFloat(super.text);
+				var q1:Number = parseFloat(NumberLocaleUtils.parse(super.text));
 				if(!isNaN(q1)){
 					var val:Number = q1/3;
 					for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){

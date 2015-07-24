@@ -882,12 +882,24 @@ package gadget.dao
 			
 			return rows;
 		}
+		private static const CO7_PRODUCT_FIELD:Array =[
+			"CustomPickList31",//Category
+			"CustomPickList34",//unit
+			"CustomNumber0",//Quantity
+			"CustomCurrency4"//value
+		];
 		
 		private function saveCo7(fields:Array,obj:Object,quater:String=null,op:Object=null):void{
 			var objSav:Object = new Object();
 			for each (var f:String in fields){
 				var tem_f:String = CO7_PREFIX+f;
-				objSav[f]=obj[tem_f];
+				//save category,unit,quantity and value to each quater
+				if(CO7_PRODUCT_FIELD.indexOf(f)!=-1 && op!=null){
+					objSav[f]=op[tem_f];
+				}else{
+					objSav[f]=obj[tem_f];
+				}
+				
 				if(op!=null &&(objSav[f]==null||objSav[f]=='')){
 					objSav[f]=op[tem_f];
 				}
@@ -1027,6 +1039,7 @@ package gadget.dao
 						var qObj:Object = row[f];
 						//if(f!='categorySelected' && f!='origCo7' && f!='origOP'){
 							if(qObj!=null && (qObj.co7Change||row.co7Change)){
+								
 								//save quater
 								saveCo7(co7Fields,qObj,f,row);
 								

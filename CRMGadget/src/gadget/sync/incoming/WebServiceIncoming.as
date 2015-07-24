@@ -782,8 +782,7 @@ package gadget.sync.incoming {
 //			
 //			}
 			//update language info
-			if(this is IncomingCurrentUserData){
-				LocaleService.updateLanguageInfo(tmpOb);
+			if(this is IncomingCurrentUserData){				
 				Database.allUsersDao.setOwnerUser(tmpOb);
 			}
 			_nbItems ++;

@@ -1982,11 +1982,19 @@ package gadget.util
 					}
 					// no break here
 				case "Phone":
-				case "Number":
-				case "Currency":
-				case "Integer":
 					childObj = new TextInput();
 					(childObj as TextInput).text = item[fieldInfo.element_name];	
+					childObj = (getEditableObject(entity, readonly, childObj) as TextInput);
+					break;
+				case "Integer":
+					childObj = new TextInput();
+					(childObj as TextInput).text = NumberLocaleUtils.format(item[fieldInfo.element_name],0);	
+					childObj = (getEditableObject(entity, readonly, childObj) as TextInput);
+					break;
+				case "Number":
+				case "Currency":
+					childObj = new TextInput();
+					(childObj as TextInput).text =NumberLocaleUtils.format(item[fieldInfo.element_name]);	
 					childObj = (getEditableObject(entity, readonly, childObj) as TextInput);
 					if(entity =="Opportunity" && fieldInfo.element_name == "Revenue"){
 						(childObj as TextInput).maxChars = 25;

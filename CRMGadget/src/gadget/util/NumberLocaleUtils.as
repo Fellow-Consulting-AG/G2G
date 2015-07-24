@@ -1,10 +1,10 @@
 package gadget.util
 {
-	import flash.globalization.NumberFormatter;
-	import flash.globalization.NumberParseResult;
+
 	
 	import gadget.service.LocaleService;
 	
+	import mx.formatters.NumberFormatter;
 	import mx.resources.Locale;
 	
 	public class NumberLocaleUtils
@@ -15,24 +15,18 @@ package gadget.util
 		}
 		public static function format(value:Object,precison:int=2):String {
 			if(value == null) return "";
-			var languageInfo:Object = LocaleService.getLanguageInfo();
-			var code:String = LocaleUtils.getLocaleCode(languageInfo.LocaleCode);
-			var numfomatter:NumberFormatter = new NumberFormatter(code);
-			numfomatter.fractionalDigits = precison;
-//			numfomatter.precision = 0;
+			
+			//var code:String = LocaleUtils.getLocaleCode();
+			var numfomatter:NumberFormatter = new NumberFormatter();
+//			numfomatter.fractionalDigits = precison;
+			numfomatter.precision = precison;
 //			numfomatter.decimalSeparatorTo = ".";
 //			numfomatter.decimalSeparatorFrom = ".";
 //			numfomatter.thousandsSeparatorTo = ",";
 //			numfomatter.thousandsSeparatorFrom =",";
-			var val:String = numfomatter.formatNumber(parse(value));
+			var val:String = numfomatter.format(value);
 			return val;
 		}
-		public static function parse(value:Object):Number {
-			var languageInfo:Object = LocaleService.getLanguageInfo();
-			var code:String = LocaleUtils.getLocaleCode(languageInfo.LocaleCode);
-			var numfomatter:NumberFormatter = new NumberFormatter(code);
-			var val:NumberParseResult = numfomatter.parse(value+"");
-			return val.value;
-		}
+		
 	}
 }

@@ -49,11 +49,11 @@ package gadget.control
 							}
 							q[fields[1]]=StringUtil.trim(super.text);
 						}else{
-							super.data[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
+							super.data[colName]=Number(StringUtil.trim(super.text));
 						}
 						if(updateData!=null){
 							var newVal:Object = new Object();
-							newVal[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
+							newVal[colName]=Number(StringUtil.trim(super.text));
 							updateData(super.data,newVal);
 						}
 						

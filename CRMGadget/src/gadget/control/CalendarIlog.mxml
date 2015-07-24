@@ -19,6 +19,7 @@
 			import gadget.util.DateUtils;
 			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.LocaleUtils;
 			import gadget.util.MenuUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -66,27 +67,9 @@
 			[Bindable] public var languageCode:String;
 			public function init(isLoadData:Boolean=false):void {
 				var currentUser:Object = Database.allUsersDao.ownerUser()
-				languageCode = currentUser.LanguageCode==null?"":currentUser.LanguageCode;			
-				resourceManager.localeChain =['en_US'];
-				if(languageCode=='JPN'){
-					resourceManager.localeChain =['ja_JP'];
-				}else if(languageCode=='FRA'){
-					resourceManager.localeChain =['fr_FR'];
-				}else if(languageCode=='DEU'){
-					resourceManager.localeChain =['de_DE'];
-					
-				}else if(languageCode=='PTG'){
-					resourceManager.localeChain =['pt_BR'];
-				}else if(languageCode=='ITA'){
-					resourceManager.localeChain =['it_IT'];
-				}else if(languageCode=='ESN'){
-					resourceManager.localeChain =['es_ES'];
-				}else if(languageCode=='NLD'){
-					resourceManager.localeChain =['nl_NL'];
-				}else if(languageCode=='SVE'){
-					resourceManager.localeChain =['sv_SE'];
-				}else if("CHS" == languageCode){
-					resourceManager.localeChain = ['zh_CN'];
+				languageCode = currentUser.LanguageCode==null?"":currentUser.LanguageCode;		
+				if("zh_CN" == LocaleUtils.getLocaleCode()){
+					//resourceManager.localeChain = ['zh_CN'];
 					var resourceBundle:IResourceBundle = resourceManager.getResourceBundle("zh_CN","ilogcalendar");
 					//bug#7528
 					resourceBundle.content["header.month.mode.short.format"]= "EEE"

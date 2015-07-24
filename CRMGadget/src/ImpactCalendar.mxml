@@ -36,6 +36,7 @@
 			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.LocaleUtils;
 			import gadget.util.NumberLocaleUtils;
 			import gadget.util.NumberUtils;
 			import gadget.util.SalesStageUtils;
@@ -452,6 +453,7 @@
 					}
 					
 					public function init():void{
+						//resourceManager.localeChain = [LocaleUtils.getLocaleCode()];
 						initGridListAllOpportunities();
 						initGridTotalAllOpportunities();
 						initGridProductDetails();

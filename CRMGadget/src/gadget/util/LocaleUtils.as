@@ -1,55 +1,69 @@
 package gadget.util
 {
+	import gadget.service.LocaleService;
+
 	public class LocaleUtils
 	{
 		private static const LOCALES:Object = {
-			'0D-CCOZE':'ch-CH',
-			'0-118':'ch-CH',
-			'0D-CCOZD':'ch-CH',
-			'0-205':'ch-CH',
-			'0-BAA65':'nl-NL',
-			'0-109':'nl-NL',
-			'0-BAA5D':'en-US',
-			'0-BAA5G':'en-US',
-			'0-208':'en-US',
-			'0-BAA5I':'en-US',
-			'0-206':'en-US',
-			'0-204':'en-US',
-			'0-203':'en-US',
-			'0-111':'en-US',
-			'0-101':'en-US',
-			'0-112':'fr-FR',
-			'0-BAA5K':'fr-FR',
-			'0-103':'fr-FR',
-			'0-BAA5P':'fr-FR',
-			'0-BAA5R':'fr-FR',
-			'0-BAA5T':'de-DE',
-			'0-106':'de-DE',
-			'0-BAA5Z':'de-DE',
-			'0-BAA5V':'de-DE',
-			'0-104':'it-IT',
-			'0-102':'jp-JP',
-			'0-212':'pl-PL',
-			'0-LCBRA':'pt-PT',
-			'0-114':'pt-PT',
-			'0-211':'ru-RU',
-			'0P-BAA66':'es-ES',
-			'0-BAA61':'es-ES',
-			'0-116':'es-ES'
+			'0D_CCOZE':'ch_CH',
+			'0_118':'ch_CH',
+			'0D_CCOZD':'ch_CH',
+			'0_205':'ch_CH',
+			'0_BAA65':'nl_NL',
+			'0_109':'nl_NL',
+			'0_BAA5D':'en_US',
+			'0_BAA5G':'en_US',
+			'0_208':'en_US',
+			'0_BAA5I':'en_US',
+			'0_206':'en_US',
+			'0_204':'en_US',
+			'0_203':'en_US',
+			'0_111':'en_US',
+			'0_101':'en_US',
+			'0_112':'fr_FR',
+			'0_BAA5K':'fr_FR',
+			'0_103':'fr_FR',
+			'0_BAA5P':'fr_FR',
+			'0_BAA5R':'fr_FR',
+			'0_BAA5T':'de_DE',
+			'0_106':'de_DE',
+			'0_BAA5Z':'de_DE',
+			'0_BAA5V':'de_DE',
+			'0_104':'it_IT',
+			'0_102':'jp_JP',
+			'0_212':'pl_PL',
+			'0_LCBRA':'pt_PT',
+			'0_114':'pt_PT',
+			'0_211':'ru_RU',
+			'0P_BAA66':'es_ES',
+			'0_BAA61':'es_ES',
+			'0_116':'es_ES'
 			
 		};
 		
 		public function LocaleUtils()
 		{
 		}
-		public static function getLocaleCode(localeCode:String):String{
-			//0-1OBMR = en-US
-			if(localeCode == null || localeCode == ""){
-				return 'en-US';
+		public static function getLocaleCodeByLanguage(lngCode):String{
+			if(lngCode == null || lngCode == ""){
+				return 'en_US';
 			}else{
-				return LOCALES[localeCode]==null?'en-US':LOCALES[localeCode];
+				return LOCALES[lngCode]==null?'en_US':LOCALES[lngCode];
 			}
 			
 		}
+		public static function getLocaleCode():String{
+			//0_1OBMR = en_US
+			var languageInfo:Object = LocaleService.getLanguageInfo();
+			var localeCode:String = languageInfo.LocaleCode;
+			return 'de_DE';
+//			if(localeCode == null || localeCode == ""){
+//				return 'en_US';
+//			}else{
+//				return LOCALES[localeCode]==null?'en_US':LOCALES[localeCode];
+//			}
+			
+		}
+		
 	}
 }

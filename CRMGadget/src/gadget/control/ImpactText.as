@@ -23,6 +23,7 @@ package gadget.control
 		protected var grid:AdvancedDataGrid = null;		
 		private var _refreshRow:Boolean = true;
 		private var _updateData:Function;
+		private var _decimal:int = 4;
 		public function ImpactText()
 		{
 			addEventListener(Event.CHANGE,onChange);
@@ -40,6 +41,7 @@ package gadget.control
 					
 					if(column != null){
 						var colName:String = column.dataField;
+						var val:String =this.text;
 						if(colName.indexOf('.')!=-1){
 							var fields:Array = colName.split('.');
 							var q:Object = data[fields[0]];
@@ -47,13 +49,13 @@ package gadget.control
 								q=new Object();
 								super.data[fields[0]]=q;
 							}
-							q[fields[1]]=StringUtil.trim(super.text);
+							q[fields[1]]=val;
 						}else{
-							super.data[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
+							super.data[colName]=val;
 						}
 						if(updateData!=null){
 							var newVal:Object = new Object();
-							newVal[colName]=NumberLocaleUtils.parse(StringUtil.trim(super.text));
+							newVal[colName]=val;
 							updateData(super.data,newVal);
 						}
 						
@@ -98,6 +100,7 @@ package gadget.control
 			super.text = value;
 		}
 		
+		
 		override public function set listData(value:BaseListData):void
 		{
 			
@@ -133,6 +136,16 @@ package gadget.control
 		public function set updateData(value:Function):void
 		{
 			_updateData = value;
+		}
+
+		public function get decimal():int
+		{
+			return _decimal;
+		}
+
+		public function set decimal(value:int):void
+		{
+			_decimal = value;
 		}
 
 

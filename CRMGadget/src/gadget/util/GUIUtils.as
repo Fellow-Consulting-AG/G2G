@@ -1713,6 +1713,11 @@ package gadget.util
 		
 		public static function setInputFieldValue(component:DisplayObject, fieldInfo:Object, value:Object,customField:Object,fields:ArrayCollection):void{
 			if(value!=null){
+				if(fieldInfo.data_type=='Currency'||fieldInfo.data_type=='Number'){
+					value = NumberLocaleUtils.format(value);
+				}else if('Integer'==fieldInfo.data_type){
+					value = NumberLocaleUtils.format(value,0);
+				}
 				if(component is Label && customField && customField.fieldType=='Formula'){
 					var entity:String = customField.entity;
 					var ownerUser:Object = Database.allUsersDao.ownerUser();

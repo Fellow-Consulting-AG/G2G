@@ -28,7 +28,14 @@ package gadget.util
 //			numfomatter.decimalSeparatorFrom = ".";
 //			numfomatter.thousandsSeparatorTo = ",";
 //			numfomatter.thousandsSeparatorFrom =",";
-			var val:String = numfomatter.formatNumber(parseFloat(parse(value.toString())));
+			
+			var val:String =""; 
+				if(value is Number){
+					val = numfomatter.formatNumber(Number(value));
+				}else{
+					val = numfomatter.formatNumber(parseFloat(value.toString()));
+				}
+				
 			return val;
 		}
 		
@@ -38,10 +45,14 @@ package gadget.util
 			var val:NumberParseResult = numfomatter.parse(StringUtil.trim(value));
 			if(val!=null && !isNaN(val.value)){
 				if(decimal!=-1){
-				
-					return val.value.toFixed(decimal);
+					if(decimal==0){
+						return parseInt(val.value.toString()).toString();
+					}else{
+						return val.value.toFixed(decimal);
+					}
+					
 				}else{
-					val.value.toString();
+					return val.value.toString();
 				}
 				
 			}

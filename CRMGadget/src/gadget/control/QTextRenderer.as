@@ -36,7 +36,8 @@ package gadget.control
 			addEventListener(Event.CHANGE,function(e:Event):void{
 				isChanged=true;
 			});
-			addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void{
+			
+			addEventListener(FocusEvent.MOUSE_FOCUS_CHANGE,function(e:Event):void{
 				if(tabOrEnterDown || !isChanged) return;
 				var oldValStr:String = column.labelFunction(data,column);
 				if(StringUtils.isEmpty(oldValStr)){
@@ -45,7 +46,7 @@ package gadget.control
 					var oldVal:Number = parseFloat(oldValStr);
 					var newVal:Number = parseFloat(text);
 					if(oldVal!=newVal){
-					
+						
 						Alert.show(i18n._("OVERRIDE_QUATER_MONTHS_MSSAGE@Do you want to override the existing monthly value based on this new quarterly value?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,Window(WindowManager.getTopWindow()),function(event:CloseEvent):void{
 							if(event.detail==Alert.YES){
 								onChange(e);							
@@ -59,10 +60,8 @@ package gadget.control
 					}
 					isChanged=false;
 				}
-				
-				
-			
 			});
+		
 			
 			addEventListener(KeyboardEvent.KEY_DOWN,function(keyEvent:KeyboardEvent):void{
 				//fixed npe error when click tab

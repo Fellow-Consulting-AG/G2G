@@ -25,8 +25,8 @@
 			{
 				super.data = value;
 				if(value != null){
-					var fyTarget:Number = value.FYTarget==null?0:Number(value.FYTarget);
-					var forecast:Number = value.Forecast==null?0:Number(value.Forecast);
+					var fyTarget:Number = value.FYTarget==null?0:Number(parseFloat(value.FYTarget));
+					var forecast:Number = value.Forecast==null?0:Number(parseFloat(value.Forecast));
 					var totalVaiance:Number = forecast-fyTarget  ;
 					super.data["variance"] = totalVaiance;
 					
@@ -54,5 +54,5 @@
 		]]>
 		
 	</fx:Script>
-	<mx:Label id="cal" textAlign="right"/>
+	<mx:Label id="cal" textAlign="right" width="100%"/>
 </s:MXAdvancedDataGridItemRenderer>

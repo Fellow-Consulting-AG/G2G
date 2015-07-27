@@ -9,6 +9,8 @@ package gadget.util
 			'0-118':'ch_CH',
 			'0D-CCOZD':'ch_CH',
 			'0-205':'ch_CH',
+			'0-202':'fr_FR',
+			'0-108':'de_DE',
 			'0-BAA65':'nl_NL',
 			'0-109':'nl_NL',
 			'0-BAA5D':'en_US',
@@ -20,6 +22,7 @@ package gadget.util
 			'0-203':'en_US',
 			'0-111':'en_US',
 			'0-101':'en_US',
+			'0-110':'fr_FR',
 			'0-112':'fr_FR',
 			'0-BAA5K':'fr_FR',
 			'0-103':'fr_FR',
@@ -29,15 +32,24 @@ package gadget.util
 			'0-106':'de_DE',
 			'0-BAA5Z':'de_DE',
 			'0-BAA5V':'de_DE',
+			'0R-BAA67':'de_DE',
+			'0-201':'fr_FR',
+			'0-210':'de_DE',
 			'0-104':'it_IT',
 			'0-102':'jp_JP',
+			'0-113':'en_US',
+			'0-207':'de_DE',
+			'0-BAA63':'de_DE',
 			'0-212':'pl_PL',
 			'0-LCBRA':'pt_PT',
 			'0-114':'pt_PT',
 			'0-211':'ru_RU',
 			'0P-BAA66':'es_ES',
 			'0-BAA61':'es_ES',
-			'0-116':'es_ES'
+			'0-116':'es_ES',
+			'0-107':'sv_SE ',
+			'0-209':'en_US',
+			'0-213':'de_DE'
 			
 		};
 		

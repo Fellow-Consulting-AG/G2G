@@ -1431,6 +1431,12 @@
 						child.sortCompareFunction = function(obj1:Object,obj2:Object):int{
 							return sortNumberic(obj1,obj2,this.entity);
 						}
+						if(obj.data_type == "Integer"){
+							child.labelFunction = Utils.labelIntDisplay;
+						}else{
+							child.labelFunction = Utils.labelNumberDisplay;
+						}	
+							
 					}else if(obj.data_type == "Date/Time"){
 						child.sortCompareFunction = sortDateTime;	
 					}else if(obj.data_type == "Date"){

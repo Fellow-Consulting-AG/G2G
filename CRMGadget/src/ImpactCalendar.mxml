@@ -140,7 +140,7 @@
 				
 				
 			]; 
-			private static var IGNORE_CO7_CHECK_FIELD:Array=[
+			public static var IGNORE_CO7_CHECK_FIELD:Array=[
 				"CustomCurrency5",//Current FY Impact
 				"CustomCurrency7",//Change vs last FY 
 				"CustomCurrency8",//Next FY Impact
@@ -490,7 +490,7 @@
 						return col;
 					}
 					private  function displayPercentag(item:Object,col:AdvancedDataGridColumn):String{
-						if(StringUtils.isEmpty(String(item[col.dataField]))){
+						if(StringUtils.isEmpty(item[col.dataField])){
 							return "";
 						}else{
 							return labelIntDisplay(item,col) + "%";	
@@ -1547,7 +1547,7 @@
 								if(!checkMandatory(recchanges)){
 									saveACTotal();
 									initOpTotal();						
-									Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD);
+									Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD,rows);
 									Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
 										if(endFunction!=null){
 											endFunction();

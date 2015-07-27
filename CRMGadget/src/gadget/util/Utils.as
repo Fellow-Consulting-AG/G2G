@@ -2561,6 +2561,15 @@ package gadget.util {
 			}
 		}
 		
+		
+		public static function labelNumberDisplay(item:Object,col:AdvancedDataGridColumn):String{
+			
+			return NumberLocaleUtils.format(item[col.dataField]);
+		}
+		public static function labelIntDisplay(item:Object,col:AdvancedDataGridColumn):String{
+			return NumberLocaleUtils.format(item[col.dataField],0);
+		}
+		
 		public static function getSalesStageByOpptType(opptType:String):ArrayCollection {
 			var cache:CacheUtils = new CacheUtils("picklist");
 			var key:String  = "getSalesStage_"+opptType;

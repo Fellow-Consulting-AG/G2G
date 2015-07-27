@@ -886,7 +886,11 @@ package gadget.dao
 			"CustomPickList31",//Category
 			"CustomPickList34",//unit
 			"CustomNumber0",//Quantity
-			"CustomCurrency4"//value
+			"CustomCurrency4",//value
+			"CustomCurrency5",//Current FY Impact
+			"CustomCurrency7",//Change vs last FY 
+			"CustomCurrency8",//Next FY Impact
+			"CustomCurrency9"//Annualized Impact 
 		];
 		
 		private function saveCo7(fields:Array,obj:Object,quater:String=null,op:Object=null):void{
@@ -1008,11 +1012,11 @@ package gadget.dao
 			return totaldic;
 		}
 		
-		public function saveImpactCalendar(impactData:ArrayCollection,opField:Array,co7Fields:Array):void{
-			var totalDic:Dictionary = calculateOpportunityTotal(impactData);
+		public function saveImpactCalendar(recordChanges:ArrayCollection,opField:Array,co7Fields:Array,allRows:ArrayCollection):void{
+			var totalDic:Dictionary = calculateOpportunityTotal(allRows);
 			Database.begin();
 			try{
-				for each(var row:Object in impactData){
+				for each(var row:Object in recordChanges){
 					if(row.isTotal){
 						continue;//total not save
 					}
@@ -1024,11 +1028,11 @@ package gadget.dao
 								row[tf] = total.toFixed(2);
 							}
 						}
-						if(row.opChange){							
+													
 							//update opportunity
 							updateByField(opField,row,'gadget_id',true);
 							row.origOP=Utils.copyModel(row,false);
-						}
+						
 					}
 					//save product usage
 					if(row.co7Change){

@@ -111,7 +111,7 @@
 						//set annualized impact value;
 						if(!isNaN(total)){						
 							if(formatNum){
-								return NumberLocaleUtils.format(total,0);
+								return NumberLocaleUtils.format(total);
 							}else{
 								return total.toFixed(4);
 							}

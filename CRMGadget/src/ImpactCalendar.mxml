@@ -447,7 +447,7 @@
 												monthVal= annulizedInpact*curveVal[currentMonthIdx];
 											}
 											currentMonthIdx++;
-											q[f]= NumberLocaleUtils.format(monthVal);
+											q[f]= monthVal;
 										}else{
 											q[f]="0.00";
 										}
@@ -490,11 +490,11 @@
 						return col;
 					}
 					private  function displayPercentag(item:Object,col:AdvancedDataGridColumn):String{
-						var fieldValue:String = item[col.dataField];	
-						if(fieldValue != "" && fieldValue != null && fieldValue.indexOf("%") == -1){
-							fieldValue = fieldValue + "%";
+						if(StringUtils.isEmpty(String(item[col.dataField]))){
+							return "";
+						}else{
+							return labelIntDisplay(item,col) + "%";	
 						}
-						return fieldValue;
 					}
 					private  function displayDataTime(item:Object,col:AdvancedDataGridColumn):String{
 						

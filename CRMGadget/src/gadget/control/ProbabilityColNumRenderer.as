@@ -14,7 +14,7 @@ package gadget.control
 		override  public function set text(value:String):void
 		{
 			if(value!=null && column){
-				value = super.data[column.dataField];
+				value = NumberLocaleUtils.format(super.data[column.dataField],0);
 			}
 			super.text = value;
 		}

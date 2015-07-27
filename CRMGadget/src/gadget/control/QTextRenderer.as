@@ -145,6 +145,11 @@ package gadget.control
 						
 						quater[f]=val.toFixed(4);//store 4digit after .
 					}					
+				}else{
+					for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+						
+						quater[f]="0";//reset them to zero
+					}			
 				}
 				
 				grid.refreshRow(super.listData.rowIndex);

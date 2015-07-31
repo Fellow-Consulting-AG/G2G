@@ -941,12 +941,16 @@ package gadget.dao
 			}
 			delete objSav['co7_gadget_id'];
 			
-			//CustomPickList33 is quater picklist
-			var name:String = objSav.CustomPickList33;
+			//name is category_quater
+			var name:String = objSav.CustomPickList31;
 			
 			if(StringUtils.isEmpty(objSav.CustomPickList31)){				
 				return;//no category cannot save
 			}
+			//CustomPickList33 is quater picklist
+			if(!StringUtils.isEmpty(objSav.CustomPickList33)){
+				name = name+'_'+objSav.CustomPickList33;
+			}			
 			
 			objSav.Name = name;
 			

@@ -1050,7 +1050,8 @@
 			private function getComboData():ArrayCollection{
 				var listTransaction:ArrayCollection = Database.transactionDao.listEnabledTransaction();
 				var comboList:ArrayCollection = new ArrayCollection();
-				if("Activity" == entity && subtype == 2 && create){
+				//bug#10876--allow all object has save
+				if(create){
 					comboList.addItem({label:SAVE_STR, data:SAVE_STR});
 				}
 				comboList.addItem({label:CLOSE_STR, data:CLOSE_STR});
@@ -1096,6 +1097,8 @@
 						if(comboAction.selectedItem.data == SAVE_STR){
 							this.create = false;
 							(comboAction.dataProvider as ArrayCollection).removeItemAt(0);
+							setTitle(titleDetail);
+							setIcon();
 							this.initButtons();
 							this.reload(true);
 						}else{

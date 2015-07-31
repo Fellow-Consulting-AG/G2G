@@ -478,17 +478,20 @@ package gadget.util {
 								if(val=='-1' && entity==Database.customObject1Dao.entity && fieldInfo.element_name=='CustomInteger0'){
 									val="";
 								}
+								
+								var tempVal:String = val==null?'':val;
+								while(tempVal.charAt(tempVal.length-1)=='-'){
+									tempVal = tempVal.substr(0,tempVal.length-1);
+								}
+								while(tempVal.charAt(0)=='-'){
+									tempVal = tempVal.substr(1);
+								}
+								if(tempVal=="No Match Row Id"){
+									tempVal ="";//
+								}	
+								
 								if(afterSave){
-									var tempVal:String = val==null?'':val;
-									while(tempVal.charAt(tempVal.length-1)=='-'){
-										tempVal = tempVal.substr(0,tempVal.length-1);
-									}
-									while(tempVal.charAt(0)=='-'){
-										tempVal = tempVal.substr(1);
-									}
-									if(tempVal=="No Match Row Id"){
-										tempVal ="";//
-									}	
+									
 									if(entity==Database.activityDao.entity && fieldInfo.element_name=='CompletedDatetime'){
 										
 										if(StringUtils.isEmpty(tempVal)){										
@@ -503,13 +506,17 @@ package gadget.util {
 										}
 										
 									}else{
-										//always set the value with the post default value
-										enityObject[fieldInfo.element_name] = tempVal;
+										//bug#10879
+										if(StringUtils.isEmpty(enityObject[fieldInfo.element_name])){	
+											//always set the value with the post default value
+											enityObject[fieldInfo.element_name] = tempVal;
+										}
+										
 									}
 									
 									
 								}else{
-									enityObject[fieldInfo.element_name] = val;
+									enityObject[fieldInfo.element_name] = tempVal;
 								}
 								
 							}

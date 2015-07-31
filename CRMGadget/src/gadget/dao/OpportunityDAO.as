@@ -941,18 +941,13 @@ package gadget.dao
 			}
 			delete objSav['co7_gadget_id'];
 			
-			//name is opportunityname_category_quater
-			var name:String = objSav.OpportunityName;
+			//CustomPickList33 is quater picklist
+			var name:String = objSav.CustomPickList33;
 			
-			if(!StringUtils.isEmpty(objSav.CustomPickList31)){
-				name = name+'_'+objSav.CustomPickList31;
-			}else{
+			if(StringUtils.isEmpty(objSav.CustomPickList31)){				
 				return;//no category cannot save
 			}
-			//CustomPickList33 is quater picklist
-			if(!StringUtils.isEmpty(objSav.CustomPickList33)){
-				name = name+'_'+objSav.CustomPickList33;
-			}
+			
 			objSav.Name = name;
 			
 			if(StringUtils.isEmpty(objSav['gadget_id'])){

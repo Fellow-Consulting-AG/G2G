@@ -77,8 +77,11 @@ package gadget.dao
 			
 		}
 		
-		public function readAllDefaultValueFields(entity:String):Dictionary{
+		public function readAllDefaultValueFields(entity:String,onlyReadOnly:Boolean = false):Dictionary{
 			var where:String = " Where (DefaultValue is not null AND DefaultValue!='') AND  entity='" + entity + "'";
+			if(onlyReadOnly){
+				where = where+ " AND ReadOnly='true'";
+			}
 			var result:Array = select_order("*", where, null, "DisplayName",null);
 			var dic:Dictionary = new Dictionary();
 			if(result!=null && result.length>0){

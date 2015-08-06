@@ -284,6 +284,7 @@
 			private function initSampleItemTab():void{
 				if(sampleView!=null){
 					viewstack.addChild(sampleView);
+					sampleView.reloadData(true,true);
 				}else{
 					if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
 						sampleView = new SampleItemView();

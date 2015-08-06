@@ -38,15 +38,7 @@
 			protected function init(event:FlexEvent):void
 			{
 				if(rows==null || rows.length<1){
-					if(parentObject==null || StringUtils.isEmpty(parentObject['Id'])){
-						if(rows==null){
-							rows = new ArrayCollection();
-						}
-					}else{
-						
-						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
-						
-					}
+					
 				}
 				
 				for each(var obj:Object in getItems()){
@@ -61,10 +53,7 @@
 					addEmptyRow(false,true,e.columnIndex);
 				
 				});
-				//add empty row
-				rows.addItem(createEmptyObject());
-				editableGrid.dataProvider = rows;
-				editableGrid.validateNow();
+				reloadData((rows==null || rows.length<1));
 				//ADD ACTION
 				editableGrid.addEventListener(KeyboardEvent.KEY_DOWN, function(evt:KeyboardEvent):void {
 					if(evt.keyCode == Keyboard.ENTER){
@@ -84,6 +73,27 @@
 				
 				
 				
+			}
+			
+			public function reloadData(reselectData:Boolean=true,resetRows:Boolean = false){
+				if(resetRows){
+					rows = new ArrayCollection();
+				}
+				if(reselectData){
+					if(parentObject==null || StringUtils.isEmpty(parentObject['Id'])){
+						if(rows==null){
+							rows = new ArrayCollection();
+						}
+					}else{
+						
+						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
+						
+					}
+				}
+				//add empty row
+				rows.addItem(createEmptyObject());
+				editableGrid.dataProvider = rows;
+				editableGrid.validateNow();
 			}
 			
 			private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
@@ -462,9 +472,11 @@
 									itemSave['CustomObject11Id']=co11['Id'];
 									itemSave['CustomObject11Name']=co11['Name']
 									Database.customObject12Dao.insert(itemSave);
-									itemSave = Database.customObject12Dao.selectLastRecord()[0];
-									itemSave['Id']='#'+itemSave.gadget_id;
-									Database.customObject12Dao.update(itemSave);
+									var dbItem:Object = Database.customObject12Dao.selectLastRecord()[0];
+									itemSave['Id']='#'+dbItem.gadget_id;
+									dbItem.Id = itemSave.Id;
+									itemSave.gadget_id = dbItem.gadget_id;
+									Database.customObject12Dao.update(dbItem);
 								}else{
 									itemSave["deleted"] = false;
 									itemSave["error"] = false;

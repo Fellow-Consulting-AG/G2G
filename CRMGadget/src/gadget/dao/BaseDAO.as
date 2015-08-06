@@ -422,9 +422,9 @@ package gadget.dao
 //			for (var column_name:String in readOnlyFieldsLayout){
 //				dic[column_name] = column_name;
 //			}
-			
-			var readOnlyFields:Object = Database.fieldManagementServiceDao.getReadOnlyField(entity);
-			for (var name:String in readOnlyFields){
+			//bug#10909---not sent only readonly field which have defaultvalue
+			var readOnlyFields:Object = Database.fieldManagementServiceDao.readAllDefaultValueFields(entity,true);
+			for (var name:String in readOnlyFields){				
 				dic[name] = name;
 			}
 			//always ignore field =ModId

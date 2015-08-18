@@ -331,7 +331,7 @@
 	</mx:Script><!--CRO 05.01.2011-->
 	<mx:FormItem required="true" label="{i18n._('GLOBAL_NAME')}">
 		<mx:HBox width="100%">
-			<mx:TextInput id="nameInput" text="{filter.name}" />
+			<mx:TextInput id="nameInput" text="{filter.displayName}" />
 			<mx:Label text="{i18n._('GLOBAL_LANGUAGE')}"  width="140" textAlign="right"/>
 			<mx:ComboBox  width="160" id="cboLanguage" dataProvider="{FieldManagmentWindow.languageCodes}" change="changeLanguage()" enabled="{!isCreated}"/>	
 		</mx:HBox>

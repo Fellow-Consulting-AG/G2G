@@ -12,6 +12,7 @@
 			import gadget.i18n.i18n;
 			import gadget.lists.FilterList;
 			import gadget.lists.List;
+			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			import gadget.window.WindowManager;
 			
@@ -92,10 +93,10 @@
 					criteria5.conjunction = "";
 					criteria5.param= filterForm.sortbyasc.selected?"asc":"desc";					
 					Database.criteriaDao.update(criteria5);
-					
+					updateTranslation();
 					filterList.listFilters();
 					list.doFilter(filter);
-					updateTranslation();
+					
 					
 					return true;
 				} else {
@@ -119,7 +120,13 @@
 				translate["filter_name"] = filterName;
 				translate["displayName"] = filterForm.nameInput.text;
 				translate["languageCode"] = filterForm.cboLanguage.selectedItem.data;
-				Database.customFilterTranslatorDao.updateFilter(translate);	
+				Database.customFilterTranslatorDao.updateFilter(translate);
+				//update display_name
+				var userOwner:Object = Database.allUsersDao.ownerUser();
+				var translate:Object = userOwner == null ? null : Database.customFilterTranslatorDao.selectFT(filter.entity,filter.name,userOwner.LanguageCode);
+				if(translate != null && !StringUtils.isEmpty(translate.displayName)){
+					filter.displayName = translate.displayName;
+				}
 				
 			}
 			private function openListLayout(event:Event):void{

@@ -148,7 +148,7 @@ package gadget.dao {
 			var customFieldlist:ArrayCollection = new ArrayCollection();
 			for each(var obj:Object in list){
 				if (obj.column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE) > -1){
-					var customFieldInfo:Object = FieldUtils.getField(obj.entity, obj.column_name,true);
+					var customFieldInfo:Object = FieldUtils.createFieldInfo(obj,false,true,true);
 					if(customFieldInfo){
 						customFieldlist.addItem(customFieldInfo);
 					} 

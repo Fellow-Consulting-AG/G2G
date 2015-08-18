@@ -851,7 +851,7 @@ package gadget.util {
 		}
 		
 		// Entity is the CG internal transaction name
-		public static function getField(entity:String, column_name:String,changeElementName:Boolean=false,sqlCustomField:Boolean=false):Object {
+		public static function getField(entity:String, column_name:String,changeElementName:Boolean=false,sqlCustomField:Boolean=false,customField:Boolean=true):Object {
 			var orginalEnity:String = entity;
 			entity = DAOUtils.getRecordType(entity);
 			var isCustomField:Boolean = false;
@@ -871,7 +871,7 @@ package gadget.util {
 				field.data_type = '{' + CustomLayout.GOOGLEMAP_CODE + '}';
 				return field;	
 			}else {
-				var fields:ArrayCollection =  allFields(orginalEnity);				
+				var fields:ArrayCollection =  allFields(orginalEnity,false,customField);				
 				
 				field = findField(column_name,fields,sqlCustomField,column_name.indexOf(CustomLayout.CUSTOMFIELD_CODE)>-1,changeElementName);
 				
@@ -887,7 +887,7 @@ package gadget.util {
 			
 			
 			if(field==null){//try with 
-				fields = allFields(orginalEnity);				
+				fields = allFields(orginalEnity,false,customField);				
 				field = findField(column_name,fields,sqlCustomField,isCustomField,changeElementName);
 			}
 			// set required fields
@@ -901,6 +901,26 @@ package gadget.util {
 			return field;
 		}		
 		
+		public static function createFieldInfo(tmp:Object,sqlCustomField:Boolean,isCustomField:Boolean,changeElementName:Boolean):Object{
+			var field:Object = new Object();			
+			var elementName:String = isCustomField?tmp.column_name:tmp.element_name;
+			if(sqlCustomField) elementName = tmp.fieldName;
+			field.entity = tmp.entity;
+			field.element_name = changeElementName?tmp.fieldName:elementName;
+			field.real_element_name = elementName;
+			field.display_name = isCustomField?tmp.displayName:tmp.display_name;
+			field.data_type = isCustomField?tmp.fieldType:tmp.data_type;
+			if(field.data_type != null){
+				field.data_type = (field.data_type as String).replace("Related Picklist","Picklist");
+			}
+			
+			var isFormulaImage:Boolean = false;
+			if(tmp.hasOwnProperty("value")) isFormulaImage = (tmp.value != null && (tmp.value as String).indexOf("Image(")) > -1 ? true : false;
+			if(isFormulaImage) field.fieldImage = field.element_name;	
+			
+			return field;
+			
+		}
 		private static function findField(column_name:String,fields:ArrayCollection,sqlCustomField:Boolean,isCustomField:Boolean,changeElementName:Boolean):Object{
 			if(fields==null){
 				return null;
@@ -911,19 +931,20 @@ package gadget.util {
 				if(sqlCustomField) elementName = tmp.fieldName;
 				if (elementName == column_name){ // || (sqlCustomField && column_name == tmp.fieldName)) {
 					// we must create a new object and not modify the value in the cache
-					field = new Object();
-					field.entity = tmp.entity;
-					field.element_name = changeElementName?tmp.fieldName:elementName;
-					field.real_element_name = column_name;
-					field.display_name = isCustomField?tmp.displayName:tmp.display_name;
-					field.data_type = isCustomField?tmp.fieldType:tmp.data_type;
-					if(field.data_type != null){
-						field.data_type = (field.data_type as String).replace("Related Picklist","Picklist");
-					}
-					
-					var isFormulaImage:Boolean = false;
-					if(tmp.hasOwnProperty("value")) isFormulaImage = (tmp.value != null && (tmp.value as String).indexOf("Image(")) > -1 ? true : false;
-					if(isFormulaImage) field.fieldImage = field.element_name;							
+//					field = new Object();
+//					field.entity = tmp.entity;
+//					field.element_name = changeElementName?tmp.fieldName:elementName;
+//					field.real_element_name = column_name;
+//					field.display_name = isCustomField?tmp.displayName:tmp.display_name;
+//					field.data_type = isCustomField?tmp.fieldType:tmp.data_type;
+//					if(field.data_type != null){
+//						field.data_type = (field.data_type as String).replace("Related Picklist","Picklist");
+//					}
+//					
+//					var isFormulaImage:Boolean = false;
+//					if(tmp.hasOwnProperty("value")) isFormulaImage = (tmp.value != null && (tmp.value as String).indexOf("Image(")) > -1 ? true : false;
+//					if(isFormulaImage) field.fieldImage = field.element_name;	
+					field = createFieldInfo(tmp,sqlCustomField,isCustomField,changeElementName);
 					break;
 				} 
 			}
@@ -1307,7 +1328,7 @@ package gadget.util {
 							var criteria:Object = Database.criteriaDao.find(filter.id, "" + i);
 							var fieldInfo:Object = null;
 							if(criteria.column_name){
-								fieldInfo = FieldUtils.getField(filter.entity, criteria.column_name,false,true);
+								fieldInfo = FieldUtils.getField(filter.entity, criteria.column_name);
 							}
 							//CRO #1254 'SalesStage' 
 							var param:String ="";
@@ -1317,7 +1338,7 @@ package gadget.util {
 								if(fieldInfo.data_type=='Picklist'||fieldInfo.data_type=='Multi-Select Picklist'){
 									param = criteria.param;
 								}else{
-									param = criteria.column_name == 'SalesStage' ? criteria.param :Utils.doEvaluateForFilter(criteria,filter.entity).toLowerCase();//criteria.param.toLowerCase();
+									param = criteria.column_name == 'SalesStage' ? criteria.param :Utils.doEvaluateForFilter(criteria,filter.entity);//criteria.param.toLowerCase();
 								}
 							}
 							
@@ -1368,7 +1389,7 @@ package gadget.util {
 									}else {
 										// Formula LastYear, NextYear, LastMonth, NextMonth, LastWeek, NextWeek										
 										// query += "LOWER(" + criteria.column_name + ") " + criteria.operator + " '" + param + "'";
-										query += "LOWER(" + criteria.column_name + ") " + criteria.operator + " '" + DateUtils.format(DateUtils.guessAndParse(param), DateUtils.DATABASE_DATE_FORMAT) + "'";
+										query += "LOWER(" + criteria.column_name + ") " + criteria.operator + " LOWER('" + DateUtils.format(DateUtils.guessAndParse(param), DateUtils.DATABASE_DATE_FORMAT) + "')";
 									}
 								}else{
 									if(criteria.operator == "is null"){

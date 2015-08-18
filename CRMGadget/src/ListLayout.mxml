@@ -82,7 +82,7 @@
 					records = Database.subColumnLayoutDao.fetchColumnLayout(filter.parentEntity, filter.entity);
 				}else{
 			
-					records = Database.columnsLayoutDao.fetchColumnLayout(entity, filter_type);
+					records = Database.columnsLayoutDao.getColumnLayout(filter.entity,filter.type);
 				}
 				//try to get column with the filter
 				if(records.length==0){

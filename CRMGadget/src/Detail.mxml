@@ -284,6 +284,7 @@
 			private function initSampleItemTab():void{
 				if(sampleView!=null){
 					viewstack.addChild(sampleView);
+					sampleView.parentObject = this.item;
 					sampleView.reloadData(true,true);
 				}else{
 					if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
@@ -3030,6 +3031,7 @@
 			
 					private function changeTabListener(e:Event):void{
 						var selectedTab:INavigatorContent=viewstack.selectedChild;
+						currentSelected = viewstack.selectedIndex;
 						if(selectedTab!=null && selectedTab.label==i18n._( "SAMPLE_ITEMS@Sample Items")){
 							if(sampleView!=null){
 								updateItemFields();

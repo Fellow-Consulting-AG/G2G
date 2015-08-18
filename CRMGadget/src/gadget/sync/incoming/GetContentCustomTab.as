@@ -27,6 +27,20 @@ package gadget.sync.incoming
 		protected  function onLoginSuccess(sessionId:String):void{
 			getContentCustomTab(sessionId);
 		}
+		
+		protected function getURI():String {
+			
+			var reportUrl:String = Database.preferencesDao.getSegment_Targeting_URL();
+			if(reportUrl.indexOf('OnDemand/user/')!=-1){
+				reportUrl = reportUrl.split('OnDemand/user/')[1];//may they use old url
+			}
+			reportUrl = reportUrl.charAt(0)=='/'?reportUrl.substr(1):reportUrl;
+			var sodhost:String = Database.preferencesDao.getStrValue("sodhost");		
+			var strForwardSlash:String = sodhost.charAt(sodhost.length-1) == "/" ? "" : "/";
+			var str:String = sodhost + strForwardSlash+"OnDemand/user/" + reportUrl;
+			return str;
+		}
+		
 		private function getContentCustomTab(sessionId:String):void{
 			
 	
@@ -34,9 +48,8 @@ package gadget.sync.incoming
 			
 			var request:URLRequest = new URLRequest();
 			// url from preference
-//			var url:String = "https://secure-vmsomxkfa.crmondemand.com/OnDemand/user/analytics/saw.dll?Dashboard&PortalPath=%2fshared%2fCompany_AJTA-D6W9M_Shared_Folder%2f_portal%2fSegmentation%20%26%20Targeting";
-			var url:String = Database.preferencesDao.getSegment_Targeting_URL();
-			request.url = url; 
+//			var url:String = "https://secure-vmsomxkfa.crmondemand.com/OnDemand/user/analytics/saw.dll?Dashboard&PortalPath=%2fshared%2fCompany_AJTA-D6W9M_Shared_Folder%2f_portal%2fSegmentation%20%26%20Targeting";		
+			request.url = getURI(); 
 			request.method = URLRequestMethod.GET;
 			request.contentType = "text/xml; charset=utf-8";
 			request.idleTimeout =100000;

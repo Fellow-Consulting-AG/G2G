@@ -75,7 +75,7 @@
 				
 			}
 			
-			public function reloadData(reselectData:Boolean=true,resetRows:Boolean = false){
+			public function reloadData(reselectData:Boolean=true,resetRows:Boolean = false):void{
 				if(resetRows){
 					rows = new ArrayCollection();
 				}

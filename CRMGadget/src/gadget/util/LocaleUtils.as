@@ -1,5 +1,7 @@
 package gadget.util
 {
+	import com.adobe.utils.StringUtil;
+	
 	import gadget.service.LocaleService;
 
 	public class LocaleUtils
@@ -47,7 +49,7 @@ package gadget.util
 			'0P-BAA66':'es_ES',
 			'0-BAA61':'es_ES',
 			'0-116':'es_ES',
-			'0-107':'sv_SE ',
+			'0-107':'sv_SE',
 			'0-209':'en_US',
 			'0-213':'de_DE'
 			
@@ -56,11 +58,11 @@ package gadget.util
 		public function LocaleUtils()
 		{
 		}
-		public static function getLocaleCodeByLanguage(lngCode):String{
-			if(lngCode == null || lngCode == ""){
+		public static function getLocaleCodeByLanguage(langCode:String):String{
+			if(langCode == null || langCode == ""){
 				return 'en_US';
 			}else{
-				return LOCALES[lngCode]==null?'en_US':LOCALES[lngCode];
+				return LOCALES[langCode]==null?'en_US':StringUtil.trim(LOCALES[langCode]);
 			}
 			
 		}
@@ -72,7 +74,7 @@ package gadget.util
 			if(localeCode == null || localeCode == ""){
 				return 'en_US';
 			}else{
-				return LOCALES[localeCode]==null?'en_US':LOCALES[localeCode];
+				return LOCALES[localeCode]==null?'en_US':StringUtil.trim(LOCALES[localeCode]);
 			}
 			
 		}

@@ -8,6 +8,7 @@
 			import flashx.textLayout.operations.InsertTextOperation;
 			
 			import gadget.i18n.i18n;
+			import gadget.util.StringUtils;
 			import gadget.window.WindowManager;
 			
 			import mx.controls.AdvancedDataGrid;
@@ -34,7 +35,7 @@
 				if(data!=null){		
 					
 					
-					if(data.isHeader || data.isHeader=='1'){
+					if(StringUtils.isTrue(data.isHeader)){
 						if(txtVal==null){
 							txtVal = new Label();
 							txtVal.percentHeight=100;

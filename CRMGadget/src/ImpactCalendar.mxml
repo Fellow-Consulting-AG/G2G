@@ -183,13 +183,13 @@
 				{isop_field:true,element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
 				{isop_field:true,element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,alignRight:true,element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ProbabilityColNumRenderer),properties:{restrict:'0-9',decimal:0,refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
-				{isop_field:true,element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{isop_field:true,element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
+				//{isop_field:true,element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},				
 				{isop_field:true,element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{isop_field:true,element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
 				{isop_field:true,element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
 				{isop_field:true,element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
 				{mandatory:true,isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
@@ -260,8 +260,14 @@
 					{element_name:"CustomCurrency4",alignRight:true,entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 					{element_name:"CustomText37",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 					{element_name:"CustomCurrency2",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-					{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
+					{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,labelFunction:displayDataTime,itemRenderer:null,properties:null},
 					{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateStatus,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
+					{isop_field:true,datafield:"OwnerFullName2",element_name:"OwnerFullName",labelFunction:function(item:Object,col:AdvancedDataGridColumn):String{
+						if(item!=null){
+							return item['OwnerFullName'];
+						}
+						return "";
+					},entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 			]);
 					
 					private function updateStatus(data:Object,oldSelected:String=null):void{
@@ -525,63 +531,7 @@
 						return obj;
 					}
 					
-					private function addEmptyRow(setSelected:Boolean = false,fromclick:Boolean = false,colIdx:int=0):void{
-						if(rows!=null){
-							var lastRow:Object = rows.getItemAt(rows.length-1);
-							if(lastRow.isNew){//
-								return;
-							}
-						}
-						
-						if(gridListAll.editedItemPosition){
-							
-							var oldColIndex:int = gridListAll.editedItemPosition.columnIndex;
-							var editColumn:AdvancedDataGridColumn = gridListAll.columns[oldColIndex];
-							var oldRowIndex:int = gridListAll.editedItemPosition.rowIndex;
-							if((rows.length-1== oldRowIndex+1 || rows.length==oldRowIndex+1) ){//add empty row
-								
-								//						var lastRow:Object = rows.getItemAt(rows.length-1);
-								//						if(lastRow.isNew){
-								//							return;
-								//						}
-								
-								var newObj:Object = createEmptyObject();
-								if(rows==null){
-									rows = new ArrayCollection();
-								}
-								
-								rows.addItem(newObj); //add a blank record		
-								
-								gridListAll.dataProvider = rows;
-								//						editableGrid.validateNow();
-								if(setSelected){
-									
-									gridListAll.editedItemPosition = {columnIndex:0, rowIndex:(oldRowIndex+1)};
-								}else{
-									gridListAll.editedItemPosition = {columnIndex:oldColIndex, rowIndex:oldRowIndex};
-								}
-								
-							}
-						}else if(fromclick){
-							var selectedRow:int = gridListAll.selectedIndex;
-							if(rows.length-1==selectedRow){
-								
-								if(rows==null){
-									rows = new ArrayCollection();
-								}
-								
-								
-								if(colIdx>=0 && colIdx<gridListAll.columnCount){
-									var col:AdvancedDataGridColumn = gridListAll.columns[colIdx];
-									if(col.editable){
-										rows.addItem(createEmptyObject()); //add a blank record						
-										gridListAll.dataProvider = rows;	
-										gridListAll.editedItemPosition = {columnIndex:colIdx, rowIndex:selectedRow};
-									}
-								}
-							}
-						}
-					}
+				
 					private function displayPicklistValue(item:Object,col:AdvancedDataGridColumn):String{
 						return List.displayPicklistValue(item,col,Database.opportunityDao.entity);
 					}
@@ -694,17 +644,17 @@
 					
 					private static const MAP_HIDE_COLUMN:Object={
 						
-						"0":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8",
-							"CustomDate9":"CustomDate9","CustomPickList7":"CustomPickList7",
+						"0":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","Status":"Status",
+							"CustomDate9":"CustomDate9",
 							"Membership":"Membership","TradingPartner":"TradingPartner",
 							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency4":"CustomCurrency4",
-							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3"},
-						"-1":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8"},
-						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","CustomDate9":"CustomDate9","CustomPickList7":"CustomPickList7",
+							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
+						"-1":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","OwnerFullName2":"OwnerFullName2"},
+						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","CustomDate9":"CustomDate9","Status":"Status",
 							"Membership":"Membership","TradingPartner":"TradingPartner",
 							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency1":"CustomCurrency1",
-							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3"},
-						"-3":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency3":"CustomCurrency3","CustomCurrency1":"CustomCurrency1"}		
+							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
+						"-3":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency3":"CustomCurrency3","CustomCurrency1":"CustomCurrency1","OwnerFullName2":"OwnerFullName2"}		
 						
 					};
 					
@@ -724,8 +674,7 @@
 						}
 					}
 					public function showHideColumns():void{
-						var columns:Array = gridListAll.columns;
-						
+						var columns:Array = gridListAll.columns;						
 						if(filter != null){
 							type = filter.type;
 						}
@@ -744,9 +693,7 @@
 								}else{
 									col.visible=true;
 								}								
-							}
-							
-							
+							}			
 							
 						}
 						if(type==CURRENT_FY_ALL_COLUMNS || type==CURRENT_FY_COMPACT){
@@ -763,7 +710,7 @@
 						var columns:Array = new Array();
 						var col:AdvancedDataGridColumn = null;
 						
-						var type:int = -1;
+						var type:int = CURRENT_FY_COMPACT;
 						if(filter != null){
 							type = filter.type;
 						}
@@ -774,7 +721,7 @@
 						col.width = 30;
 						col.sortable=false;
 						columns.push(col);
-						var hidCols:Object = MAP_HIDE_COLUMN[type.toFixed(0)];
+						var hidCols:Object = MAP_HIDE_COLUMN[type.toString()];
 //						var co7groupColumns:AdvancedDataGridColumnGroup = new ImpactCalendarColumnGroup(Database.customLayoutDao.getDisplayName(Database.customObject7Dao.entity));
 //						var hdRenderer:ClassFactory =  new ClassFactory(AdvancedDataGridColorHeaderRenderer);
 //						hdRenderer.properties ={bgColor: 0xB8CF95};
@@ -840,7 +787,7 @@
 								col.headerRenderer=headerRenderer;
 								
 							}
-							var hidename:String = col_name;
+							var hidename:String = datafield;
 							if(hidename.indexOf('.')!=-1){
 								hidename=hidename.split('.')[0];
 							}
@@ -1310,8 +1257,8 @@
 						if(cboBusinessArea.selectedItem != "" && cboBusinessArea.selectedItem.data != ""){
 							map["CustomPickList0"]=cboBusinessArea.selectedItem.data;
 						}
-						if(txtTerritory.text != ""){
-							map["OwnerFullName"]= txtTerritory.text;
+						if(!StringUtils.isEmpty(opOwnerFullName.text)){
+							map["OwnerFullName"]= opOwnerFullName.text;
 						}
 						if(cboCategory.selectedItem != null && cboCategory.selectedItem.data != ""){
 							map["co7_CustomPickList31"]= cboCategory.selectedItem.data;
@@ -1319,9 +1266,13 @@
 						if(cboSalesStage.selectedItem != null && cboSalesStage.selectedItem.data != "" && item["SalesStage"] != null){
 							map["SalesStage"]=cboSalesStage.selectedItem.data;
 						}
-						if(dtCloseDate.selectedDate != null){
-							map["CloseDate"]= DateUtils.format(dtCloseDate.selectedDate, DateUtils.DATABASE_DATE_FORMAT);
+						if(dtStartDate.selectedDate != null){
+							map["CustomDate26"]= DateUtils.format(dtStartDate.selectedDate, DateUtils.DATABASE_DATE_FORMAT);
 						}
+						if(!StringUtils.isEmpty(txtTerritory.text)){
+							map['User_CustomText30']= txtTerritory.text;
+						}
+						
 						
 						var found:Boolean = true;
 						for(var key:String in map){
@@ -1588,8 +1539,8 @@
 					}
 					protected function clearDate(event:MouseEvent):void
 					{
-						dtCloseDate.selectedDate = null;
-						dtCloseDate.text = "";
+						dtStartDate.selectedDate = null;
+						dtStartDate.text = "";
 						advanceSearch();
 					}
 					
@@ -1718,8 +1669,8 @@
 						cboCategory.selectedIndex=-1;
 						cboSalesStage.selectedIndex=-1;
 						cboBusinessArea.selectedIndex-1;
-						dtCloseDate.selectedDate=null;
-						dtCloseDate.text = "";
+						dtStartDate.selectedDate=null;
+						dtStartDate.text = "";
 					}
 					
 					protected function cancelAction(event:MouseEvent):void
@@ -1776,9 +1727,9 @@
 				<mx:ComboBox dataProvider="{Utils.getDefaultSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="130"/>
 			</mx:VBox>
 			<mx:VBox>
-				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'CloseDate')}"/>
+				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'CustomDate26')}"/>
 				<mx:HBox>
-					<mx:DateField id="dtCloseDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
+					<mx:DateField id="dtStartDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
 					<mx:LinkButton icon="{ImageUtils.deleteIcon}" height="100%" click="clearDate(event)"/>
 				</mx:HBox>
 				
@@ -1786,6 +1737,10 @@
 			<mx:VBox>
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,'CustomPickList31')}"/>
 				<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="130"/>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'OwnerFullName')}"/>
+				<mx:TextInput id="opOwnerFullName" change="advanceSearch()" width="130"/>
 			</mx:VBox>
 			<mx:VBox>
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.allUsersDao.entity,'CustomPickList1')}"/>

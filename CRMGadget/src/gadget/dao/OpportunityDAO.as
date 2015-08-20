@@ -715,7 +715,7 @@ package gadget.dao
 					cols += ", co." + co7f +" co7_"+co7f;
 				}
 				
-				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id FROM " + tableName + "  o LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id desc";
+				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id, u.CustomText30 as User_CustomText30 FROM " + tableName + "  o inner join allusers u on o.OwnerId= u.Id LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id desc";
 				exec(stmtFindAllWithCO7);
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;

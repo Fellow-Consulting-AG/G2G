@@ -2887,6 +2887,18 @@ package gadget.util
 				dateControl.text = "";
 				item[element_name] = "";
 			}
+			//bug#11007
+			if(entity==Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST && element_name=='CustomDate26'){
+				dateControl.addEventListener(CalendarLayoutChangeEvent.CHANGE,function(e:Event):void{
+						var fieldInfo:Object = FieldUtils.getField(entity,element_name);
+						var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("CustomDate25") as BetterFormItem;
+						var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATE_FORMAT);
+						item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item))), DateUtils.DATABASE_DATE_FORMAT);;
+						setInputFieldValue(endDisplay.getChildByName("CustomDate25"),fieldInfo,item.CustomDate25,null,null);
+					
+					
+				});
+			}
 			
 			(childObj as HBox).addChild(dateControl);
 			if(!small) (childObj as HBox).addChild(clearDateBtn);

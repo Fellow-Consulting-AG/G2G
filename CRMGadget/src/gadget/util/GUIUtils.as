@@ -916,7 +916,7 @@ package gadget.util
 								//bug#11008
 								var existCons:ArrayCollection = grid.dataProvider as ArrayCollection;
 								if(detail.item.OpportunityType=='Trial' && existCons.length>0){
-									Alert.show(i18n._("OP_TRIAL_CONTACT_EXCEED_MSG@You can choose only 1 contact?"),i18n._("GLOBAL_INFO@Info"),Alert.OK,Window(WindowManager.getTopWindow()));
+									Alert.show(i18n._("OP_TRIAL_CONTACT_EXCEED_MSG@You can choose only 1 contact"),i18n._("GLOBAL_INFO@Info"),Alert.OK,Window(WindowManager.getTopWindow()));
 								}else{
 									addContactRoleHandler(detail, grid, addBtn.label);
 								}

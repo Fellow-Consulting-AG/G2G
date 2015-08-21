@@ -1328,7 +1328,7 @@ package gadget.util {
 							var criteria:Object = Database.criteriaDao.find(filter.id, "" + i);
 							var fieldInfo:Object = null;
 							if(criteria.column_name){
-								fieldInfo = FieldUtils.getField(filter.entity, criteria.column_name);
+								fieldInfo = FieldUtils.getField(filter.entity, criteria.column_name,false,true);
 							}
 							//CRO #1254 'SalesStage' 
 							var param:String ="";

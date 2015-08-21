@@ -913,7 +913,14 @@ package gadget.util
 						});
 					}else if(related==Database.contactDao.entity && item.gadget_type == Database.opportunityDao.entity){
 							addBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{
-								addContactRoleHandler(detail, grid, addBtn.label);
+								//bug#11008
+								var existCons:ArrayCollection = grid.dataProvider as ArrayCollection;
+								if(detail.item.OpportunityType=='Trial' && existCons.length>0){
+									Alert.show(i18n._("OP_TRIAL_CONTACT_EXCEED_MSG@You can choose only 1 contact?"),i18n._("GLOBAL_INFO@Info"),Alert.OK,Window(WindowManager.getTopWindow()));
+								}else{
+									addContactRoleHandler(detail, grid, addBtn.label);
+								}
+								
 								//							contextMenuFunction=addTeamHandler;
 							});
 					}else{
@@ -1186,7 +1193,7 @@ package gadget.util
 				}
 				
 				entityFinder.entity = object.related;
-				
+				entityFinder.parentItem = detail.item;
 				entityFinder.action = function(other:Object):void {
 					// as there is no unique key constraint on the table, we check programmatically
 					// the unicity
@@ -2889,12 +2896,12 @@ package gadget.util
 			}
 			//bug#11007
 			if(entity==Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST && element_name=='CustomDate26'){
-				dateControl.addEventListener(CalendarLayoutChangeEvent.CHANGE,function(e:Event):void{
+				dateControl.addEventListener(CalendarLayoutChangeEvent.CHANGE,function(e:CalendarLayoutChangeEvent):void{
 						var fieldInfo:Object = FieldUtils.getField(entity,element_name);
 						var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("CustomDate25") as BetterFormItem;
-						var endD:Date = DateUtils.parse(getInputFieldValue(childObj,fieldInfo), DateUtils.DATABASE_DATE_FORMAT);
-						item.EndTime =DateUtils.format( new Date(endD.getTime() + ( getTimeDuration(item))), DateUtils.DATABASE_DATE_FORMAT);;
-						setInputFieldValue(endDisplay.getChildByName("CustomDate25"),fieldInfo,item.CustomDate25,null,null);
+						var endD:Date = Utils.calculateDate(12,e.newDate,"month");
+						var strEndD = DateUtils.toSodDate(endD);
+						setInputFieldValue(endDisplay.getChildByName("CustomDate25"),fieldInfo,strEndD,null,null);
 					
 					
 				});

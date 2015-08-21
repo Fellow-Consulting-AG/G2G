@@ -670,6 +670,12 @@
 						}
 						
 					}
+					
+					//bug#11012
+					if(UserService.getCustomerId()== UserService.COLOPLAST&&StringUtils.isEmpty(item["CloseDate"])){
+						//CustomDate26 is the start date field
+						item["CloseDate"]= item["CustomDate26"];
+					}
 				}
 				
 				

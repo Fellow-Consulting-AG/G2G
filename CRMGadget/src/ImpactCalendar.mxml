@@ -37,6 +37,7 @@
 			import gadget.service.PicklistService;
 			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
+			import gadget.util.GUIUtils;
 			import gadget.util.ImageUtils;
 			import gadget.util.LocaleUtils;
 			import gadget.util.NumberLocaleUtils;
@@ -183,14 +184,14 @@
 				{isop_field:true,element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
 				{isop_field:true,element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,alignRight:true,element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ProbabilityColNumRenderer),properties:{restrict:'0-9',decimal:0,refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
-				//{isop_field:true,element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},				
+				//{isop_field:true,element_name:"CloseDate",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:updateFieldValue},labelFunction:displayDate,editAble:true,editorDataField:"selectedDate"},				
 				{isop_field:true,element_name:"CustomPickList0",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateBSArea,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,mandatory:true,element_name:"CustomPickList7",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:calculateMonthByAnnualizedImpact,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,element_name:"Membership",display_name:"MEMBERSHIP@Membership",itemEditor:null,properties:null},
 				{isop_field:true,element_name:"TradingPartner",display_name:"TRADING_PARTNER@Trading partner",itemEditor:null,properties:null},
-				{isop_field:true,element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
-				{isop_field:true,element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDataTime,editAble:false},
-				{isop_field:true,element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDataTime,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"CustomDate26",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDate,editAble:true,editorDataField:"selectedDate"},
+				{isop_field:true,element_name:"CustomDate9",entity:Database.opportunityDao.entity,labelFunction : displayDateTime,editAble:false},
+				{isop_field:true,element_name:"CustomDate25",mandatory:true,entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(DateColumnRenderer),properties:{updateFunction:changeStartOrEndDate},labelFunction:displayDate,editAble:true,editorDataField:"selectedDate"},
 				{mandatory:true,isco7_field:true,element_name:"CustomPickList31",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:function(item:Object,oldSelected:String):void{
 					if(item.isNoCo7){
 						item.editable=true;
@@ -260,7 +261,7 @@
 					{element_name:"CustomCurrency4",alignRight:true,entity:Database.opportunityDao.entity,labelFunction : getNextFyImpact,itemRenderer:null,properties:{}},		
 					{element_name:"CustomText37",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
 					{element_name:"CustomCurrency2",alignRight:true,entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-					{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,labelFunction:displayDataTime,itemRenderer:null,properties:null},
+					{element_name:"ModifiedDate",entity:Database.opportunityDao.entity,labelFunction:displayDate,itemRenderer:null,properties:null},
 					{element_name:"Status",entity:Database.opportunityDao.entity,itemRenderer:null,itemEditor:new ClassFactory(ComboboxColRender),properties:{refreshRow:false,updateFunction:updateStatus,'entity':Database.opportunityDao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 					{isop_field:true,datafield:"OwnerFullName2",element_name:"OwnerFullName",labelFunction:function(item:Object,col:AdvancedDataGridColumn):String{
 						if(item!=null){
@@ -502,7 +503,7 @@
 							return labelIntDisplay(item,col) + "%";	
 						}
 					}
-					private  function displayDataTime(item:Object,col:AdvancedDataGridColumn):String{
+					private  function displayDate(item:Object,col:AdvancedDataGridColumn):String{
 						
 						
 						var fieldValue:String = item[col.dataField];	
@@ -525,6 +526,23 @@
 						}
 						return "";
 					}
+					//display only date
+					private function displayDateTime(item:Object, col:AdvancedDataGridColumn):String{
+						var fieldValue:String = item[col.dataField];	
+						if(!StringUtils.isEmpty(fieldValue)){
+							var date:Date = DateUtils.guessAndParse(fieldValue);
+							if(date!=null){
+								var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();								
+								date = new Date(date.getTime()+DateUtils.getCurrentTimeZone(date)*GUIUtils.millisecondsPerHour);
+								var format:String = currentUserDatePattern.dateFormat  ;
+								return DateUtils.format(date, format);								
+							}
+						}
+						return "";
+						
+					}
+					
+					
 					private function createEmptyObject():Object{
 						var obj:Object = new Object();
 						obj.isNew=true;
@@ -1714,37 +1732,37 @@
 		<control:MyAdvancedDataGrid sortExpertMode="true" doubleClickEnabled="true" doubleClick="{openProductRevenue()}" height="44" editable="true" width="100%" id="gridTotal"/>
 		<mx:Label text="{i18n._('LIST_OF_ALL_OPPORTUNITY@List of all Opportunities')}" />
 		<mx:HBox width="100%">
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'AccountName')}"/>
-				<mx:TextInput id="txtAccountName" change="advanceSearch()" width="130"/>
+				<mx:TextInput id="txtAccountName" change="advanceSearch()" width="100%"/>
 			</mx:VBox>
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'CustomPickList0')}"/>
-				<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'CustomPickList0')}" change="advanceSearch()" width="130"/>
+				<mx:ComboBox id="cboBusinessArea" dataProvider="{PicklistService.getPicklist(Database.opportunityDao.entity,'CustomPickList0')}" change="advanceSearch()" width="100%"/>
 			</mx:VBox> 
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'SalesStage')}"/>
-				<mx:ComboBox dataProvider="{Utils.getDefaultSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="130"/>
+				<mx:ComboBox dataProvider="{Utils.getDefaultSalesStage()}" id="cboSalesStage" change="advanceSearch()" width="100%"/>
 			</mx:VBox>
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'CustomDate26')}"/>
-				<mx:HBox>
-					<mx:DateField id="dtStartDate" change="advanceSearch()" width="100" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
-					<mx:LinkButton icon="{ImageUtils.deleteIcon}" height="100%" click="clearDate(event)"/>
+				<mx:HBox width="100%">
+					<mx:DateField id="dtStartDate" change="advanceSearch()" width="100%" formatString="{DateUtils.getCurrentUserDatePattern().dateFormat}"/>
+					<mx:LinkButton icon="{ImageUtils.deleteIcon}" height="100%" width="20" click="clearDate(event)"/>
 				</mx:HBox>
 				
 			</mx:VBox>
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,'CustomPickList31')}"/>
-				<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="130"/>
+				<mx:ComboBox id="cboCategory" dataProvider="{PicklistService.getPicklist(Database.customObject7Dao.entity,'CustomPickList31')}" change="advanceSearch()" width="100%"/>
 			</mx:VBox>
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.opportunityDao.entity,'OwnerFullName')}"/>
-				<mx:TextInput id="opOwnerFullName" change="advanceSearch()" width="130"/>
+				<mx:TextInput id="opOwnerFullName" change="advanceSearch()" width="100%"/>
 			</mx:VBox>
-			<mx:VBox>
+			<mx:VBox width="14.3%">
 				<mx:Label text="{FieldUtils.getFieldDisplayName(Database.allUsersDao.entity,'CustomPickList1')}"/>
-				<mx:TextInput id="txtTerritory" change="advanceSearch()" width="130"/>
+				<mx:TextInput id="txtTerritory" change="advanceSearch()" width="100%"/>
 			</mx:VBox>
 		</mx:HBox>
 		

@@ -2900,7 +2900,7 @@ package gadget.util
 						var fieldInfo:Object = FieldUtils.getField(entity,element_name);
 						var endDisplay:BetterFormItem = childObj.parent.parent.getChildByName("CustomDate25") as BetterFormItem;
 						var endD:Date = Utils.calculateDate(12,e.newDate,"month");
-						var strEndD = DateUtils.toSodDate(endD);
+						var strEndD:String = DateUtils.toSodDate(endD);
 						setInputFieldValue(endDisplay.getChildByName("CustomDate25"),fieldInfo,strEndD,null,null);
 					
 					

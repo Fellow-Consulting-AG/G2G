@@ -36,8 +36,8 @@
 					doSearch();
 				
 				this.systemManager.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDown);
-				optionItem.visible=(parentItem!=null && (parentItem.gadget_type==Database.activityDao.entity))
-				optionItem.includeInLayout=optionItem.visible;
+				optionItem.visible=(Database.contactDao.entity == entity && (parentItem!=null && (parentItem.gadget_type==Database.activityDao.entity)))
+				optionItem.includeInLayout=optionItem.visible;				
 			}
 			private function keyDown(evt:KeyboardEvent):void {
 				if (evt.charCode == Keyboard.ESCAPE) {

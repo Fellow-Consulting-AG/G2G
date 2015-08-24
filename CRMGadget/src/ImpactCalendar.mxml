@@ -662,16 +662,17 @@
 					private static const NEXT_FY_ALL_COLUMNS:int=-3;
 					
 					private static const MAP_HIDE_COLUMN:Object={
-						
+						//{isco7_field:true,datafield:'CustomCurrency6',labelFunction : labelIntDisplay,alignRight:true,element_name:"CustomCurrency3",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ImpactColNumRenderer),properties:{restrict:'0-9\\-',decimal:0,maxChars:20},editAble:true},
+						//{isco7_field:true,element_name:"CustomCurrency7",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction : getChangeVsLastFY,itemRenderer:null,properties:null},
 						"0":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","Status":"Status",
 							"CustomDate9":"CustomDate9",
-							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","CustomCurrency7":"CustomCurrency7",
-							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomText37":"CustomText37",
+							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","co7_CustomCurrency7":"co7_CustomCurrency7",
+							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","co7_CustomCurrency6":"co7_CustomCurrency6",
 							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
 						"-1":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","OwnerFullName2":"OwnerFullName2"},
-						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","Status":"Status",
+						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","Status":"Status","co7_CustomCurrency6":"co7_CustomCurrency6",
 							"CustomDate9":"CustomDate9",
-							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","CustomCurrency7":"CustomCurrency7",
+							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","co7_CustomCurrency7":"co7_CustomCurrency7",
 							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomText37":"CustomText37",
 							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
 						"-3":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency3":"CustomCurrency3","CustomCurrency1":"CustomCurrency1","OwnerFullName2":"OwnerFullName2"}		

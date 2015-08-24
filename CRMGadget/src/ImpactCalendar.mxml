@@ -30,6 +30,7 @@
 			import gadget.control.ProbabilityColNumRenderer;
 			import gadget.control.QTextRenderer;
 			import gadget.dao.Database;
+			import gadget.dao.ImpactManualTotalInput;
 			import gadget.dao.OpportunityDAO;
 			import gadget.i18n.i18n;
 			import gadget.lists.FilterList;
@@ -898,14 +899,24 @@
 						}
 						rows = Database.opportunityDao.findImpactCalendar(OP_FIELD,CO7_FIELD);
 						
-						rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),isTotal:true,type:FORECAST_TYPE,'lineTotalId':'totalid'});
-						rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),isTotal:true,type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
+						rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),groupType:'FORECAST',isTotal:true,type:FORECAST_TYPE,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),groupType:'FORECAST',isTotal:true,type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
 							"Q1":true,				
 							"Q2":true,"Q3":true,"Q4":true,"Q5":true,
 							"Q6":true,
 							"Q7":true,
 							"Q8":true}});
-						rows.addItem({CustomCurrency0:i18n._("VARIANCE@Variance"),type:VARIANCE_TYPE,isTotal:true,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("VARIANCE@Variance"),type:VARIANCE_TYPE,groupType:'FORECAST',isTotal:true,'lineTotalId':'totalid'});
+						
+						rows.addItem({CustomCurrency0:i18n._("NPE_TOTAL@NPE total"),isTotal:true,groupType:'NPE',type:FORECAST_TYPE,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("ACTUAL_NPE@Actual NPE"),isTotal:true,groupType:'NPE',type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
+							"Q1":true,				
+							"Q2":true,"Q3":true,"Q4":true,"Q5":true,
+							"Q6":true,
+							"Q7":true,
+							"Q8":true}});
+						rows.addItem({CustomCurrency0:i18n._("VARIANCE_NPE@Variance NPE"),groupType:'NPE',type:VARIANCE_TYPE,isTotal:true,'lineTotalId':'totalid'});
+						
 						//refresh total
 						calculateTotalAllOpportunity();
 						//calculateList(rows);
@@ -1026,7 +1037,51 @@
 						//				gridTotal.rowCount = data.length;
 						
 					}
+					
+					
+					protected function getUnitType(rec:Object):String{
+						//right now we have only two types(NPE and FORCAST)
+						if(rec.CustomPickList34==ImpactManualTotalInput.NPE){
+							return ImpactManualTotalInput.NPE;
+						}
+						
+						return ImpactManualTotalInput.FORCAST;
+					}
+					
+					private function clearForcastAndVarian(){
+						for each(var fq:String in OpportunityDAO.ALL_FY_QUATER){
+							getForceastTotal()[fq]=null;
+							getForcastNPETotal()[fq]=null;
+							getVariance()[fq]=null;
+							getVarianceNPE()[fq]=null;
+						}
+					}
+					private function getAllNpeTotal():Object{
+						return 
+					}
+					private function loadActualTotal():void{						
+						var acTotal:Object = getAcForcastTotal();
+						var acNPETotal:Object = getAcNPETotal();
+						if(acTotal!=null && !acTotal.loaded){
+							var actualTotals:Dictionary = Database.icManualTotal.getRecordAsType2Record();
+							for(var f:String in actualTotals[ImpactManualTotalInput.FORCAST]){
+								actualTotal[f] = saveTotal[f];
+							}
+							actualTotal.loaded=true;
+							if(!StringUtils.isEmpty(saveTotal.FYTarget)){
+								currentFyTarget = parseFloat(saveTotal.FYTarget);
+								actualTotal.FYTarget = currentFyTarget;
+							}
+						}else{
+							if(actualTotal.loaded){
+								currentFyTarget = actualTotal.FYTarget
+							}
+						}
+					}
+					
 					private function calculateTotalAllOpportunity():void{
+						
+						
 						
 						var totalAll:Number=0;
 						var totalClosed:Number=0;
@@ -1044,24 +1099,10 @@
 						var forCaseTotal:Object = rows.getItemAt(rows.length-3);
 						var varianceTotal:Object = rows.getItemAt(rows.length-1);
 						//clear value
-						for each(var fq:String in OpportunityDAO.ALL_FY_QUATER){
-							forCaseTotal[fq]=null;
-							varianceTotal[fq]=null;
-						}
-						if(saveTotal!=null && !actualTotal.loaded){
-							for(var f:String in saveTotal){
-								actualTotal[f] = saveTotal[f];
-							}
-							actualTotal.loaded=true;
-							if(!StringUtils.isEmpty(saveTotal.FYTarget)){
-								currentFyTarget = parseFloat(saveTotal.FYTarget);
-								actualTotal.FYTarget = currentFyTarget;
-							}
-						}else{
-							if(actualTotal.loaded){
-								currentFyTarget = actualTotal.FYTarget
-							}
-						}
+						clearForcastAndVarian();
+						
+						
+						
 						
 						for each(var r:Object in gridListAll.dataProvider){
 							
@@ -1123,10 +1164,10 @@
 									}
 								}
 							}else{						
-								if(!mapGroup.hasOwnProperty("totalop")){							
-									mapGroup["totalop"]= currentGroup++;
+								if(!mapGroup.hasOwnProperty(r.groupType)){							
+									mapGroup[r.groupType]= currentGroup++;
 								}						
-								r.group = mapGroup["totalop"];
+								r.group = mapGroup[r.groupType];
 							}
 							
 						}			
@@ -1543,13 +1584,44 @@
 						
 					}
 					
+					private function getAcNPETotal():Object{
+						return rows.getItemAt(rows.length-2);
+					}
+					
+					private function getAcForcastTotal():Object{
+						return rows.getItemAt(rows.length-5);
+					}
+					
+					private function getForceastTotal():Object{
+						return rows.getItemAt(rows.length-6);
+						
+					}
+					
+					private function getForcastNPETotal():Object{
+						return rows.getItemAt(rows.length-3);
+					}
+					
+					private function getVarianceNPE():Object{
+						return rows.getItemAt(rows.length-1);
+					}
+					
+					private function getVariance():Object{
+						return rows.getItemAt(rows.length-4);
+					}
+					
 					private function saveACTotal():void{
-						var acTotal:Object = rows.getItemAt(rows.length-2);
+						var acTotalNPE:Object = getAcNPETotal();
+						var acForcast:Object = getAcForcastTotal();
 						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 						if(lstTotal != null && lstTotal.length>0){
-							acTotal.FYTarget= lstTotal.getItemAt(0).FYTarget;
+							acTotalNPE.Type = ImpactManualTotalInput.NPE;
+							acTotalNPE.FYTarget= lstTotal.getItemAt(1).FYTarget;
+							
+							acForcast.Type = ImpactManualTotalInput.FORCAST;
+							acForcast.FYTarget= lstTotal.getItemAt(0).FYTarget;
 						}
-						Database.icManualTotal.replaceRec(acTotal);
+						Database.icManualTotal.replaceRec(acTotalNPE);
+						Database.icManualTotal.replaceRec(acForcast);
 					}
 					
 					private function openProductRevenue():void{

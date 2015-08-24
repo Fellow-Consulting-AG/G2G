@@ -155,7 +155,7 @@ package gadget.control
 		}
 		
 		override public function getStyle(styleProp:String):*{
-			if("defaultDataGridItemRenderer"==styleProp){
+			if("defaultDataGridItemRenderer"==styleProp && impactCalendarGrid){
 				return MyAdvancedDataGridItemRenderer;
 			}
 			return super.getStyle(styleProp);
@@ -189,6 +189,11 @@ package gadget.control
 		
 		override protected function drawRowBackgrounds():void
 		{
+			
+			if(!impactCalendarGrid){
+				super.drawRowBackgrounds();
+				return;
+			}
 			var rowBGs:Sprite = Sprite(listContent.getChildByName("rowBGs"));
 			if (!rowBGs)
 			{

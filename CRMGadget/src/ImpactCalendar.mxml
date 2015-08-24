@@ -665,13 +665,14 @@
 						
 						"0":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","Status":"Status",
 							"CustomDate9":"CustomDate9",
-							"Membership":"Membership","TradingPartner":"TradingPartner",
-							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency4":"CustomCurrency4",
+							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","CustomCurrency7":"CustomCurrency7",
+							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomText37":"CustomText37",
 							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
 						"-1":{"Q5":"Q5","Q6":"Q6","Q7":"Q7","Q8":"Q8","OwnerFullName2":"OwnerFullName2"},
-						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","CustomDate9":"CustomDate9","Status":"Status",
-							"Membership":"Membership","TradingPartner":"TradingPartner",
-							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency1":"CustomCurrency1",
+						"-2":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","Status":"Status",
+							"CustomDate9":"CustomDate9",
+							"Membership":"Membership","TradingPartner":"TradingPartner","CustomCurrency3":"CustomCurrency3","CustomCurrency7":"CustomCurrency7",
+							"CustomCurrency2":"CustomCurrency2","ChangeVsLastFY":"ChangeVsLastFY","CustomText37":"CustomText37",
 							"CustomText37":"CustomText37","CustomCurrency2":"CustomCurrency2","ModifiedDate":"ModifiedDate","CustomCurrency3":"CustomCurrency3","OwnerFullName":"OwnerFullName"},
 						"-3":{"Q1":"Q1","Q2":"Q2","Q3":"Q3","Q4":"Q4","ChangeVsLastFY":"ChangeVsLastFY","CustomCurrency3":"CustomCurrency3","CustomCurrency1":"CustomCurrency1","OwnerFullName2":"OwnerFullName2"}		
 						
@@ -883,6 +884,12 @@
 					}
 					public function reloadData():void{
 						clearCirteria();
+						
+						var data:ArrayCollection = new ArrayCollection();
+						data.addItem({group:0,Type:ImpactManualTotalInput.FORECAST,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+						data.addItem({group:1,Type:ImpactManualTotalInput.NPE,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+						gridTotal.dataProvider = data;
+						
 						var filterList:FilterList = list.mainwindow.filterList;
 						if(filter!=null){
 							var filters:ArrayCollection =  ArrayCollection(filterList.filterGrid.dataProvider);
@@ -953,24 +960,24 @@
 					}
 					
 					
-					private function calculateGridTotal(FYTarget:Number,closed:Number,notClosed:Number,curImpact:Number):void{
-						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
-						if(lstTotal != null && lstTotal.length>0){
-							var obj:Object = lstTotal[0];
-							obj.Forecast =curImpact;
-							obj.FYTarget=FYTarget;					
-							obj.variance = (curImpact-FYTarget);
-							obj.closed = closed;
-							obj.notclosed = notClosed;
-							lstTotal.refresh();
-						}else{
-							var data:ArrayCollection = new ArrayCollection();
-							data.addItem({FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
-							gridTotal.dataProvider = data;
-						}
-						
-						
-					}
+//					private function calculateGridTotal(FYTarget:Number,closed:Number,notClosed:Number,curImpact:Number):void{
+//						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+//						if(lstTotal != null && lstTotal.length>0){
+//							var obj:Object = lstTotal[0];
+//							obj.Forecast =curImpact;
+//							obj.FYTarget=FYTarget;					
+//							obj.variance = (curImpact-FYTarget);
+//							obj.closed = closed;
+//							obj.notclosed = notClosed;
+//							lstTotal.refresh();
+//						}else{
+//							var data:ArrayCollection = new ArrayCollection();
+//							data.addItem({FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+//							gridTotal.dataProvider = data;
+//						}
+//						
+//						
+//					}
 					
 					
 					private function getFieldDisplayName(item:Object,col:AdvancedDataGridColumn =null):String{
@@ -998,12 +1005,28 @@
 					private function labelIntDisplay(item:Object,col:AdvancedDataGridColumn):String{
 						return NumberLocaleUtils.format(item[col.dataField],0);
 					}
+					private function allTotalVarianLabel(value:Object,col:AdvancedDataGridColumn):String{
+						if(value!=null){
+							var fyTarget:Number = value.FYTarget==null?0:Number(parseFloat(value.FYTarget));
+							var forecast:Number = value.Forecast==null?0:Number(parseFloat(value.Forecast));
+							var totalVaiance:Number = forecast-fyTarget  ;
+							value["variance"] = totalVaiance;
+						
+							return  NumberLocaleUtils.format(totalVaiance);
+						}
+						
+						
+						return "";
+					}
+					
 					private  function initGridTotalAllOpportunities():void{
 						
 						var columns:Array = new Array();
 						//				columns.push(createColumn("","Total"));
 						var renderer:ClassFactory = new ClassFactory(ImpactColNumRenderer);
 						renderer.properties= {restrict:'0-9.,',maxChars:20,updateData:updateFYTarget};
+						columns.push(createColumn(FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,"CustomPickList34"),"Type",false));
+						
 						var col:AdvancedDataGridColumn = createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer);
 						col.labelFunction = labelNumberDisplay;
 						col.setStyle("textAlign","right");
@@ -1013,7 +1036,7 @@
 						col.setStyle("textAlign","right");
 						columns.push(col);
 						col = createColumn(i18n._("FY_IMPACT_VARIANCE_TO_TARGET@FY impact variance to target"),"variance",false);
-						col.itemRenderer = new ClassFactory(CalculateGridTotalRender);						
+						col.labelFunction = allTotalVarianLabel;		
 						col.setStyle("textAlign","right");
 						columns.push(col);
 						col = createColumn(i18n._("FY_IMPACT_CLOSED_OPPORTUNITIES@FY impact, closed Opportunities"),"closed",false);	
@@ -1030,7 +1053,7 @@
 						//if(arr != null && arr.length>0){
 						//gridTotal.dataProvider = new ArrayCollection(arr);
 						//}
-						calculateGridTotal(0,0,0,0);
+//						calculateGridTotal(0,0,0,0);
 						gridListAll.refreshFunction = calculateTotalAllOpportunity;
 						//				gridTotal.addEventListener(AdvancedDataGridEvent.ITEM_EDIT_END,itemEditEndGridTotalListener);
 						
@@ -1039,73 +1062,101 @@
 					}
 					
 					
-					protected function getUnitType(rec:Object):String{
+					protected function isNPE(rec:Object):Boolean{
 						//right now we have only two types(NPE and FORCAST)
-						if(rec.CustomPickList34==ImpactManualTotalInput.NPE){
-							return ImpactManualTotalInput.NPE;
-						}
-						
-						return ImpactManualTotalInput.FORCAST;
+						return rec!=null && rec[OpportunityDAO.CO7_PREFIX+"CustomPickList34"]==ImpactManualTotalInput.NPE;
 					}
 					
-					private function clearForcastAndVarian(){
+					private function clearForcastAndVarian():void{
 						for each(var fq:String in OpportunityDAO.ALL_FY_QUATER){
-							getForceastTotal()[fq]=null;
+							getForcastTotal()[fq]=null;
 							getForcastNPETotal()[fq]=null;
 							getVariance()[fq]=null;
 							getVarianceNPE()[fq]=null;
 						}
 					}
-					private function getAllNpeTotal():Object{
-						return 
+					private function getAllNPETotal():Object{
+						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+						return lstTotal.getItemAt(1);
 					}
-					private function loadActualTotal():void{						
+					private function getAllForcastTotal():Object{
+						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
+						return lstTotal.getItemAt(0);
+					}
+					
+					private function initActualTotal():void{						
 						var acTotal:Object = getAcForcastTotal();
 						var acNPETotal:Object = getAcNPETotal();
-						if(acTotal!=null && !acTotal.loaded){
-							var actualTotals:Dictionary = Database.icManualTotal.getRecordAsType2Record();
-							for(var f:String in actualTotals[ImpactManualTotalInput.FORCAST]){
-								actualTotal[f] = saveTotal[f];
-							}
-							actualTotal.loaded=true;
-							if(!StringUtils.isEmpty(saveTotal.FYTarget)){
-								currentFyTarget = parseFloat(saveTotal.FYTarget);
-								actualTotal.FYTarget = currentFyTarget;
-							}
-						}else{
-							if(actualTotal.loaded){
-								currentFyTarget = actualTotal.FYTarget
+						if(acTotal!=null ){							
+							
+							if(!acTotal.loaded){
+								acNPETotal.loaded=true;
+								acTotal.loaded = true;
+								var actualTotals:Dictionary = Database.icManualTotal.getRecordAsType2Record();
+								var forcastTotal:Object = actualTotals[ImpactManualTotalInput.FORECAST];
+								var npeTotal:Object = actualTotals[ImpactManualTotalInput.NPE];
+								if(forcastTotal!=null){
+									for(var f:String in forcastTotal){
+										acTotal[f] = forcastTotal[f];
+									}
+									if(!StringUtils.isEmpty(forcastTotal.FYTarget)){
+										getAllForcastTotal().FYTarget=forcastTotal.FYTarget;
+										acTotal.FYTarget = forcastTotal.FYTarget;
+									}
+								}
+								if(npeTotal!=null){
+									for(var f:String in npeTotal){
+										acNPETotal[f] = npeTotal[f];
+										getAllNPETotal().FYTarget=npeTotal.FYTarget;
+										npeTotal.FYTarget=npeTotal.FYTarget;
+									}
+								}
+							}else{								
+								getAllNPETotal().FYTarget = acNPETotal.FYTarget
+								getAllForcastTotal().FYTarget=acTotal.FYTarget;								
 							}
 						}
 					}
 					
+					private function getForcast(r:Object):Object{
+						var  forCaseTotal:Object = null;
+						if(isNPE(r)){
+							forCaseTotal = getForcastNPETotal();
+						}else{
+							forCaseTotal = getForcastTotal();
+						}						
+						if(!forCaseTotal.hasOwnProperty('co7_CustomCurrency6')){
+							forCaseTotal.co7_CustomCurrency6=0;
+						}
+						if(!forCaseTotal.hasOwnProperty('CustomCurrency2')){
+							forCaseTotal.CustomCurrency2=0;
+						}	
+						if(!forCaseTotal.hasOwnProperty('CustomText37')){
+							forCaseTotal.CustomText37=0;
+						}	
+						return forCaseTotal;
+					}
+					private function getAllTotal(r:Object):Object{
+						if(isNPE(r)){
+							return getAllNPETotal();
+						}
+						
+						return getAllForcastTotal();
+					}
 					private function calculateTotalAllOpportunity():void{
-						
-						
-						
-						var totalAll:Number=0;
-						var totalClosed:Number=0;
-						var totalOpen:Number=0;
-						var currentGroup:int =0;
-						
-						var expenseTotal:Number=0;
-						var callTotal:Number=0;
-						var lastFyTotal:Number=0;				
+						var currentGroup:int =0;					
 						var mapGroup:Dictionary = new Dictionary();
-						var mapAccountAdded:Dictionary = new Dictionary();
-						var saveTotal:Object = Database.icManualTotal.selectLastRecord();
-						var currentFyTarget:Number=0;
-						var actualTotal:Object = rows.getItemAt(rows.length-2);
-						var forCaseTotal:Object = rows.getItemAt(rows.length-3);
-						var varianceTotal:Object = rows.getItemAt(rows.length-1);
+						var mapAccountAdded:Dictionary = new Dictionary();	
 						//clear value
 						clearForcastAndVarian();
+						//init actual total
+						initActualTotal();
 						
-						
-						
-						
+						//calculate forcast total
 						for each(var r:Object in gridListAll.dataProvider){
 							
+							var  forCaseTotal:Object = getForcast(r);
+							var allTotal:Object = getAllTotal(r);
 							if(!r.isTotal){
 								
 								if(!mapGroup.hasOwnProperty(r.OpportunityId)){							
@@ -1114,28 +1165,29 @@
 										mapAccountAdded[r.AccountId]=r.AccountId;
 										var expense:Number = parseFloat(r.CustomCurrency2);
 										if(!isNaN(expense)){
-											expenseTotal+=expense
+											
+											forCaseTotal.CustomCurrency2+=expense
 										}
 										//call cannot nan
 										var cal:Number = parseFloat(r.CustomText37);
 										if(!isNaN(cal)){
-											callTotal+=cal;
+											forCaseTotal.CustomText37+=cal;
 										}
 									}
 								}		
 								if(!StringUtils.isEmpty(r.co7_CustomCurrency6)){
-									lastFyTotal+=parseFloat(r.co7_CustomCurrency6);
+									forCaseTotal.co7_CustomCurrency6+=parseFloat(r.co7_CustomCurrency6);
 								}
 								
 								r.group = mapGroup[r.OpportunityId];
 								var currentTotalFy:Number = parseFloat(getCurrentFyImpact(r,null,false));
 								if(!isNaN(currentTotalFy)){
-									totalAll+=currentTotalFy;
+									allTotal.Forecast+=currentTotalFy;
 									if(r.SalesStage == SalesStageUtils.getCloseLostValue() || r.SalesStage == SalesStageUtils.getCloseWonValue()){
-										totalClosed += currentTotalFy;
+										allTotal.closed += currentTotalFy;
 									}else{
-										totalOpen +=currentTotalFy;
-									}
+										allTotal.notclosed +=currentTotalFy;
+									}									
 								}
 								for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
 									var qObj:Object = forCaseTotal[q];
@@ -1170,14 +1222,33 @@
 								r.group = mapGroup[r.groupType];
 							}
 							
-						}			
-						forCaseTotal.co7_CustomCurrency6 = NumberLocaleUtils.format(lastFyTotal);
-						forCaseTotal.CustomCurrency2 = expenseTotal;
-						forCaseTotal.CustomText37 = callTotal;
+						}		
 						
+					
 						//calculate variance's total
+						calcualateVarianTotal([ImpactManualTotalInput.FORECAST,ImpactManualTotalInput.NPE]);						
+						//refres total
+						gridListAll.refreshRowByRecordId('totalid','lineTotalId',false);
+//						calculateGridTotal(currentFyTarget,totalClosed,totalOpen,totalAll);
+						
+					}
+					
+					private function calcualateVarianTotal(types:Array):void{
+						for each(var t:String in types){
+						var varianceTotal:Object = null;
+						var forCaseTotal:Object = null;
+						var actualTotal:Object = null;
+						if(t==ImpactManualTotalInput.NPE){
+							varianceTotal = getVarianceNPE();
+							forCaseTotal = getForcastNPETotal();
+							actualTotal = getAcNPETotal();
+						}else{
+							varianceTotal = getVariance();
+							forCaseTotal = getForcastTotal();
+							actualTotal = getAcForcastTotal();
+						}
 						for each(var vq:String in OpportunityDAO.ALL_FY_QUATER){
-							var vqObj:Object = varianceTotal[q];
+							var vqObj:Object = varianceTotal[vq];
 							if(vqObj==null){
 								vqObj = {};
 								varianceTotal[vq]=vqObj;
@@ -1212,10 +1283,7 @@
 								}
 							}
 						}
-						//refres total
-						gridListAll.refreshRowByRecordId('totalid','lineTotalId',false);
-						calculateGridTotal(currentFyTarget,totalClosed,totalOpen,totalAll);
-						
+						}
 					}
 					
 					private function setCompititor(row:Object,compititor:Object):void{
@@ -1385,6 +1453,7 @@
 						
 						rows.filterFunction = filterDataGridResult;
 						rows.refresh();
+						gridListAll.dataProvider = rows;
 						calculateTotalAllOpportunity();
 						
 						
@@ -1592,7 +1661,7 @@
 						return rows.getItemAt(rows.length-5);
 					}
 					
-					private function getForceastTotal():Object{
+					private function getForcastTotal():Object{
 						return rows.getItemAt(rows.length-6);
 						
 					}
@@ -1615,18 +1684,16 @@
 						var lstTotal:ArrayCollection = gridTotal.dataProvider as ArrayCollection;
 						if(lstTotal != null && lstTotal.length>0){
 							acTotalNPE.Type = ImpactManualTotalInput.NPE;
-							acTotalNPE.FYTarget= lstTotal.getItemAt(1).FYTarget;
+							acTotalNPE.FYTarget= acTotalNPE.FYTarget;
 							
-							acForcast.Type = ImpactManualTotalInput.FORCAST;
-							acForcast.FYTarget= lstTotal.getItemAt(0).FYTarget;
+							acForcast.Type = ImpactManualTotalInput.FORECAST;
+							acForcast.FYTarget= acForcast.FYTarget;
 						}
 						Database.icManualTotal.replaceRec(acTotalNPE);
 						Database.icManualTotal.replaceRec(acForcast);
 					}
 					
-					private function openProductRevenue():void{
-						var data:Object = gridTotal.selectedItem;
-					}
+					
 					protected function clearDate(event:MouseEvent):void
 					{
 						dtStartDate.selectedDate = null;
@@ -1636,7 +1703,10 @@
 					
 					
 					private function updateFYTarget(item:Object,newVal:Object):void{
-						var acTotal:Object = rows.getItemAt(rows.length-2);
+						var acTotal:Object = getAcForcastTotal();
+						if(item.Type==ImpactManualTotalInput.NPE){
+							acTotal = getAcNPETotal();
+						}
 						acTotal.FYTarget=parseFloat(newVal.FYTarget);
 						if(isNaN(acTotal.FYTarget)){
 							acTotal.FYTarget=0;
@@ -1801,7 +1871,7 @@
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>
 		</mx:HBox>
 		<mx:Label paddingTop="20" text="{i18n._('TOTAL_OF_ALL_OPPORTUNITY@Total of all Opportunities')}" />
-		<control:MyAdvancedDataGrid sortExpertMode="true" doubleClickEnabled="true" doubleClick="{openProductRevenue()}" height="44" editable="true" width="100%" id="gridTotal"/>
+		<control:MyAdvancedDataGrid groupId="group" verticalScrollPolicy="off" sortExpertMode="true" doubleClickEnabled="false" height="75" editable="true" drawBg="false" impactCalendarGrid="true" width="100%" id="gridTotal"/>
 		<mx:Label text="{i18n._('LIST_OF_ALL_OPPORTUNITY@List of all Opportunities')}" />
 		<mx:HBox width="100%">
 			<mx:VBox width="14.3%">

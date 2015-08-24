@@ -7,7 +7,7 @@ package gadget.dao
 	{
 		
 		public static const  NPE:String = "NPE";
-		public static const  FORCAST:String = "Forcast";
+		public static const  FORECAST:String = "Forecast";
 		
 		public function ImpactManualTotalInput(sqlConnection:SQLConnection, workerFunction:Function) {
 			super(sqlConnection, workerFunction, {
@@ -66,8 +66,8 @@ package gadget.dao
 					
 				}
 				obj.gadget_id = rec['gadget_id'];
-				obj.FYTarget = result.FYTarget;
-				obj.Type= rec.Type?rec.Type:'Forcast';
+				obj.FYTarget = rec.FYTarget;
+				obj.Type= rec.Type?rec.Type:FORECAST;
 				result[obj.Type] = obj;
 			}
 			
@@ -76,10 +76,13 @@ package gadget.dao
 		}
 		
 		public function replaceRec(obj:Object):void{
-			var lastRec:Object = selectLastRecord();
-			
+			var lastRec:Object = first({Type:obj.Type});
+			if(lastRec==null && obj.Type==FORECAST){
+				lastRec = first();//old record is forcast
+			}
 			var saveRec:Object = new Object();
 			saveRec.FYTarget = obj.FYTarget;
+			saveRec.Type = obj.Type;
 			if(lastRec!=null){
 				saveRec.gadget_id = lastRec.gadget_id;
 			}

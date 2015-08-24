@@ -11,6 +11,8 @@ package gadget.control
 			super();
 		}
 		
+	
+		
 		override public function get text():String{
 			return NumberLocaleUtils.parse( StringUtil.trim(super.text),decimal);
 		}

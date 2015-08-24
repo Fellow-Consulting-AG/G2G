@@ -688,12 +688,12 @@
 					}else{
 						item["Activity"] = "Task"; 
 					}
-					
-					if(subtypeActivity==CALL){
-						if(StringUtils.isEmpty(item["Type"])){
-							item["Type"] = "Call";
-						}
-					} 
+					//bug#11016
+//					if(subtypeActivity==CALL){
+//						if(StringUtils.isEmpty(item["Type"])){
+//							item["Type"] = "Call";
+//						}
+//					} 
 					
 					
 					//hardcoded fix for Thomas

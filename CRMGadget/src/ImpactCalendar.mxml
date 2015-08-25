@@ -887,8 +887,8 @@
 						clearCirteria();
 						
 						var data:ArrayCollection = new ArrayCollection();
-						data.addItem({group:0,Type:ImpactManualTotalInput.FORECAST,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
-						data.addItem({group:1,Type:ImpactManualTotalInput.NPE,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+						data.addItem({'lineTotalId':'totalid',group:0,Type:ImpactManualTotalInput.FORECAST,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
+						data.addItem({'lineTotalId':'totalid',group:1,Type:ImpactManualTotalInput.NPE,FYTarget:0,Target:0,Forecast:0,variance:0,closed:0,notclosed:0});
 						gridTotal.dataProvider = data;
 						
 						var filterList:FilterList = list.mainwindow.filterList;
@@ -1026,9 +1026,9 @@
 						//				columns.push(createColumn("","Total"));
 						var renderer:ClassFactory = new ClassFactory(ImpactColNumRenderer);
 						renderer.properties= {restrict:'0-9.,',maxChars:20,updateData:updateFYTarget};
-						columns.push(createColumn(FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,"CustomPickList34"),"Type",false));
-						
-						var col:AdvancedDataGridColumn = createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer);
+						var col:AdvancedDataGridColumn = createColumn(FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,"CustomPickList34"),"Type",false);
+						columns.push(col);						
+						col= createColumn(i18n._("CURRENT_FY_TARGET@Current FY Target"),"FYTarget",true,renderer);
 						col.labelFunction = labelNumberDisplay;
 						col.setStyle("textAlign","right");
 						columns.push(col);
@@ -1085,7 +1085,14 @@
 						return lstTotal.getItemAt(0);
 					}
 					
-					private function initActualTotal():void{						
+					private function initActualTotal():void{
+						
+						//clear all total
+						for each(var allTotal:Object in gridTotal.dataProvider){
+							allTotal.Forecast=0;
+							allTotal.closed=0;
+							allTotal.notclosed=0;							
+						}
 						var acTotal:Object = getAcForcastTotal();
 						var acNPETotal:Object = getAcNPETotal();
 						if(acTotal!=null ){							
@@ -1230,6 +1237,7 @@
 						calcualateVarianTotal([ImpactManualTotalInput.FORECAST,ImpactManualTotalInput.NPE]);						
 						//refres total
 						gridListAll.refreshRowByRecordId('totalid','lineTotalId',false);
+						gridTotal.refreshRowByRecordId('totalid','lineTotalId',false);
 //						calculateGridTotal(currentFyTarget,totalClosed,totalOpen,totalAll);
 						
 					}
@@ -1872,7 +1880,7 @@
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>
 		</mx:HBox>
 		<mx:Label paddingTop="20" text="{i18n._('TOTAL_OF_ALL_OPPORTUNITY@Total of all Opportunities')}" />
-		<control:MyAdvancedDataGrid groupId="group" verticalScrollPolicy="off" sortExpertMode="true" doubleClickEnabled="false" height="75" editable="true" drawBg="false" impactCalendarGrid="true" width="100%" id="gridTotal"/>
+		<control:MyAdvancedDataGrid groupId="group" verticalScrollPolicy="off" sortExpertMode="true" doubleClickEnabled="false" height="75" editable="true" drawBg="false" impactCalendarGrid="true" widthDependParent="false" width="100%" id="gridTotal"/>
 		<mx:Label text="{i18n._('LIST_OF_ALL_OPPORTUNITY@List of all Opportunities')}" />
 		<mx:HBox width="100%">
 			<mx:VBox width="14.3%">

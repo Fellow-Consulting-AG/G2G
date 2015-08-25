@@ -28,6 +28,7 @@ package gadget.control
 		private var _drawBg:Boolean=true;
 		private var _refreshFunction:Function;
 		private var _impactCalendarGrid:Boolean=false;
+		private var _widthDependParent:Boolean = true;
 		private var _groupId:String;
 		public function MyAdvancedDataGrid()
 		{
@@ -145,7 +146,7 @@ package gadget.control
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{			
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			if(impactCalendarGrid){	
+			if(widthDependParent){	
 				this.width= parent.width;
 			}
 		}
@@ -276,6 +277,16 @@ package gadget.control
 		public function set groupId(value:String):void
 		{
 			_groupId = value;
+		}
+
+		public function get widthDependParent():Boolean
+		{
+			return _widthDependParent;
+		}
+
+		public function set widthDependParent(value:Boolean):void
+		{
+			_widthDependParent = value;
 		}
 
 		

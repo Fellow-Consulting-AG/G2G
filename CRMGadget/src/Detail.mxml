@@ -82,6 +82,7 @@
 			import mx.events.ItemClickEvent;
 			import mx.events.ListEvent;
 			import mx.events.NumericStepperEvent;
+			import mx.formatters.DateBase;
 			import mx.managers.DragManager;
 			import mx.managers.IFocusManagerComponent;
 			import mx.utils.Base64Decoder;
@@ -669,8 +670,11 @@
 							return false;
 						}
 						
-					}
+					}					
 					
+				}
+				
+				if(entity==Database.opportunityDao.entity){
 					//bug#11012
 					if(UserService.getCustomerId()== UserService.COLOPLAST&&StringUtils.isEmpty(item["CloseDate"])){
 						//CustomDate26 is the start date field

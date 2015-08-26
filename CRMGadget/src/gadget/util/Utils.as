@@ -420,7 +420,7 @@ package gadget.util {
 //				if (tmpField.custom == null) {
 			for(var tempField:String in fieldsManagement){//should execute all default field
 					var fieldInfo:Object = FieldUtils.getField(entity, tempField);
-					if(!fieldInfo) continue;
+					if(!fieldInfo) continue;					
 					var fieldName:String = fieldInfo.element_name;
 					var fieldManagement:Object = fieldsManagement[fieldName];
 					if(fieldManagement==null){

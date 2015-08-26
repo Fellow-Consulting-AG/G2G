@@ -8,7 +8,7 @@ package gadget.util
 		
 		private static const TASK_DATA:Object = {gadget_type:'Activity',Activity:'Task',CallType:'General'};
 		private static const APPOINTMENT_DATA:Object = {gadget_type:'Activity',Activity:'Appointment',CallType:'General'};
-		private static const CALL_DATA:Object = {gadget_type:'Activity',Activity:'Appointment',Type:'Call',CallType:'Account Call'};
+		private static const CALL_DATA:Object = {gadget_type:'Activity',Activity:'Appointment',CallType:'Account Call'};
 		
 		public function ActivityDataUtils(){}
 		

@@ -19,11 +19,19 @@ package gadget.control
 					//annulized
 					if(col.dataField=='CustomCurrency0'){
 						setStyle("fontWeight","bold");
+						if(value.type==ImpactCalendar.FORECAST_TYPE){
+							setStyle("textDecoration","underline");//underline only forcast
+						}else{
+							setStyle("textDecoration","");//no underline
+						}
 					}else{
 						setStyle("fontWeight","normal");
+						setStyle("textDecoration","");//no underline
 					}
+					
 				}else{
 					setStyle("fontWeight","normal");
+					setStyle("textDecoration","");//no underline
 				}
 			}
 			super.data = value;

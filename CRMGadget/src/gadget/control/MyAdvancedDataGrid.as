@@ -146,7 +146,7 @@ package gadget.control
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{			
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			if(widthDependParent){	
+			if(widthDependParent && impactCalendarGrid){	
 				this.width= parent.width;
 			}
 		}

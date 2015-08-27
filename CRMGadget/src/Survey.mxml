@@ -334,8 +334,10 @@
 					var assPage:AssessmentPageTotal = modelTotal.listPageTotal[lstIndex];
 					var listAsst:ArrayCollection = assPage.listSectionTotal;
 					var temphieght:int = 0;
-					assessmentSection.removeAllChildren();
-					assessmentSection.verticalScrollPosition = 0;
+					if(assessmentSection.getChildren().length>0){
+						assessmentSection.removeAllChildren();
+						assessmentSection.verticalScrollPosition = 0;
+					}
 					var isButik:Boolean = assModel.assessmentModel=="Foersaeljningsledare Butiks";
 					var isFirstShow:Boolean = true;
 					

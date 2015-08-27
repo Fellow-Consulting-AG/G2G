@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox creationComplete="init()" xmlns:mx="http://www.adobe.com/2006/mxml" height="30" width="100%" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4" xmlns:control="gadget.control.*">
+<mx:HBox verticalScrollPolicy="off" horizontalScrollPolicy="off" creationComplete="init()" xmlns:mx="http://www.adobe.com/2006/mxml" height="30" width="100%" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4" xmlns:control="gadget.control.*">
 
 	<mx:Script>
 	    <![CDATA[

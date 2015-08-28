@@ -1218,7 +1218,7 @@
 											}
 										}else{
 											if(!qObj.hasOwnProperty(mf)){
-												qObj[mf]="0";
+												qObj[mf]=0;
 											}
 										}
 									}

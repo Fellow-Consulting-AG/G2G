@@ -8,6 +8,7 @@ package gadget.util {
 	import gadget.control.AutoComplete;
 	import gadget.control.GoogleLocalSearchAddress;
 	import gadget.control.ImageTextInput;
+	import gadget.control.MultiPickListValidator;
 	import gadget.dao.AccountDAO;
 	import gadget.dao.AllUsersDAO;
 	import gadget.dao.BookDAO;
@@ -1452,6 +1453,14 @@ package gadget.util {
 				validator.source = childObj;	
 				validator.required = false;
 				validators.push(validator);
+			}
+			
+			if (fieldInfo.data_type == "Multi-Select Picklist"){
+				var multiValidator:MultiPickListValidator = new MultiPickListValidator();
+				multiValidator.property="text";
+				multiValidator.source = childObj;
+				multiValidator.required = false;
+				validators.push(multiValidator);
 			}
 			
 			if (fieldInfo.element_name == "LeadEmail" || fieldInfo.element_name == "ContactEmail" || fieldInfo.element_name == "Email"){

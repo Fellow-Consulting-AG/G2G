@@ -6,7 +6,7 @@ package gadget.dao
 	public class ImpactManualTotalInput extends SimpleTable
 	{
 		
-		public static const  NPE:String = "NPD-e";
+		public static const  NPE:String = "CARE";
 		public static const  FORECAST:String = "Forecast";
 		
 		public function ImpactManualTotalInput(sqlConnection:SQLConnection, workerFunction:Function) {

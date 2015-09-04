@@ -877,10 +877,10 @@
 				var pdfSize:String = portraitRadio.selected ? portraitRadio.value as String : landScapeRadio.value as String ;
 				preferences.pdf_Page_Size = pdfSize;
 				//-------------------------------
-				preferences.sodhost = sodhost.text; 
-				preferences.sodlogin = sodlogin.text; 
-				preferences.sodpass = sodpass.text;
-				preferences.config_url = configurl.text;				
+				preferences.sodhost = StringUtil.trim(sodhost.text); 
+				preferences.sodlogin = StringUtil.trim(sodlogin.text); 
+				preferences.sodpass = StringUtil.trim(sodpass.text);
+				preferences.config_url = StringUtil.trim(configurl.text);				
 				preferences.interface_style = iconsRadio.selected ? iconsRadio.value : tabsRadio.value;
 				preferences.sync_startup = startupsync.selected ? 1 : 0;
 				preferences.disable_gzip = disableGzip.selected ? 1 : 0;
@@ -944,8 +944,8 @@
 				preferences.cvs_separator = cboSeparator.selectedItem==null?',':cboSeparator.selectedItem.data;
 				preferences.google_map_address = cboGoogleMapAddress.selectedItem==null?'':cboGoogleMapAddress.selectedItem.data;
 				//preferences[PreferencesDAO.GOOGLE_MAP_DISTANCE] = cboGoogleMapDistance.selectedItem==null?'metric':cboGoogleMapDistance.selectedItem.data;
-				preferences.tech_username = tech_username.text;
-				preferences.tech_password = tech_password.text;
+				preferences.tech_username = StringUtil.trim(tech_username.text);
+				preferences.tech_password = StringUtil.trim(tech_password.text);
 				preferences.important_length = important_length.selectedItem==null?'10':important_length.selectedItem.data;
 				preferences.recent_filter = recent_filter.selectedItem==null?'10':recent_filter.selectedItem.data;
 				
@@ -955,7 +955,7 @@
 				//Bug fixing 472 CRO
 				//Open code 748 CRO
 				preferences.use_sso = use_sso.selected ? 1 : 0;
-				preferences.company_sso_id=company_sso_id.text;
+				preferences.company_sso_id=StringUtil.trim(company_sso_id.text);
 				preferences.usegzip=usegzip.selected? 1 : 0;
 				preferences.enable_check_conflict=enable_check_conflict.selected?1:0;
 				preferences.background_color = "0x" + winTitleBarColor.selectedColor.toString(16);
@@ -978,11 +978,11 @@
 					Database.preferencesDao.setValue(PreferencesDAO.PDF_HEADER,pdfHeaderText.text);
 					Database.preferencesDao.setValue(PreferencesDAO.PREDEFINED_FILTERS,showPredefinedFilters.selected);
 					
-					Database.preferencesDao.setValue("gmail_username",txtGmailUsername.text);
-					Database.preferencesDao.setValue("gmail_password",txtGmailPassword.text);
+					Database.preferencesDao.setValue("gmail_username",StringUtil.trim(txtGmailUsername.text));
+					Database.preferencesDao.setValue("gmail_password",(txtGmailPassword.text));
 					
-					Database.preferencesDao.setValue(PreferencesDAO.ADMIN_PASSWORD, txtAdminPasswordInput.text);
-					Database.preferencesDao.setValue(PreferencesDAO.DATABASE_PASSWORD, txtDatabasePasswordInput.text);
+					Database.preferencesDao.setValue(PreferencesDAO.ADMIN_PASSWORD, StringUtil.trim(txtAdminPasswordInput.text));
+					Database.preferencesDao.setValue(PreferencesDAO.DATABASE_PASSWORD, StringUtil.trim(txtDatabasePasswordInput.text));
 					
 					//InitDbLocation.writeToConfigFile(Database.getCustomDatabasePathFromFile(),Utils.encryptPassword(txtDatabasePasswordInput.text));
 					
@@ -1254,11 +1254,11 @@
 				waitConnectionEnable(testConnectionWait, true);
 				
 				var tmpPreferences:Object = new Object();
-				tmpPreferences.sodhost = sodhost.text;
-				tmpPreferences.sodlogin = sodlogin.text;
-				tmpPreferences.sodpass = sodpass.text;
-				tmpPreferences.tech_username = tech_username.text;
-				tmpPreferences.tech_password = tech_password.text;
+				tmpPreferences.sodhost = StringUtil.trim(sodhost.text);
+				tmpPreferences.sodlogin = StringUtil.trim(sodlogin.text);
+				tmpPreferences.sodpass = StringUtil.trim(sodpass.text);
+				tmpPreferences.tech_username = StringUtil.trim(tech_username.text);
+				tmpPreferences.tech_password = StringUtil.trim(tech_password.text);
 				//Bug fixing 472 CRO
 				//Open code for fixing bug 748 CRO
 				tmpPreferences.use_sso= use_sso.selected
@@ -1273,7 +1273,7 @@
 				waitConnectionEnable(testGmailConnectionWait, true);
 				var calendarService:CalendarService = new CalendarService();
 				calendarService.addEventListener(GServiceEvent.SERVICE_RESULT, calendarService_serviceResultHandler);			
-				calendarService.setCredentials(txtGmailUsername.text, txtGmailPassword.text);
+				calendarService.setCredentials(StringUtil.trim(txtGmailUsername.text), StringUtil.trim(txtGmailPassword.text));
 				calendarService.authenticationService.clientLogin();
 			}
 			

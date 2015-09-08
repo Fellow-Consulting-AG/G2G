@@ -686,6 +686,7 @@ package gadget.sync.outgoing
 			}
 			
 			var showWarning:Boolean = true;
+			var error:Boolean = true;
 			var currentRecords:Object = getCurrentRecordError();
 			if(faultString.indexOf("(SBL-DAT-00357)")>0 && faultString.indexOf("'Activity_Contact'")>0){
 				if(getOperation()=='create' || getOperation()=='Created'){
@@ -695,12 +696,21 @@ package gadget.sync.outgoing
 					currentRecords.error = false;
 					getDao().update(currentRecords);
 				}
+			}else if(faultString.indexOf("SBL-DAT-00278")!=-1){
+				error=false;
 			}
 			if(showWarning){
 				warn(i18n._(oops, getDao().entity, currentRecords[SodID], ObjectUtils.joinFields(currentRecords, getNameCols()), getOperation(), short, XmlUtils.XMLcleanString(faultString)));
 				notify(ObjectUtils.joinFields(currentRecords, getNameCols()), i18n._(short));
-				faulted++;
-				getDao().setErrorGid(currentRecords.gadget_id, true);
+				if(error){
+					faulted++;
+					getDao().setErrorGid(currentRecords.gadget_id, true);
+				}else{
+					currentRecords.local_update=null;
+					currentRecords.error = false;
+					currentRecords.deleted=false;
+					getDao().update(currentRecords);
+				}
 				trace(faultString.toString());
 			}
 			doRequest();

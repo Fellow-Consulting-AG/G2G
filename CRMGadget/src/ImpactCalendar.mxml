@@ -679,7 +679,7 @@
 						
 					};
 					
-					private var type:int = CURRENT_FY_ALL_COLUMNS;
+					private var type:int = CURRENT_FY_COMPACT;
 					
 					protected function visibleColumn(hideCols:Object,columns:Array):void{
 						for each(var col:AdvancedDataGridColumn in columns){
@@ -698,6 +698,8 @@
 						var columns:Array = gridListAll.columns;						
 						if(filter != null){
 							type = filter.type;
+						}else{
+							type = CURRENT_FY_COMPACT;//default filter
 						}
 						var hideCols:Object = MAP_HIDE_COLUMN[type.toString()];						
 						for each(var col:AdvancedDataGridColumn in columns){

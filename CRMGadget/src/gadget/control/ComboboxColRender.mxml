@@ -76,9 +76,8 @@
 					var oldSelected:String = this.data[column.dataField];
 					this.data[column.dataField] = cborender.selectedItem.data + "";		
 					if("SalesStage" == column.dataField){
-						this.data['Probability']=cborender.selectedItem.probability;
-						
-						
+						this.data['Probability']=cborender.selectedItem.probability;						
+						this.data['SalesStageId']=cborender.selectedItem.key;						
 					}
 					if(updateFunction!=null){
 						try{

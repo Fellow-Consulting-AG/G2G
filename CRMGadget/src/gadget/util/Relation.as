@@ -405,7 +405,7 @@ package gadget.util
 			{entitySrc:"CustomObject7", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},
 			{entitySrc:"CustomObject7", keySrc:"ProductId", keyDest:"ProductId", labelSrc:["ProductName","CustomCurrency20"], labelDest:["ProductName","ListPrice"], entityDest:"PriceListLineItem"},
 			{entitySrc:"CustomObject7", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact"},
-			{entitySrc:"CustomObject7", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:["OpportunityName"], labelDest:["OpportunityName"], entityDest:"Opportunity"},
+			{entitySrc:"CustomObject7", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:["OpportunityName","OpportunityAccountName"], labelDest:["OpportunityName","AccountName"], entityDest:"Opportunity"},
 			{entitySrc:"CustomObject7", keySrc:"ServiceRequestId", keyDest:"ServiceRequestId", labelSrc:["ServiceRequestNumber"], labelDest:["SRNumber"], entityDest:"Service Request"},
 			{entitySrc:"CustomObject7", keySrc:"LeadId", keyDest:"LeadId", labelSrc:["LeadFullName"], labelDest:["LeadFullName"], entityDest:"Lead"},
 			{entitySrc:"CustomObject7", keySrc:"CampaignId", keyDest:"CampaignId", labelSrc:["CampaignName"], labelDest:["CampaignName"], entityDest:"Campaign"},

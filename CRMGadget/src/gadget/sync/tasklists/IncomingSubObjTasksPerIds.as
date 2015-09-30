@@ -34,7 +34,12 @@ package gadget.sync.tasklists {
 			for each(var subObj:Object in subList){		
 				
 				switch (subObj.sodname){
-					case  "Attachment": subSync.push(new IncomingAttachment(subObj.entity));
+					case  "Attachment":
+						if(subObj.syncable){
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname){
+								subSync.push(new IncomingAttachment(subObj.entity));
+							}
+						}
 						break;
 					case "Activity":
 					case "Opportunity":
@@ -56,7 +61,10 @@ package gadget.sync.tasklists {
 					
 					default:
 						if(subObj.syncable){
-							subSync.push(new IncomingSubobjectsByIds(subObj.entity,subObj.sodname));
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname){
+								subSync.push(new IncomingSubobjectsByIds(subObj.entity,subObj.sodname));
+							}
+							
 						}
 						
 				}
@@ -66,6 +74,7 @@ package gadget.sync.tasklists {
 		}	
 		
 		if(syncContactAccount){
+			
 			subSync.push(new IncomingSubobjectsByIds(Database.accountDao.entity,Database.contactDao.entity));
 		}
 		if(syncContactC02){

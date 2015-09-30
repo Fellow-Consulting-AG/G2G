@@ -1,5 +1,8 @@
 package gadget.sync.incoming
 {
+	import com.probertson.utils.GZIPEncoder;
+	import com.probertson.utils.GZIPFile;
+	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
@@ -7,6 +10,8 @@ package gadget.sync.incoming
 	import flash.net.URLRequest;
 	import flash.net.URLRequestHeader;
 	import flash.net.URLRequestMethod;
+	import flash.utils.ByteArray;
+	import flash.utils.CompressionAlgorithm;
 	
 	import gadget.dao.Database;
 	import gadget.sync.task.SyncTask;
@@ -88,7 +93,23 @@ package gadget.sync.incoming
 		override public function getName():String {
 			return "Importing configuration file from server..."; 
 		}
-		
+		private function uncompress(target:Object):String {	
+			if(Utils.osIsMac()){
+				return URLLoader(target).data;	
+			}
+			try{
+				var rawData:ByteArray = URLLoader(target).data as ByteArray;
+				var encoder:GZIPEncoder = new GZIPEncoder();
+				var gzipData:GZIPFile = encoder.parseGZIPData(rawData);
+				var uncompressedData:ByteArray = gzipData.getCompressedData();
+				uncompressedData.uncompress(CompressionAlgorithm.DEFLATE);			
+				return uncompressedData.toString();
+			}catch(e:Error){
+				//nothing todo
+				//return URLLoader(target).data;
+			}
+			return URLLoader(target).data;
+		}
 		private function loadXmlConfig(sessionId:String, fileOrders:Array):void{
 			if(fileOrders.length<0){
 				return;
@@ -105,13 +126,14 @@ package gadget.sync.incoming
 			request.idleTimeout =100000;
 			request.useCache = false;
 			request.requestHeaders.push(new URLRequestHeader("Cookie", sessionId));
-			
+			request.requestHeaders.push(new URLRequestHeader("Accept-Encoding", "gzip"));
 			var loader:URLLoader = new URLLoader();
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
+			
 			loader.addEventListener(Event.COMPLETE, function(e:Event):void {
 				info("Successfully imported configuration file " + fileName + ".");
 				try{
-					var data:String = (e.target as URLLoader).data;
+					var data:String = uncompress(e.target);
 					var xml:XML = new XML(data);
 					handleResponse(null,xml);
 				}catch(e:Error){

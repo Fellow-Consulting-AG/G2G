@@ -163,9 +163,15 @@ package gadget.dao
 			if (transaction!=null) {
 				return transaction.advanced_filter;
 			}
-			return -99;
+			return -9999;
 			
 		}
+		
+		public function isSyncAble(entity:String,subEntity:String){
+			var type:Number = getAdvancedFilterType(entity,subEntity);
+			return type!=TransactionDAO.NO_SYNC_TYPE;
+		}
+		
 		private var textColumns:Array = [
 			"entity",
 			"sub",

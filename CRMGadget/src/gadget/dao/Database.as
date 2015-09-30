@@ -3660,6 +3660,8 @@ package gadget.dao {
 						obj["sodname"]= sub.sodname;
 						obj["entity_name"]= sub.entity_name;
 						obj["syncable"]=sub.syncable;
+						//this is default sync filter
+						obj["advanced_filter"]=TransactionDAO.NO_SYNC_TYPE;
 						_subSyncDao.insert(obj);
 					}else{					
 //						if(StringUtils.isEmpty(subTransExist["entity_name"])){

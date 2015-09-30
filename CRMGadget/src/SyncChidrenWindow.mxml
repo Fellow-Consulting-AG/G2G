@@ -17,6 +17,7 @@
 	<fx:Script>
 		<![CDATA[
 			import gadget.dao.Database;
+			import gadget.dao.TransactionDAO;
 			import gadget.i18n.i18n;
 			import gadget.util.Utils;
 			
@@ -85,9 +86,19 @@
 				cboAdvancedFilter.enabled = checkbox.selected;
 				
 			}
+			
+			private function getAvanceFilters():ArrayCollection{
+				var result:ArrayCollection = new ArrayCollection();
+				
+				result.addItem({type:TransactionDAO.NO_SYNC_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_NO_SYNC@No Sync")});
+				result.addAll(Database.transactionDao.advancedfilter);
+				
+				return result;
+			}
 			private function advanceFilters(transaction:Object,checkBox:CheckBox,lstParentTrans:ArrayCollection,subEntity:String):void{
-				var cboAdvancedFilter:ComboBox = new ComboBox();				
-				cboAdvancedFilter.dataProvider = Database.transactionDao.advancedfilter;
+				var cboAdvancedFilter:ComboBox = new ComboBox();
+				var filters:ArrayCollection = getAvanceFilters();
+				cboAdvancedFilter.dataProvider = filters;
 				cboAdvancedFilter.labelField = "name";
 				//cboAdvancedFilter.width = 100;				
 				cboAdvancedFilter.height = 25;
@@ -95,12 +106,10 @@
 				cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;
 				
 				if(mapParentFilter[subEntity] != null && parseInt(mapParentFilter[subEntity]) != 0)	{
-					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, mapParentFilter[subEntity]);
+					cboAdvancedFilter.selectedItem = getSelectionObject(filters, mapParentFilter[subEntity]);
 				}else{
-					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);
+					cboAdvancedFilter.selectedItem = getSelectionObject(filters, transaction.advanced_filter);
 				}
-				
-				
 				advancedFilter.addChild(cboAdvancedFilter);
 			}
 			private function getSelectionObject(list:ArrayCollection, id:String):Object{

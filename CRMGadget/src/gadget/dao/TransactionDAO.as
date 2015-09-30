@@ -24,6 +24,7 @@ package gadget.dao
 		public static var ONE_MONTH_TYPE:Number =4;
 		public static var SEVEN_DAY_TYPE:Number =5;
 		public static var DEFAULT_BOOK_TYPE:Number = -15;
+		public static var NO_SYNC_TYPE:Number = 6;
 		
 		
 		private var stmtInsert:SQLStatement;

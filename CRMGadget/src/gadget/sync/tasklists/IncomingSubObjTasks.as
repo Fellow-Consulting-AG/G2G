@@ -1,5 +1,6 @@
 package gadget.sync.tasklists {
 	import gadget.dao.Database;
+	import gadget.dao.TransactionDAO;
 	import gadget.sync.WSProps;
 	import gadget.sync.incoming.IncomingAttachment;
 	import gadget.sync.incoming.IncomingSubActivity;
@@ -37,7 +38,13 @@ package gadget.sync.tasklists {
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
 			for each(var subObj:Object in subList){
 				switch (subObj.sodname){
-					case  "Attachment": subSync.push(new IncomingAttachment(subObj.entity));
+					case  "Attachment": 
+						if(subObj.syncable){							
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname)){
+								subSync.push(new IncomingAttachment(subObj.entity));		
+							}
+						}
+					
 						break;
 					case "Activity":
 					case "Opportunity":
@@ -55,15 +62,21 @@ package gadget.sync.tasklists {
 					case "Service Request":
 					case "Asset":	
 						//var obj:Object = Database.transactionDao.find(subObj.entity);
-						if(subObj.syncable){
-							subSync.push(new IncomingSubActivity(subObj.entity,subObj.sodname));
+						if(subObj.syncable){							
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname)){
+								subSync.push(new IncomingSubActivity(subObj.entity,subObj.sodname));
+							}
+							
 						}
 						break;
 					
 //					case "Note": subSync.push(new IncomingNote(subObj.entity));	
 					default:
 						if(subObj.syncable){
-							subSync.push(new IncomingSubobjects(subObj.entity,subObj.sodname));
+							
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname)){
+								subSync.push(new IncomingSubobjects(subObj.entity,subObj.sodname));
+							}
 						}
 						
 				}
@@ -71,14 +84,17 @@ package gadget.sync.tasklists {
 			
 		}		
 		var accountContact:IncomingSubContact = new IncomingSubContact("Account","Contact");
-		//if(syncContactAccount && (fullCompare||fullSync || Database.lastsyncDao.find(accountContact.getMyClassName())==null)){
+		if(Database.subSyncDao.isSyncAble("Account","Contact")||Database.subSyncDao.isSyncAble("Contact","Account")){
 			subSync.push(accountContact);
+		}
+		
+			
 		//}
 		
 		var co2Contact:IncomingSubContact = new IncomingSubContact("Contact","Custom Object 2");
-		//if(syncContactC02 && (fullCompare||fullSync|| Database.lastsyncDao.find(co2Contact.getMyClassName())==null)){
+		if(Database.subSyncDao.isSyncAble("Contact","Custom Object 2")||Database.subSyncDao.isSyncAble("Custom Object 2","Contact")){
 			subSync.push(co2Contact);
-		//}
+		}
 		
 //		if(syncActivityUser){
 //			subSync.push(new IncomingSubobjects(Database.activityDao.entity,Database.allUsersDao.entity));

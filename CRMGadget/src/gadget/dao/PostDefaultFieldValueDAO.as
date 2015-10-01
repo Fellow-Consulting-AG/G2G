@@ -20,7 +20,7 @@ package gadget.dao
 		
 		
 		public function isPostDefault(entity:String,element_name:String):Boolean{
-			var obj:Object = select_one("*",null,{'element_name':element_name,'entity':entity});
+			var obj:Object = select_first("*",null,{'element_name':element_name,'entity':entity});
 			if(obj!=null){
 				return obj.postdefault;
 			}

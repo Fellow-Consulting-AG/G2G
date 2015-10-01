@@ -472,7 +472,7 @@
 	<mx:VBox verticalGap="0" x="237" y="38">
 		<mx:Label id="applicationName" color="#FFFFFF" fontSize="24" fontWeight="bold"/>
 		<mx:Label id="version" fontWeight="bold"/>
-		<mx:Label fontWeight="bold" text="©2010 Fellow Consulting"/>	
+		<mx:Label fontWeight="bold" text="©2015 Fellow Consulting"/>	
 	</mx:VBox>
 	<mx:Text id="infoText" x="237" y="138" width="220" height="80"/>
 	

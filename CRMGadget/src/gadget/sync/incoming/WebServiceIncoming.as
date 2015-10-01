@@ -212,7 +212,7 @@ package gadget.sync.incoming {
 		protected function buildStdXML():XML{
 			return <{wsID} xmlns={ns1.uri}>						
 						<ViewMode>{viewMode}</ViewMode>						
-						<{listID} pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
+						<{listID} recordcountneeded="1" pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
 							<{entityIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>
 							</{entityIDns}>
 						</{listID}>

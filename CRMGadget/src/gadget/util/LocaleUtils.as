@@ -42,7 +42,7 @@ package gadget.util
 			'0-113':'en_US',
 			'0-207':'de_DE',
 			'0-BAA63':'de_DE',
-			'0-212':'pl_PL',
+			'0-212':'de_DE',
 			'0-LCBRA':'pt_PT',
 			'0-114':'pt_PT',
 			'0-211':'ru_RU',

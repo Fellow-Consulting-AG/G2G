@@ -162,6 +162,8 @@ package com.crmgadget.eval
 					return 'CustomPickList1';
 				case 'OCC_CUST_LOV_CONTACT_4':
 					return 'CustomPickList4';//TODO later
+				case 'TODO_TYPE':
+					return 'Type';
 				default:
 					return field;
 			}
@@ -297,11 +299,23 @@ package com.crmgadget.eval
 					if(value!=null && value.length>0){
 						return value;
 					}
-					return opPars.doGetPickList(opPars.entity, elment_name, lang_ind_code,objEntity); 
+					value= opPars.doGetPickList(opPars.entity, elment_name, lang_ind_code,objEntity);
+					if(!StringUtils.isEmpty(value)){
+					
+						return value;
+					}
 					
 				}
 				// step 2 : get the translated value
-				return opPars.doGetPickList(opPars.entity, picklist, id,objEntity);
+				if(StringUtils.isEmpty(id)){
+					return lang_ind_code;
+				}
+				var valTran:String = opPars.doGetPickList(opPars.entity, picklist, id,objEntity);
+				if(StringUtils.isEmpty(valTran)){
+					return lang_ind_code;
+				}
+				
+				return valTran;
 				
 			}
 			if(upperName =="LOOKUPNAME"){

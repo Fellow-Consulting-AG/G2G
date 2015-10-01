@@ -36,7 +36,7 @@ package gadget.sync.tasklists {
 				switch (subObj.sodname){
 					case  "Attachment":
 						if(subObj.syncable){
-							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname){
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname)){
 								subSync.push(new IncomingAttachment(subObj.entity));
 							}
 						}
@@ -61,7 +61,7 @@ package gadget.sync.tasklists {
 					
 					default:
 						if(subObj.syncable){
-							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname){
+							if(Database.subSyncDao.isSyncAble(subObj.entity,subObj.sodname)){
 								subSync.push(new IncomingSubobjectsByIds(subObj.entity,subObj.sodname));
 							}
 							

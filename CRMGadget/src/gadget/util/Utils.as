@@ -430,13 +430,17 @@ package gadget.util {
 					if(fieldManagement!=null){
 						if(!StringUtils.isEmpty( fieldManagement.DefaultValue )){
 							var defaultValue:String = fieldManagement.DefaultValue;
-							if(fieldManagement.PostDefault=='true' && !afterSave){
-								continue;
+							if(afterSave){
+								if((fieldManagement.PostDefault=='false'||StringUtils.isEmpty(fieldManagement.PostDefault))||!Database.postDefaultFieldDao.isPostDefault(entity,fieldInfo.element_name)){
+									continue;
+								}
+							}else{
+								if(fieldManagement.PostDefault=='true'||Database.postDefaultFieldDao.isPostDefault(entity,fieldInfo.element_name)){
+									continue;
+								}
 							}
 							
-							if(afterSave && (fieldManagement.PostDefault=='false'||StringUtils.isEmpty(fieldManagement.PostDefault))){
-								continue;
-							}
+							
 							if (defaultValue.indexOf("(") == -1 && defaultValue.indexOf("{") == -1 && defaultValue.indexOf("[") == -1) {
 								if( defaultValue.indexOf("CreatedDate")!=-1 ){
 									enityObject[fieldInfo.element_name] =new Date();
@@ -2332,6 +2336,13 @@ package gadget.util {
 				dao.delete_all();
 			}
 			commitObjects(dao,xml.elements("default_field_values").children());
+			
+			dao = Database.postDefaultFieldDao;
+			if(xml.elements("postdefault_fields").children()!=null){
+				dao.delete_all();
+			}
+			commitObjects(dao,xml.elements("postdefault_fields").children());
+			
 			if(reload!=null) reload();
 			
 		}

@@ -705,6 +705,7 @@ package gadget.dao
 			return list;
 		}
 		
+		
 		public function insert(object:Object, useCustomfield:Boolean=true):void {
 			object.deleted = false;
 			var fields:ArrayCollection = fieldList(useCustomfield);

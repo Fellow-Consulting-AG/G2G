@@ -1378,6 +1378,7 @@
 						<layoutblocks/>
 						<blockLyoutFields/>	
 						<default_field_values/>
+						<postdefault_fields/>
 					</configuration>;
 				
 				for each(var obj:Object in Database.industryDAO.getDifferenceLanguage()) {
@@ -1838,6 +1839,8 @@
 				generateXML(configXml.elements("countrys"),"country",countrys);
 				var defaultValues:Array = Database.defaultFieldValueDao.fetch();
 				generateXML(configXml.elements("default_field_values"),"default_field_value",defaultValues);
+				var postDefaultFields:Array = Database.postDefaultFieldDao.fetch();
+				generateXML(configXml.elements("postdefault_fields"),"postdefault_field",postDefaultFields);
 				
 				//export custom layout
 				if(chkListLayout.selected){		

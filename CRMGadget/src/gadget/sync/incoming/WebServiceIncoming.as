@@ -79,7 +79,8 @@ package gadget.sync.incoming {
 		protected var ignoreQueryFields:Array = [ ];
 		protected var oldIds:Dictionary = null;
 		// METHODS not to change
-		
+		//first sync we should use created date because we have some pb with modifieddate look like bug#11384 or #10703
+		protected var useCreatedDate:Boolean = false;
 		
 		private var _dao:BaseDAO;
 
@@ -229,8 +230,15 @@ package gadget.sync.incoming {
 				if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE ||entityIDour == Database.accountDao.entity){
 					oldIds = dao.findAllIdsAsDictionary();				
 					Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
+					useCreatedDate = true;
+				}else{
+					useCreatedDate = param.full||Database.incomingSyncDao.is_unsynced(getEntityName());
 				}
+			}else{
+				useCreatedDate = param.full||Database.incomingSyncDao.is_unsynced(getEntityName());
 			}
+			
+			
 			
 		}
 		
@@ -488,11 +496,16 @@ package gadget.sync.incoming {
 			if (param.range && byModiDate) {
 				var minD:String = ServerTime.toSodIsoDate(param.range.start);
 				var maxD:String = ServerTime.toSodIsoDate(param.range.end);
-				searchSpec = "(["+MODIFIED_DATE+"] &gt;= '"+minD+"'"
-					+ " AND ["+MODIFIED_DATE+"] &lt;= '"+maxD+"')";
-				//bug#11384---sometime modfieddate is null so we can check with created Date
-				searchSpec = searchSpec+' OR ' +"(["+CREATED_DATE+"] &gt;= '"+minD+"'"
-					+ " AND ["+CREATED_DATE+"] &lt;= '"+maxD+"')";
+				if(!useCreatedDate){
+					searchSpec = "(["+MODIFIED_DATE+"] &gt;= '"+minD+"'"
+						+ " AND ["+MODIFIED_DATE+"] &lt;= '"+maxD+"')";
+				}else{
+					//bug#11384---sometime modfieddate is null so we can check with created Date
+					searchSpec = "(["+CREATED_DATE+"] &gt;= '"+minD+"'"
+						+ " AND ["+CREATED_DATE+"] &lt;= '"+maxD+"')";
+				}
+				
+				
 			}
 			
 			

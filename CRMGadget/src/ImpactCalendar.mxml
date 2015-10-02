@@ -417,6 +417,10 @@
 						//CustomPickList7 is curve_type 
 						var curveVal:Array = getCurveTypevalue(row['CustomPickList7']);
 						var currentYear:Date = new Date();
+						if(currentYear.month>9){
+							//#11402 Oct - Sep ( so it goes over 2 calendar years)
+							currentYear = Utils.calculateDate(1,currentYear,"fullyear");
+						}
 						var minDate:Date=DateUtils.guessAndParse(row.CustomDate26);
 						var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
 						var currentMonth:Date = new Date(currentYear.fullYear-1,9,1,0,0,0,0)

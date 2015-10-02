@@ -88,7 +88,15 @@ package com.crmgadget.eval
 				];
 		private static const FIL:Object={Left:"Left",Right:"Right",Preference:"Preference",Today:"Today",Locale:"Locale",UserValue:"UserValue"}
 		private static const CURRENCY_SYMBOL:Object = {$:"$",'€':"€",'£':"£",CHF:"CHF",'฿':"฿",'HK$':"HK$",'元':"元",'ƒ':"ƒ",'руб':"руб",'zł':"zł"}
-		
+		private static function cloneObject(source:Object):Object{
+			var obj:Object = new Object();
+			if(source!=null){
+				for(var f:String in source){
+					obj[f]=source[f];
+				}
+			}
+			return obj;
+		}
 		
 		public static function evaluate(strExp:String,owner:Object,entity:String, elment_name:String, objEntity:Object=null,doGetPickList:Function=null,doGetPickListId:Function=null,doGetXMLValueField:Function=null,isFiltered:Boolean=false,doGetJoinField:Function=null,getFieldNameFromIntegrationTag:Function=null,sqlLists:ArrayCollection=null,getOracleId:Function = null):String{
 			if(strExp.charAt(0) == '"' && strExp.charAt(strExp.length-1) == '"'){
@@ -101,7 +109,7 @@ package com.crmgadget.eval
 				var formula:String=Functionalizer.functionalize(strExp);
 				var node:Node=Parser.parse(formula);
 				var optionalParam:OptionalParams = new OptionalParams();
-				optionalParam.objEntity = objEntity;
+				optionalParam.objEntity = cloneObject(objEntity);
 				optionalParam.doGetJoinField=doGetJoinField;
 				optionalParam.doGetPickList = doGetPickList;
 				optionalParam.doGetPickListId = doGetPickListId;
@@ -947,10 +955,7 @@ package com.crmgadget.eval
 			if(fieldManagement!=null){
 				str = fieldManagement.Name;
 				var defaultValue:String  = fieldManagement.DefaultValue;
-				if(str!=opPars.current_field 
-					&& (opPars.objEntity[str] == null || opPars.objEntity[str] == '') 
-					&& defaultValue != null
-					&& defaultValue != ''){
+				if(str!=opPars.current_field && StringUtils.isEmpty(opPars.objEntity[str])&& !StringUtils.isEmpty(defaultValue)){
 					if (defaultValue.indexOf("(") == -1 && defaultValue.indexOf("{") == -1 && defaultValue.indexOf("[") == -1) {
 						if( defaultValue.indexOf("CreatedDate")==-1 ){							
 							opPars.objEntity[str] = defaultValue;
@@ -958,10 +963,8 @@ package com.crmgadget.eval
 						
 					} else {
 						
-						if(opPars.isExecuting(fieldManagement.Name)){
-							return null;
-						}else{
-							return doExecuteRelatedField(defaultValue,fieldManagement.Name,opPars);
+						if(!opPars.isExecuting(fieldManagement.Name)){						
+							opPars.objEntity[str] = doExecuteRelatedField(defaultValue,fieldManagement.Name,opPars);
 						}						
 				
 					}

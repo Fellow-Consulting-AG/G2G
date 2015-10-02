@@ -242,7 +242,7 @@ package gadget.sync.incoming {
 				OOPS("=Error while saveing data....", e.details);
 				Database.errorLoggingDao.add(e, null);
 			}
-			_nbItems ++;	
+			dicCount.count(info.rowid);
 			return 1;
 		}
 		

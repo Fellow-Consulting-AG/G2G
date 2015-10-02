@@ -105,7 +105,7 @@ package gadget.sync.incoming
 					trace('ATT',entityIDour, attachId, obj.filename);
 					//Database.attachmentDao.insert(obj);
 					Database.attachmentDao.replaceAttachment(obj,false);
-					_nbItems++;
+					dicCount.count(attachId);
 				}
 //			}
 			return 1;

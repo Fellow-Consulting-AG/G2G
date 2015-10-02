@@ -281,8 +281,7 @@ package gadget.sync.incoming
 				
 				
 //			} 
-			
-			_nbItems ++;
+				dicCount.count(this.pid+rec[subId]);
 			
 			
 			return 1;

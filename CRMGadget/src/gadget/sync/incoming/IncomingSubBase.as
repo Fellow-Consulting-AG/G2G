@@ -139,8 +139,7 @@ package gadget.sync.incoming
 		protected function initXMLsub(baseXML:XML, subXML:XML):void {}
 
 		override protected function initEach():void {
-			_subpage = 0;
-			_lastItems = _nbItems;
+			_subpage = 0;			
 			super.initEach();
 		}
 

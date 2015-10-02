@@ -17,8 +17,7 @@ package gadget.sync.incoming
 		}
 		
 		override protected function doRequest():void {		
-			var pagenow:int = _page;
-			_lastItems = _nbItems;
+			var pagenow:int = _page;			
 			isLastPage=false;	
 //			Database.errorLoggingDao.add(null, {trace:[getEntityName(), _page, pagenow, isLastPage, haveLastPage, searchSpec]});
 			//VAHI another poor man's workaround for missing late binding in XML templates			

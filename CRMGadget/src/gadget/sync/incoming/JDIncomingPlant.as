@@ -69,7 +69,7 @@ package gadget.sync.incoming
 					param.maxRec	= modDate;
 			}
 			
-			_nbItems ++;
+			dicCount.count(info.rowid);
 			
 			
 			var localRecord:Object = dao.findByOracleId(info.rowid);

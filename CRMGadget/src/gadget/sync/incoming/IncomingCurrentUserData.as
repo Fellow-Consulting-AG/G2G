@@ -24,9 +24,8 @@ package gadget.sync.incoming
 			var searchSpec:String =  "[UserSignInId]= '"+Database.userDao.read().user_sign_in_id+"' ";			
 			
 			
-			var pagenow:int = _page;
-			
-			_lastItems = _nbItems;
+			var pagenow:int = _page;			
+		
 			
 
 			sendRequest("\""+getURN()+"\"", new XML(getRequestXML().toXMLString()

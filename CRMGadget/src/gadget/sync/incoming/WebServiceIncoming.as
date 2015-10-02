@@ -40,14 +40,16 @@ package gadget.sync.incoming {
 		protected var isFormulaError:Boolean = false;
 		protected const SEARCHSPEC_PLACEHOLDER:String = "___HERE__THE__SEARCH__SPEC___";
 		protected const ROW_PLACEHOLDER:String = "___HERE__THE__ROW__NUMBER___";
-		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 3;
+		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 400;
 		protected const MODIFIED_DATE:String = "ModifiedDate"; // ModifiedDate or ModifiedByDate
-
+		protected const CREATED_DATE:String ="CreatedDate";
 		
 		protected var _page:int;
 		protected var haveLastPage:Boolean, isLastPage:Boolean;
-		protected var _nbItems:int=0;
-		protected var _lastItems:int;
+		//protected var _nbItems:int=0;
+		//protected var _lastItems:int;
+		
+		protected var dicCount:SyncRecordCount = new SyncRecordCount();
 		
 		// Following are precalculated from initialization
 		private var _entityIDour:String;	// Account, Contact, AllUsers, ...
@@ -178,7 +180,6 @@ package gadget.sync.incoming {
 			
 			var pagenow:int = _page;
 			
-			_lastItems = _nbItems;
 			isLastPage=false;
 			if (pagenow==0 && haveLastPage==false && param.force==false && isUnboundedTask==false) {
 				isLastPage = true;
@@ -375,7 +376,6 @@ package gadget.sync.incoming {
 		}
 		
 		protected function doSplit():void {
-			_nbItems	= _lastItems;	//reset the counts.
 			setFailed();				// failed success, do a split
 			successHandler(null);
 		}
@@ -486,8 +486,13 @@ package gadget.sync.incoming {
 		protected function generateSearchSpec(byModiDate:Boolean=true):String{
 			var searchSpec:String ="";
 			if (param.range && byModiDate) {
-				searchSpec = "["+MODIFIED_DATE+"] &gt;= '"+ServerTime.toSodIsoDate(param.range.start)+"'"
-					+ " AND ["+MODIFIED_DATE+"] &lt;= '"+ServerTime.toSodIsoDate(param.range.end)+"'";
+				var minD:String = ServerTime.toSodIsoDate(param.range.start);
+				var maxD:String = ServerTime.toSodIsoDate(param.range.end);
+				searchSpec = "(["+MODIFIED_DATE+"] &gt;= '"+minD+"'"
+					+ " AND ["+MODIFIED_DATE+"] &lt;= '"+maxD+"')";
+				//bug#11384---sometime modfieddate is null so we can check with created Date
+				searchSpec = searchSpec+' OR ' +"(["+CREATED_DATE+"] &gt;= '"+minD+"'"
+					+ " AND ["+CREATED_DATE+"] &lt;= '"+maxD+"')";
 			}
 			
 			
@@ -621,7 +626,7 @@ package gadget.sync.incoming {
 			}
 			if(isChangeOwner(localRecord,tmpOb) && UserService.DIVERSEY==UserService.getCustomerId()){				
 				dao.deleteByOracleId(info.rowid);
-				_nbItems ++;
+				dicCount.count(info.rowid);
 				return 1;
 			}
 			if(this is JDIncomingObject){
@@ -738,6 +743,7 @@ package gadget.sync.incoming {
 						}
 					}
 				}
+				
 				if (changed) {
 					
 					if(Database.preferencesDao.getValue("enable_google_calendar", 0) != 0){
@@ -785,9 +791,9 @@ package gadget.sync.incoming {
 			if(this is IncomingCurrentUserData){				
 				Database.allUsersDao.setOwnerUser(tmpOb);
 			}
-			_nbItems ++;
-			handleInlineData(data, tmpOb, info);
 			
+			handleInlineData(data, tmpOb, info);
+			dicCount.count(info.rowid);
 			
 			return 1;
 		}
@@ -922,10 +928,12 @@ package gadget.sync.incoming {
 
 		
 		override public function getRecordCount():String {
-			return _nbItems.toString();
+			return dicCount.getRecCount().toString();
 		}
 
 
+		
+		
 		
 		override public function getTransactionName():String { return entityIDour; }
 		override public function getEntityName():String { return entityIDsod; }
@@ -937,8 +945,8 @@ package gadget.sync.incoming {
 		}
 		
 		protected function showCount():void {
-			if (_lastItems!=_nbItems)
-				countHandler(_nbItems);
+				//always show count
+				countHandler(dicCount.getRecCount());
 			//_lastItems = _nbItems;
 		}
 		

@@ -58,8 +58,7 @@ package gadget.sync.incoming
 			if(searchSpec==null || searchSpec==''){
 				successHandler(null);
 				return;
-			}
-			_lastItems = _nbItems;
+			}			
 			isLastPage=false;			
 			
 			
@@ -168,7 +167,7 @@ package gadget.sync.incoming
 				conflictObj.serverRec = tmpOb;
 				conflictObj.localeRec = locRec;
 				_foundRecords.addItem(conflictObj);
-				_nbItems ++;
+				dicCount.count(tmpOb[oracId]);
 				return 1;
 			}			
 			

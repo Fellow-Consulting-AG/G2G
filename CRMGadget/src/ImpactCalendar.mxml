@@ -106,20 +106,7 @@
 				if(item.isTotal && col!=null){
 					return item[col.dataField];
 				}else{
-					if(!StringUtils.isEmpty(String(item.co7_CustomNumber0)) &&!StringUtils.isEmpty(String(item.co7_CustomCurrency4))){
-						var qty:int = parseInt(item.co7_CustomNumber0);
-						var val:Number = parseFloat(item.co7_CustomCurrency4);
-						var total:Number = qty*val;
-						//set annualized impact value;
-						if(!isNaN(total)){						
-							if(formatNum){
-								return NumberLocaleUtils.format(total);
-							}else{
-								return total.toFixed(4);
-							}
-						}
-					}
-					return "0";
+					return OpportunityDAO.getAnnualizedInpact(item,formatNum);
 				}
 			}
 			private static const CO7_FIELD:Array =[
@@ -149,14 +136,7 @@
 				"CustomCurrency9"//Annualized Impact 
 			];
 			
-			private static const MAP_CURVE_TYPE_VALUE:Object={
-				//last item is default value
-				'Straight Line':[0.0833333],
-				'3 Month Curve':[0.025,0.05,0.075,0.0833333],
-				'6 Month Curve':[0.02,0.03,0.04,0.05,0.06,0.07,0.0833333],
-				'Up-front Purchase':[0.32,0.06,0.04,0.0833333]		
-				
-			};
+			
 			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7","CustomDate26","CustomDate25"],CustomObject7:["CustomPickList31",//Category
 				"CustomPickList34",//unit
 				"CustomNumber0",//Quantity
@@ -221,8 +201,8 @@
 						}
 					},'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
 					{mandatory:true,isco7_field:true,element_name:"CustomPickList34",entity:Database.customObject7Dao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{'entity':Database.customObject7Dao.entity},labelFunction:displayPicklistValue,editAble:true,editorDataField :"selectedItem"},
-					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelIntDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,decimal:0,restrict:'0-9',maxChars:20},editAble:true},
-					{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:calMonth,restrict:'0-9.,\\-',maxChars:20},editAble:true},
+					{mandatory:true,isco7_field:true,element_name:"CustomNumber0",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelIntDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:OpportunityDAO.calImpactCalMonth,decimal:0,restrict:'0-9',maxChars:20},editAble:true},
+					{mandatory:true,isco7_field:true,element_name:"CustomCurrency4",alignRight:true,entity:Database.customObject7Dao.entity,labelFunction:labelNumberDisplay,itemEditor:new ClassFactory(AnnulizeColRenderer),properties:{calculateMonth:OpportunityDAO.calImpactCalMonth,restrict:'0-9.,\\-',maxChars:20},editAble:true},
 					{isco7_field:false,alignRight:true,element_name:"CustomCurrency0",entity:Database.opportunityDao.entity,itemRenderer:null,editAble:false,labelFunction:getAnnualizedInpact},
 					{element_name:"Q1",display_name:"QUATER1@Q1",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
 					{element_name:"Q2",display_name:"QUATER2@Q2",alignRight:true,labelFunction : colValue,itemEditor:new ClassFactory(QTextRenderer),properties:{restrict:'0-9.,\\-',maxChars:20},editorDataField:"quater",editAble:true},
@@ -311,7 +291,7 @@
 									r.origOP = Utils.copyModel(r,false);
 								}
 								if(callCalMonth){
-									calMonth(r);
+									OpportunityDAO.calImpactCalMonth(r);
 								}
 							}
 						}
@@ -377,22 +357,20 @@
 							return total.toFixed(4);
 						}
 					}
-					private function getCurveTypevalue(curveType:String):Array{
-						return MAP_CURVE_TYPE_VALUE[curveType];
-					}
+					
 					
 					private function calculateMonthByAnnualizedImpact(row:Object,oldSelected:String=null):void{
 						if(!StringUtils.isEmpty(oldSelected)){
 							//
 							Alert.show(i18n._("OVERRIDE_CURVE_MONTHS_MSSAGE@Do you want to override the existing monthly data for this new curve?"),i18n._("GLOBAL_WARNINGO@Warning"),Alert.YES|Alert.NO,this,function(event:CloseEvent):void{
 								if(event.detail==Alert.YES){
-									//calMonth(row);
+									//OpportunityDAO.calImpactCalMonth(row);
 									//right now loop over all recs to check related data
 									for each(var obj:Object in gridListAll.dataProvider){
 										if(obj!=row && row.OpportunityId==obj.OpportunityId){
 											obj.CustomPickList7 = row.CustomPickList7;
 										}
-										calMonth(obj);
+										OpportunityDAO.calImpactCalMonth(obj);
 									}
 									
 								}else{
@@ -406,69 +384,12 @@
 								if(obj!=row && row.OpportunityId==obj.OpportunityId){
 									obj.CustomPickList7 = row.CustomPickList7;
 								}
-								calMonth(obj);
+								OpportunityDAO.calImpactCalMonth(obj);
 							}
 							gridListAll.refreshRowByRecordId(row.OpportunityId,'OpportunityId');
 						}
 					}
-					//"CustomDate26",//Stard Date
-					//"CustomDate25",//end date
-					private function calMonth(row:Object):void{
-						//CustomPickList7 is curve_type 
-						var curveVal:Array = getCurveTypevalue(row['CustomPickList7']);
-						var currentYear:Date = new Date();
-						if(currentYear.month>9){
-							//#11402 Oct - Sep ( so it goes over 2 calendar years)
-							currentYear = Utils.calculateDate(1,currentYear,"fullyear");
-						}
-						var minDate:Date=DateUtils.guessAndParse(row.CustomDate26);
-						var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
-						var currentMonth:Date = new Date(currentYear.fullYear-1,9,1,0,0,0,0)
-						if(curveVal!=null && minDate!=null && maxDate!=null){
-							var currentMonthIdx:int = 0;
-							//CustomCurrency0 is annulized
-							var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row,null,false));
-							if(!isNaN(annulizedInpact)){						
-								for each(var qstr:String in OpportunityDAO.ALL_FY_QUATER){
-									var q:Object=row[qstr];
-									if(q==null){
-										q = new Object();
-										row[qstr]=q;
-									}
-									for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){								
-										var cal:Boolean = false;								
-										if(currentMonth.fullYear==maxDate.fullYear){
-											if(currentMonth.fullYear==minDate.fullYear){
-												cal=currentMonth.month>=minDate.month && currentMonth.month<=maxDate.month;
-											}else{
-												cal=currentMonth.month<=maxDate.month;
-											}
-											
-										}else if(currentMonth.fullYear<maxDate.fullYear){
-											if(currentMonth.fullYear>minDate.fullYear){
-												cal = true;
-											}else if(currentMonth.fullYear==minDate.fullYear){
-												cal=currentMonth.month>=minDate.month;
-											}
-										}
-										if(cal){									
-											var monthVal:Number = 0;
-											if(currentMonthIdx>=curveVal.length){
-												monthVal= annulizedInpact*curveVal[curveVal.length-1];
-											}else{
-												monthVal= annulizedInpact*curveVal[currentMonthIdx];
-											}
-											currentMonthIdx++;
-											q[f]= monthVal;
-										}else{
-											q[f]="0.00";
-										}
-										currentMonth=Utils.calculateDate(1,currentMonth,"month");
-									}
-								}
-							}
-						}
-					}
+					
 					
 					[Bindable]
 					public function get list():List

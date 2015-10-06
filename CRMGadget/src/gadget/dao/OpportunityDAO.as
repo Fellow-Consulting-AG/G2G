@@ -13,6 +13,7 @@ package gadget.dao
 	
 	import gadget.service.UserService;
 	import gadget.util.DateUtils;
+	import gadget.util.NumberLocaleUtils;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
@@ -84,6 +85,8 @@ package gadget.dao
 			
 			]);
 		
+		//TODO will change when get field from simone
+		private static const CO7_CURRENT_YEAR_FIELD:String = "CustomNumber61";
 		public static const MONTH_FIELD_FOR_EACH_Q:Array=[
 			"co7_CustomCurrency0",//Monthly Revenue 1
 			"co7_CustomCurrency2",//Monthly Revenue 2
@@ -702,9 +705,17 @@ package gadget.dao
 			"CustomCurrency3",//Previous FY Impact
 			"CustomCurrency4",//Next FY Impact
 		];
-		
+		private static const MAP_CURVE_TYPE_VALUE:Object={
+			//last item is default value
+			'Straight Line':[0.0833333],
+			'3 Month Curve':[0.025,0.05,0.075,0.0833333],
+			'6 Month Curve':[0.02,0.03,0.04,0.05,0.06,0.07,0.0833333],
+			'Up-front Purchase':[0.32,0.06,0.04,0.0833333]		
+			
+		};
 		public static const ALL_FY_QUATER:Array = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
-		
+		public static const CURRENT_YEAR_QUATER:Array=["Q1","Q2","Q3","Q4"];
+		public static const NEXT_YEAR_QUATER:Array=["Q5","Q6","Q7","Q8"];
 		public function findImpactCalendar(opColumns:Array,co7Field:Array):ArrayCollection {
 			if(UserService.getCustomerId()==UserService.COLOPLAST){//should be work for coloplast only
 				var cols:String = '';
@@ -724,6 +735,104 @@ package gadget.dao
 				}
 			}
 			return new ArrayCollection();
+		}
+		
+		private static function getCurveTypevalue(curveType:String):Array{
+			return MAP_CURVE_TYPE_VALUE[curveType];
+		}
+		
+		
+		public static function getAnnualizedInpact(item:Object,formatNum:Boolean = true):String{
+			
+			if(!StringUtils.isEmpty(String(item.co7_CustomNumber0)) &&!StringUtils.isEmpty(String(item.co7_CustomCurrency4))){
+				var qty:int = parseInt(item.co7_CustomNumber0);
+				var val:Number = parseFloat(item.co7_CustomCurrency4);
+				var total:Number = qty*val;
+				//set annualized impact value;
+				if(!isNaN(total)){						
+					if(formatNum){
+						return NumberLocaleUtils.format(total);
+					}else{
+						return total.toFixed(4);
+					}
+				}
+			}
+			return "0";
+			
+		}
+		
+		private static function getCurrentYearOfImpCal():Date{
+			var currentYear:Date = new Date();
+			if(currentYear.month>=9){//
+				//#11402 Oct - Sep ( so it goes over 2 calendar years)
+				currentYear = Utils.calculateDate(1,currentYear,"fullYear");
+			}
+			return currentYear;
+		}
+		
+		private static function calImpCalMonthByYear(row:Object,quters:Array,curentYear:Date):void{
+			var curveVal:Array = getCurveTypevalue(row['CustomPickList7'])
+			var minDate:Date=DateUtils.guessAndParse(row.CustomDate26);
+			var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
+			var currentMonth:Date = new Date(currentYear.fullYear-1,9,1,0,0,0,0)
+			if(curveVal!=null && minDate!=null && maxDate!=null){
+				var currentMonthIdx:int = 0;
+				//CustomCurrency0 is annulized
+				var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row,false));
+				if(!isNaN(annulizedInpact)){						
+					for each(var qstr:String in quters){
+						var q:Object=row[qstr];
+						if(q==null){
+							q = new Object();
+							row[qstr]=q;
+						}
+						for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){								
+							var cal:Boolean = false;								
+							if(currentMonth.fullYear==maxDate.fullYear){
+								if(currentMonth.fullYear==minDate.fullYear){
+									cal=currentMonth.month>=minDate.month && currentMonth.month<=maxDate.month;
+								}else{
+									cal=currentMonth.month<=maxDate.month;
+								}
+								
+							}else if(currentMonth.fullYear<maxDate.fullYear){
+								if(currentMonth.fullYear>minDate.fullYear){
+									cal = true;
+								}else if(currentMonth.fullYear==minDate.fullYear){
+									cal=currentMonth.month>=minDate.month;
+								}
+							}
+							if(cal){									
+								var monthVal:Number = 0;
+								if(currentMonthIdx>=curveVal.length){
+									monthVal= annulizedInpact*curveVal[curveVal.length-1];
+								}else{
+									monthVal= annulizedInpact*curveVal[currentMonthIdx];
+								}
+								currentMonthIdx++;
+								q[f]= monthVal;
+							}else{
+								q[f]="0.00";
+							}
+							currentMonth=Utils.calculateDate(1,currentMonth,"month");
+						}
+					}
+				}
+			}
+			
+		}
+		
+		//"CustomDate26",//Stard Date
+		//"CustomDate25",//end date
+		public static function calImpactCalMonth(row:Object):void{
+			//CustomPickList7 is curve_type 
+			var curveVal:Array = getCurveTypevalue(row['CustomPickList7']);
+			var currentYear:Date =getCurrentYearOfImpCal();
+			//calculate current year
+			calImpCalMonthByYear(row,CURRENT_YEAR_QUATER,currentYear);
+			//calculate next year
+			calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear');
+		
 		}
 		
 		public function getCompititor(filter:String=null):Dictionary{

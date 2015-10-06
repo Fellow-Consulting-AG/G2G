@@ -1719,6 +1719,7 @@ package gadget.dao {
 			LocaleService.reset();
 			customLayoutDao.removeTempRecords();//clear all temporary records
 			database.initTimeZoneData();
+			opportunityDao.triggerUpdateImpCal();
 		}
 		
 		//insert data to timezone by hardcoded

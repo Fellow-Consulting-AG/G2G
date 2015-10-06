@@ -780,6 +780,11 @@ package gadget.dao
 			exec(stmtDeleteTemporary);
 		}
 
+		public function deleteTemporaryByGadgetId(g2gId:Object):void	{
+			stmtDeleteTemporary.parameters[":gadget_id"] = g2gId;
+			exec(stmtDeleteTemporary);
+		}
+		
 		public function undeleteTemporary(object:Object):void	{
 			stmtUndeleteTemporary.parameters[":gadget_id"] = object.gadget_id;
 			exec(stmtUndeleteTemporary);

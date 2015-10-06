@@ -86,11 +86,58 @@ package gadget.dao
 			]);
 		
 		//TODO will change when get field from simone
-		private static const CO7_CURRENT_YEAR_FIELD:String = "CustomNumber61";
+		private static const CO7_CURRENT_YEAR_FIELD:String = "CustomNumber1";
 		public static const MONTH_FIELD_FOR_EACH_Q:Array=[
 			"co7_CustomCurrency0",//Monthly Revenue 1
 			"co7_CustomCurrency2",//Monthly Revenue 2
 			"co7_CustomCurrency1",//Monthly Revenue 3
+		];
+		public static const CO7_IMP_CAL_FIELD:Array =[
+			"CustomPickList31",//Category
+			"CustomPickList34",//unit
+			"CustomNumber0",//Quantity
+			"CustomCurrency4",//value
+			"CustomPickList33",//Quarter
+			"CustomCurrency0",//Monthly Revenue 1
+			"CustomCurrency2",//Monthly Revenue 2
+			"CustomCurrency1",//Monthly Revenue 3
+			"CustomCurrency3",//quater total
+			"Name",
+			"CustomCurrency6",//Last FY Impact 
+			"Type",//product type
+			"CustomCurrency5",//Current FY Impact
+			"CustomCurrency7",//Change vs last FY 
+			"CustomCurrency8",//Next FY Impact
+			"CustomCurrency9",//Annualized Impact
+			CO7_CURRENT_YEAR_FIELD
+			
+			
+		]; 
+		
+		public static const OP_IMP_CAL_FIELD:Array=[
+			"OwnerFullName",
+			"OpportunityId",
+			"OpportunityName",
+			"AccountName",
+			"AccountId",
+			"SalesStage",
+			"SalesStageId",
+			"Probability",
+			"CloseDate",
+			"CustomDate9",//Original Close Date
+			"CustomPickList0",//Business Area (CP)
+			"CustomPickList7",//Curve Type
+			"CustomDate26",//Stard Date
+			"CustomDate25",//end date
+			"CustomCurrency0",//Annualized Impact
+			"CustomCurrency1",//Current FY Impact
+			"CustomCurrency3",//Previous FY Impact
+			"CustomCurrency4",//Next FY Impact
+			"CustomText37",//Total Calls Current Quarter
+			"CustomCurrency2",//Expenses
+			"ModifiedDate",	
+			"Status"
+			
 		];
 		
 		private var textColumns:Array = [
@@ -716,7 +763,17 @@ package gadget.dao
 		public static const ALL_FY_QUATER:Array = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
 		public static const CURRENT_YEAR_QUATER:Array=["Q1","Q2","Q3","Q4"];
 		public static const NEXT_YEAR_QUATER:Array=["Q5","Q6","Q7","Q8"];
-		public function findImpactCalendar(opColumns:Array,co7Field:Array):ArrayCollection {
+		
+		
+		
+		
+		public function findImpactCalendar(opColumns:Array=null,co7Field:Array=null):ArrayCollection {
+			if(opColumns==null||opColumns.length<1){
+				opColumns = OP_IMP_CAL_FIELD;
+			}
+			if(co7Field==null||co7Field.length<1){
+				co7Field = CO7_IMP_CAL_FIELD;
+			}
 			if(UserService.getCustomerId()==UserService.COLOPLAST){//should be work for coloplast only
 				var cols:String = '';
 				for each (var column:String in opColumns) {
@@ -770,7 +827,7 @@ package gadget.dao
 			return currentYear;
 		}
 		
-		private static function calImpCalMonthByYear(row:Object,quters:Array,curentYear:Date):void{
+		private static function calImpCalMonthByYear(row:Object,quters:Array,currentYear:Date):void{
 			var curveVal:Array = getCurveTypevalue(row['CustomPickList7'])
 			var minDate:Date=DateUtils.guessAndParse(row.CustomDate26);
 			var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
@@ -831,7 +888,7 @@ package gadget.dao
 			//calculate current year
 			calImpCalMonthByYear(row,CURRENT_YEAR_QUATER,currentYear);
 			//calculate next year
-			calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear');
+			calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear'));
 		
 		}
 		
@@ -1038,6 +1095,14 @@ package gadget.dao
 			objSav.CustomPickList33=quater;
 			objSav.Type = 'Forecast';
 			if(!StringUtils.isEmpty(quater)){
+				var currentyear:Date = getCurrentYearOfImpCal();
+				if(CURRENT_YEAR_QUATER.indexOf(quater)!=-1){
+					//current year
+					objSav[CO7_CURRENT_YEAR_FIELD] = currentyear.fullYear;
+				}else{
+					//next year
+					objSav[CO7_CURRENT_YEAR_FIELD] =currentyear.fullYear+1;
+				}
 				var total:Number =0;
 				//save total of the quater
 				for each(var m:String in MONTH_FIELD_FOR_EACH_Q){
@@ -1098,8 +1163,8 @@ package gadget.dao
 				if(totalObj==null){
 					totalObj = new Object();
 					//init value
-					for each(var f:String in TOTAL_FIELD){
-						totalObj[f]=0;
+					for each(var ft:String in TOTAL_FIELD){
+						totalObj[ft]=0;
 					}
 					totaldic[row.OpportunityId]=totalObj;
 				}
@@ -1118,6 +1183,87 @@ package gadget.dao
 				}
 			}
 			return totaldic;
+		}
+		
+		
+		public function triggerUpdateImpCal():void{
+			//user only for coloplast
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+				var results:ArrayCollection =findImpactCalendar();
+				var currentYear:Date = getCurrentYearOfImpCal();
+				var listChange:ArrayCollection = new ArrayCollection();
+				for each(var row:Object in results){
+					if(getCurrentYearFromRow(row)<currentYear.fullYear && currentYear.fullYear<=getNextYearForRow(row)){
+						//start calculate new year
+						for( var i:int=0;i<CURRENT_YEAR_QUATER.length;i++){
+							var cq:Object = row[CURRENT_YEAR_QUATER[i]];
+							var nq:Object = row[NEXT_YEAR_QUATER[i]];
+							if(nq!=null){
+								nq.CustomPickList33=CURRENT_YEAR_QUATER[i];
+								row[CURRENT_YEAR_QUATER[i]]=nq;							
+								
+							}
+							
+							if(cq!=null){
+								//clear next year quator
+								for each(var m:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+									cq[m]="0.00";	
+								}
+								cq.CustomPickList33=NEXT_YEAR_QUATER[i];
+								row[NEXT_YEAR_QUATER[i]]=cq;
+							}
+							
+							
+						}					
+						calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear'));
+						row.co7Change=true;
+						
+						listChange.addItem(row);
+					}
+				}
+				if(listChange.length>0){
+					saveImpactCalendar(listChange,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,results);
+				}
+			}
+		}
+		
+		private function getCurrentYearFromRow(r:Object):int{
+			if(r["Q1"]!=null){
+				var y:String = r["Q1"][CO7_CURRENT_YEAR_FIELD];
+				if(!StringUtils.isEmpty(y)){
+					var yn:int = parseInt(y);
+					if(!isNaN(yn)){
+						return yn;
+					}
+				}
+			}
+			var minDate:Date=DateUtils.guessAndParse(r.CustomDate26);
+			if(minDate!=null){
+				return minDate.fullYear;
+			}
+			
+			return 9999;
+			
+		}
+		
+		private function getNextYearForRow(r:Object):Number{
+			if(r["Q4"]!=null){
+				var y:String = r["Q4"][CO7_CURRENT_YEAR_FIELD];
+				if(!StringUtils.isEmpty(y)){
+					var yn:int = parseInt(y);
+					if(!isNaN(yn)){
+						return yn;
+					}
+				}
+			}
+			
+			
+			var maxDate:Date = DateUtils.guessAndParse(r.CustomDate25);		
+			if(maxDate!=null){
+				return maxDate.fullYear;
+			}
+			
+			return -1;
 		}
 		
 		public function saveImpactCalendar(recordChanges:ArrayCollection,opField:Array,co7Fields:Array,allRows:ArrayCollection):void{

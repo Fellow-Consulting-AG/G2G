@@ -1783,7 +1783,7 @@ package gadget.util {
 						}
 						if(subObj.advanced_filter==null || subObj.advanced_filter==""){
 							//bug#11369 default display only not sync
-							subObj.advanced_filter=TransactionDAO.NO_SYNC_TYPE;
+							subObj.advanced_filter=TransactionDAO.ALL_TYPE;
 						}
 						
 					});

@@ -65,31 +65,7 @@
 			public static const ACTUAL_TYPE:String = "Actual";
 			public static const VARIANCE_TYPE:String = "Variance";
 			private var mapShowMonth:Object = {"-1":false};
-			private static const OP_FIELD:Array=[
-				"OwnerFullName",
-				"OpportunityId",
-				"OpportunityName",
-				"AccountName",
-				"AccountId",
-				"SalesStage",
-				"SalesStageId",
-				"Probability",
-				"CloseDate",
-				"CustomDate9",//Original Close Date
-				"CustomPickList0",//Business Area (CP)
-				"CustomPickList7",//Curve Type
-				"CustomDate26",//Stard Date
-				"CustomDate25",//end date
-				"CustomCurrency0",//Annualized Impact
-				"CustomCurrency1",//Current FY Impact
-				"CustomCurrency3",//Previous FY Impact
-				"CustomCurrency4",//Next FY Impact
-				"CustomText37",//Total Calls Current Quarter
-				"CustomCurrency2",//Expenses
-				"ModifiedDate",	
-				"Status"
-				
-			];
+			private static const OP_FIELD:Array=OpportunityDAO.OP_IMP_CAL_FIELD;
 			
 			
 			private static var IGNORE_OP_CHECK_FIELD:Array=[
@@ -109,26 +85,7 @@
 					return OpportunityDAO.getAnnualizedInpact(item,formatNum);
 				}
 			}
-			private static const CO7_FIELD:Array =[
-				"CustomPickList31",//Category
-				"CustomPickList34",//unit
-				"CustomNumber0",//Quantity
-				"CustomCurrency4",//value
-				"CustomPickList33",//Quarter
-				"CustomCurrency0",//Monthly Revenue 1
-				"CustomCurrency2",//Monthly Revenue 2
-				"CustomCurrency1",//Monthly Revenue 3
-				"CustomCurrency3",//quater total
-				"Name",
-				"CustomCurrency6",//Last FY Impact 
-				"Type",//product type
-				"CustomCurrency5",//Current FY Impact
-				"CustomCurrency7",//Change vs last FY 
-				"CustomCurrency8",//Next FY Impact
-				"CustomCurrency9"//Annualized Impact 
-				
-				
-			]; 
+			private static const CO7_FIELD:Array =OpportunityDAO.CO7_IMP_CAL_FIELD; 
 			public static var IGNORE_CO7_CHECK_FIELD:Array=[
 				"CustomCurrency5",//Current FY Impact
 				"CustomCurrency7",//Change vs last FY 
@@ -832,7 +789,7 @@
 						}else{
 							filterList.filterGrid.selectedIndex=0;
 						}
-						rows = Database.opportunityDao.findImpactCalendar(OP_FIELD,CO7_FIELD);
+						rows = Database.opportunityDao.findImpactCalendar();
 						
 						rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),groupType:'FORECAST',isTotal:true,type:FORECAST_TYPE,'lineTotalId':'totalid'});
 						rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),groupType:'FORECAST',isTotal:true,type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{

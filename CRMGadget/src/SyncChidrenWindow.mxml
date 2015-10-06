@@ -112,7 +112,10 @@
 				}
 				advancedFilter.addChild(cboAdvancedFilter);
 			}
-			private function getSelectionObject(list:ArrayCollection, id:String):Object{
+			private function getSelectionObject(list:ArrayCollection, id:Object):Object{
+				if(id==null){
+					id = TransactionDAO.ALL_TYPE;//all type is default value
+				}
 				for each(var obj:Object in list){
 					if(obj.type==id)
 						return obj;

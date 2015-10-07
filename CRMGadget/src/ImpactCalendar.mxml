@@ -19,6 +19,7 @@
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
+			import gadget.control.ImpactCalLinkColRenderer;
 			import gadget.control.ImpactCalendarColumnGroup;
 			import gadget.control.ImpactColNumRenderer;
 			import gadget.control.ImpactText;
@@ -114,7 +115,7 @@
 			}
 			private var all_columns:ArrayCollection = new ArrayCollection([
 				{isop_field:true,element_name:"OwnerFullName",entity:Database.opportunityDao.entity,itemRenderer:null,properties:null},
-				{isop_field:true,element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(LinkButtonRevenueColRenderer),properties:{"list":list},editAble:true},
+				{isop_field:true,element_name:"OpportunityName",entity:Database.opportunityDao.entity,itemRenderer:new ClassFactory(ImpactCalLinkColRenderer),properties:{"list":list},editAble:true},
 				{isop_field:true,element_name:"AccountName",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ItemFinderColRender),properties:{reloadFunc:updateData,'entity':Database.opportunityDao.entity},editAble:true,width:120,editorDataField :"selectedItem"},
 				{isop_field:true,element_name:"SalesStage",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ComboboxColRender),properties:{updateFunction:updateSaleStage,refreshRow:false,'entity':Database.opportunityDao.entity},editAble:true,editorDataField :"selectedItem"},
 				{isop_field:true,alignRight:true,element_name:"Probability",entity:Database.opportunityDao.entity,itemEditor:new ClassFactory(ProbabilityColNumRenderer),properties:{restrict:'0-9',decimal:0,refreshRow:false,updateData:updateData},labelFunction:displayPercentag,editAble:true},
@@ -359,7 +360,7 @@
 						//resourceManager.localeChain = [LocaleUtils.getLocaleCode()];
 						initGridListAllOpportunities();
 						initGridTotalAllOpportunities();
-						initGridProductDetails();
+//						initGridProductDetails();
 					}
 					private  function createColumn(header:String,dataField:String,editAble:Boolean=false,renderer:ClassFactory=null):AdvancedDataGridColumn{
 						
@@ -606,6 +607,11 @@
 						
 					}
 					
+					private function openEditScreen(item:Object):void{
+						checkAction(function():void{
+							list.editScreenDetail(item);
+						});
+					}
 					
 					public function initGridListAllOpportunities():void{				
 						var columns:Array = new Array();
@@ -641,7 +647,7 @@
 							var editAble:Boolean = objCol.editAble==null?false:objCol.editAble;
 							if(renderer != null){
 								if(col_name=='OpportunityName'){
-									renderer.properties={"list":list};
+									renderer.properties={"clickAction":openEditScreen};
 								}else{
 									renderer.properties= objCol.properties;
 								}
@@ -1232,28 +1238,28 @@
 						calculateTotalAllOpportunity();
 					}
 					
-					private  function initGridProductDetails():void{
-						
-						var columns:Array = new Array();
-						
-						columns.push(createColumn("Product Description","ProductDescription",true));
-						columns.push(createColumn("# of Patients","Patients",true));
-						columns.push(createColumn("Value of Product","ProductValue",true));
-						columns.push(createColumn("Value of Patients","QTDRevenue",false));
-						
-						//				gridProductDetails.columns = columns;
-						
-						var dataProvider:ArrayCollection = new ArrayCollection();
-						var objDest:Object = {ProductDescription:"SelfCath",Patients:"200",ProductValue:"700",QTDRevenue:"140000"};
-						var objSpeediCath:Object = {ProductDescription:"SpeediCath Straight",Patients:"100",ProductValue:"1400",QTDRevenue:"140000"};
-						var objCollection:Object = {ProductDescription:"Collection",Patients:"100",ProductValue:"400",QTDRevenue:"40000"};
-						var objTotal:Object = {ProductDescription:"Total",Patients:"400",ProductValue:"2500",QTDRevenue:"320000"};
-						dataProvider.addItem(objDest);
-						dataProvider.addItem(objSpeediCath);
-						dataProvider.addItem(objCollection);
-						dataProvider.addItem(objTotal);
-						//				gridProductDetails.dataProvider = dataProvider;
-					}
+//					private  function initGridProductDetails():void{
+//						
+//						var columns:Array = new Array();
+//						
+//						columns.push(createColumn("Product Description","ProductDescription",true));
+//						columns.push(createColumn("# of Patients","Patients",true));
+//						columns.push(createColumn("Value of Product","ProductValue",true));
+//						columns.push(createColumn("Value of Patients","QTDRevenue",false));
+//						
+//						//				gridProductDetails.columns = columns;
+//						
+//						var dataProvider:ArrayCollection = new ArrayCollection();
+//						var objDest:Object = {ProductDescription:"SelfCath",Patients:"200",ProductValue:"700",QTDRevenue:"140000"};
+//						var objSpeediCath:Object = {ProductDescription:"SpeediCath Straight",Patients:"100",ProductValue:"1400",QTDRevenue:"140000"};
+//						var objCollection:Object = {ProductDescription:"Collection",Patients:"100",ProductValue:"400",QTDRevenue:"40000"};
+//						var objTotal:Object = {ProductDescription:"Total",Patients:"400",ProductValue:"2500",QTDRevenue:"320000"};
+//						dataProvider.addItem(objDest);
+//						dataProvider.addItem(objSpeediCath);
+//						dataProvider.addItem(objCollection);
+//						dataProvider.addItem(objTotal);
+//						//				gridProductDetails.dataProvider = dataProvider;
+//					}
 					private function homeOpportunity():void{
 						list.showHomeOpportunity();
 					}
@@ -1735,16 +1741,16 @@
 					}
 					
 					
-					protected function showNormalMode(event:MouseEvent):void
+					protected function checkAction(callF:Function):void
 					{
 						Alert.show(i18n._("CHANGE_TAB_MSSAGE@Do you want to save your entries before moving on?"),i18n._("GLOBAL_INFO@Info"),Alert.YES|Alert.NO,this,function(e:CloseEvent):void{
 							if(e.detail==Alert.YES){
 								save(function():void{
-									list.showHomeOpportunity();
+									callF();
 									
 								});
 							}else{
-								list.showHomeOpportunity();
+								callF();
 							}
 							
 						});
@@ -1754,7 +1760,7 @@
 	</mx:Script>
 	<mx:VBox left="8" right="8" width="100%" height="100%">
 		<mx:HBox width="100%" horizontalAlign="right" paddingTop="10" paddingRight="20">
-			<mx:LinkButton label="{i18n._('GLOBAL_LIST_MODE@List mode')}"  click="showNormalMode(event)" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
+			<mx:LinkButton label="{i18n._('GLOBAL_LIST_MODE@List mode')}"  click="checkAction(list.showHomeOpportunity)" icon="{ImageUtils.getImage(Database.opportunityDao.entity)}"/>
 			<mx:LinkButton icon="{ImageUtils.excelIcon}" click="exportToExcel()" label="{i18n._('GLOBAL_EXPORT_EXCEL@Export Excel')}" />
 			<mx:LinkButton icon="{closeIcon}" label="{i18n._('GLOBAL_DISCARD_CHANGES')}" click="cancelAction(event)"/>
 			<mx:LinkButton paddingRight="20" icon="{saveIcon}" click="save()" label="{i18n._('GLOBAL_SAVE')}"/>

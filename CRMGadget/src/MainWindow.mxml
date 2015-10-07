@@ -1878,8 +1878,8 @@
 			}
 			
 			private function  checkAction(event:Event,callFunction:Function):void{
-				var entity:String = getEntityFromEvent(event);
-				if(selectedEntity==Database.opportunityDao.entity && entity!=Database.opportunityDao.entity && getSelectedList().boxImpactCalendar.visible){
+				
+				if(selectedEntity==Database.opportunityDao.entity &&  getSelectedList().boxImpactCalendar.visible){
 					Alert.show(i18n._("CHANGE_TAB_MSSAGE@Do you want to save your entries before moving on?"),i18n._("GLOBAL_INFO@Info"),Alert.YES|Alert.NO,this,function(e:CloseEvent):void{
 						if(e.detail==Alert.YES){
 							getSelectedList().saveImpactCalendar(function():void{

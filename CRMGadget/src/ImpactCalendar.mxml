@@ -94,11 +94,7 @@
 			];
 			
 			
-			private static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7","CustomDate26","CustomDate25"],CustomObject7:["CustomPickList31",//Category
-				"CustomPickList34",//unit
-				"CustomNumber0",//Quantity
-				"CustomCurrency4"//value
-			]};
+		//	private static const MANDATORY_FIELD:Object =OpportunityDAO.MANDATORY_FIELD;
 			
 			private static const ENTITY_CHECKS:Array = ['Opportunity','CustomObject7'];
 			
@@ -1387,7 +1383,7 @@
 								if(!r.co7Change && entity==Database.customObject7Dao.entity){
 									continue;
 								}
-								var fields:Array = MANDATORY_FIELD[entity];
+								var fields:Array = OpportunityDAO.MANDATORY_FIELD[entity];
 								var isco7:Boolean = entity==Database.customObject7Dao.entity;
 								for each(var mf:String in fields){
 									var datafield:String = mf;
@@ -1407,7 +1403,7 @@
 								
 							}
 							if(!r.opChange && isco7 && r.co7Change){//always check curve type if has co7
-								var opMfs:Array = MANDATORY_FIELD[Database.opportunityDao.entity];
+								var opMfs:Array = OpportunityDAO.MANDATORY_FIELD[Database.opportunityDao.entity];
 								var changedFirstCol:Boolean=false;
 								for (var j:int=0;j<opMfs.length;j++){
 									var f:String = opMfs[j];

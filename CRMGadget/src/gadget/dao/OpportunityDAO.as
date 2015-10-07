@@ -92,6 +92,14 @@ package gadget.dao
 			"co7_CustomCurrency2",//Monthly Revenue 2
 			"co7_CustomCurrency1",//Monthly Revenue 3
 		];
+		
+		//for impact calendar
+		public static const ENTITY_CHECKS:Array = ['Opportunity','CustomObject7']
+		public static const MANDATORY_FIELD:Object ={Opportunity:["CustomPickList7","CustomDate26","CustomDate25"],CustomObject7:["CustomPickList31",//Category
+			"CustomPickList34",//unit
+			"CustomNumber0",//Quantity
+			"CustomCurrency4"//value
+		]};
 		public static const CO7_IMP_CAL_FIELD:Array =[
 			"CustomPickList31",//Category
 			"CustomPickList34",//unit
@@ -818,8 +826,10 @@ package gadget.dao
 			
 		}
 		
-		private static function getCurrentYearOfImpCal():Date{
-			var currentYear:Date = new Date();
+		private static function getCurrentYearOfImpCal(currentYear:Date = null):Date{
+			if(currentYear==null){
+				currentYear = new Date();
+			}
 			if(currentYear.month>=9){//
 				//#11402 Oct - Sep ( so it goes over 2 calendar years)
 				currentYear = Utils.calculateDate(1,currentYear,"fullYear");
@@ -981,9 +991,15 @@ package gadget.dao
 			var opId2Row:Dictionary = new Dictionary();
 			var opId2CategorySlected:Dictionary = new Dictionary();
 			var group:int =-1;
+			var currentDate:Date = getCurrentYearOfImpCal();
 			//row idenfify is opportunityId and category
 			for each(var obj:Object in result){
+				var maxDate:Date = getCurrentYearOfImpCal(DateUtils.guessAndParse(obj.CustomDate25));
+				if(currentDate.fullYear>maxDate.fullYear){//we show only opportunity which has end date > now
+					continue;
+				}
 				if(!StringUtils.isEmpty(obj.co7_Id)){
+					
 					var rId:String = obj.OpportunityId+"_"+getCo7Value(obj,'CustomPickList31');
 					var row:Object=dic[rId];
 					if(row==null){
@@ -1184,7 +1200,36 @@ package gadget.dao
 			}
 			return totaldic;
 		}
-		
+		//check co7 mandatoryfield
+
+		private function isMandatory(r:Object):Boolean{
+			
+			for each (var type:String in ENTITY_CHECKS){
+				if(!r.opChange && type==Database.opportunityDao.entity){
+					continue;
+				}
+				if(!r.co7Change && type==Database.customObject7Dao.entity){
+					continue;
+				}
+				var fields:Array = OpportunityDAO.MANDATORY_FIELD[type];
+				var isco7:Boolean = type==Database.customObject7Dao.entity;
+				for each(var mf:String in fields){
+					var datafield:String = mf;
+					if(isco7){
+						datafield = OpportunityDAO.CO7_PREFIX+mf;
+					}
+					if(StringUtils.isEmpty(r[datafield])){
+						
+						return true;
+						
+						
+					}
+				}
+				
+			}
+			
+			return false;
+		}
 		
 		public function triggerUpdateImpCal():void{
 			//user only for coloplast
@@ -1193,6 +1238,9 @@ package gadget.dao
 				var currentYear:Date = getCurrentYearOfImpCal();
 				var listChange:ArrayCollection = new ArrayCollection();
 				for each(var row:Object in results){
+					if(isMandatory(row)){
+						continue;//is mandatory mean that row no product
+					}
 					if(getCurrentYearFromRow(row)<currentYear.fullYear && currentYear.fullYear<=getNextYearForRow(row)){
 						//start calculate new year
 						for( var i:int=0;i<CURRENT_YEAR_QUATER.length;i++){
@@ -1229,39 +1277,38 @@ package gadget.dao
 		
 		private function getCurrentYearFromRow(r:Object):int{
 			if(r["Q1"]!=null){
-				var y:String = r["Q1"][CO7_CURRENT_YEAR_FIELD];
+				var y:String = getCo7Value(r["Q1"],CO7_CURRENT_YEAR_FIELD);
 				if(!StringUtils.isEmpty(y)){
 					var yn:int = parseInt(y);
 					if(!isNaN(yn)){
 						return yn;
 					}
+				}else{
+					return 0;
 				}
 			}
-			var minDate:Date=DateUtils.guessAndParse(r.CustomDate26);
-			if(minDate!=null){
-				return minDate.fullYear;
-			}
-			
-			return 9999;
+			return 999;
 			
 		}
 		
 		private function getNextYearForRow(r:Object):Number{
 			if(r["Q4"]!=null){
-				var y:String = r["Q4"][CO7_CURRENT_YEAR_FIELD];
+				var y:String =getCo7Value(r["Q4"],CO7_CURRENT_YEAR_FIELD);
 				if(!StringUtils.isEmpty(y)){
 					var yn:int = parseInt(y);
 					if(!isNaN(yn)){
 						return yn;
 					}
 				}
+				
+				
+				var maxDate:Date = DateUtils.guessAndParse(r.CustomDate25);		
+				if(maxDate!=null){
+					return maxDate.fullYear;
+				}
 			}
 			
 			
-			var maxDate:Date = DateUtils.guessAndParse(r.CustomDate25);		
-			if(maxDate!=null){
-				return maxDate.fullYear;
-			}
 			
 			return -1;
 		}

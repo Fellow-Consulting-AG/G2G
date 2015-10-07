@@ -167,7 +167,7 @@ package gadget.dao
 			
 		}
 		
-		public function isSyncAble(entity:String,subEntity:String){
+		public function isSyncAble(entity:String,subEntity:String):Boolean{
 			var type:Number = getAdvancedFilterType(entity,subEntity);
 			return type!=TransactionDAO.NO_SYNC_TYPE;
 		}

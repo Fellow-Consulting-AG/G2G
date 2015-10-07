@@ -181,10 +181,18 @@
 						});
 					}
 				});
+				//bug#11360-----lock url
+				var unLockUrl:Boolean = !Database.lastsyncDao.isSynced();
+				use_sso.enabled = unLockUrl;
+				company_sso_id.editable = unLockUrl&&use_sso.selected;
+				sodhost.editable = unLockUrl;
+				sodlogin.editable = unLockUrl;
+				
 				loadDailyAgendaHeader();
 				loadRevenueReportHeader();
 				initDataReportAdmin();
 				loadDataCalendarSettings();
+				
 			}
 			private function selectCombobox(combo:ComboBox,data:String):void{
 				var provider:ArrayCollection = combo.dataProvider as ArrayCollection;
@@ -2804,7 +2812,7 @@
 							<!--Bug fixing 472 CRO -->
 							<!--Open code for fixing bug 748 CRO-->
 							<mx:FormItem label="{i18n._('USE_SSO')}" id="chkUseSSO">
-								<mx:CheckBox id="use_sso" selected="{Database.preferencesDao.getValue('use_sso')==1? true:false}" change="{editStatus = true;company_sso_id.enabled=use_sso.selected}" click="hideSSOTechUser(hideTechUser.selected)" />									
+								<mx:CheckBox id="use_sso" selected="{Database.preferencesDao.getValue('use_sso')==1? true:false}" change="{editStatus = true;company_sso_id.enabled=use_sso.selected;company_sso_id.editable=use_sso.selected}" click="hideSSOTechUser(hideTechUser.selected)" />									
 							</mx:FormItem>
 							<mx:FormItem label="{i18n._('COMPANY_SSO_ID')}" id="ssocompId">
 								<mx:TextInput id="company_sso_id" width="360" enabled="{use_sso.selected}" text="{Database.preferencesDao.getValue('company_sso_id')}" />

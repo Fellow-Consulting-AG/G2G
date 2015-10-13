@@ -123,15 +123,17 @@
 						}
 						
 						rows.addItem(newObj); //add a blank record		
-						
-						editableGrid.dataProvider = rows;
 //						editableGrid.validateNow();
 						if(setSelected){
-							
+							//editableGrid.selectedIndex = oldRowIndex+1;
 							editableGrid.editedItemPosition = {columnIndex:0, rowIndex:(oldRowIndex+1)};
 						}else{
+							//editableGrid.selectedIndex = oldRowIndex;
 							editableGrid.editedItemPosition = {columnIndex:oldColIndex, rowIndex:oldRowIndex};
 						}
+						
+						
+						
 						
 					}
 				}else if(fromclick){

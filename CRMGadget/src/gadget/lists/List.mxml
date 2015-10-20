@@ -1429,7 +1429,7 @@
 					//#1124 CRO
 					if(obj.data_type == "Integer" || obj.data_type == "Number" || obj.data_type == "Currency") {
 						child.sortCompareFunction = function(obj1:Object,obj2:Object):int{
-							return sortNumberic(obj1,obj2,this.entity);
+							return sortNumberic(obj1,obj2,obj1.gadget_type);
 						}
 						if(obj.data_type == "Integer"){
 							child.labelFunction = Utils.labelIntDisplay;

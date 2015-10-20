@@ -1279,6 +1279,12 @@ package gadget.util
 					//the result cannot be null or empty
 					obj = dao.getByParentId({'ActivityId':actId,'Id':contId})[0];
 					gadId = obj.gadget_id;
+				}else if(dao is ActivityUserDAO){
+					var aId:String = object.item["ActivityId"];
+					var uId:String = selectedItem['Id'];
+					obj = dao.getByParentId({'ActivityId':aId,'UserId':uId})[0];
+					gadId = obj.gadget_id;
+					
 				}else{
 					gadId = selectedItem.gadget_id;
 					obj = dao.findByGadgetId(gadId);

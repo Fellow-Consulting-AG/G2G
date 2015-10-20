@@ -688,7 +688,7 @@ package gadget.sync.outgoing
 			var showWarning:Boolean = true;
 			var error:Boolean = true;
 			var currentRecords:Object = getCurrentRecordError();
-			if(faultString.indexOf("(SBL-DAT-00357)")>0 && faultString.indexOf("'Activity_Contact'")>0){
+			if((short=="Nonunique"|| short=="Duplicate") && this is OutgoingSubBase){
 				if(getOperation()=='create' || getOperation()=='Created'){
 					showWarning = false;
 					currentRecords.DummySiebelRowId = currentRecords.gadget_id;

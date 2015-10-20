@@ -448,6 +448,18 @@
 								Database.activityContactDao.update(newObj);
 							}
 						}
+						//create activity_user
+						var acUsers:Array = Database.activityUserDao.getByParentId({'ActivityId':item[DAOUtils.getOracleId(entity)],'UserId':item['OwnerId']});
+						if(acUsers==null || acUsers.length<1){
+							var acu:Object = new Object();
+							acu["ActivityId"] = item[DAOUtils.getOracleId(entity)];
+							acu["UserId"] = item['OwnerId'];													
+							Database.activityUserDao.insert(acu);
+							acu = Database.activityUserDao.selectLastRecord()[0];
+							var acuOODId:String = DAOUtils.getOracleId(Database.activityUserDao.entity);
+							acu[acuOODId]="#"+acu.gadget_id;
+							Database.activityContactDao.update(acu);
+						}
 					}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
 						var accoundId:String = Utils.ensureOracleId(item.AccountId);
 						var contactId:String = Utils.ensureOracleId(item.ContactId);
@@ -464,7 +476,7 @@
 								var newObj2:Object = new Object();
 								newObj2["AccountId"] = accoundId;
 								newObj2["ContactId"] = contactId;
-								newObj2["ContactFullName"] = item["PrimaryContactFirstName"];													
+								newObj2["ContactFullName"] = contactFullName;													
 								Database.contactAccountDao.insert(newObj2);
 								newObj2 = Database.contactAccountDao.selectLastRecord()[0];
 								var oraIdF:String = DAOUtils.getOracleId(Database.contactAccountDao.entity);
@@ -1162,13 +1174,16 @@
 					}
 					// default values for call, appointment, task
 					var aData:Object;
-					if(comboAction.selectedItem.subtype == 2 && data == 'Activity') {
-						aData = ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE);
-					}else if(comboAction.selectedItem.subtype == 1 && data == 'Activity') {
-						aData = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE);
-					}else if(comboAction.selectedItem.subtype == 0 && data == 'Activity') {
-						aData = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE);
+					if(data==Database.activityDao.entity){
+						if(comboAction.selectedItem.subtype == 2) {
+							aData = ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE);
+						}else if(comboAction.selectedItem.subtype == 1) {
+							aData = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE);
+						}else if(comboAction.selectedItem.subtype == 0) {
+							aData = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE);
+						}
 					}
+					
 					for (var key:String in aData) {
 						other[key] = aData[key];
 					}

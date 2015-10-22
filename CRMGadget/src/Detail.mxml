@@ -1202,6 +1202,15 @@
 						}else if(entity==Database.contactDao.entity){
 							other["AccountId"] = item["AccountId"];
 							other["AccountName"] = item["AccountName"];
+							
+						}else if(entity==Database.serviceDao.entity){
+							//bug#1546-----SR-Detail
+							other["AccountId"] = item["AccountId"];
+							other["AccountName"] = item["AccountName"];
+							other["PrimaryContactId"] = item["ContactId"];
+							other["PrimaryContact"] = item["ContactFullName"];
+							other["PrimaryContactFirstName"] = con["ContactFirstName"];
+							other["PrimaryContactLastName"] = con["ContactLastName"];
 						}
 					}
 					

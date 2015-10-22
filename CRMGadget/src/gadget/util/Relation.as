@@ -161,7 +161,7 @@ package gadget.util
 			
 			
 			{entitySrc:"Service Request", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},
-			{entitySrc:"Service Request", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact"},
+			{entitySrc:"Service Request", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"'ContactFirstName','ContactLastName',], labelDest:["ContactFullName","ContactFirstName","ContactLastName"], entityDest:"Contact"},
 			{entitySrc:"Service Request", keySrc:"ServiceRequestId", keySupport:"ServiceRequestId", keyDest:"Id", labelSrc:["ServiceRequestId"], labelSupport:["Subject","Private","CreatedByFullName","ModifiedDate"],isColDynamic:true, labelDest:["Subject"], entityDest:"Note", supportTable:"Service Request.Note"},
 			{entitySrc:"Service Request.Note", keySrc:"ServiceRequestId",labelSrc:["ServiceRequestId"], keyDest:"ServiceRequestId",labelDest:["ServiceRequestId"],  entityDest:"Service Request"},
 			{entitySrc:"Service Request", keySrc:"ProductId", keyDest:"ProductId", labelSrc:["Product"], labelDest:["Name"], entityDest:"Product"},

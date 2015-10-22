@@ -1088,7 +1088,7 @@
 				var entity:String = event.target.data.toString().substr(0, index);
 				
 				var newObj:Object;
-				if(entity == 'Activity'){
+				if(entity == Database.activityDao.entity){
 //					switch(subtype){
 //						case 0: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE); break;
 //						case 1: newObj = ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE); break;

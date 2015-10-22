@@ -81,7 +81,15 @@ package gadget.dao
 				"CustomObject5ExternalSystemId",
 				"CustomObject5Name",
 				"CustomObject6ExternalSystemId",
-				"CustomObject6Name"
+				"CustomObject6Name",
+				'Owner',
+				'OwnerFullName',				
+				'OwnerPartnerAccount',
+				'OwnerPartnerExternalSystemId',
+				'OwnerPartnerIntegrationId',
+				'OwnerPartnerLocation',
+				'OwnerPartnerName',
+				'OwnershipStatus',
 			
 			]);
 		

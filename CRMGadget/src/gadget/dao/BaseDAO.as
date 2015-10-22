@@ -18,6 +18,7 @@ package gadget.dao
 	
 	import mx.collections.ArrayCollection;
 	
+	
 	import org.flexunit.runner.Result;
 	
 	public class BaseDAO extends BaseQuery implements DAO {
@@ -415,6 +416,14 @@ package gadget.dao
 						dic[labelField] = labelField;
 					}
 				}
+			}
+			
+			for each(var uf:Object in getOwnerFields()){
+				if(uf.userField=="Id"){
+					continue;
+				}
+				//ignore field not id
+				dic[uf.entityField]=uf.entityField;
 			}
 			//read readonly fields from field management Bug #7267 CRO
 			//bug#8905-----have some pb---ood not execute formula when created

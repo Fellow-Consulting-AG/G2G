@@ -32,7 +32,8 @@ package gadget.dao
 			stmtUserSelect = new SQLStatement();
 			stmtUserSelect.sqlConnection = sqlConnection;
 			stmtUserSelect.text = "SELECT 'User' gadget_type, * FROM allusers WHERE Id in (SELECT UserId FROM activity_user WHERE ( deleted = 0 OR deleted IS null ) AND ActivityId = :ActivityId);";
-			
+			_isSelectAll=true;
+			_isGetField = true;
 			/*
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;

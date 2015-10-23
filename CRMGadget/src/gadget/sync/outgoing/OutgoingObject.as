@@ -4,6 +4,8 @@
 // It still is heavily based on the WS1.0 outgoing sync.
 package gadget.sync.outgoing
 {	
+	import com.hurlant.crypto.symmetric.ECBMode;
+	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.utils.Dictionary;
@@ -190,8 +192,7 @@ package gadget.sync.outgoing
 		}
 		
 		
-		override protected function doRequest():void {
-			subObjects = {};
+		protected function readRecords():Boolean{
 			records = new ArrayCollection();//clear records
 			if (updated) {
 				if(!_co12FindWithoutCo11){
@@ -219,23 +220,26 @@ package gadget.sync.outgoing
 			if (records.length == 0) {
 				if (updated) {
 					successHandler(null);
-					return;
+					return false;
 				}
 				updated = true;
 				faulted = 0;
 				_co12FindWithoutCo11=false;
 				doRequest();
+				return false;
+			}
+			
+			return true;
+		}
+		
+		override protected function doRequest():void {
+			subObjects = {};
+			
+			if(!readRecords()){
 				return;
 			}
 			
-//			//Mony----for jd only
-//			if(checkSRRequire(records[0])){
-//					return;
-//			}
 			
-			
-			
-
 			var WSTag:String = WSTagExe;
 			var request:XML =
 				<{WSTag} xmlns={ns1}>
@@ -308,32 +312,7 @@ package gadget.sync.outgoing
 					);
 				}
 
-				
-				// Map Attachment
-//				if (do_attachments) {
-//					var have:Boolean = false;
-//					tmp = <ListOfAttachment xmlns={ns1}/>;
-//
-//					var atts:ArrayCollection = Database.attachmentDao.findAllAttachments(entity, records[i].gadget_id);
-//					subObjects.Attachments = atts;
-//
-//					for each (var obj:Object in atts) {
-//						// These are only new attachments!
-//						
-//						var operation:String = 'insert';
-//						if(obj.deleted){							
-//							operation = 'delete'
-//						}else if(!StringUtils.isEmpty(obj.AttachmentId)){
-//							//attachment is exist on OOD
-//							continue;
-//						}
-//						tmp.appendChild(Utils.instanceAttachmentXML(obj, operation));
-//						have = true;
-//					}
-//					if (have)
-//						xml.appendChild(tmp);
-					
-//				}
+	
 				
 				// Map subobjects like User, Product, Contact, etc.
 				for each (var sub:String in SupportRegistry.getSubObjects(entity)) {
@@ -452,6 +431,12 @@ package gadget.sync.outgoing
 				records[i].deleted = false;
 				records[i].local_update = null;
 				records[i].error = false;
+				if(UserService.COLOPLAST==UserService.getCustomerId()){
+					if(entity==Database.customObject11Dao.entity||entity==Database.customObject12Dao.entity){
+						records[i].checkRelation = true;
+					}
+				}
+				
 				dao.update(records[i]);				
 				if(entity==Database.activityDao.entity){
 					var contId:String = records[i].PrimaryContactId;
@@ -597,6 +582,7 @@ package gadget.sync.outgoing
 				|| faultString.indexOf("(SBL-DAT-56810)")>=0
 				|| faultString.indexOf("(SBL-EAI-04376)")>=0
 				|| faultString.indexOf("(SBL-EAI-04397)")>=0
+				|| faultString.indexOf("(SBL-DAT-00565)")>=0
 			) {
 				oops ="cannot {4} {1} with Id {2}: data error in '{3}': {6}";
 				short = "Invalid";
@@ -697,10 +683,13 @@ package gadget.sync.outgoing
 			if((short=="Nonunique"|| short=="Duplicate") && this is OutgoingSubBase){
 				if(getOperation()=='create' || getOperation()=='Created'){
 					showWarning = false;
-					currentRecords.DummySiebelRowId = currentRecords.gadget_id;
-					currentRecords.local_update=null;
-					currentRecords.error = false;
-					getDao().update(currentRecords);
+					faulted++;
+					if(currentRecords!=null){
+						currentRecords.DummySiebelRowId = currentRecords.gadget_id;						
+						currentRecords.local_update=null;
+						currentRecords.error = false;
+						getDao().update(currentRecords);
+					}
 				}
 			}else if(faultString.indexOf("SBL-DAT-00278")!=-1){
 				error=false;
@@ -745,7 +734,14 @@ package gadget.sync.outgoing
 				return getDao().findByGadgetId(att.gadget_id);
 			}
 			if(this is OutgoingSubObject){
-				return getDao().findByOracleId(records[0][getOracleIdField()]);	
+				var rec:Object = getDao().findByGadgetId(records[0].gadget_id);
+				
+				if(rec==null){
+					var orcleId:String = records[0][getOracleIdField()];
+					rec = getDao().findByOracleId(orcleId);
+				}
+				
+				return rec;
 			}
 			
 			return records[0];

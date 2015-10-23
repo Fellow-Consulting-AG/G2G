@@ -10,9 +10,12 @@ package gadget.sync.incoming
 	public class JDIncomingProduct extends IncomingObject
 	{
 		private var searchSpec:String='';
-		public function JDIncomingProduct(searchSpec:String)
+		public function JDIncomingProduct(searchSpec:String,entity:String = null)
 		{			
-			super(Database.productDao.entity);
+			if(entity==null){
+				entity=Database.productDao.entity;
+			}
+			super(entity);
 			this.searchSpec=searchSpec;
 		}
 		

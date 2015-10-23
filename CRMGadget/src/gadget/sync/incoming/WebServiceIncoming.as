@@ -20,6 +20,7 @@ package gadget.sync.incoming {
 	import gadget.service.PicklistService;
 	import gadget.service.UserService;
 	import gadget.sync.WSProps;
+	import gadget.sync.outgoing.CPOutgoingUpdateRelation;
 	import gadget.sync.task.TaskParameterObject;
 	import gadget.sync.task.WebServiceBase;
 	import gadget.util.FieldUtils;
@@ -560,10 +561,16 @@ package gadget.sync.incoming {
 				trace(request);
 				trace(response);
 			}*/
+			var cnt:int = 0;
+			if(this is CPIncomingCheckRelationById){
+				//don't need open transaction
+				cnt = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)),googleListUpdate);
+			}else{
+				Database.begin();
+				cnt = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)),googleListUpdate);
+				Database.commit();
+			}
 			
-			Database.begin();
-			var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)),googleListUpdate);
-			Database.commit();
 			
 			//do update to google calendar
 			if(googleListUpdate != null){
@@ -767,12 +774,26 @@ package gadget.sync.incoming {
 							googleListUpdate.addItem(tmpOb);
 						}
 					}
-					
+					if(UserService.getCustomerId()==UserService.COLOPLAST && localRecord.checkRelation==true){
+						var lostRelation:Boolean = false;
+						if(entityIDour==Database.customObject11Dao.entity){
+							if(StringUtils.isEmpty(tmpOb.ContactId)){
+								lostRelation=true;
+							}
+						}else if(entityIDour==Database.customObject12Dao.entity){
+							if(StringUtils.isEmpty(tmpOb.CustomObject1Id)){
+								lostRelation=true;
+							}
+						}
+						if(lostRelation){
+							createCPOutgoingUpdateRelation(localRecord).start();
+							return 0;
+						}
+					}
 					trace('UPD',getTransactionName(), info.rowid,tmpOb[modName],info.name);
 					updateTracking(entitySod, info.rowid);
 					dao.updateByOracleId(tmpOb);
 					notifyUpdate(false, info.name);
-					
 				} else {
 					trace('HAV',getTransactionName(), info.rowid,tmpOb[modName],info.name);
 				}
@@ -809,6 +830,10 @@ package gadget.sync.incoming {
 			dicCount.count(info.rowid);
 			
 			return 1;
+		}
+		
+		protected function createCPOutgoingUpdateRelation(rec:Object):CPOutgoingUpdateRelation{
+			return new CPOutgoingUpdateRelation(entityIDour,rec);
 		}
 		
 		

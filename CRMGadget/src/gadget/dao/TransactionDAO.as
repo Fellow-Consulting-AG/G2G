@@ -226,7 +226,8 @@ package gadget.dao
 			
 		};
 		
-		public var advancedfilter:ArrayCollection = new ArrayCollection([
+		public function get advancedfilter():ArrayCollection {
+			return new ArrayCollection([
 			{type:ALL_TYPE,				name:i18n._("PREFERENCE_ADVANCE_FILTER_SHOW_ALL@Show All")},
 			{type:ONE_YEAR_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_ONE_YEAR@One Year")},
 			{type:SIX_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_6_MONTHS@6 Months")},
@@ -234,6 +235,8 @@ package gadget.dao
 			{type:ONE_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_1_MONTHS@1 Month")},
 			{type:SEVEN_DAY_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_7_DAYS@7 Days")}
 		]);
+			
+		}
 		
 		//VAHI I would like to write, because it's more clear:
 		// return [trans for each var trans:Object in sodTransactions]

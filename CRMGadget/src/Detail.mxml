@@ -1209,8 +1209,8 @@
 							other["AccountName"] = item["AccountName"];
 							other["PrimaryContactId"] = item["ContactId"];
 							other["PrimaryContact"] = item["ContactFullName"];
-							other["PrimaryContactFirstName"] = con["ContactFirstName"];
-							other["PrimaryContactLastName"] = con["ContactLastName"];
+							other["PrimaryContactFirstName"] = item["ContactFirstName"];
+							other["PrimaryContactLastName"] = item["ContactLastName"];
 						}
 					}
 					

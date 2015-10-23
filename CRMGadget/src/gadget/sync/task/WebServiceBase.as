@@ -46,7 +46,7 @@ package gadget.sync.task {
 		private var isInited:Boolean = false;		
 		private var prefFault:Array=[{'<ErrorMessage>':'</ErrorMessage>'},{'<siebelf:errormsg>':'</siebelf:errormsg>'},
 			{'<faultstring>':'</faultstring>'}];//MONY key is start prefix and value is end prefix	
-		private const RETRY_WAIT_BACKOFF:int = 2000;	//VAHI ms, wait retry* this when retrying
+		protected const RETRY_WAIT_BACKOFF:int = 2000;	//VAHI ms, wait retry* this when retrying
 
 		//VAHI timeout values.  100000 is 1.66 minutes.
 		// The first retry has MAX_TIMEOUT+TIMEOUT_BACKOFF timeout
@@ -606,7 +606,7 @@ package gadget.sync.task {
 				}
 				retries	= 0;
 			} catch (e:Error) {		
-				e.getStackTrace()
+				trace(e.getStackTrace());
 				_iscompress=false;
 				try {
 					Database.rollback();					

@@ -781,7 +781,7 @@ package gadget.sync.incoming {
 								lostRelation=true;
 							}
 						}else if(entityIDour==Database.customObject12Dao.entity){
-							if(StringUtils.isEmpty(tmpOb.CustomObject1Id)){
+							if(StringUtils.isEmpty(tmpOb.CustomObject14Id)){
 								lostRelation=true;
 							}
 						}

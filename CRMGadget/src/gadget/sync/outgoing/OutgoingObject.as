@@ -262,12 +262,12 @@ package gadget.sync.outgoing
 				var xml:XML = <{EntityTag} xmlns={ns1} operation={oper}/>;
 				var hasActivityParent:Boolean = false;
 				var outgoingIgnoreFields:Dictionary = dao.outgoingIgnoreFields;
-				if(UserService.getCustomerId()==UserService.COLOPLAST){
-					//bug#11533 try to sent item name(e1 sample item) to ood
-					if(entity==Database.customObject12Dao.entity){
-						delete outgoingIgnoreFields['CustomObject14Name'];
-					}
-				}
+//				if(UserService.getCustomerId()==UserService.COLOPLAST){
+//					//bug#11533 try to sent item name(e1 sample item) to ood
+//					if(entity==Database.customObject12Dao.entity){
+//						delete outgoingIgnoreFields['CustomObject14Name'];
+//					}
+//				}
 				var hasOracleId:Boolean = false;
 				for each (var field:Object in field_list) {
 					var fieldData:String = records[i][field.element_name];

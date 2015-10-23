@@ -768,7 +768,10 @@ package gadget.util {
 					var criteria:Object={};
 					criteria[obj.keySrc]=dest[obj.keyDest];					
 					var dao:BaseDAO=Database.getDao(obj['entitySrc'])
-					var fields:Array = 	obj.labelSrc;
+					var fields:Array = new Array();
+					for each(var f:String in obj.labelSrc){
+						fields.push(f);
+					}
 					fields.push(obj.keySrc);
 					dao.removeRelationFields(fields,criteria);
 				}

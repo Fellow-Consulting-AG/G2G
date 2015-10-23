@@ -6,6 +6,8 @@ package gadget.util
 	import mx.collections.Sort;
 	import mx.collections.SortField;
 	
+	import org.as3commons.logging.util.clone;
+	
 	public class Relation
 	{
 		// This array describes relation between entities and is used for :
@@ -709,7 +711,7 @@ package gadget.util
 			for each (var relation:Object in RELATIONS) {
 				if (relation.entitySrc == entitySrc && relation.labelSrc[0] == field) {
 					//				if (relation.entitySrc == entitySrc && relation.labelSrc == field) {
-					return relation;
+					return copyRelation((relation));
 				}
 			}
 			if (entitySrc.indexOf(".")>0) {
@@ -741,7 +743,7 @@ package gadget.util
 					if(!StringUtils.isEmpty(removeParent) && removeParent == relation.entityDest){
 						continue;
 					}
-					references.addItem(relation);
+					references.addItem(copyRelation(relation));
 				}
 			}	
 			if(references.length>0){
@@ -754,13 +756,32 @@ package gadget.util
 			}
 			return references;
 		}
+		
+		private static function copyRelation(rel:Object):Object{
+			var clone:Object = new Object();
+			for(var f:String in rel){
+				var val:Object = rel[f];
+				if(val is Array){
+					var ac:Array = new Array();
+					for each(var item:String in val){
+						ac.push(item);
+					}
+					clone[f] = ac;
+				}else{
+					clone[f] = val;
+				}
+			}
+			
+			return clone;
+		}
+		
 		//VAHI There can be more than one field which has a relation to another object.
 		// So this should return a list (Array) of such relations, not just an arbitrary one.
 		// Perhaps rename it to getRelations() then.
 		public static function getRelation(entitySrc:String, entityDest:String):Object {
 			for each (var relation:Object in RELATIONS) {
 				if (relation.supportTable == null && relation.entitySrc == entitySrc && relation.entityDest == entityDest) {
-					return relation;
+					return copyRelation((relation));
 				}
 			}	
 			return null;
@@ -769,7 +790,7 @@ package gadget.util
 		public static function getMNRelation(entitySrc:String, entityDest:String):Object {
 			for each (var relation:Object in RELATIONS) {
 				if (relation.supportTable != null && relation.entitySrc == entitySrc && (relation.entityDest == entityDest||relation.supportTable==entityDest)) {
-					return relation;
+					return copyRelation((relation));
 				}
 			}	
 			return null;
@@ -786,7 +807,7 @@ package gadget.util
 			var references:ArrayCollection = new ArrayCollection();
 			for each (var relation:Object in RELATIONS) {
 				if (relation.entitySrc == entity) {
-					references.addItem(relation);
+					references.addItem(copyRelation(relation));
 				}
 			}
 			return references;
@@ -801,7 +822,7 @@ package gadget.util
 			var references:ArrayCollection = new ArrayCollection();
 			for each (var relation:Object in RELATIONS) {
 				if (relation.entitySrc == entity && relation.supportTable) {
-					references.addItem(relation);
+					references.addItem(copyRelation(relation));
 				}
 			}
 			return references;
@@ -817,7 +838,7 @@ package gadget.util
 			var referencers:ArrayCollection = new ArrayCollection();
 			for each (var relation:Object in RELATIONS) {
 				if (relation.entityDest == entity) {
-					referencers.addItem(relation);
+					referencers.addItem(copyRelation(relation));
 				}
 			}			
 			if (entity.indexOf(".")>0) {

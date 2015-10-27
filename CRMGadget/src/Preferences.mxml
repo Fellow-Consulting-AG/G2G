@@ -656,14 +656,15 @@
 					// #311: hange request - Diversey sales - Prefernces 
 					//cbodisplayTrans.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);;
 					
-					var cboAdvancedFilter:ComboBox = new ComboBox();				
-					cboAdvancedFilter.dataProvider = Database.transactionDao.advancedfilter;
+					var cboAdvancedFilter:ComboBox = new ComboBox();		
+					var filters:ArrayCollection =Database.transactionDao.advancedfilter; 
+					cboAdvancedFilter.dataProvider = filters;
 					cboAdvancedFilter.labelField = "name";
 					cboAdvancedFilter.width = 100;				
 					
 					// #311: hange request - Diversey sales - Prefernces 
 					cboAdvancedFilter.enabled = transaction.filter_disable == true ? false :  checkBox.selected;				
-					cboAdvancedFilter.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);
+					cboAdvancedFilter.selectedItem = getSelectionObject(filters, transaction.advanced_filter);
 					cboAdvancedFilter.height = 25;
 					cboAdvancedFilter.addEventListener(Event.CHANGE,advanceFilterChanged);
 					cboAdvancedFilter.name = transaction.entity;

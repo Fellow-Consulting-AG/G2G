@@ -435,10 +435,13 @@ package gadget.util
 						objectSQLQuery.newRecord = param;
 						refreshGrid(detail,grid,objectSQLQuery);
 					},newObj,false,0,
-						function(newObject:Object):Boolean{
-							return checkExistOpportunityCompetitorRelation(objectSQLQuery,newObject);
+						function(newObject:Object,iscreate:Boolean = true):Boolean{
+							if(iscreate){
+								return checkExistOpportunityCompetitorRelation(objectSQLQuery,newObject);
+							}
+							return false;
 							
-						}
+						},false
 					);
 //				}else{
 //					openMiniDetail(true,newObj,objectSQLQuery,function(param:Object):void {
@@ -461,7 +464,7 @@ package gadget.util
 						function(newObject:Object):Boolean{
 							objectSQLQuery.target = selectedItem;
 							return checkExistOpportunityCompetitorRelation(objectSQLQuery,newObject);
-						});
+						},false);
 //				}else{
 //					var item:Object = Database.getDao(objectSQLQuery.entity).findByGadgetId(selectedItem.gadget_id);
 //					openMiniDetail(false,item,objectSQLQuery,function(param:Object):void {
@@ -716,7 +719,7 @@ package gadget.util
 		} 
 		
 		
-		public static function openDetailScreen(isCreate:Boolean,mainWindow:MainWindow,entity:String,refreshFunction:Function,item:Object = null,isRefreshList:Boolean=false, subtype:int = 0,checkDoublicate:Function=null):void {
+		public static function openDetailScreen(isCreate:Boolean,mainWindow:MainWindow,entity:String,refreshFunction:Function,item:Object = null,isRefreshList:Boolean=false, subtype:int = 0,checkDoublicate:Function=null,showNext:Boolean=true):void {
 			var screenDetail:Detail = new Detail();			
 			if(isCreate){
 				screenDetail.item = Utils.copyModel(item);							
@@ -748,6 +751,7 @@ package gadget.util
 			screenDetail.refreshFunction = refreshFunction;
 			screenDetail.create = isCreate;
 			screenDetail.isRefreshList = isRefreshList;
+			screenDetail.showNextAction=showNext;
 			WindowManager.openModal(screenDetail);
 		}
 		

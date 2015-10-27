@@ -416,6 +416,8 @@ package gadget.sync.outgoing
 							if(entity==Database.activityDao.entity){
 								//update parentid for ICA
 								Database.activityDao.updadteParentSurveyId(data.child(ws20field)[0].toString(),"#" + records[i].gadget_id);
+								//update activity user
+								Database.activityUserDao.updateReference('ActivityId',records[i]['ActivityId'],data.child(ws20field)[0].toString());
 							}
 						}
 						

@@ -226,15 +226,21 @@ package gadget.dao
 			
 		};
 		
+		private var _advancedFilter:ArrayCollection;
+		
 		public function get advancedfilter():ArrayCollection {
-			return new ArrayCollection([
-			{type:ALL_TYPE,				name:i18n._("PREFERENCE_ADVANCE_FILTER_SHOW_ALL@Show All")},
-			{type:ONE_YEAR_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_ONE_YEAR@One Year")},
-			{type:SIX_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_6_MONTHS@6 Months")},
-			{type:THREE_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_3_MONTHS@3 Months")},
-			{type:ONE_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_1_MONTHS@1 Month")},
-			{type:SEVEN_DAY_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_7_DAYS@7 Days")}
-		]);
+			if(_advancedFilter==null){
+					_advancedFilter = new ArrayCollection([
+					{type:ALL_TYPE,				name:i18n._("PREFERENCE_ADVANCE_FILTER_SHOW_ALL@Show All")},
+					{type:ONE_YEAR_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_ONE_YEAR@One Year")},
+					{type:SIX_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_6_MONTHS@6 Months")},
+					{type:THREE_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_3_MONTHS@3 Months")},
+					{type:ONE_MONTH_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_1_MONTHS@1 Month")},
+					{type:SEVEN_DAY_TYPE,		name:i18n._("PREFERENCE_ADVANCE_FILTER_7_DAYS@7 Days")}
+				]);
+			}
+			
+			return _advancedFilter;
 			
 		}
 		

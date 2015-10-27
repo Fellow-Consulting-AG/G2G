@@ -95,6 +95,7 @@
 			[Bindable] public var subtype:int = 0;
 			[Bindable] public var subtypeActivity:int = 0;
 			[Bindable] public var create:Boolean = false;
+			[Bindable] public var showNextAction:Boolean = true;
 			//[Bindable] public var link_from_revenue:Boolean = false;
 			
 			
@@ -765,9 +766,16 @@
 				
 				if(checkDoublicate != null){
 					//check doublicate account for relation only
-					if(checkDoublicate(item)){
-						Alert.show("Record already exists.","Duplicate",Alert.OK,this);
-						return false;
+					try{
+						if(checkDoublicate(item,create)){
+							Alert.show("Record already exists.","Duplicate",Alert.OK,this);
+							return false;
+						}
+					}catch(e:Error){
+						if(checkDoublicate(item)){
+							Alert.show("Record already exists.","Duplicate",Alert.OK,this);
+							return false;
+						}
 					}
 				}
 				//update only readonly field
@@ -1323,6 +1331,7 @@
 					attachmentBtn.includeInLayout=false;
 				}
 				comboAction.invalidateSize();
+				nextLayout.setVisible(showNextAction);
 				
 			}
 			
@@ -3153,7 +3162,7 @@
 							   icon="{ImageUtils.linkedinIcon}"
 							   includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"
 							   toolTip="Linkedin"/>
-				<mx:HBox width="100%" horizontalAlign="right">
+				<mx:HBox width="100%" horizontalAlign="right" id="nextLayout">
 					<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
 					<mx:ComboBox id="comboAction" dataProvider="{getComboData()}">
 					<!--	<mx:itemRenderer>

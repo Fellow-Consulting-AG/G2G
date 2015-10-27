@@ -2355,7 +2355,19 @@ package gadget.util {
 			var result:Array = Database.defaultFieldValueDao.fetch({'entity':entity});
 			if(result!=null && result.length>0){
 				for each(var defv:Object in result){
-					item[defv.element_name]=defv.default_value;
+					var defaultValue:String = defv.default_value;
+					if (defaultValue.indexOf("(") == -1 && defaultValue.indexOf("{") == -1 && defaultValue.indexOf("[") == -1) {
+						if( defaultValue.indexOf("CreatedDate")!=-1 ){
+							item[defv.element_name] =new Date();
+						}else{
+							item[defv.element_name] = defaultValue;
+						}
+						
+					}else{
+						item[defv.element_name]=doEvaluate(defaultValue,Database.allUsersDao.ownerUser(),entity,defv.element_name,item,null);
+					}
+					
+					
 				}
 			}
 		}

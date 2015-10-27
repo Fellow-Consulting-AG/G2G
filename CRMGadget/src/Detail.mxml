@@ -786,8 +786,11 @@
 					item["deleted"] = false;
 					item["error"] = false;
 					var dao:BaseDAO = Database.getDao(entity);
-					for each(var obj:Object in dao.getOwnerFields()){						
-						item[obj.entityField] = item[obj.entityField] == null || item[obj.entityField]=="" ? Database.allUsersDao.ownerUser()[obj.userField] : item[obj.entityField];
+					//bug#10530--Service Request object that "owner" field is not pre-filled by the user.
+					if(entity != Database.serviceDao.entity){
+						for each(var obj:Object in dao.getOwnerFields()){						
+							item[obj.entityField] = item[obj.entityField] == null || item[obj.entityField]=="" ? Database.allUsersDao.ownerUser()[obj.userField] : item[obj.entityField];
+						}
 					}
 					
 					

@@ -609,8 +609,11 @@
 				}
 				
 				if(dao!=null){
-					for each(var temp:Object in dao.getOwnerFields()){						
-						screenCreate.item [temp.entityField] = Database.allUsersDao.ownerUser()[temp.userField];
+					//bug#10530
+					if(entity!=Database.serviceDao.entity){
+						for each(var temp:Object in dao.getOwnerFields()){						
+							screenCreate.item [temp.entityField] = Database.allUsersDao.ownerUser()[temp.userField];
+						}
 					}
 				}
 				// for #4981 Data are not linked

@@ -1123,6 +1123,10 @@
 					close = commit();				
 				}
 				if (close) {
+					if(!showNextAction){
+						this.close();
+						return;
+					}
 					if (event.label != CLOSE_STR && event.label != NEXT_STR) {
 						addEventListener(Event.CLOSE, nextAction);
 						
@@ -1167,6 +1171,9 @@
 			//			}
 			
 			private function nextAction(event:Event):void {
+				if(!showNextAction){
+					return;
+				}
 				var data:String = comboAction.selectedItem.data;
 				if (data != CLOSE_STR && data != SAVE_STR) {
 					var other:Object = new Object();
@@ -3162,15 +3169,12 @@
 							   icon="{ImageUtils.linkedinIcon}"
 							   includeInLayout="{isFacebookLinkedin(PreferencesDAO.ENABLE_LINKEDIN)}"
 							   toolTip="Linkedin"/>
-				<mx:HBox width="100%" horizontalAlign="right" id="nextLayout">
-					<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
-					<mx:ComboBox id="comboAction" dataProvider="{getComboData()}">
-					<!--	<mx:itemRenderer>
-							<mx:Component>
-								<mx:Label text="{data.label}" width="100%" toolTip="{data.label}" />
-							</mx:Component>
-						</mx:itemRenderer>-->
-						</mx:ComboBox>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:HBox  id="nextLayout">
+						<mx:Label text="{i18n._('DETAIL_LABEL_NEXT')}"/>
+						<mx:ComboBox id="comboAction" dataProvider="{getComboData()}"/>
+					</mx:HBox>
+					
 					<mx:HBox id="actionCanvas" horizontalAlign="right"/>	
 				</mx:HBox>					
 			</mx:HBox>

@@ -678,6 +678,11 @@ package gadget.sync.outgoing
 //				failErrorHandler("BUG CHECK",event);
 				return false;
 			}
+			//specific for activity_contact
+			if ((faultString.indexOf("(SBL-EAI-04383)")>0 ||
+				faultString.indexOf("(SBL-DAT-00357)")>0)&& faultString.indexOf("'Activity_Contact'")>0) {
+				short = "Duplicate";
+			}
 			
 			var showWarning:Boolean = true;
 			var error:Boolean = true;

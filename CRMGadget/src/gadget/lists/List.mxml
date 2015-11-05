@@ -2145,8 +2145,9 @@
 					}	
 					
 					records = dao.findAll(columns, filter, null, 1001,null);
-					Utils.parseDateTime(entity, columns, records);
-					Utils.parsePicklistValues(entity, columns, records);
+					//we use label function instead of load all data
+//					Utils.parseDateTime(entity, columns, records);
+//					Utils.parsePicklistValues(entity, columns, records);
 				}
 				
 			}

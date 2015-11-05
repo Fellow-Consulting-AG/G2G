@@ -75,10 +75,20 @@
             }
             
             private function getValue(data:Object):String {
-				return (parentApplication as CustomLayout).item[data.column_name];            	
+				var item:Object = (parentApplication as CustomLayout).item;
+				if(item!=null){
+				return item[data.column_name];
+				}
+				
+				return "";
             }
 			private function getSampleValue(field:String):String {
-				return (parentApplication as CustomLayout).item[field];            
+				var item:Object = (parentApplication as CustomLayout).item;
+				if(item!=null){
+					return item[field];
+				}
+				
+				return "";       
 			}
 
 //          public override function invalidateDisplayList():void{

@@ -1803,6 +1803,7 @@ package gadget.util {
 				transactionObject.hide_relation = checkNullValue(transaction.elements("hide-relation").children()[0],"")=="true"? 1 : 0;
 				transactionObject.read_only = checkNullValue(transaction.elements("read-only").children()[0],"")=="true"? 1 : 0;
 				transactionObject.display = checkNullValue(transaction.elements("display").children()[0],"true")=="true"? 1 : 0;
+				transactionObject.checkinrange = checkNullValue(transaction.elements("checkinrange").children()[0],"true")=="true"? 1 : 0;
 				transactionObject.authorize_deletion = checkNullValue(transaction.elements("authorize-deletion").children()[0],"")=="true"? 1 : 0;
 				
 				// #311: hange request - Diversey sales - Prefernces -> #41: Cannot load VETO.XML

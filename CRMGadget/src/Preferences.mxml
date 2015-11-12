@@ -443,6 +443,7 @@
 				readonlyEntities.removeAllChildren();
 				authorizeDeletion.removeAllChildren();
 				displayTrans.removeAllChildren(); 
+				removeIfNotInRange.removeAllChildren();
 				syncChildren.removeAllChildren();
 				init();
 				mainWindow.updateTransactions();
@@ -600,6 +601,7 @@
 				readonlyEntities.addChild(createLabel('PREFERENCES_LABEL_TEXT_READ_ONLY'));
 				authorizeDeletion.addChild(createLabel('GLOBAL_AUTHORIZE_DELETION'));
 				displayTrans.addChild(createLabel('GLOBAL_DISPLAY'));
+				removeIfNotInRange.addChild(createLabel('GLOBLE_CHECK_NOT_IN_RANG@Check not in range'));
 				spinnersMove.addChild(createLabel(" "));
 				
 				//var disable_authorize_deletion:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_AUTORIZE_DELETION);
@@ -653,6 +655,14 @@
 					chkDisplayTrans.addEventListener(MouseEvent.CLICK, onChangeValue);
 					chkDisplayTrans.height = 25;
 					chkDisplayTrans.label = " ";
+					
+					//check in range filter
+					var chkCheckInrangeFilter:CheckBox = new CheckBox();
+					chkCheckInrangeFilter.selected = transaction.checkinrange==null?false:transaction.checkinrange;
+					chkCheckInrangeFilter.enabled = checkBox.selected && checkBox.enabled;
+					chkCheckInrangeFilter.addEventListener(MouseEvent.CLICK, onChangeValue);
+					chkCheckInrangeFilter.height = 25;
+					chkCheckInrangeFilter.label = " ";
 					// #311: hange request - Diversey sales - Prefernces 
 					//cbodisplayTrans.selectedItem = getSelectionObject(Database.transactionDao.advancedfilter, transaction.advanced_filter);;
 					
@@ -750,6 +760,7 @@
 					readonlyEntities.addChild(chkReadonly);
 					authorizeDeletion.addChild(chkAuthorizeDeletion);
 					displayTrans.addChild(chkDisplayTrans);
+					removeIfNotInRange.addChild(chkCheckInrangeFilter);
 				}
 			}
 			//			private function disableListComboxItem(cboParentEntity:DisabledComboBox,listDisableTransaction:ArrayCollection):void{
@@ -835,6 +846,7 @@
 						syncChildren.addChildAt(syncChildren.removeChildAt(index),index-1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index - 1);
 						displayTrans.addChildAt(displayTrans.removeChildAt(index), index - 1);
+						removeIfNotInRange.addChildAt(removeIfNotInRange.removeChildAt(index),index-1);
 						editStatus = true;
 					}
 				}else if(targetButton.id == "decrementButton"){
@@ -849,6 +861,7 @@
 						//syncAttachments.addChildAt(syncAttachments.removeChildAt(index), index + 1);
 						readonlyEntities.addChildAt(readonlyEntities.removeChildAt(index), index + 1);
 						displayTrans.addChildAt(displayTrans.removeChildAt(index), index + 1);
+						removeIfNotInRange.addChildAt(removeIfNotInRange.removeChildAt(index),index+1);
 						editStatus = true;
 					}
 				}
@@ -1173,6 +1186,7 @@
 					//var chkActivities:CheckBox = syncActivities.getChildAt(i) as CheckBox;
 					//var chkAttachment:CheckBox = syncAttachments.getChildAt(i) as CheckBox;
 					var chkReadonly:CheckBox = readonlyEntities.getChildAt(i) as CheckBox;
+					var chkCheckInrangeFilter:CheckBox = removeIfNotInRange.getChildAt(i) as CheckBox;
 					var chkAuthorizeDeletion:CheckBox = authorizeDeletion.getChildAt(i) as CheckBox;
 					var chkDisplay:CheckBox = displayTrans.getChildAt(i) as CheckBox;
 					var cboBox:ComboBox = vBoxChildListFilterTrans[i] as ComboBox;
@@ -1195,6 +1209,7 @@
 					transaction.authorize_deletion = chkAuthorizeDeletion.selected == true? 1:0;
 					transaction.rank = i;
 					transaction.display = chkDisplay.selected;
+					transaction.checkinrange=chkCheckInrangeFilter.selected;
 					transaction.advanced_filter = cboAdvance.selectedItem.type;
 					changeDefaultSelectedUpdateSyn(cboBox.selectedItem);
 					Database.transactionDao.update(transaction);
@@ -1471,6 +1486,7 @@
 					var chkReadonly:CheckBox = readonlyEntities.getChildAt(index) as CheckBox;
 					var chkAuthorizeDeletion:CheckBox = authorizeDeletion.getChildAt(index) as CheckBox;
 					var chkDisplay:CheckBox = displayTrans.getChildAt(index) as CheckBox;
+					var chkCheckInrangeFilter:CheckBox = removeIfNotInRange.getChildAt(index) as CheckBox;
 					var entity:String = listTransaction.getItemAt(i).entity;//should be get from db is beter
 					
 					
@@ -1488,6 +1504,7 @@
 								<hide-relation>{listTransaction.getItemAt(i).hide_relation?"true":"false"}</hide-relation>
 								<read-only>{chkReadonly.selected.toString()}</read-only>
 								<display>{chkDisplay.selected.toString()}</display>
+								<checkinrange>{chkCheckInrangeFilter.selected.toString()}</checkinrange>
 								<read-only-disable>{listTransaction.getItemAt(i).read_only_disable?"true":"false"}</read-only-disable>
 								<authorize-deletion>{chkAuthorizeDeletion.selected.toString()}</authorize-deletion>
 								<authorize-deletion-disable>{listTransaction.getItemAt(i).authorize_deletion_disable?"true":"false"}</authorize-deletion-disable>
@@ -2317,6 +2334,7 @@
 					//var chkAttachment:CheckBox = syncAttachments.getChildAt(i) as CheckBox;
 					var chkReadonly:CheckBox = readonlyEntities.getChildAt(i) as CheckBox;
 					var chkDisplay:CheckBox = displayTrans.getChildAt(i) as CheckBox;
+					var chkCheckInrangeFilter:CheckBox = removeIfNotInRange.getChildAt(i) as CheckBox;
 					// Check if tag id equal checkbox's label 
 					if(checkBox.data == transactionObject.entity){
 						checkBox.selected = transactionObject.enabled == 0? false : true;
@@ -2325,6 +2343,7 @@
 						//chkAttachment.selected = transactionObject.sync_attachments == 0? false : true;
 						chkReadonly.selected = transactionObject.read_only == 0? false : true;
 						chkDisplay.selected = transactionObject.display == 0? false : true;
+						chkCheckInrangeFilter.selected = transactionObject.checkinrange==0?false:true;
 						return;
 					}
 				}
@@ -2434,6 +2453,11 @@
 				var dis:CheckBox = displayTrans.getChildAt(index) as CheckBox;
 				dis.selected = status;
 				dis.enabled = cboBox.enabled;
+				
+				var chkCheckInrangeFilter:CheckBox = removeIfNotInRange.getChildAt(index) as CheckBox;
+				chkCheckInrangeFilter.selected = status;
+				chkCheckInrangeFilter.enabled = cboBox.enabled;
+				
 				var chkReadonly:CheckBox = readonlyEntities.getChildAt(index) as CheckBox;
 				chkReadonly.enabled = trans.read_only_disable ? false : status;
 				endableItemListComboParentEntity(checkbox.data.toString(),status);
@@ -2900,6 +2924,7 @@
 						<mx:VBox id="readonlyEntities" horizontalAlign="center"/>
 						<mx:VBox id="authorizeDeletion" horizontalAlign="center"/>
 						<mx:VBox id="displayTrans" horizontalAlign="center"/>
+						<mx:VBox id="removeIfNotInRange" horizontalAlign="center"/>
 					</mx:HBox>
 				</mx:Canvas>
 				<mx:Canvas label="{i18n._('PREFERENCES_CANVAS_LABEL_USER_INTERFACE')}" width="100%" height="100%">

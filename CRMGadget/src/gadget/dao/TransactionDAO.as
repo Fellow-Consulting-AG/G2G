@@ -45,9 +45,9 @@ package gadget.dao
 			// #311: hange request - Diversey sales - Prefernces
 			stmtInsert.text = "INSERT INTO transactions (entity, enabled, display_name,display, filter_id, default_filter, sync_ws20, sync_activities, sync_attachments, rank, read_only, "+
 				" filter_disable, read_only_disable, sync_activities_disable, sync_attachments_disable, entity_disable, sync_order, authorize_deletion, authorize_deletion_disable" +
-				", advanced_filter, hide_relation ,parent_entity,column_order,order_type) VALUES (:entity, :enabled, :display_name,:display, :filter_id, :default_filter, :sync_ws20, :sync_activities, :sync_attachments, :rank, :read_only, " +
+				", advanced_filter, hide_relation ,parent_entity,column_order,order_type,checkinrange) VALUES (:entity, :enabled, :display_name,:display, :filter_id, :default_filter, :sync_ws20, :sync_activities, :sync_attachments, :rank, :read_only, " +
 				" :filter_disable, :read_only_disable, :sync_activities_disable, :sync_attachments_disable, :entity_disable,:sync_order,:authorize_deletion" +
-				",:authorize_deletion_disable,:advanced_filter,:hide_relation,:parent_entity,:column_order,:order_type)";
+				",:authorize_deletion_disable,:advanced_filter,:hide_relation,:parent_entity,:column_order,:order_type,:checkinrange)";
 			
 			stmtUpdSortCol = new SQLStatement();
 			stmtUpdSortCol.sqlConnection = sqlConnection;
@@ -57,7 +57,7 @@ package gadget.dao
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
 			stmtUpdate.text = "UPDATE transactions SET enabled = :enabled, display_name = :display_name,display = :display, filter_id = :filter_id, sync_ws20 = :sync_ws20, sync_activities = :sync_activities, sync_attachments = :sync_attachments, read_only = :read_only, rank = :rank" +
-				",authorize_deletion = :authorize_deletion,advanced_filter = :advanced_filter,parent_entity = :parent_entity WHERE entity = :entity";
+				",authorize_deletion = :authorize_deletion,advanced_filter = :advanced_filter,parent_entity = :parent_entity,checkinrange=:checkinrange WHERE entity = :entity";
 			
 			stmtAllTransaction = new SQLStatement();
 			stmtAllTransaction.sqlConnection = sqlConnection;
@@ -84,7 +84,7 @@ package gadget.dao
 			stmtUpdateAllField.text = "UPDATE transactions SET enabled = :enabled, display_name = :display_name, display = :display, filter_id = :filter_id, default_filter = :default_filter, rank = :rank,"+ 
 				" sync_ws20 = :sync_ws20, sync_activities = :sync_activities, sync_attachments = :sync_attachments, read_only =:read_only, sync_order= :sync_order, authorize_deletion= :authorize_deletion,authorize_deletion_disable= :authorize_deletion_disable," +
 				" filter_disable = :filter_disable, read_only_disable = :read_only_disable, sync_activities_disable = :sync_activities_disable, sync_attachments_disable = :sync_attachments_disable, entity_disable = :entity_disable, advanced_filter =:advanced_filter, hide_relation =:hide_relation, parent_entity = :parent_entity,  " + 
-				" column_order = :column_order, order_type =:order_type WHERE entity = :entity";
+				" column_order = :column_order, order_type =:order_type,checkinrange=:checkinrange WHERE entity = :entity";
 			
 			stmtUpdateSyncOrder=new SQLStatement();
 			stmtUpdateSyncOrder.text="UPDATE transactions SET  sync_order= :sync_order,display=:display where entity = :entity ";
@@ -130,6 +130,7 @@ package gadget.dao
 			stmtUpdate.parameters[":read_only"] = transaction.read_only;
 			stmtUpdate.parameters[":rank"] = transaction.rank;
 			//stmtUpdate.parameters[":sync_order"] = transaction.sync_order;
+			stmtUpdate.parameters[":checkinrange"]=transaction.checkinrange;
 			stmtUpdate.parameters[":authorize_deletion"] = transaction.authorize_deletion;
 			stmtUpdate.parameters[":advanced_filter"] = transaction.advanced_filter;
 			stmtUpdate.parameters[":parent_entity"] = transaction.parent_entity;
@@ -167,6 +168,7 @@ package gadget.dao
 			stmt.parameters[":parent_entity"]=object.parent_entity;
 			stmt.parameters[":column_order"]=object.column_order;
 			stmt.parameters[":order_type"]=object.order_type;
+			stmt.parameters[":checkinrange"] = object.checkinrange;
 			exec(stmt);
 		}
 		

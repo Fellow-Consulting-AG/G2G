@@ -2962,6 +2962,7 @@ package gadget.dao {
 			// #311: hange request - Diversey sales - Prefernces
 			XcheckColumn(sqlConnection, 'transactions','filter_disable','BOOLEAN', '0');
 			XcheckColumn(sqlConnection, 'transactions','display','BOOLEAN');
+			XcheckColumn(sqlConnection, 'transactions','checkinrange','BOOLEAN');
 			XcheckColumn(sqlConnection, 'transactions','read_only_disable','BOOLEAN', '0');
 			XcheckColumn(sqlConnection, 'transactions','sync_activities_disable','BOOLEAN', '0');
 			XcheckColumn(sqlConnection, 'transactions','sync_attachments_disable','BOOLEAN', '0');
@@ -3606,6 +3607,7 @@ package gadget.dao {
 					entity_disable: false,
 					advanced_filter: 0,
 					hide_relation: false,
+					checkinrange:false,
 					display: ("enabled" in transaction) ? transaction.enabled : false,
 					column_order: null,
 					order_type:null

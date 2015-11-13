@@ -79,10 +79,12 @@ package gadget.sync.incoming {
 		//SEEALSO[1] Keep this in sync (field ModifiedDate)
 		protected var ignoreQueryFields:Array = [ ];
 		protected var oldIds:Dictionary = null;
+		protected var _checkinrange:Boolean = false;
+		protected var _ListNotInFilters:ArrayCollection = new ArrayCollection();
 		// METHODS not to change
 		//first sync we should use created date because we have some pb with modifieddate look like bug#11384 or #10703
 		protected var useCreatedDate:Boolean = false;
-		
+		protected var checkOwner = true;
 		private var _dao:BaseDAO;
 
 		public function WebServiceIncoming(ID:String, daoName:String=null) {
@@ -138,8 +140,34 @@ package gadget.sync.incoming {
 
 		}
 		
-		override protected function doRequest():void {
+		private function finishReadDeltaChange(ids:ArrayCollection):void{
+			if(ids!=null&& ids.length>0){
+				this.oldIds = new Dictionary();
+				for each(var id:String in ids){
+					this.oldIds[id]=id;
+				}
+			}			
+			doRequest();
+		}
+		
+		override protected function doRequest():void {			
+			if(checkOwner && checkinrange){
+				if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+					var minD:String = ServerTime.toSodIsoDate(param.range.start);				
+					new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
+				}else{
+					buildAndSendRequest();
+				}	
+				//checkowner for first time only
+				checkOwner = false;
+			}else{
+				buildAndSendRequest();
+			}
+							
 			
+		}
+		
+		protected function buildAndSendRequest():void{
 			if(startTime!=-1){
 				if(param.range){
 					var start:Date = param.range.start;
@@ -228,7 +256,7 @@ package gadget.sync.incoming {
 			//bug#8928--resync if full compare=true and viewtype=defaultbook
 			//bug#10624---full sync. do the same full compare
 			if(oldIds==null && (p.fullCompare||p.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
-				if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE ||entityIDour == Database.accountDao.entity){
+				if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE || checkinrange ||entityIDour == Database.accountDao.entity){
 					oldIds = dao.findAllIdsAsDictionary();				
 					Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
 					useCreatedDate = true;
@@ -616,14 +644,6 @@ package gadget.sync.incoming {
 			var hasActivityParent:Boolean = false;
 			for each (var field:Object in getFields()) {
 				tmpOb[field.element_name] = getValue(entitySod,data,WSProps.ws10to20(entitySod,field.element_name));
-//				var xmllist:XMLList = data.child(new QName(ns2.uri,WSProps.ws10to20(entitySod,field.element_name)));
-//				if (xmllist.length()>1)
-//					trace(field.element_name,xmllist.length());
-//				if (xmllist.length() > 0) {
-//					tmpOb[field.element_name] = xmllist[0].toString();
-//				} else {
-//					tmpOb[field.element_name] = null;
-//				}
 				if(field.element_name == ActivityDAO.PARENTSURVEYID || entityIDour!=Database.activityDao.entity){
 					hasActivityParent = true;
 				}
@@ -1030,6 +1050,16 @@ package gadget.sync.incoming {
 				return Database.criteriaDao.findCriterialWithConjunctionAnd(filters.id);
 			
 			return criterials;
+		}
+
+		public function get checkinrange():Boolean
+		{
+			return _checkinrange;
+		}
+
+		public function set checkinrange(value:Boolean):void
+		{
+			_checkinrange = value;
 		}
 		
 	

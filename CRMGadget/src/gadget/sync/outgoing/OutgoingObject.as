@@ -692,7 +692,8 @@ package gadget.sync.outgoing
 					showWarning = false;
 					faulted++;
 					if(currentRecords!=null){
-						currentRecords.DummySiebelRowId = currentRecords.gadget_id;						
+						//not need to retry later if has duplicate child
+						currentRecords[getOracleIdField()] = currentRecords.gadget_id;						
 						currentRecords.local_update=null;
 						currentRecords.error = false;
 						getDao().update(currentRecords);

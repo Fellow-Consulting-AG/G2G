@@ -445,7 +445,8 @@
 								Database.activityContactDao.insert(newObj);
 								newObj = Database.activityContactDao.selectLastRecord()[0];
 								var oraIdField:String = DAOUtils.getOracleId(Database.activityContactDao.entity);
-								newObj[oraIdField]="#"+newObj.gadget_id;
+								//no need to create on ood because it will auto created by ood
+								newObj[oraIdField]=""+newObj.gadget_id;
 								Database.activityContactDao.update(newObj);
 							}
 						}
@@ -458,7 +459,8 @@
 							Database.activityUserDao.insert(acu);
 							acu = Database.activityUserDao.selectLastRecord()[0];
 							var acuOODId:String = DAOUtils.getOracleId(Database.activityUserDao.entity);
-							acu[acuOODId]="#"+acu.gadget_id;
+							//no need to create on ood because it will auto created by ood
+							acu[acuOODId]=""+acu.gadget_id;
 							Database.activityContactDao.update(acu);
 						}
 					}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
@@ -481,7 +483,8 @@
 								Database.contactAccountDao.insert(newObj2);
 								newObj2 = Database.contactAccountDao.selectLastRecord()[0];
 								var oraIdF:String = DAOUtils.getOracleId(Database.contactAccountDao.entity);
-								newObj2[oraIdF]="#"+newObj2.gadget_id;
+								//no need to create on ood because it will auto created by ood
+								newObj2[oraIdF]=""+newObj2.gadget_id;
 								Database.contactAccountDao.update(newObj2);
 							}
 						}

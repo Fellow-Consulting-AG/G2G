@@ -601,7 +601,7 @@
 				readonlyEntities.addChild(createLabel('PREFERENCES_LABEL_TEXT_READ_ONLY'));
 				authorizeDeletion.addChild(createLabel('GLOBAL_AUTHORIZE_DELETION'));
 				displayTrans.addChild(createLabel('GLOBAL_DISPLAY'));
-				removeIfNotInRange.addChild(createLabel('GLOBLE_CHECK_NOT_IN_RANG@Check not in range'));
+				removeIfNotInRange.addChild(createLabel('GLOBLE_CHECK_NOT_IN_RANG@Check Owner'));
 				spinnersMove.addChild(createLabel(" "));
 				
 				//var disable_authorize_deletion:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_AUTORIZE_DELETION);
@@ -632,7 +632,7 @@
 					var dataProvider:ArrayCollection = filterConjunctionAndToDisplay(listFilter, transaction);
 					cboBox.dataProvider = dataProvider;
 					cboBox.labelField = "displayName";
-					cboBox.width = 230;				
+					cboBox.width = 180;				
 					
 					// #311: hange request - Diversey sales - Prefernces 
 					cboBox.enabled = transaction.filter_disable == true ? false :  checkBox.selected;

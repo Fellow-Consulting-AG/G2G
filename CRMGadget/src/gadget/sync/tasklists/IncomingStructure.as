@@ -97,12 +97,14 @@ package gadget.sync.tasklists
 					co11 = parent;
 				}else{
 					var parentTask:IncomingObject = createParentProcess(parent.entity);
+					parentTask.checkinrange = parent.checkinrange;
 					this.addTask(parentTask);				
 					buildChildObject(mapDependOn,parentTask,parent.entity,1,dependOn);
 				}
 			}
 			if(co11!=null){
 				var co11Task:IncomingObject = createParentProcess(co11.entity);
+				co11Task.checkinrange = co11.checkinrange;
 				this.addTask(co11Task,99);				
 				buildChildObject(mapDependOn,co11Task,co11.entity,100,dependOn);
 			}
@@ -146,6 +148,7 @@ package gadget.sync.tasklists
 						childTask = createProcess(child.entity,parentTask,objParentField,true);
 						
 					}
+					childTask.checkinrange = child.checkinrange;
 					this.addTask(childTask,level);
 					var list:ArrayCollection = mapDependOn[child.entity];
 					if(list!=null && list.length>0){

@@ -25,6 +25,7 @@ package gadget.dao
 				});
 			_isSyncWithParent = false;
 			_isGetField = true;
+			_isSelectAll = true;
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{

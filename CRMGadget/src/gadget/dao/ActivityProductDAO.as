@@ -20,6 +20,7 @@ package gadget.dao
 			});
 			_isGetField = true;
 			_isSyncWithParent = false;
+			_isSelectAll=true;
 		}
 
 

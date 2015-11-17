@@ -30,7 +30,7 @@ package gadget.dao
 			stmtDeleteByRelatedAccountId.text = "DELETE FROM  account_related WHERE RelatedAccountId = :RelatedAccountId";
 			stmtDeleteByRelatedAccountId.sqlConnection = sqlConnection;
 			_isSyncWithParent = false;
-			_isSelectAll = false;
+			_isSelectAll = true;
 			_isGetField = true;
 		}
 		override protected function getIncomingIgnoreFields():ArrayCollection{

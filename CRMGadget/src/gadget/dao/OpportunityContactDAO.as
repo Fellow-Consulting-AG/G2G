@@ -25,6 +25,7 @@ package gadget.dao
 			});
 			_isGetField = true;
 			_isSyncWithParent = false;
+			_isSelectAll = true;
 		}
 		public override function getLinkFields():Dictionary{
 			var fields:Dictionary = new Dictionary();

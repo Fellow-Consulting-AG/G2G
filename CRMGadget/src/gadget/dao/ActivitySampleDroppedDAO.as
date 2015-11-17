@@ -32,7 +32,7 @@ package gadget.dao
 			//stmtDeleteByPartnerId = new SQLStatement();
 			//stmtDeleteByPartnerId.text = "DELETE FROM  account_partner WHERE PartnerId = :PartnerId";
 			//stmtDeleteByPartnerId.sqlConnection = sqlConnection;
-			this._isSelectAll = false;
+			this._isSelectAll = true;
 			
 		}
 		override public function findRelatedData(parentEntity:String , oracleId:String):ArrayCollection {

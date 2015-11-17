@@ -32,7 +32,7 @@ package gadget.dao
 			stmtDeleteByCompetitorId.sqlConnection = sqlConnection;
 			_isSyncWithParent = false;
 			_isGetField = true;
-			_isSelectAll = false;
+			_isSelectAll = true;
 		}
 		
 		override protected function getOutgoingIgnoreFields():ArrayCollection{

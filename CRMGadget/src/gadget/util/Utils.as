@@ -1420,8 +1420,22 @@ package gadget.util {
 		
 		public static function copyObject(source:Object,target:Object):void{
 			for(var f:String in target){
-				source[f]=target[f];
+				var objV:Object = target[f];
+				if(typeof(objV) == "object"){
+					var clone:Object = new Object();
+					copyObject(clone,objV);
+					source[f] = clone;
+				}else{
+					source[f]=target[f];
+				}
+				
 			}
+		}
+		
+		public static function cloneObject(obj:Object):Object{
+			var clone:Object = new Object();
+			copyObject(clone,obj);
+			return clone;
 		}
 		
 		/**
@@ -2094,20 +2108,27 @@ package gadget.util {
 			for each(var filter:XML in filters.elements("filter")){
 				var entityFilter:String = filter.children()[0];
 				//restrict delete no object filter in transactions
-				Database.filterDao.deleteByEntity(entityFilter);
-				if (first) {
-					//VAHI moved this here to be able to import incomplete XML
-					//restrict delete no object filter in transactions
-					//Database.filterDao.deleteAll();
-					Database.criteriaDao.deleteAll();
-					first	= false;
-				}
+				//bug11811---User sync filter
+//				Database.filterDao.deleteByEntity(entityFilter);
+//				if (first) {
+//					//VAHI moved this here to be able to import incomplete XML
+//					//restrict delete no object filter in transactions
+//					//Database.filterDao.deleteAll();
+//					Database.criteriaDao.deleteAll();
+//					first	= false;
+//				}
 				
 				for each(var fieldFilter:XML in filter.elements("field")){
 					var objectFilter:Object = new Object();
 					objectFilter.entity = entityFilter;
 					objectFilter.name = fieldFilter.children()[0].toString();
 					objectFilter.predefined = fieldFilter.predefined.children()[0].toString()=="true"? 1 : 0;
+					var oldFilter:Object = Database.filterDao.findByName(objectFilter.name);
+					//delete old and add new from xml
+					if(oldFilter!=null){
+						Database.filterDao.delete_(oldFilter);
+					}
+									
 					objectFilter.type = fieldFilter.type.children()[0];
 					var filterId:Number = Database.filterDao.insert(objectFilter);
 					
@@ -2125,6 +2146,8 @@ package gadget.util {
 						
 						Database.criteriaDao.insert(objectCriteria);
 					}
+					
+					
 				}
 			}
 			//refreshMainWindow = true;

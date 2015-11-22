@@ -1691,9 +1691,11 @@
 					break;
 					} */
 				}
-				filterList.filterGrid.selectedIndex = selectedIndex;
-				if (filterList.list!=null)
+				filterList.selectedIndex = selectedIndex;
+				if (filterList.list!=null){
 					filterList.list.filter = filter;
+				}
+				
 				// Clear Data on the detail list and link list
 				//listSelected.detail.clearData();				
 				//listSelected.linkList.linkListGrid.dataProvider = null;

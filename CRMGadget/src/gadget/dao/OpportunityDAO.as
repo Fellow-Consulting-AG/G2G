@@ -42,6 +42,75 @@ package gadget.dao
 			return "Opportunity";
 		}
 		
+		
+		public override function updateByField(fields:Array,object:Object,fieldCriteria:String = 'gadget_id',addLocalUpdate:Boolean=false):void{
+			var isCalImpactC:Boolean = isCalculateImpactCalendar(object,fieldCriteria);
+			super.updateByField(fields,object,fieldCriteria,addLocalUpdate);
+			if(isCalImpactC){
+				calCulateImpactByOppId(object[fieldOracleId]);
+			}
+		}
+		
+		protected function calCulateImpactByOppId(optId:String):void{
+			var impacs:ArrayCollection = findImpactCalendar(null,null,optId);
+			if(impacs!=null && impacs.length>0){
+				for each(var r:Object in impacs){
+					//mark every row as change
+					r.co7Change=true;
+					calImpactCalMonth(r);
+				}
+				saveImpactCalendar(impacs,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,impacs);
+			}
+		}
+		
+		public override function update(object:Object):void {
+			var isCalImpactC:Boolean = isCalculateImpactCalendar(object,'gadget_id');
+			super.update(object);
+			if(isCalImpactC){
+				calCulateImpactByOppId(object[fieldOracleId]);
+			}
+			
+		}
+		
+		public override function updateByOracleId(object:Object,updateCustomField:Boolean=false):void {
+			var isCalImpactC:Boolean = isCalculateImpactCalendar(object,fieldOracleId);
+			super.updateByOracleId(object,updateCustomField);
+			if(isCalImpactC){
+				calCulateImpactByOppId(object[fieldOracleId]);
+			}
+		}
+
+		protected function isCalculateImpactCalendar(uObj:Object,fieldCriteria:String):Boolean{
+			if(UserService.getCustomerId()==UserService.COLOPLAST && Database.preferencesDao.isEnableImpactCalendar()){
+				var dbVal:Object = null;
+				if(fieldOracleId==fieldCriteria){
+					dbVal = findByOracleId(uObj[fieldCriteria]);
+				}else{
+					dbVal = findByGadgetId(uObj[fieldCriteria]);
+				}
+				
+				if(dbVal!=null){
+					//"CustomDate26",//Stard Date
+					//"CustomDate25",//end date
+					var dbStartDate:Date =DateUtils.parse(dbVal.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
+					var uStartDate:Date =DateUtils.parse(uObj.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
+					var dbEndDate:Date =DateUtils.parse(dbVal.CustomDate25,DateUtils.DATABASE_DATE_FORMAT);
+					var uEndDate:Date =DateUtils.parse(uObj.CustomDate25,DateUtils.DATABASE_DATE_FORMAT);
+					
+					return (dbStartDate.getMonth()!=uStartDate.getMonth() 
+						|| dbStartDate.getFullYear()!=uStartDate.getFullYear()
+						|| dbEndDate.getMonth()!=uEndDate.getMonth()
+						|| dbEndDate.getFullYear()!=uEndDate.getFullYear());
+					
+					
+				}
+			}
+			
+			return false;
+		}
+		
+		
+		
 		public static const CO7_PREFIX:String = "co7_";
 		override public function getIgnoreCopyFields():ArrayCollection{
 			return new ArrayCollection(
@@ -783,7 +852,7 @@ package gadget.dao
 		
 		
 		
-		public function findImpactCalendar(opColumns:Array=null,co7Field:Array=null):ArrayCollection {
+		public function findImpactCalendar(opColumns:Array=null,co7Field:Array=null,opportId:String=null):ArrayCollection {
 			if(opColumns==null||opColumns.length<1){
 				opColumns = OP_IMP_CAL_FIELD;
 			}
@@ -799,7 +868,7 @@ package gadget.dao
 					cols += ", co." + co7f +" co7_"+co7f;
 				}
 				
-				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id, u.CustomText30 as User_CustomText30 FROM " + tableName + "  o inner join allusers u on o.OwnerId= u.Id LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' order by o.gadget_id desc";
+				stmtFindAllWithCO7.text = "SELECT '" + entity + "' gadget_type " +cols +",o.gadget_id,co.gadget_id as co7_gadget_id,co.Id as co7_Id, u.CustomText30 as User_CustomText30 FROM " + tableName + "  o inner join allusers u on o.OwnerId= u.Id LEFT OUTER JOIN sod_customobject7  co ON o.OpportunityId = co.OpportunityId WHERE  (o.deleted = 0 OR o.deleted IS null)AND (co.deleted = 0 OR co.deleted IS null) AND o.OpportunityType='Forecast' "+(StringUtils.isEmpty(opportId)?"":"AND o.OpportunityId='"+opportId+"'") +" order by o.gadget_id desc";
 				exec(stmtFindAllWithCO7);
 				var result:SQLResult = stmtFindAllWithCO7.getResult();
 				var data:Array = result.data;
@@ -885,7 +954,7 @@ package gadget.dao
 									monthVal= annulizedInpact*curveVal[currentMonthIdx];
 								}
 								currentMonthIdx++;
-								q[f]= monthVal;
+								q[f]= monthVal; 
 							}else{
 								q[f]="0.00";
 							}
@@ -896,6 +965,7 @@ package gadget.dao
 			}
 			
 		}
+		
 		
 		//"CustomDate26",//Stard Date
 		//"CustomDate25",//end date
@@ -909,6 +979,13 @@ package gadget.dao
 			calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear'));
 		
 		}
+		
+		
+		
+		
+		
+		
+	
 		
 		public function getCompititor(filter:String=null):Dictionary{
 			var map:Dictionary = new Dictionary();
@@ -1241,7 +1318,7 @@ package gadget.dao
 		
 		public function triggerUpdateImpCal():void{
 			//user only for coloplast
-			if(UserService.getCustomerId()==UserService.COLOPLAST){
+			if(UserService.getCustomerId()==UserService.COLOPLAST && Database.preferencesDao.isEnableImpactCalendar()){
 				var results:ArrayCollection =findImpactCalendar();
 				var currentYear:Date = getCurrentYearOfImpCal();
 				var listChange:ArrayCollection = new ArrayCollection();
@@ -1272,16 +1349,64 @@ package gadget.dao
 							
 						}					
 						calImpCalMonthByYear(row,NEXT_YEAR_QUATER,Utils.calculateDate(1,currentYear,'fullYear'));
+						if(isRecal(row)){
+							calImpactCalMonth(row);
+						}
 						row.co7Change=true;
 						
 						listChange.addItem(row);
+					}else{
+						
+						if(isRecal(row)){
+							//mark row as change
+							row.co7Change=true;
+							calImpactCalMonth(row);
+							listChange.addItem(row);
+						}
+						
+					
 					}
 				}
 				if(listChange.length>0){
 					saveImpactCalendar(listChange,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,results);
 				}
+				
 			}
 		}
+		private function isRecal(row:Object):Boolean{
+			//check if has invalid data
+			var cloneRow:Object = Utils.cloneObject(row);
+			//clear all quater
+			for each(var cq:String in ALL_FY_QUATER){
+				cloneRow[cq]=null;
+			}
+			calImpactCalMonth(cloneRow);			
+			for each(var q:String in ALL_FY_QUATER){
+				var cQ:Object = cloneRow[q];
+				var rQ:Object = row[q];							
+				for each(var month:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+					var cmV:Number = parseFloat(cQ[month]);
+					var rmV:Number = parseFloat(rQ[month]);
+					if(isNaN(cmV) && !isNaN(rmV)){
+						return true;
+					}
+					if(cmV==0 && rmV!=0){
+						return true;
+					}
+					if(rmV==0 && cmV!=0){
+						return true;
+					}			
+				}				
+			}
+			
+			return false;
+		}
+			
+				
+				
+				
+		
+		
 		
 		private function getCurrentYearFromRow(r:Object):int{
 			if(r["Q1"]!=null){
@@ -1338,8 +1463,8 @@ package gadget.dao
 							}
 						}
 													
-							//update opportunity
-							updateByField(opField,row,'gadget_id',true);
+							//update opportunity--no need to check
+							super.updateByField(opField,row,'gadget_id',true);
 							row.origOP=Utils.copyModel(row,false);
 						
 					}

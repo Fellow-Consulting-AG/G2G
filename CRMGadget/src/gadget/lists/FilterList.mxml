@@ -52,10 +52,22 @@
 				}else{
 					if( filterSelectedIndices[list.entity] != null ){
 						filterGrid.selectedIndex = filterSelectedIndices[list.entity];
+					}else{
+						if(list.filter!=null){
+							filterGrid.selectedItem=list.filter;
+						}
 					}
 				}
 				
 			}	
+			
+			public function set selectedIndex(index:int):void{
+				filterGrid.selectedIndex = index;
+				if (list!=null){
+					//store selected index in the filter
+					filterSelectedIndices[list.entity]=index;
+				}
+			}
 			
 			public function getTransactionObject():Object{
 				//Bug #6516 CRO
@@ -155,9 +167,9 @@
 				Alert.show(i18n._('GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE'), i18n._('GLOBAL_DELETE_FILTER'), Alert.YES|Alert.NO, this, function(event:CloseEvent):void{
 					if (event.detail==Alert.YES){
 						Database.filterDao.delete_(objTarget);
-						Database.criteriaDao.delete_(objTarget);
+						//Database.criteriaDao.delete_(objTarget);
 						//CRO #1345
-						Database.customFilterTranslatorDao.deleteByFilterId(objTarget.entity,objTarget.name);
+						//Database.customFilterTranslatorDao.deleteByFilterId(objTarget.entity,objTarget.name);
 						listFilters();
 						(parentApplication as MainWindow).loadBookmarks();
 					}
@@ -195,11 +207,21 @@
 				return GUIUtils.getListName(lst.displayName ,' ' + i18n._('FILTERLIST_DATAGRID_COLUMN_HEADER_TEXT_FILTERS'));
 			}
 			
+			private function clickListener(e:Event):void{
+				list.filter = filterGrid.selectedItem;				
+				if(!list.boxImpactCalendar.visible){
+					list.initGridColumns();
+					filterSelectedIndices[list.entity] = filterGrid.selectedIndex;
+				}
+				list.doFilter(filterGrid.selectedItem);
+				list.computeColumnList();
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%" height="100%" verticalGap="0">
 		<mx:DataGrid sortableColumns="false" dragEnabled="true" id="filterGrid" width="100%" height="100%"
-					 click="list.filter = filterGrid.selectedItem; list.initGridColumns(); list.doFilter(filterGrid.selectedItem); filterSelectedIndices[list.entity] = filterGrid.selectedIndex; list.computeColumnList();"
+					 click="clickListener(event)"
 					 doubleClickEnabled="true" doubleClick="editFilter()" >
 			<mx:columns><!-- GUIUtils.getListName method use to add change PTG translation-->
 				<mx:DataGridColumn headerText="{getHeaderText(list)}">

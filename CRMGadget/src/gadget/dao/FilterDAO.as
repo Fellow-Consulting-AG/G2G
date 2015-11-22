@@ -17,6 +17,7 @@ package gadget.dao {
 		private var stmtDelete:SQLStatement;
 		private var stmtList:SQLStatement;
 		private var stmtExists:SQLStatement;
+		private var stmtDeleteByName:SQLStatement;
 		private var stmtDeleteAll:SQLStatement;
 		private var stmtDeleteByEntity:SQLStatement;
 		
@@ -52,6 +53,12 @@ package gadget.dao {
 			stmtExists = new SQLStatement();
 			stmtExists.sqlConnection = sqlConnection;
 			stmtExists.text = "SELECT * FROM filter WHERE name = :name";
+			
+			//stmtDeleteByName
+			stmtDeleteByName = new SQLStatement();
+			stmtDeleteByName.sqlConnection = sqlConnection;
+			stmtDeleteByName.text = "delete FROM filter WHERE name = :name";
+			
 			
 			stmtDeleteAll = new SQLStatement();
 			stmtDeleteAll.sqlConnection = sqlConnection;
@@ -131,6 +138,10 @@ package gadget.dao {
 			
 			stmtDelete.parameters[":id"] = filter.id;
 			exec(stmtDelete);
+			//auto delete criteria
+			Database.criteriaDao.delete_(filter);
+			//CRO #1345
+			Database.customFilterTranslatorDao.deleteByFilterId(filter.entity,filter.name);
 		}
 		
 //		public function listFilters(entity:String):ArrayCollection {
@@ -157,11 +168,26 @@ package gadget.dao {
 			return stmtList.getResult().data;
 		}
 		
-		public function exists(name:String):Boolean {
+		public function findByName(name:String){
 			stmtExists.parameters[":name"] = name;
 			exec(stmtExists);
-			return stmtExists.getResult().data != null;
+			var result:Array = stmtExists.getResult().data;
+			if(result!=null && result.length>0){
+				return  result[0];
+			}
+			return null;
 		}
+		
+		public function exists(name:String):Boolean {			
+			return findByName(name) != null;
+		}
+		
+		public function deleteByName(filterName):void{
+			stmtDeleteByName.parameters[":name"] = filterName;
+			exec(stmtDeleteByName);
+		}
+		
+		
 		
 		
 		public function deleteByEntity(entity:String):void{

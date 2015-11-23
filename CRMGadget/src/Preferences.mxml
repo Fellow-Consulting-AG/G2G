@@ -3333,10 +3333,10 @@
 								<!--<mx:ComboBox  id="cboActivityType" dataProvider="{dataProviderPicklist()}"/>-->
 							</mx:FormItem>
 						</mx:Form>
-						<mx:HBox paddingLeft="20"  width="100%" top="10"  paddingRight="10" id="googleDistanceConfig" visible="{StringUtils.isEmpty(preferences.admin_password)}">
-							<components:FieldSet width="500" height="280" gap="6" paddingLeft="10" cornerRadius="8" legend="{i18n._('GOOGLE_MAP_DISTANCE@Google Map Distance')}" skinClass="com.shinynet.shinylib.skins.FieldSetSkin">
+						<mx:HBox paddingLeft="20"  width="100%" top="10" horizontalScrollPolicy="off"  paddingRight="10" id="googleDistanceConfig" includeInLayout="{StringUtils.isEmpty(preferences.admin_password)}" visible="{StringUtils.isEmpty(preferences.admin_password)}">
+							<components:FieldSet width="543" height="180" gap="6" paddingLeft="10" cornerRadius="8" legend="{i18n._('GOOGLE_MAP_DISTANCE@Google Map Distance')}" skinClass="com.shinynet.shinylib.skins.FieldSetSkin">
 								<mx:HBox width="100%" height="100%" paddingLeft="10" paddingTop="20" paddingRight="10">
-									<mx:AdvancedDataGrid editable="true"  height="250"  id="distanceMap" top="0" width="100%" doubleClickEnabled="true">
+									<mx:AdvancedDataGrid editable="true" sortExpertMode="true" height="150"  id="distanceMap" top="0" width="100%" doubleClickEnabled="true">
 										<mx:columns>
 											<mx:AdvancedDataGridColumn resizable="false" editable="false" width="340" dataField="displayname" headerText="{i18n._('COUNTRY@Country')}"/>
 											<mx:AdvancedDataGridColumn resizable="false" width="150" dataField="distance" labelFunction="{getDistanceDisplayName}" headerText="{i18n._('GLOBAL_TYPE@Type')}" itemEditor="{new ClassFactory(ComboboxColRender)}" editorDataField="selectedItem"/>

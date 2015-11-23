@@ -1382,8 +1382,8 @@ package gadget.dao
 			}
 			calImpactCalMonth(cloneRow);			
 			for each(var q:String in ALL_FY_QUATER){
-				var cQ:Object = cloneRow[q];
-				var rQ:Object = row[q];							
+				var cQ:Object = cloneRow[q]==null?{}:cloneRow[q];
+				var rQ:Object = row[q]==null?{}:row[q];							
 				for each(var month:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
 					var cmV:Number = parseFloat(cQ[month]);
 					var rmV:Number = parseFloat(rQ[month]);

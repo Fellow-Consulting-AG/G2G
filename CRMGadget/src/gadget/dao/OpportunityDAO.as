@@ -2,6 +2,7 @@ package gadget.dao
 {
 	import com.adobe.protocols.dict.Dict;
 	import com.adobe.utils.DateUtil;
+	import com.adobe.utils.StringUtil;
 	
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
@@ -20,7 +21,9 @@ package gadget.dao
 	import mx.collections.ArrayCollection;
 	
 	public class OpportunityDAO extends BaseDAO {
-		
+		public static const FORECAST_TYPE:String = "forecast"; 
+		public static const ACTUAL_TYPE:String = "Actual";
+		public static const VARIANCE_TYPE:String = "Variance";
 		
 		public function OpportunityDAO(sqlConnection:SQLConnection, work:Function) {			
 			super(work, sqlConnection, {
@@ -90,6 +93,13 @@ package gadget.dao
 				}
 				
 				if(dbVal!=null){
+					
+					var oldCurveType:String = dbVal.CustomPickList7;
+					var newCurveType:String = uObj.CustomPickList7;
+					if(newCurveType!=oldCurveType){
+						return true;
+					}
+					
 					//"CustomDate26",//Stard Date
 					//"CustomDate25",//end date
 					var dbStartDate:Date =DateUtils.parse(dbVal.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
@@ -883,6 +893,85 @@ package gadget.dao
 			return MAP_CURVE_TYPE_VALUE[curveType];
 		}
 		
+		public static function getCurrentFyImpact(item:Object,formatNum:Boolean=true):String{
+			if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
+				return "";
+			}
+			var total:Number = 0;
+			for each(var q:String in CURRENT_YEAR_QUATER){
+				var qVal:Number = parseFloat(colValue(item,q,false));
+				if(!isNaN(qVal)){
+					total+=qVal;
+				}
+				
+			}				
+			if(formatNum){
+				return NumberLocaleUtils.format(total);
+			}else{
+				return total.toFixed(4);
+			}
+		}
+		
+		public static function colValue(data:Object,colName:String,formatNum:Boolean=true):String{			
+			
+			var obj:Object =data[colName];
+			if(colName.indexOf('.')!=-1){
+				var fields:Array = colName.split('.');
+				var q:Object = data[fields[0]];
+				if(q!=null){
+					obj = parseFloat(q[fields[1]]);
+					if(isNaN(Number(obj))){
+						obj="";
+					}
+				}
+			}
+			
+			if(obj!=null){
+				if(obj is String  || obj is Boolean){					
+					return obj.toString();
+				}else if( obj is Number){
+					if(!formatNum){
+						return Number(obj).toFixed(2);
+					}
+					return NumberLocaleUtils.format(obj);
+				}else{
+					//it is quater
+					if(colName.indexOf("Q")==0){
+						var total:Number =0;
+						for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+							try{
+								if(obj[f] is Number){
+									total +=Number(obj[f]);
+								}else if(obj[f] is String){
+									if(!StringUtils.isEmpty(obj[f])){
+										var qVal:Number =parseFloat(obj[f]);
+										if(!isNaN(qVal)){
+											total +=qVal;
+										}
+									}
+								}
+								
+							}catch(e:Error){
+								trace(e.getStackTrace());
+								//nothing to to
+							}
+						}
+						if(!formatNum){
+							return Number(total).toFixed(2);
+						}else{
+							return NumberLocaleUtils.format(total);
+						}
+						
+					}
+				}
+				
+				
+			}
+			
+			return null;
+			
+		}
+		
 		
 		public static function getAnnualizedInpact(item:Object,formatNum:Boolean = true):String{
 			
@@ -1160,6 +1249,71 @@ package gadget.dao
 			"CustomCurrency9"//Annualized Impact 
 		];
 		
+		
+		private function initOpTotal(rows:ArrayCollection):void{
+			//"CustomCurrency0",//Annualized Impact
+			//"CustomCurrency1",//Current FY Impact
+			//"CustomCurrency3",//Previous FY Impact
+			//"CustomCurrency4",//Next FY Impact
+			for each(var r:Object in rows){
+				if(r.isTotal) continue;
+				r.CustomCurrency0 = getAnnualizedInpact(r,false);
+				r.CustomCurrency1 =  getCurrentFyImpact(r,false);
+				r.CustomCurrency3 = r[OpportunityDAO.CO7_PREFIX+'CustomCurrency6'];
+				r.CustomCurrency4 = getNextFyImpact(r,false);
+				//save for co7
+				r[OpportunityDAO.CO7_PREFIX+"CustomCurrency9"] = r.CustomCurrency0;
+				r[OpportunityDAO.CO7_PREFIX+"CustomCurrency8"] = r.CustomCurrency4;
+				r[OpportunityDAO.CO7_PREFIX+"CustomCurrency5"] = r.CustomCurrency1;
+				r[OpportunityDAO.CO7_PREFIX+"CustomCurrency7"] = getChangeVsLastFY(r,false);
+				
+				
+			}
+		}
+		
+		public static function getChangeVsLastFY(item:Object,formatNum:Boolean=true):String{
+			if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
+				return "";
+			}
+			var total:Number =parseFloat(getCurrentFyImpact(item,false));
+			var prefNumStr:Number = 0;
+			if(item["co7_CustomCurrency6"]!=null){
+				prefNumStr = parseFloat(StringUtil.trim(item["co7_CustomCurrency6"]));
+			}
+			if(isNaN(total)){
+				total =0;
+			}
+			
+			if(!isNaN(prefNumStr)){
+				total = total-prefNumStr;
+			}
+		
+			if(formatNum){
+				return NumberLocaleUtils.format(total);
+			}else{
+				return total.toFixed(4);
+			}
+		}
+		
+		public static function getNextFyImpact(item:Object,formatNum:Boolean=true):String{
+			if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
+				return "";
+			}
+			var total:Number = 0;
+			for each(var q:String in OpportunityDAO.NEXT_YEAR_QUATER){
+				var qVal:Number = parseFloat(colValue(item,q,false));
+				if(!isNaN(qVal)){
+					total+=qVal;
+				}
+				
+			}				
+			if(formatNum){
+				return NumberLocaleUtils.format(total);
+			}else{
+				return total.toFixed(4);
+			}
+		}
+		
 		private function saveCo7(fields:Array,obj:Object,quater:String=null,op:Object=null):void{
 			var objSav:Object = new Object();
 			for each (var f:String in fields){
@@ -1374,6 +1528,10 @@ package gadget.dao
 			}
 		}
 		private function isRecal(row:Object):Boolean{
+			
+			if(row.isNoCo7){
+				return false;
+			}
 			//check if has invalid data
 			var cloneRow:Object = Utils.cloneObject(row);
 			//clear all quater
@@ -1447,6 +1605,7 @@ package gadget.dao
 		}
 		
 		public function saveImpactCalendar(recordChanges:ArrayCollection,opField:Array,co7Fields:Array,allRows:ArrayCollection):void{
+			initOpTotal(allRows);
 			var totalDic:Dictionary = calculateOpportunityTotal(allRows);
 			Database.begin();
 			try{

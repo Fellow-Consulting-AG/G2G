@@ -33,7 +33,10 @@ package gadget.util
 				if(value is Number){
 					val = numfomatter.formatNumber(Number(value));
 				}else{
-					val = numfomatter.formatNumber(parseFloat(value.toString()));
+					var num:Number = parseFloat(value.toString());
+					if(!isNaN(num)){
+						val = numfomatter.formatNumber(num);
+					}
 				}
 				
 			return val;

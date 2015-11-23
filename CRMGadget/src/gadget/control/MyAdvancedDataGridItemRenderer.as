@@ -1,5 +1,7 @@
 package gadget.control
 {
+	import gadget.dao.OpportunityDAO;
+	
 	import mx.controls.AdvancedDataGrid;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridItemRenderer;
@@ -15,11 +17,11 @@ package gadget.control
 		
 		public override function set data(value:Object):void{
 			if(value!=null && col!=null){
-				if(value.type == ImpactCalendar.ACTUAL_TYPE || value.type==ImpactCalendar.FORECAST_TYPE||value.type==ImpactCalendar.VARIANCE_TYPE){
+				if(value.type == OpportunityDAO.ACTUAL_TYPE || value.type==OpportunityDAO.FORECAST_TYPE||value.type==OpportunityDAO.VARIANCE_TYPE){
 					//annulized
 					if(col.dataField=='CustomCurrency0'){
 						setStyle("fontWeight","bold");
-						if(value.type==ImpactCalendar.FORECAST_TYPE){
+						if(value.type==OpportunityDAO.FORECAST_TYPE){
 							setStyle("textDecoration","underline");//underline only forcast
 						}else{
 							setStyle("textDecoration","");//no underline

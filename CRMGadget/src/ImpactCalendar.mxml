@@ -62,9 +62,7 @@
 			[Embed(source='/assets/save.gif')] [Bindable] public var saveIcon:Class;
 			[Bindable] public var rows:ArrayCollection;
 			[Bindable] public var filter:Object;
-			public static const FORECAST_TYPE:String = "forecast"; 
-			public static const ACTUAL_TYPE:String = "Actual";
-			public static const VARIANCE_TYPE:String = "Variance";
+			
 			private var mapShowMonth:Object = {"-1":false};
 			private static const OP_FIELD:Array=OpportunityDAO.OP_IMP_CAL_FIELD;
 			
@@ -99,8 +97,8 @@
 			
 			private static const ENTITY_CHECKS:Array = ['Opportunity','CustomObject7'];
 			
-			private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
-			private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
+			//private static const CURRENT_FY_QUATER:Array = ["Q1","Q2","Q3","Q4"];
+			//private static const NEXt_FY_QUATER:Array = ["Q5","Q6","Q7","Q8"];
 			
 			//private static const QUATER_LINE_TOTAL_FIELDS:Array=["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8"];
 			
@@ -255,61 +253,14 @@
 					}	
 					
 					private function getCurrentFyImpact(item:Object,col:AdvancedDataGridColumn=null,formatNum:Boolean=true):String{
-						if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
-							return "";
-						}
-						var total:Number = 0;
-						for each(var q:String in CURRENT_FY_QUATER){
-							var qVal:Number = parseFloat(colValue(item,null,q,false));
-							if(!isNaN(qVal)){
-								total+=qVal;
-							}
-							
-						}				
-						if(formatNum){
-							return NumberLocaleUtils.format(total);
-						}else{
-							return total.toFixed(4);
-						}
+						return OpportunityDAO.getCurrentFyImpact(item,formatNum);
 					}
 					private function getNextFyImpact(item:Object,col:AdvancedDataGridColumn=null,formatNum:Boolean=true):String{
-						if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
-							return "";
-						}
-						var total:Number = 0;
-						for each(var q:String in NEXt_FY_QUATER){
-							var qVal:Number = parseFloat(colValue(item,null,q,false));
-							if(!isNaN(qVal)){
-								total+=qVal;
-							}
-							
-						}				
-						if(formatNum){
-							return NumberLocaleUtils.format(total);
-						}else{
-							return total.toFixed(4);
-						}
+						return OpportunityDAO.getNextFyImpact(item,formatNum);
 					}
 					
 					private function getChangeVsLastFY(item:Object,col:AdvancedDataGridColumn=null,formatNum:Boolean=true):String{
-						if(item.isTotal && (item.type==ACTUAL_TYPE||item.type==VARIANCE_TYPE)){
-							return "";
-						}
-						var total:Number =0;
-						var prefNumStr:String = null;
-						if(item["co7_CustomCurrency6"]!=null){
-							prefNumStr = StringUtil.trim(item["co7_CustomCurrency6"]);
-						}
-						if(StringUtils.isEmpty(prefNumStr)){
-							total= parseFloat(getCurrentFyImpact(item,null,false));
-						}else{
-							total= parseFloat(getCurrentFyImpact(item,null,false))- parseFloat(prefNumStr);
-						}
-						if(formatNum){
-							return NumberLocaleUtils.format(total);
-						}else{
-							return total.toFixed(4);
-						}
+						return OpportunityDAO.getChangeVsLastFY(item,formatNum);
 					}
 					
 					
@@ -461,62 +412,7 @@
 						if(StringUtils.isEmpty(colName)){
 							colName=col.dataField;
 						}
-						
-						var obj:Object =data[colName];
-						if(colName.indexOf('.')!=-1){
-							var fields:Array = colName.split('.');
-							var q:Object = data[fields[0]];
-							if(q!=null){
-								obj = parseFloat(q[fields[1]]);
-								if(isNaN(Number(obj))){
-									obj="";
-								}
-							}
-						}
-						
-						if(obj!=null){
-							if(obj is String  || obj is Boolean){					
-								return obj.toString();
-							}else if( obj is Number){
-								if(!formatNum){
-									return Number(obj).toFixed(2);
-								}
-								return NumberLocaleUtils.format(obj);
-							}else{
-								//it is quater
-								if(colName.indexOf("Q")==0){
-									var total:Number =0;
-									for each(var f:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
-										try{
-											if(obj[f] is Number){
-												total +=Number(obj[f]);
-											}else if(obj[f] is String){
-												if(!StringUtils.isEmpty(obj[f])){
-													var qVal:Number =parseFloat(obj[f]);
-													if(!isNaN(qVal)){
-														total +=qVal;
-													}
-												}
-											}
-											
-										}catch(e:Error){
-											trace(e.getStackTrace());
-											//nothing to to
-										}
-									}
-									if(!formatNum){
-										return Number(total).toFixed(2);
-									}else{
-										return NumberLocaleUtils.format(total);
-									}
-									
-								}
-							}
-							
-							
-						}
-						
-						return null;
+						return OpportunityDAO.colValue(data,colName,formatNum);
 						
 					}
 					
@@ -793,23 +689,23 @@
 						}
 						rows = Database.opportunityDao.findImpactCalendar();
 						
-						rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),groupType:'FORECAST',isTotal:true,type:FORECAST_TYPE,'lineTotalId':'totalid'});
-						rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),groupType:'FORECAST',isTotal:true,type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
+						rows.addItem({CustomCurrency0:i18n._("FORECAST_TOTAL@Forecast total"),groupType:'FORECAST',isTotal:true,type:OpportunityDAO.FORECAST_TYPE,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("ACTUAL_REVENUE@Actual revenue"),groupType:'FORECAST',isTotal:true,type:OpportunityDAO.ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
 							"Q1":true,				
 							"Q2":true,"Q3":true,"Q4":true,"Q5":true,
 							"Q6":true,
 							"Q7":true,
 							"Q8":true}});
-						rows.addItem({CustomCurrency0:i18n._("VARIANCE@Variance"),type:VARIANCE_TYPE,groupType:'FORECAST',isTotal:true,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("VARIANCE@Variance"),type:OpportunityDAO.VARIANCE_TYPE,groupType:'FORECAST',isTotal:true,'lineTotalId':'totalid'});
 						
-						rows.addItem({CustomCurrency0:i18n._("NPE_TOTAL@CARE total"),isTotal:true,groupType:'NPE',type:FORECAST_TYPE,'lineTotalId':'totalid'});
-						rows.addItem({CustomCurrency0:i18n._("ACTUAL_NPE@Actual CARE"),isTotal:true,groupType:'NPE',type:ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
+						rows.addItem({CustomCurrency0:i18n._("NPE_TOTAL@CARE total"),isTotal:true,groupType:'NPE',type:OpportunityDAO.FORECAST_TYPE,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("ACTUAL_NPE@Actual CARE"),isTotal:true,groupType:'NPE',type:OpportunityDAO.ACTUAL_TYPE,'lineTotalId':'totalid',editFields:{
 							"Q1":true,				
 							"Q2":true,"Q3":true,"Q4":true,"Q5":true,
 							"Q6":true,
 							"Q7":true,
 							"Q8":true}});
-						rows.addItem({CustomCurrency0:i18n._("VARIANCE_NPE@Variance CARE"),groupType:'NPE',type:VARIANCE_TYPE,isTotal:true,'lineTotalId':'totalid'});
+						rows.addItem({CustomCurrency0:i18n._("VARIANCE_NPE@Variance CARE"),groupType:'NPE',type:OpportunityDAO.VARIANCE_TYPE,isTotal:true,'lineTotalId':'totalid'});
 						
 						//refresh total
 						calculateTotalAllOpportunity();
@@ -1070,7 +966,10 @@
 									}
 								}		
 								if(!StringUtils.isEmpty(r.co7_CustomCurrency6)){
-									forCaseTotal.co7_CustomCurrency6+=parseFloat(r.co7_CustomCurrency6);
+									var lastFy:Number = parseFloat(r.co7_CustomCurrency6);
+									if(!isNaN(lastFy)){
+											forCaseTotal.co7_CustomCurrency6+=lastFy;
+									}
 								}
 								
 								r.group = mapGroup[r.OpportunityId];
@@ -1354,26 +1253,7 @@
 						
 					}
 					
-					private function initOpTotal():void{
-						//"CustomCurrency0",//Annualized Impact
-						//"CustomCurrency1",//Current FY Impact
-						//"CustomCurrency3",//Previous FY Impact
-						//"CustomCurrency4",//Next FY Impact
-						for each(var r:Object in rows){
-							if(r.isTotal) continue;
-							r.CustomCurrency0 = getAnnualizedInpact(r,null,false);
-							r.CustomCurrency1 = getCurrentFyImpact(r,null,false);
-							r.CustomCurrency3 = r[OpportunityDAO.CO7_PREFIX+'CustomCurrency6'];
-							r.CustomCurrency4 = getNextFyImpact(r,null,false);
-							//save for co7
-							r[OpportunityDAO.CO7_PREFIX+"CustomCurrency9"] = r.CustomCurrency0;
-							r[OpportunityDAO.CO7_PREFIX+"CustomCurrency8"] = r.CustomCurrency4;
-							r[OpportunityDAO.CO7_PREFIX+"CustomCurrency5"] = r.CustomCurrency1;
-							r[OpportunityDAO.CO7_PREFIX+"CustomCurrency7"] = getChangeVsLastFY(r,null,false);
-							
-							
-						}
-					}
+					
 					
 					private function checkMandatory(recChangs:ArrayCollection):Boolean{
 						
@@ -1519,8 +1399,7 @@
 							
 							if(recchanges!=null && recchanges.length>0){
 								if(!checkMandatory(recchanges)){
-									saveACTotal();
-									initOpTotal();						
+									saveACTotal();													
 									Database.opportunityDao.saveImpactCalendar(recchanges,OP_FIELD,CO7_FIELD,rows);
 									Alert.show(i18n._('SAVE_SUCCESSFULLY@Saved successfully'),i18n._('GLOBAL_INFO@Info'),Alert.OK,this,function(e:CloseEvent):void{
 										if(endFunction!=null){

@@ -1420,15 +1420,7 @@ package gadget.util {
 		
 		public static function copyObject(source:Object,target:Object):void{
 			for(var f:String in target){
-				var objV:Object = target[f];
-				if(typeof(objV) == "object"){
-					var clone:Object = new Object();
-					copyObject(clone,objV);
-					source[f] = clone;
-				}else{
-					source[f]=target[f];
-				}
-				
+				source[f]= target[f];
 			}
 		}
 		

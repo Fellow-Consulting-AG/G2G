@@ -25,6 +25,8 @@ package gadget.sync.incoming
 		protected var _currentRequestIds:ArrayCollection;
 		protected var _readParentIds:Boolean = true;
 		protected var _existRetrieved:Dictionary = null;
+		protected var _switchToDependOnParent:Boolean = true;
+		protected var _usemodfiedDateAscriteria:Boolean = false;
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -111,6 +113,19 @@ package gadget.sync.incoming
 		}
 		
 		
+		protected function  initParentIds():void{
+			var fields:ArrayCollection = new ArrayCollection([{"element_name":DAOUtils.getOracleId(parentTask.entityIDour)}]);
+			try{						
+				if(!StringUtils.isEmpty(parentRelationField.ChildRelationId)){
+					fields.addItem({"element_name":parentRelationField.ChildRelationId});
+				}
+				parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
+			}catch(e:SQLError){
+				fields.removeItemAt(fields.length-1);//remove last column
+				parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
+			}
+		}
+		
 		override protected function doRequest():void {		
 			//if(!dependOnParent){
 				var count:int = Database.getDao(entityIDour).count();					
@@ -118,16 +133,7 @@ package gadget.sync.incoming
 					_readParentIds= false;
 					_dependOnParent = true;
 					
-					var fields:ArrayCollection = new ArrayCollection([{"element_name":DAOUtils.getOracleId(parentTask.entityIDour)}]);
-					try{						
-						if(!StringUtils.isEmpty(parentRelationField.ChildRelationId)){
-							fields.addItem({"element_name":parentRelationField.ChildRelationId});
-						}
-						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
-					}catch(e:SQLError){
-						fields.removeItemAt(fields.length-1);//remove last column
-						parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
-					}
+					initParentIds();
 				}
 				
 			//}
@@ -183,7 +189,7 @@ package gadget.sync.incoming
 					first = false;
 				}			
 				
-				var superCriteria:String = super.generateSearchSpec(startTime!=-1);
+				var superCriteria:String = super.generateSearchSpec((startTime!=-1 || _usemodfiedDateAscriteria));
 				if(StringUtils.isEmpty(superCriteria)){
 					superCriteria=searchProductSpec;
 				}else{
@@ -193,7 +199,25 @@ package gadget.sync.incoming
 				return superCriteria;
 			}
 		}
-		
+		protected override function doProcessResponse(recordCount:int,lastPage:Boolean,listObject:XML):int{
+			
+			if(_switchToDependOnParent && !dependOnParent){
+				initParentIds();
+				if(recordCount>parentTask.listRetrieveId.length){
+					_page =0;//reset page
+					_dependOnParent = true;
+					_switchToDependOnParent = false;
+					_readParentIds = false;
+					_usemodfiedDateAscriteria=true;//use modifidate
+					//start sync depend parent
+					doRequest();
+					return 0;
+				}
+			}
+			
+			
+			return super.doProcessResponse(recordCount,lastPage,listObject);;
+		}
 		protected function restoreRequest():void{
 			if(dependOnParent){
 				parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);

@@ -57,12 +57,18 @@ package gadget.dao
 		protected function calCulateImpactByOppId(optId:String):void{
 			var impacs:ArrayCollection = findImpactCalendar(null,null,optId);
 			if(impacs!=null && impacs.length>0){
+				
 				for each(var r:Object in impacs){
-					//mark every row as change
-					r.co7Change=true;
-					calImpactCalMonth(r);
+					
+						//mark every row as change
+						r.co7Change=true;
+						calImpactCalMonth(r);
+						
+					
 				}
-				saveImpactCalendar(impacs,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,impacs);
+				
+					saveImpactCalendar(impacs,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,impacs);
+				
 			}
 		}
 		
@@ -102,12 +108,20 @@ package gadget.dao
 					
 					//"CustomDate26",//Stard Date
 					//"CustomDate25",//end date
-					var dbStartDate:Date =DateUtils.parse(dbVal.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
+					var dbStartDate:Date =DateUtils.parse(dbVal.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);					
 					var uStartDate:Date =DateUtils.parse(uObj.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
 					var dbEndDate:Date =DateUtils.parse(dbVal.CustomDate25,DateUtils.DATABASE_DATE_FORMAT);
 					var uEndDate:Date =DateUtils.parse(uObj.CustomDate25,DateUtils.DATABASE_DATE_FORMAT);
+					if(dbStartDate==null 
+						|| uStartDate==null 
+						||dbEndDate==null 
+						||uEndDate==null){
+						
+						return true;
+					}
 					
-					return (dbStartDate.getMonth()!=uStartDate.getMonth() 
+					
+					return  (dbStartDate.getMonth()!=uStartDate.getMonth() 
 						|| dbStartDate.getFullYear()!=uStartDate.getFullYear()
 						|| dbEndDate.getMonth()!=uEndDate.getMonth()
 						|| dbEndDate.getFullYear()!=uEndDate.getFullYear());
@@ -1008,11 +1022,13 @@ package gadget.dao
 			var minDate:Date=DateUtils.guessAndParse(row.CustomDate26);
 			var maxDate:Date = DateUtils.guessAndParse(row.CustomDate25);
 			var currentMonth:Date = new Date(currentYear.fullYear-1,9,1,0,0,0,0)
+			var clearQuater:Boolean = true;
 			if(curveVal!=null && minDate!=null && maxDate!=null){
 				var currentMonthIdx:int = 0;
 				//CustomCurrency0 is annulized
 				var annulizedInpact:Number = parseFloat(getAnnualizedInpact(row,false));
-				if(!isNaN(annulizedInpact)){						
+				if(!isNaN(annulizedInpact)){	
+					clearQuater = false;
 					for each(var qstr:String in quters){
 						var q:Object=row[qstr];
 						if(q==null){
@@ -1045,9 +1061,20 @@ package gadget.dao
 								currentMonthIdx++;
 								q[f]= monthVal; 
 							}else{
-								q[f]="0.00";
+								q[f]="0";
 							}
 							currentMonth=Utils.calculateDate(1,currentMonth,"month");
+						}
+					}
+				}
+			}
+			
+			if(clearQuater){
+				for each(var qs:String in quters){
+					var qo:Object=row[qs];
+					if(qo!=null){
+						for each(var m:String in OpportunityDAO.MONTH_FIELD_FOR_EACH_Q){
+							qo[m]="0";
 						}
 					}
 				}

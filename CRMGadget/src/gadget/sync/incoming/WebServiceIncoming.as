@@ -572,12 +572,8 @@ package gadget.sync.incoming {
 		protected function getResponseNamespace():Namespace{
 			return ns2;
 		}
-		
-		override protected function handleResponse(request:XML, response:XML):int {
+		protected function doProcessResponse(recordCount:int,lastPage:Boolean,listObject:XML):int{
 			var ns:Namespace = getResponseNamespace();
-			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
-			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';
-			
 			var googleListUpdate:ArrayCollection;
 			if(getEntityName() == "Activity"){
 				googleListUpdate = new ArrayCollection();
@@ -586,8 +582,8 @@ package gadget.sync.incoming {
 			}
 			
 			/*if(getEntityName() == "BusinessPlan"){
-				trace(request);
-				trace(response);
+			trace(request);
+			trace(response);
 			}*/
 			var cnt:int = 0;
 			if(this is CPIncomingCheckRelationById){
@@ -610,6 +606,15 @@ package gadget.sync.incoming {
 			
 			nextPage(lastPage);
 			return cnt;
+		}
+		override protected function handleResponse(request:XML, response:XML):int {
+			var ns:Namespace = getResponseNamespace();
+			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
+			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';
+			var recordcount:int = parseInt(listObject.attribute("recordcount")[0].toString());
+			
+			
+			return doProcessResponse(recordcount,lastPage,listObject);
 		}
 		
 		protected function importRecords(entitySod:String, list:XMLList, googleListUpdate:ArrayCollection=null):int {

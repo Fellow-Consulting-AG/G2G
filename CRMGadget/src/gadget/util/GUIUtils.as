@@ -1328,7 +1328,7 @@ package gadget.util
 			var odiVal:String = item[oidName] as String;
 			var enabled:Boolean = true;
 			//Bug #1497 CRO
-			if(!detail.create &&(odiVal.indexOf('#')==-1) && detail.entity==Database.serviceDao.entity 
+			if(!detail.create &&(odiVal!=null && odiVal.indexOf('#')==-1) && detail.entity==Database.serviceDao.entity 
 				&& Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_SR_SYNC_ORDER_STATUS)){					
 				if(item.CustomPickList10=="STND" || item.CustomPickList10=="ACPT" || item.CustomPickList11=="TECO"  ){  
 					enabled = false;

@@ -136,12 +136,13 @@
 				
 			} 
 			private function checkEULA_Veriosn():Boolean{
-				var file:File = File.userDirectory.resolvePath(Database.CUSTOM_DATABASE);
-				var stream:FileStream = new FileStream();
-				stream.open(file, FileMode.READ);
-				var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
+				
 				//trace(fileData);
 				try{
+					var file:File = File.userDirectory.resolvePath(Database.CUSTOM_DATABASE);
+					var stream:FileStream = new FileStream();
+					stream.open(file, FileMode.READ);
+					var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 					var xml:XML = new XML(fileData);	
 					var oldVersion:String = xml.appversion;
 					var accepted_eula:String = xml.accepted_eula;

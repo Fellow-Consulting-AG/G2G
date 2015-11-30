@@ -31,7 +31,7 @@ package gadget.dao
 			stmtDeleteByRelatedContactId.text = "DELETE FROM  contact_campaignrecipient WHERE ContactId = :ContactId";
 			stmtDeleteByRelatedContactId.sqlConnection = sqlConnection;
 			_isSyncWithParent = false;
-			_isSelectAll = false;
+			_isSelectAll = true;
 			_isGetField = true;
 		}
 		

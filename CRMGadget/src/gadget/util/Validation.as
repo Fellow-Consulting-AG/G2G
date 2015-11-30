@@ -25,13 +25,13 @@ package gadget.util
 //			if (entity == 'Activity') {
 //				item['Activity'] = 'Task';
 //			}
-			
-			if (entity == 'Opportunity') {
-				var opportunityDao:OpportunityDAO = Database.opportunityDao;
-				if (opportunityDao.findDuplicateByColumn('OpportunityName', item.OpportunityName, item.gadget_id == null ? '' : item.gadget_id)!=null) {
-					return "Opportunity '" + item.OpportunityName + "' already exists.";
-				}
-			}	
+			//11865----------no need check duplicate for opportunity
+//			if (entity == 'Opportunity') {
+//				var opportunityDao:OpportunityDAO = Database.opportunityDao;
+//				if (opportunityDao.findDuplicateByColumn('OpportunityName', item.OpportunityName, item.gadget_id == null ? '' : item.gadget_id)!=null) {
+//					return "Opportunity '" + item.OpportunityName + "' already exists.";
+//				}
+//			}	
 			
 			if (entity == 'Account') {
 				var accountDao:AccountDAO = Database.accountDao;

@@ -253,19 +253,27 @@ package gadget.sync.incoming {
 		override public function set param(p:TaskParameterObject):void
 		{			
 			super.param = p;
-			//bug#8928--resync if full compare=true and viewtype=defaultbook
-			//bug#10624---full sync. do the same full compare
-			if(oldIds==null && (p.fullCompare||p.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
-				if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE || checkinrange ||entityIDour == Database.accountDao.entity){
-					oldIds = dao.findAllIdsAsDictionary();				
-					Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
-					useCreatedDate = true;
+			//bug#11731
+			if(oldIds==null && UserService.getCustomerId()==UserService.COLOPLAST && entityIDour ==Database.opportunityDao.entity && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+				oldIds = dao.findAllIdsAsDictionary();				
+				Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
+				useCreatedDate = true;
+			}else{
+				//bug#8928--resync if full compare=true and viewtype=defaultbook
+				//bug#10624---full sync. do the same full compare
+				if(oldIds==null && (p.fullCompare||p.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+					if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE || checkinrange ||entityIDour == Database.accountDao.entity){
+						oldIds = dao.findAllIdsAsDictionary();				
+						Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());
+						useCreatedDate = true;
+					}else{
+						useCreatedDate = param.full||Database.incomingSyncDao.is_unsynced(getEntityName());
+					}
 				}else{
 					useCreatedDate = param.full||Database.incomingSyncDao.is_unsynced(getEntityName());
 				}
-			}else{
-				useCreatedDate = param.full||Database.incomingSyncDao.is_unsynced(getEntityName());
 			}
+			
 			
 			
 			

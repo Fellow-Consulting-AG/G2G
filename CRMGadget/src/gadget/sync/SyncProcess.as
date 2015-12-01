@@ -168,13 +168,7 @@ package gadget.sync
 					}else{
 						addSeriaTask(IncomingSubObjTasksPerIds(),IncomingParallelTaskGroup);
 					}
-					//retrieve missing contact
-					_groups.addItem(new TaskGroupBase(	
-						this,
-						[new IncomingContactNotExistInAccCon()],
-						_full
-						,_metaSyn
-					));
+					
 				
 					
 					

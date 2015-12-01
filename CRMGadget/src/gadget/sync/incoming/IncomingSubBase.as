@@ -250,8 +250,7 @@ package gadget.sync.incoming
 			}else{
 				parentcriteria = searchByParentCriteria;
 			}
-			var subCirteria:String = getSubSerachSpec();
-			
+			var subCirteria:String = getSubSerachSpec();			
 //			if (param.range) {
 //				dateSpec	= "( &gt;= '"+DateUtils.toSodDate(param.range.start)+"' ) AND ( &lt;= '"+DateUtils.toSodDate(param.range.end)+"' )";
 //			}			

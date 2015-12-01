@@ -2,12 +2,16 @@ package gadget.sync.incoming
 {
 	
 	
+	import com.google.analytics.utils.UserAgent;
+	
 	import flash.errors.SQLError;
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.TransactionDAO;
+	import gadget.service.UserService;
 	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.ObjectUtils;
 	import gadget.util.StringUtils;
@@ -44,10 +48,16 @@ package gadget.sync.incoming
 		{			
 			super.param = p;
 			//bug#8990
-			if((p.fullCompare||p.full) && entityIDour==Database.accountDao.entity){
+			if((p.fullCompare||p.full) && (viewType == TransactionDAO.DEFAULT_BOOK_TYPE||checkinrange ||entityIDour==Database.accountDao.entity)){
 				_readParentIds = true;
 				_dependOnParent = true;
 			}
+			//bug#11731
+			if(UserService.getCustomerId()==UserService.COLOPLAST && entityIDour ==Database.opportunityDao.entity){
+				_readParentIds = true;
+				_dependOnParent = true;
+			}
+			
 			
 		}
 	

@@ -152,18 +152,19 @@ package gadget.sync.incoming {
 		
 		override protected function doRequest():void {			
 			if(checkOwner && checkinrange){
-				if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
-					var minD:String = ServerTime.toSodIsoDate(param.range.start);				
-					new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
-				}else{
-					buildAndSendRequest();
-				}	
 				//checkowner for first time only
 				checkOwner = false;
-			}else{
-				buildAndSendRequest();
+				if(entityIDour != Database.opportunityDao.entity || UserService.getCustomerId()!=UserService.COLOPLAST){
+					if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+						var minD:String = ServerTime.toSodIsoDate(param.range.start);				
+						new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
+						return;
+					}
+				}
+				
+				
 			}
-							
+			buildAndSendRequest();		
 			
 		}
 		

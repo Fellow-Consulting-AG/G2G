@@ -22,31 +22,25 @@ package gadget.sync.tasklists {
 		var syncContactAccount:Boolean = false;
 		var syncContactC02:Boolean = false;
 		var syncActivityUser:Boolean = false;
-		for each(var o:Object in list){
+		
+		var accountContact:IncomingSubContact = new IncomingSubContact("Account","Contact");
+		if(Database.subSyncDao.isSyncAble("Account","Contact")||Database.subSyncDao.isSyncAble("Contact","Account")){
+			subSync.push(accountContact);
+			subSync.push(new IncomingContactNotExistInAccCon());
+		}
+		
+		var co2Contact:IncomingSubContact = new IncomingSubContact("Contact","Custom Object 2");
+		if(Database.subSyncDao.isSyncAble("Contact","Custom Object 2")||Database.subSyncDao.isSyncAble("Custom Object 2","Contact")){
+			subSync.push(co2Contact);
+		}
+		for each(var o:Object in list){			
 			
-			if(o.entity == "Account"){				
-				syncContactAccount=true;	
-			}
-			if(o.entity == "Contact"){
-				syncContactAccount=true;
-				syncContactC02=true;
-				
-			}
 			if(o.entity == Database.activityDao.entity){	
 				syncActivityUser = true;
 			}
 			//sub
 			var subList:Array = Database.subSyncDao.listSubEnabledTransaction(o.entity);
-			var accountContact:IncomingSubContact = new IncomingSubContact("Account","Contact");
-			if(Database.subSyncDao.isSyncAble("Account","Contact")||Database.subSyncDao.isSyncAble("Contact","Account")){
-				subSync.push(accountContact);
-				subSync.push(new IncomingContactNotExistInAccCon());
-			}
 			
-			var co2Contact:IncomingSubContact = new IncomingSubContact("Contact","Custom Object 2");
-			if(Database.subSyncDao.isSyncAble("Contact","Custom Object 2")||Database.subSyncDao.isSyncAble("Custom Object 2","Contact")){
-				subSync.push(co2Contact);
-			}
 			for each(var subObj:Object in subList){
 				switch (subObj.sodname){
 					case  "Attachment": 

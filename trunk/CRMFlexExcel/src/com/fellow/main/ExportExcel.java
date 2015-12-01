@@ -530,9 +530,9 @@ public class ExportExcel {
 	
 	protected  HSSFCell fillCell(HSSFRow r, int cellnr, String content,int type,boolean isLock,HSSFCellStyle style) {
 		
-		HSSFCell cell = r.getCell((short)cellnr);
+		HSSFCell cell = r.getCell(cellnr);
 		if (cell==null) {
-			cell = r.createCell((short)cellnr);
+			cell = r.createCell(cellnr);
 			
 			
 		}

@@ -418,7 +418,7 @@ public class ExportExcel {
 		if(pageTotal != null && pageTotal.getRows()!= null && pageTotal.getRows().size()>0){
 			
 			for(DtoRow row : pageTotal.getRows()){
-				int c=5;
+				int c=1;
 				
 
 				HSSFRow qRow=sheet.getRow(startRow);
@@ -431,7 +431,7 @@ public class ExportExcel {
 					c = 9;
 				}else{
 //					sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 0, 4));
-					mergeCell(startRow, 0, 4, qRow,styleNomal);
+					//mergeCell(startRow, 0, 4, qRow,styleNomal);
 					fillCell(qRow, 1, "", HSSFCell.CELL_TYPE_STRING, true, style);
 					fillCell(qRow, 2, "", HSSFCell.CELL_TYPE_STRING, true, style);
 					fillCell(qRow, 3, "", HSSFCell.CELL_TYPE_STRING, true, style);

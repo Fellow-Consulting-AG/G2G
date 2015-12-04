@@ -217,6 +217,15 @@
 					private function changeStartOrEndDate(data:Object,field:String,newVal:Object):void{
 						var updateVal:Object = new Object();
 						updateVal[field]=newVal;
+						if(field=='CustomDate26' && newVal!=null && !StringUtils.isEmpty(newVal.toString())){
+							//bug#11930
+							var startDate:Date = DateUtils.parse(newVal.toString(),DateUtils.DATABASE_DATE_FORMAT);
+							var endD:Date = Utils.calculateDate(12,startDate,"month");
+							endD = Utils.calculateDate(-1,endD,"date");
+							var strEndD:String = DateUtils.format(endD,DateUtils.DATABASE_DATE_FORMAT);
+							updateVal['CustomDate25'] = strEndD;
+						}
+						
 						if(StringUtils.isEmpty(data[field])){
 							
 							updateData(data,updateVal,true);

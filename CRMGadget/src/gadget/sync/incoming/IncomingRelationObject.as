@@ -52,11 +52,11 @@ package gadget.sync.incoming
 				_readParentIds = true;
 				_dependOnParent = true;
 			}
-			//bug#11731
-			if(UserService.getCustomerId()==UserService.COLOPLAST && entityIDour ==Database.opportunityDao.entity){
-				_readParentIds = true;
-				_dependOnParent = true;
-			}
+			//bug#11731--remove hardcode for opportunity
+//			if(UserService.getCustomerId()==UserService.COLOPLAST && entityIDour ==Database.opportunityDao.entity){
+//				_readParentIds = true;
+//				_dependOnParent = true;
+//			}
 			
 			
 		}

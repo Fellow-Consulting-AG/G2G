@@ -21,7 +21,9 @@
 			import gadget.control.SampleItemView;
 			import gadget.dao.AccountDAO;
 			import gadget.dao.BaseDAO;
+			import gadget.dao.BlockLayoutDAO;
 			import gadget.dao.CustomFieldDAO;
+			import gadget.dao.CustomObject11DAO;
 			import gadget.dao.CustomRecordTypeServiceDAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
@@ -530,6 +532,24 @@
 				}
 			}
 			
+			private  function checkApproval():Boolean{				
+				
+				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
+					if(StringUtils.isTrue(item[CustomObject11DAO.READY_FOR_APPROVAL_F])){
+						var sampleItems:ArrayCollection = null;
+						if(sampleView!=null){
+							sampleItems = sampleView.getSampleItems();
+						}
+						if(sampleView==null|| sampleItems==null||sampleItems.length<1){								
+							Alert.show(i18n._("MISSING_SAMPLE_ITEM_MSG@Please add  a Sample Item to the sample order."),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Order'),Alert.OK,Window(WindowManager.getTopWindow()));
+							return false;
+						}
+					}
+					
+				}
+				return true;
+			}
+			
 			private function commit():Boolean {
 				
 				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
@@ -784,6 +804,11 @@
 				//update only readonly field
 				Utils.executeFomulaFields(entity,item,fields,true);
 				try{
+					
+					if(!checkApproval()){
+						return false;
+					}
+					
 				if (create) {
 					
 					item["deleted"] = false;
@@ -2443,7 +2468,12 @@
 					listBlock[dynamicId] = dicB;
 					column_name = blockObj.parent_field;
 					
-					
+//					if(create && StringUtils.isEmpty(item[blockObj.parent_field])){
+//						var fieldValid:String = BlockLayoutDAO.DEFAULT_COUNTRY_FROM_USER[entity];
+//						if(!StringUtils.isEmpty(fieldValid) && fieldValid==blockObj.parent_field){
+//							item[blockObj.parent_field] = Database.allUsersDao.ownerUser()["PersonalCountry"];
+//						}
+//					}
 					var displayObj:DisplayObject = createDisplayObject(column_name,field.readonly,dicB,Database.addressfieldtranslatorDao.getDisplayName(blockObj.addressfield)) as FormItem;
 					var dependField:Object = Database.blockDependField.getDependFields(blockObj.gadget_id); 					
 					if(displayObj!=null){
@@ -2495,6 +2525,7 @@
 //								idx++;
 //							}
 //						}
+						
 						redrawBlock(field,blockObj.gadget_id,item[blockObj.parent_field],vbox);
 
 					}

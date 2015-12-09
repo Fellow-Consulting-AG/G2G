@@ -92,6 +92,11 @@ package gadget.dao
 			
 		];
 		
+		public static const DEFAULT_COUNTRY_FROM_USER:Object={
+			'Account':'PrimaryBillToCountry','Contact':'AlternateCountry','Lead':'Country'
+		};
+		
+		
 		protected function buildField(blockName:String,fields:Array):String{
 			var strFields:String = '';
 			var first:Boolean = true;

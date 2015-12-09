@@ -7,6 +7,7 @@
 		<![CDATA[
 			import flexunit.utils.ArrayList;
 			
+			import gadget.dao.CustomObject11DAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
@@ -37,9 +38,6 @@
 			private var items:ArrayCollection = null;
 			protected function init(event:FlexEvent):void
 			{
-				if(rows==null || rows.length<1){
-					
-				}
 				
 				for each(var obj:Object in getItems()){
 					itemId2CO14[obj.Id] = obj;
@@ -184,7 +182,7 @@
 						
 					}		
 				}
-				updateComponent(StringUtils.isTrue(obj['CustomBoolean2']));
+				updateComponent(StringUtils.isTrue(obj[CustomObject11DAO.READY_FOR_APPROVAL_F]));
 				
 			}
 			
@@ -375,11 +373,11 @@
 								t.CustomObject14Id=null;
 							}
 						}else if(p=='CustomObject14ExternalSystemId'){
-							var itemObj:Object = tmp[p];
-							if(itemObj is String){
-								t[p]=itemObj;
-							}else if(itemObj!=null){
-								t[p] = itemObj.ExternalSystemId;										
+							var itemObj2:Object = tmp[p];
+							if(itemObj2 is String){
+								t[p]=itemObj2;
+							}else if(itemObj2!=null){
+								t[p] = itemObj2.ExternalSystemId;										
 							}else{
 								t[p] = null;
 								t.CustomObject14Name=null;
@@ -399,9 +397,50 @@
 				return newDataProvider;
 			}
 			
+			public function getSampleItems():ArrayCollection{
+				var dp:ArrayCollection = new ArrayCollection( (editableGrid.dataProvider as ArrayCollection).source);		
+				var newDataProvider:ArrayCollection = new ArrayCollection();
+				for each(var tmp:Object in dp){
+					var t:Object = new Object;
+					for(var p:String in tmp){
+						if(p=='CustomObject14Name'){
+							var itemObj:Object = tmp[p];
+							if(itemObj is String){
+								t[p]=itemObj;
+							}else if(itemObj!=null){
+								t[p] = itemObj.Name;										
+							}else{
+								t[p] = null;
+								t.CustomObject14ExternalSystemId = null;
+								t.CustomObject14Id=null;
+							}
+						}else if(p=='CustomObject14ExternalSystemId'){
+							var itemObj:Object = tmp[p];
+							if(itemObj is String){
+								t[p]=itemObj;
+							}else if(itemObj!=null){
+								t[p] = itemObj.ExternalSystemId;										
+							}else{
+								t[p] = null;
+								t.CustomObject14Name=null;
+								t.CustomObject14Id=null;
+							}
+							
+						}else{
+							t[p] = tmp[p];
+						}
+						
+					}
+					newDataProvider.addItem(t);
+				}
+				newDataProvider.filterFunction = isNotEmptyRow;
+				newDataProvider.refresh();
+				return newDataProvider;
+			}
+			
 			public function save(co11:Object):void{
 				
-				var dp:ArrayCollection = new ArrayCollection( (editableGrid.dataProvider as ArrayCollection).source);			
+					
 			    var missingIndex:int = checkValidator();
 				if(missingIndex!=-1){
 					Alert.show(i18n._("MISSING_FIELD_MSG@Please input the missing fields."),i18n._('GLOBAL_ERROR@Error'),Alert.OK,this, function(eventObj:CloseEvent):void {
@@ -410,43 +449,7 @@
 						}
 					});	
 				}else{
-				
-						var newDataProvider:ArrayCollection = new ArrayCollection();
-						for each(var tmp:Object in dp){
-							var t:Object = new Object;
-							for(var p:String in tmp){
-								if(p=='CustomObject14Name'){
-									var itemObj:Object = tmp[p];
-									if(itemObj is String){
-										t[p]=itemObj;
-									}else if(itemObj!=null){
-										t[p] = itemObj.Name;										
-									}else{
-										t[p] = null;
-										t.CustomObject14ExternalSystemId = null;
-										t.CustomObject14Id=null;
-									}
-								}else if(p=='CustomObject14ExternalSystemId'){
-									var itemObj:Object = tmp[p];
-									if(itemObj is String){
-										t[p]=itemObj;
-									}else if(itemObj!=null){
-										t[p] = itemObj.ExternalSystemId;										
-									}else{
-										t[p] = null;
-										t.CustomObject14Name=null;
-										t.CustomObject14Id=null;
-									}
-									
-								}else{
-									t[p] = tmp[p];
-								}
-								
-							}
-							newDataProvider.addItem(t);
-						}
-						newDataProvider.filterFunction = isNotEmptyRow;
-						newDataProvider.refresh();
+					    
 					
 					
 						Database.begin();
@@ -461,6 +464,7 @@
 									}
 								}
 							}
+							var newDataProvider:ArrayCollection  = getSampleItems();
 							var owner:Object = Database.allUsersDao.ownerUser();
 							for each(var itemSave:Object in newDataProvider){
 								

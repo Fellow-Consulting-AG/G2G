@@ -14,12 +14,22 @@
 			private var column:AdvancedDataGridColumn;
 			private var _chkEnable:Boolean;
 			private var _onChkChange:Function;
+			private var _validFunction:Function;
 			
 			 private function clickFunction():void{
 				 if(column!=null){			
 					 data[column.dataField] = chkBox.selected;
 				 }else{
 					 data.isSync=!data.isSync;
+				 }
+				 if(column!=null){
+					 if(_validFunction!=null && chkBox.selected){
+						 if(!_validFunction(data,column)){
+							 chkBox.selected = false;
+							 data[column.dataField] =false;
+							 return;
+						 }
+					 } 
 				 }
 				 
 				 if(_onChkChange!=null){
@@ -62,6 +72,16 @@
 			public function set onChkChange(value:Function):void
 			{
 				_onChkChange = value;
+			}
+
+			public function get validFunction():Function
+			{
+				return _validFunction;
+			}
+
+			public function set validFunction(value:Function):void
+			{
+				_validFunction = value;
 			}
 
 			

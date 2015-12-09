@@ -9,7 +9,7 @@ package gadget.dao
 	import mx.collections.ArrayCollection;
 
 	public class CustomObject11DAO extends CustomeObjectBaseDao {
-		
+		public static const READY_FOR_APPROVAL_F = "CustomBoolean2";
 		
 		private var stmtColoPlastFindUpdated:SQLStatement;
 		private var stmtColoPlastFindCreated:SQLStatement;

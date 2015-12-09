@@ -6,6 +6,7 @@ package gadget.lists
 	import mx.controls.AdvancedDataGrid;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 	import mx.controls.advancedDataGridClasses.AdvancedDataGridHeaderInfo;
+	import mx.controls.advancedDataGridClasses.AdvancedDataGridListData;
 	
 	public class ListAdvanceGrid extends AdvancedDataGrid
 	{
@@ -13,7 +14,21 @@ package gadget.lists
 		{
 			super();
 		}
-		
+		public function refreshCell(row:int,col:int):void{
+			if(row>-1 && col>-1){
+				if(row<listItems.length){
+					var colRenderers:Array = listItems[row];
+					if(col<colRenderers.length){
+						var r:Object = colRenderers[col];
+						if(r!=null){
+							r.data = r.data;//refresh label
+						}
+					}
+					
+				}
+			}
+			
+		}
 		
 		protected override function addSortField(columnName:String,
 										columnNumber:int,

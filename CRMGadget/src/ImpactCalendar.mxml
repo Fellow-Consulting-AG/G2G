@@ -19,6 +19,7 @@
 			import gadget.control.CloseableToolTip;
 			import gadget.control.ComboboxColRender;
 			import gadget.control.DateColumnRenderer;
+			import gadget.control.ICDeleteColRender;
 			import gadget.control.ImpactCalLinkColRenderer;
 			import gadget.control.ImpactCalendarColumnGroup;
 			import gadget.control.ImpactColNumRenderer;
@@ -628,6 +629,15 @@
 							columns.push(col);	
 							
 						}
+						
+						col = createColumn("","DeleteRenderer");
+						render = new ClassFactory(ICDeleteColRender);				
+						render.properties={"visibleDeleteBtn":visibleBtnDelete,"deleteFunction":deleteFunction};
+						col.itemRenderer = render;
+						col.width = 30;
+						col.sortable=false;
+						columns.push(col);
+						
 						reloadData();
 						colapExpandMonth(false,"Q4",columns);
 						gridListAll.columns = columns;
@@ -644,6 +654,20 @@
 						//				rows.addItem({AnnualizedImpact:"Variance"});
 						//gridListAll.dataProvider = rows;
 					}
+					private function visibleBtnDelete(item:Object,col:AdvancedDataGridColumn=null):Boolean{
+						return item!=null && !StringUtils.isEmpty(item.co7_gadget_id);
+					}
+					private function deleteFunction(item:Object,col:AdvancedDataGridColumn=null):void{
+						Database.customObject7Dao.deleteTemporaryByGadgetId(item.co7_gadget_id);
+						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
+							var objQ:Object = item[q];
+							if(objQ!=null){
+								Database.customObject7Dao.deleteTemporaryByGadgetId(objQ.co7_gadget_id);
+							}
+						}
+						reloadData();
+					}
+					
 					private function colapExpandMonth(expandMonth:Boolean,name:String,columns:Array):void{
 						for each(var c:AdvancedDataGridColumn in columns){
 							if(c is AdvancedDataGridColumnGroup){//need to check child of the group

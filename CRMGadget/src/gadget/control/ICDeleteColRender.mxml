@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXAdvancedDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+								  xmlns:s="library://ns.adobe.com/flex/spark" 
+								  xmlns:mx="library://ns.adobe.com/flex/mx" 
+								  focusEnabled="true">
+	<fx:Script>
+		<![CDATA[
+			import gadget.i18n.i18n;
+			import gadget.util.StringUtils;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.AdvancedDataGrid;
+			import mx.controls.Alert;
+			import mx.controls.listClasses.BaseListData;
+			import mx.events.CloseEvent;
+			private var grid:AdvancedDataGrid;
+			private var _addEmptyRow:Boolean=false;
+			private var _createEmptyRow:Function;
+			private var _parentComp:Sprite;
+			private var _deleteFunction:Function = defaultDeleteFunction;
+			private var _visibleDeleteBtn:Function =defaultVisbleDeleteBtn;
+			private var _postDelete:Function;
+			
+			public function get parentComp():Sprite
+			{
+				return _parentComp;
+			}
+			
+			private function defaultVisbleDeleteBtn(item:Object):Boolean{
+				var isSHowDeleteButton:Boolean = false;
+				if(!item.isNew){
+					for(var f:String in item){
+						if(f!='mx_internal_uid' && item[f]!=null && !StringUtils.isEmpty(item[f].toString())){
+							isSHowDeleteButton = true;
+							break;
+						}
+					}
+				}
+				return isSHowDeleteButton;
+			}
+			
+			public function set parentComp(value:Sprite):void
+			{
+				_parentComp = value;
+			}
+			override public function set data(value:Object):void{		
+				super.data = value;
+				
+				btnDelete.visible=_visibleDeleteBtn(value);
+			}		
+			
+			
+			
+			override public function set listData(value:BaseListData):void{
+				super.listData = value;
+				if(value!=null){
+					grid = value.owner as AdvancedDataGrid;		
+					this.btnDelete.enabled = grid.editable;
+				}
+			}
+			
+			private function defaultDeleteFunction(item:Object):void{
+				var items:ArrayCollection = grid.dataProvider as ArrayCollection;
+				if(items!=null && items.length>0){
+					var rowInd:int=items.getItemIndex(item);
+					items.removeItemAt(rowInd);
+					if(items.length==rowInd && addEmptyRow){//delete last row must be add empty row
+						if(createEmptyRow!=null){
+							items.addItem(createEmptyRow());
+						}else{
+							items.addItem(new Object());
+						}
+					}
+					if(postDelete!=null){
+						postDelete(item);
+					}
+					grid.dataProvider = items;
+					grid.validateNow();
+				}
+			}
+			public final function deleteRow():void{
+				if(grid!=null && grid.editable){
+					Alert.show(i18n._("GLOBAL_ARE_YOU_SURE_YOU_WANT_TO_DELETE@Are you sure you want to delete?"), i18n._('GLOBAL_DELETE@Delete'), Alert.YES | Alert.NO, parentComp, alertListener, null, Alert.NO);
+					
+					function alertListener(eventObj:CloseEvent):void {
+						
+						if (eventObj.detail==Alert.YES) {
+							if(deleteFunction!=null){
+								deleteFunction(data);
+							}else{
+								defaultDeleteFunction(data);	
+							}
+							
+							
+						}
+					}
+				}
+				
+			}
+			
+			public function get addEmptyRow():Boolean
+			{
+				return _addEmptyRow;
+			}
+			
+			public function set addEmptyRow(value:Boolean):void
+			{
+				_addEmptyRow = value;
+			}
+			
+			public function get createEmptyRow():Function
+			{
+				return _createEmptyRow;
+			}
+			
+			public function set createEmptyRow(value:Function):void
+			{
+				_createEmptyRow = value;
+			}
+			
+			
+			public function get postDelete():Function
+			{
+				return _postDelete;
+			}
+			
+			public function set postDelete(value:Function):void
+			{
+				_postDelete = value;
+			}
+			
+			public function get deleteFunction():Function
+			{
+				return _deleteFunction;
+			}
+			
+			public function set deleteFunction(value:Function):void
+			{
+				_deleteFunction = value;
+			}
+			
+			public function get visibleDeleteBtn():Function
+			{
+				return _visibleDeleteBtn;
+			}
+			
+			public function set visibleDeleteBtn(value:Function):void
+			{
+				_visibleDeleteBtn = value;
+			}
+			
+			
+		]]>
+		
+	</fx:Script>
+	
+	<mx:LinkButton id="btnDelete" icon="@Embed(source='/assets/cancel.png')" toolTip="{i18n._('GLOBAL_DELETE@Delete')}" click="{deleteRow()}" />
+</s:MXAdvancedDataGridItemRenderer>

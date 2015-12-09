@@ -17,6 +17,7 @@
 			import gadget.dao.AccountDAO;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.BookDAO;
+			import gadget.dao.CustomObject11DAO;
 			import gadget.dao.DAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
@@ -56,6 +57,7 @@
 			import mx.controls.ToggleButtonBar;
 			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.core.Window;
 			import mx.events.AdvancedDataGridEvent;
 			import mx.events.CloseEvent;
 			import mx.events.IndexChangedEvent;
@@ -557,8 +559,9 @@
 					// screenDetail.closeRecordTypePopup = closeRecordType;
 					if(isCopy){
 						screenDetail.create = true;
+						//#11944
+						screenDetail.subtype = LayoutUtils.getSubtypeIndex(screenDetail.item);
 						screenDetail.item.gadget_id = null;
-						screenDetail.subtype = screenDetail.item.Activity == "Appointment" ? 1 : 0;
 					}
 					WindowManager.openModal(screenDetail);
 				}else{
@@ -1358,6 +1361,13 @@
 				}
 			}
 			
+			private static function isValidSampleOrder(sampleOrderId:String):Boolean{
+				
+				var count:int = Database.customObject12Dao.countByField('CustomObject11Id',sampleOrderId)
+				
+				return count>0;
+			}
+			
 			private static function updateDataOnColumnChange(obj:Object,col:AdvancedDataGridColumn):void{
 				
 				var dao:BaseDAO = Database.getDao(obj.gadget_type,false);
@@ -1367,8 +1377,24 @@
 					obj.deleted = 0;
 					obj.modified = i18n._("UPD");
 					dao.updateByField([col.dataField],obj);
+					
 				}
 				
+			}
+			
+			public static function checkApproval(data:Object,col:AdvancedDataGridColumn=null):Boolean{
+				var dao:BaseDAO = Database.getDao(data.gadget_type,false);
+				
+				if(dao.entity ==Database.customObject11Dao.entity && UserService.COLOPLAST==UserService.getCustomerId()){
+					if(StringUtils.isTrue(data[CustomObject11DAO.READY_FOR_APPROVAL_F])){
+						if(!isValidSampleOrder(data[DAOUtils.getOracleId(dao.entity)])){								
+							Alert.show(i18n._("MISSING_SAMPLE_ITEM_MSG@Please add  a Sample Item to the sample order."),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Order'),Alert.OK,Window(WindowManager.getTopWindow()));
+							return false;
+						}
+					}
+					
+				}
+				return true;
 			}
 			
 			public static function createColumn(field:Object,dispDateTime:Function,dispPickVal:Function,editable:Boolean = false):AdvancedDataGridColumn{
@@ -1421,7 +1447,7 @@
 						var chkRenderer:ClassFactory = new ClassFactory(CheckBoxColRender);
 						//bug#8893---Could we trigger this by xml tag, which is N by default? "enable_checkbox_inlist" 
 						editable =(editable || Database.preferencesDao.isEnableCheckBoxInList());
-						chkRenderer.properties={chkEnable:editable,onChkChange:updateDataOnColumnChange};
+						chkRenderer.properties={chkEnable:editable,onChkChange:updateDataOnColumnChange,validFunction:checkApproval};
 						child.itemRenderer=chkRenderer;
 						
 					}

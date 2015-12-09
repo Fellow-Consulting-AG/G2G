@@ -18,7 +18,6 @@ package gadget.dao
 	
 	import mx.collections.ArrayCollection;
 	
-	
 	import org.flexunit.runner.Result;
 	
 	public class BaseDAO extends BaseQuery implements DAO {
@@ -469,6 +468,7 @@ package gadget.dao
 		public function findAllIds():ArrayCollection{
 			var oracleId:String = fieldOracleId;
 			var result:ArrayCollection = new ArrayCollection();
+			stmtFindAll.clearParameters();
 			stmtFindAll.text = "SELECT "+oracleId + " FROM "+tableName;
 			exec(stmtFindAll);
 			var items:ArrayCollection = new ArrayCollection(stmtFindAll.getResult().data);
@@ -488,6 +488,7 @@ package gadget.dao
 		public function findAllIdsAsDictionary():Dictionary{
 			var oracleId:String = fieldOracleId;
 			var result:Dictionary = new Dictionary();
+			stmtFindAll.clearParameters();
 			stmtFindAll.text = "SELECT "+oracleId + " FROM "+tableName;
 			exec(stmtFindAll);
 			var items:ArrayCollection = new ArrayCollection(stmtFindAll.getResult().data);
@@ -506,6 +507,7 @@ package gadget.dao
 		
 		public function count():int{
 			stmtFindAll.text = "SELECT count(*) FROM " + tableName;
+			stmtFindAll.clearParameters();
 			exec(stmtFindAll, false);
 			
 			var result:Array = stmtFindAll.getResult().data;
@@ -516,6 +518,19 @@ package gadget.dao
 			return 0;
 		}
 		
+		
+		public function countByField(field:String, value:String):int{
+			stmtFindAll.clearParameters();
+			stmtFindAll.text = "SELECT count(*) FROM " + tableName + " WHERE "+field +" ='"+value+"'";
+			exec(stmtFindAll, false);
+			
+			var result:Array = stmtFindAll.getResult().data;
+			if(result!=null && result.length>0){
+				var obj:Object = result[0];
+				return obj['count(*)'] as int;
+			}
+			return 0;
+		}
 		
 		public function findAll(columns:ArrayCollection, filter:String = null, selectedId:String = null, limit:int = 1001,order_by:String=null,addColOODLastModified:Boolean=true, group_by:String=null):ArrayCollection {
 			var cols:String = '';

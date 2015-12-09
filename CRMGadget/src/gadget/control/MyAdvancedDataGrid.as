@@ -240,6 +240,14 @@ package gadget.control
 			}
 		}
 		
+		
+		public function setNewDataProvider(dataProvider:Object,isRefreshDependOnTable:Boolean = true):void{
+			super.dataProvider = dataProvider;
+			if(isRefreshDependOnTable){
+				refreshDependOnGrid();
+			}
+			
+		}
 
 		private function getColorRow(curRow:int):int{
 			

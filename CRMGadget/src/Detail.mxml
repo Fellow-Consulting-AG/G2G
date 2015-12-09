@@ -541,7 +541,7 @@
 							sampleItems = sampleView.getSampleItems();
 						}
 						if(sampleView==null|| sampleItems==null||sampleItems.length<1){								
-							Alert.show(i18n._("MISSING_SAMPLE_ITEM_MSG@Please add  a Sample Item to the sample order."),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Order'),Alert.OK,Window(WindowManager.getTopWindow()));
+							Alert.show(i18n._("MISSING_SAMPLE_ITEM_MSG@Please add at least one Sample Detail to the Sample Order!"),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Order'),Alert.OK,Window(WindowManager.getTopWindow()));
 							return false;
 						}
 					}

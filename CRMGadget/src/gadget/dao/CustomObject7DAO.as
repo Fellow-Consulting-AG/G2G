@@ -2,11 +2,12 @@
 package gadget.dao
 {
 	import flash.data.SQLConnection;
+	import flash.data.SQLStatement;
 	
 	import mx.collections.ArrayCollection;
 
 	public class CustomObject7DAO extends CustomeObjectBaseDao {
-
+		private var stmtDeleteTemp:SQLStatement;
 		public function CustomObject7DAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'sod_customobject7',
@@ -17,6 +18,11 @@ package gadget.dao
 				index: [ 'Id' ],
 				columns: { 'TEXT' : textColumns }
 			});
+			
+			// Delete temporary just updates the field deleted to true
+			stmtDeleteTemp = new SQLStatement();
+			stmtDeleteTemp.sqlConnection = sqlConnection;
+			stmtDeleteTemp.text = "UPDATE " + tableName + " SET deleted = true,OpportunityId='' WHERE gadget_id = :gadget_id"; 
 		}
 
 		override public function get entity():String {
@@ -31,6 +37,11 @@ package gadget.dao
 //			
 //			return new ArrayCollection(["LastFYImpact"]);
 //		}
+		
+		public function deleteTemporaryFromOppt(gadget_id:Object):void{
+			stmtDeleteTemp.parameters[":gadget_id"] = gadget_id;
+			exec(stmtDeleteTemp);
+		}
 		
 		private var textColumns:Array = [
 			"AccountExternalSystemId",

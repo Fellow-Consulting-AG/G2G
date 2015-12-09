@@ -655,17 +655,23 @@
 						//gridListAll.dataProvider = rows;
 					}
 					private function visibleBtnDelete(item:Object,col:AdvancedDataGridColumn=null):Boolean{
-						return item!=null && !StringUtils.isEmpty(item.co7_gadget_id);
+						return item!=null && (!StringUtils.isEmpty(item.co7_gadget_id)||!StringUtils.isEmpty(item[OpportunityDAO.CO7_PREFIX+'CustomPickList31']));
 					}
 					private function deleteFunction(item:Object,col:AdvancedDataGridColumn=null):void{
-						Database.customObject7Dao.deleteTemporaryByGadgetId(item.co7_gadget_id);
+						Database.begin();
+						try{
+						Database.customObject7Dao.deleteTemporaryFromOppt(item.co7_gadget_id);
 						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
 							var objQ:Object = item[q];
 							if(objQ!=null){
-								Database.customObject7Dao.deleteTemporaryByGadgetId(objQ.co7_gadget_id);
+								Database.customObject7Dao.deleteTemporaryFromOppt(objQ.co7_gadget_id);
 							}
 						}
-						reloadData();
+						Database.commit();
+						}catch(e:Error){
+							Database.rollback();
+						}
+						
 					}
 					
 					private function colapExpandMonth(expandMonth:Boolean,name:String,columns:Array):void{

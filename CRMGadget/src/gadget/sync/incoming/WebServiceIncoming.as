@@ -84,7 +84,7 @@ package gadget.sync.incoming {
 		// METHODS not to change
 		//first sync we should use created date because we have some pb with modifieddate look like bug#11384 or #10703
 		protected var useCreatedDate:Boolean = false;
-		protected var checkOwner = true;
+		protected var checkOwner:Boolean = true;
 		private var _dao:BaseDAO;
 
 		public function WebServiceIncoming(ID:String, daoName:String=null) {
@@ -154,12 +154,11 @@ package gadget.sync.incoming {
 			if(checkOwner && checkinrange){
 				//checkowner for first time only
 				checkOwner = false;
-				if(entityIDour != Database.opportunityDao.entity || UserService.getCustomerId()!=UserService.COLOPLAST){
-					if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
-						var minD:String = ServerTime.toSodIsoDate(param.range.start);				
-						new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
-						return;
-					}
+				
+				if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+					var minD:String = ServerTime.toSodIsoDate(param.range.start);				
+					new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
+					return;
 				}
 				
 				

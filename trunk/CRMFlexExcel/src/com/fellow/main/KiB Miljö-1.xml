@@ -1,4 +1,4 @@
-﻿<model title="KiB Miljö" isCreateSum="false" sumType="">
+﻿<model title="KiB Miljö" type="Miljö" isCreateSum="false" sumType="">
   <page title="1 Egenkontroll" isCreateSum="false" assessmentType="Activity Assessment">
     <Section title="M-1 Egenkontroll- 1 LAGAR &amp; ANDRA KRAV">
       <row isheader="true" title="">

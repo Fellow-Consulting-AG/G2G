@@ -36,6 +36,9 @@ import com.fellow.dto.DtoSections;
 
 
 public class ExportExcel {
+	private static final String TRYGGMAT = "Tryggmat";
+	private static final String BUTIKS = "Butiks";
+	private static final String MILJO = "Miljö";
 	protected static final short SHEET_EXPORT = 0;
 	private HSSFWorkbook workBook = null;
 	private HSSFSheet sheet = null;
@@ -60,14 +63,15 @@ public class ExportExcel {
 		
 		try{
 			DtoModel dtoModel = (DtoModel) loadData(DtoModel.class, fpath);  
-			if("KiB Miljö".equalsIgnoreCase(dtoModel.getTitle())){
+			String type = dtoModel.getType();
+			if(MILJO.equalsIgnoreCase(type)){
 				template_name = "Miljo.xls";
 				
-			}else if("Foersaeljningsledare Butiks".equalsIgnoreCase(dtoModel.getTitle())){
+			}else if(BUTIKS.equalsIgnoreCase(type)){
 				template_name = "Foersaeljningsledare.xls";
 				isFoersaeljningsledare = true;
 				
-			}else if("KiB Tryggmat".equalsIgnoreCase(dtoModel.getTitle())){
+			}else if(TRYGGMAT.equalsIgnoreCase(type)){
 				template_name = "Tryggmat.xls";
 				
 			}
@@ -75,12 +79,12 @@ public class ExportExcel {
 			ByteArrayOutputStream out=new ByteArrayOutputStream();
 	        
 	        HSSFColor color = null;
-			if("KiB Miljö".equalsIgnoreCase(dtoModel.getTitle())){				
+			if(MILJO.equalsIgnoreCase(type)){				
 				color = getColor(workBook,HSSFColor.BLUE_GREY.index,153,204,0);
-			}else if("Foersaeljningsledare Butiks".equalsIgnoreCase(dtoModel.getTitle())){				
+			}else if(BUTIKS.equalsIgnoreCase(type)){				
 				isFoersaeljningsledare = true;
 				color =getColor(workBook,HSSFColor.BLUE_GREY.index,204,0,0);
-			}else if("KiB Tryggmat".equalsIgnoreCase(dtoModel.getTitle())){				
+			}else if(TRYGGMAT.equalsIgnoreCase(type)){				
 				color = getColor(workBook,HSSFColor.BLUE_GREY.index,255,51,0);
 			}
 			

@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DtoModel {
 	@XmlAttribute(name="title")
 	private String title;
+	@XmlAttribute(name = "type")
+	private String type;
+	
 	@XmlElement(name="account")
 	private DtoAccount account;
 	@XmlElement(name="page")
@@ -22,6 +25,12 @@ public class DtoModel {
 	@XmlElement(name="modelTotal")
 	private DtoModelTotal modelTotal;
 	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public String getTitle() {
 		return title;
 	}

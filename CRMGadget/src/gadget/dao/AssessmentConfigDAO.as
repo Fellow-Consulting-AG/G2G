@@ -22,7 +22,8 @@ package gadget.dao
 			"entity",
 			"SelectedPages",
 			"TotalStoreToField",
-			"SumType"
+			"SumType",
+			"Type"
 		];
 		public function AssessmentConfigDAO(sqlConnection:SQLConnection, work:Function)
 		{
@@ -88,7 +89,7 @@ package gadget.dao
 				for each(var obj:Object in result){
 					var selectedids:String = obj.SelectedPages as String;
 					var dto:DtoConfiguration = new DtoConfiguration(obj.AssessmentType,
-						obj.ModelName, new ArrayCollection(selectedids.split(";")));
+						obj.ModelName,obj.Type, new ArrayCollection(selectedids.split(";")));
 					dto.recordId = obj.gadget_id;
 					dto.totalStoreToField = obj.TotalStoreToField;
 					dto.isCreateSum = obj.iscreatesum;

@@ -95,6 +95,7 @@ package
 		{
 			var obj:Object = new Object();
 			obj.ModelName = dtoConfig.assessmentModel;
+			obj.Type = dtoConfig.type;
 			obj.AssessmentType = dtoConfig.assessmentType;
 			obj.SelectedPages = getSelectedAssessments(dtoConfig.pageSelectedIds);
 			obj.entity= Database.assessmentDao.getEntityByType(dtoConfig.assessmentType);

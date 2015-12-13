@@ -145,6 +145,7 @@ package
 			modelTotal = new AssessmentModelTotal(model);
 			xmlModel.@title = model.assessmentModel;
 			xmlModel.@isCreateSum = model.isCreateSum;
+			xmlModel.@type = model.type;
 			xmlModel.@sumType = model.sumType==null?"":model.sumType;			
 			for each(var pageName:String in model.pageSelectedIds){	
 				var xmlPage:XML  = <page/>;
@@ -161,7 +162,7 @@ package
 					var first:Boolean = true;
 					for each(var assId:String in page.assessmentSelectedIds){//page add section
 						bindListQuestion(assId,xmlPage,pageTotal,first);
-						if((model.assessmentModel=="KiB Miljö" || model.assessmentModel=="KiB Tryggmat")){
+						if((model.type==DtoConfiguration.MILJO || model.type==DtoConfiguration.TRYGGMAT)){
 							first=false;//add header column at the first secion of the page
 						}
 					}
@@ -338,7 +339,7 @@ package
 					var headerRow:XML =<row/>;
 					headerRow.@isheader=true;
 					xmlSection.appendChild(headerRow);
-					if((model.assessmentModel=="KiB Miljö" || model.assessmentModel=="KiB Tryggmat")){
+					if((model.type==DtoConfiguration.MILJO || model.type==DtoConfiguration.TRYGGMAT)){
 						headerRow.@title="";
 					}else{
 						headerRow.@title=ass.Name;
@@ -352,7 +353,7 @@ package
 				
 				for each(var quest:Object in lstQues){
 					
-					if((model.assessmentModel=="KiB Miljö" || model.assessmentModel=="KiB Tryggmat") && (quest["backgroundColor"]=="1" ||quest["isHeader"]=="1")){
+					if((model.type==DtoConfiguration.MILJO || model.type==DtoConfiguration.TRYGGMAT) && (quest["backgroundColor"]=="1" ||quest["isHeader"]=="1")){
 						var sectionHeader:XML = <row/>;
 						sectionHeader.@title=quest.Question;
 						sectionHeader.@colspan=lstColumn.length;
@@ -563,7 +564,7 @@ package
 						description+=(mappingObject.Title+":"+(mappingObject.description==null?"":mappingObject.description));
 					}
 				}
-				if(model.assessmentModel=="KiB Miljö"||model.assessmentModel=="KiB Tryggmat"){
+				if(model.type==DtoConfiguration.MILJO || model.type==DtoConfiguration.TRYGGMAT){
 					if(isModelTotal && description.length>0){
 						description+='.';
 						var colDesc:XML = <col/>;
@@ -595,13 +596,13 @@ package
 					var accTitle:String = '';
 					var accValue:String = '';
 					var acc:Object = Database.accountDao.getAccountById(appItem.AccountId);
-					if(model.assessmentModel=="KiB Miljö"){
+					if(model.type==DtoConfiguration.MILJO){
 						accTitle = FieldUtils.getField(Database.accountDao.entity,"IndexedPick5").display_name;
 						if(acc!=null){
 							accValue = PicklistService.getValue(Database.accountDao.entity,'IndexedPick5', acc["IndexedPick5"]);
 						}
 						isAddAccount = true;
-					}else if(model.assessmentModel=="KiB Tryggmat"){
+					}else if(model.type==DtoConfiguration.TRYGGMAT){
 						accTitle = FieldUtils.getField(Database.accountDao.entity,"CustomPickList6").display_name;
 						if(acc!=null){
 							accValue = PicklistService.getValue(Database.accountDao.entity,'CustomPickList6', acc["CustomPickList6"]);
@@ -625,7 +626,7 @@ package
 			
 		}
 		private function getDisplayTotal(total:Number,typ:String):String{
-			if(model.assessmentModel=="KiB Miljö" || model.assessmentModel=="KiB Tryggmat"){
+			if(model.type==DtoConfiguration.MILJO || model.type==DtoConfiguration.TRYGGMAT){
 				return total+"";
 			}
 			

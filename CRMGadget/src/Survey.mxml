@@ -338,7 +338,7 @@
 						assessmentSection.removeAllChildren();
 						assessmentSection.verticalScrollPosition = 0;
 					}
-					var isButik:Boolean = assModel.assessmentModel=="Foersaeljningsledare Butiks";
+					var isButik:Boolean = assModel.type==DtoConfiguration.BUTIKS;
 					var isFirstShow:Boolean = true;
 					
 					for each(var  obj:AssessmentSectionTotal in listAsst){

@@ -1,4 +1,4 @@
-﻿<model title="KiB Tryggmat" isCreateSum="false" sumType="">
+﻿<model title="KiB Tryggmat" type="Tryggmat" isCreateSum="false" sumType="">
   <page title="2.1 EKP" isCreateSum="false" assessmentType="Activity Assessment">
     <Section title="T-2.1 EKP- EKP Verksamhetsbeskrivning">
       <row isheader="true" title="">

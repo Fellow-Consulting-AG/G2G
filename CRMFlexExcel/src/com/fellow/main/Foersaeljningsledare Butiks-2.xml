@@ -1,4 +1,4 @@
-﻿<model title="Foersaeljningsledare Butiks" isCreateSum="false" sumType="%">
+﻿<model title="Foersaeljningsledare Butiks" type="Butiks" isCreateSum="false" sumType="%">
   <page title="1 Försäljning" isCreateSum="false" assessmentType="Activity Assessment">
     <Section title="B-1 Försäljning- 1 Kunden">
       <row isheader="true" title="B-1 Försäljning- 1 Kunden">

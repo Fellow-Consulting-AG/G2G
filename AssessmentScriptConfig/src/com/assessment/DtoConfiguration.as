@@ -4,20 +4,42 @@ package com.assessment
 
 	public class DtoConfiguration
 	{
+		
+		public static const  TRYGGMAT:String = "Tryggmat";
+		public static const  BUTIKS:String  = "Butiks";
+		public static const  MILJO:String  = "Miljö";
 		private var _recordId:String;
 		private var _assessmentType:String = "";	
 		private var _assessmentModel:String = "";
 		private var _totalStoreToField:String;
 		private var _isCreateSum:Boolean;
+		private var _type:String;
 		private var _sumType:String;
 		
 		private var _pageSelectedIds:ArrayCollection = new ArrayCollection();
-		public function DtoConfiguration(assessmentType:String,assessmentModel:String,pageSelectedIds:ArrayCollection)
+		public function DtoConfiguration(assessmentType:String,assessmentModel:String,type:String,pageSelectedIds:ArrayCollection)
 		{
 			this._assessmentType = assessmentType;
 			this._assessmentModel = assessmentModel;
 			this._pageSelectedIds = pageSelectedIds;
+			if(type==null || StringUtils.isEmpty(type)){
+				type = matchTypeByName(assessmentModel);
+			}
+			this._type =type;
 			
+		}
+		
+		private function matchTypeByName(name:String):String{
+			if(name.indexOf(TRYGGMAT)!=-1){
+				return TRYGGMAT;
+			}
+			if(name.indexOf(BUTIKS)!=-1){
+				return BUTIKS;
+			}
+			if(name.indexOf(MILJO)!=-1){
+				return MILJO;
+			}
+			return null;
 		}
 		
 		public function get totalStoreToField():String{
@@ -75,6 +97,16 @@ package com.assessment
 		
 		public function get recordId():String{
 			return this._recordId;
+		}
+
+		public function get type():String
+		{
+			return _type;
+		}
+
+		public function set type(value:String):void
+		{
+			_type = value;
 		}
 		
 		

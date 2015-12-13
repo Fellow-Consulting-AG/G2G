@@ -54,6 +54,8 @@
 			private static var PAGE:String="PAGE_CONF";
 			private static var MODEL:String="MODEL_CONF";
 			private static var FIELD:String = "FIELD_CONF";
+			
+			
 			[Bindable] 
 			private var dataPageItems:ArrayCollection;
 			[Bindable] 
@@ -310,6 +312,44 @@
 				
 				return new ArrayCollection([{'data':'','label':iAseesment.translate('GLOBLE_NUMBERS@Numbers')},
 					{'data':'%','label':iAseesment.translate('GLOBLE_PERCENT@Percent')}]);
+			}
+			
+			private function getModelTypeProvider():ArrayCollection{
+				
+				return new ArrayCollection([{'data':'','label':''},{'data':DtoConfiguration.MILJO,'label':iAseesment.translate('GLOBLE_MILJO@Miljo')},
+					{'data':DtoConfiguration.TRYGGMAT,'label':iAseesment.translate('GLOBLE_TRYGGMAT@Tryggmat')},
+						{'data':DtoConfiguration.BUTIKS,'label':iAseesment.translate('GLOBLE_BUTIKS@Butiks')}]);
+			}
+			
+			private function modelLabel(data:Object,col:DataGridColumn=null):String{
+				if(data!=null){
+					var type:String = data.type;
+					for each(var t:Object in getModelTypeProvider()){
+						if(t.data==type){
+							return t.label;
+						}
+					}
+					
+				}
+				
+				return '';
+			}
+			
+			private function sumTypeLabel(data:Object,col:DataGridColumn=null):String{
+				if(data!=null){
+					var type:String = data[col.dataField];
+					if(type==null){
+						type ='';//number is default;
+					}
+					for each(var t:Object in getSumTypeProvider()){
+						if(t.data==type){
+							return t.label;
+						}
+					}
+					
+				}
+				
+				return '';
 			}
 			
 //			private function setDefaultMapping():void{
@@ -721,6 +761,10 @@
 					errors.push(iAseesment.translate("ASSESSMENT_MODEL_IS_MANDATORY@Assessment Model is mandatory"));
 				}
 				
+				if(cboModelType.text=='' || cboModelType.selectedIndex==-1){
+					errors.push(iAseesment.translate("ASSESSMENT_MODEL_TYPE_IS_MANDATORY@Type is mandatory"));
+				}
+				
 				if(_selectedItems==null || _selectedItems.length<1){
 					errors.push(iAseesment.translate("PLEASE_SELECT_AT_LEAST_ONE_Page@Please select at least one Page."));
 				}
@@ -747,7 +791,7 @@
 					
 					var isUpdate:Boolean = currentConfig!=null;
 					if(currentConfig==null){
-						currentConfig = new DtoConfiguration(String(cboType.selectedItem),txtAssessmentModel.text,new ArrayCollection(_selectedItems.source));
+						currentConfig = new DtoConfiguration(String(cboType.selectedItem),txtAssessmentModel.text,cboModelType.selectedItem.data,new ArrayCollection(_selectedItems.source));
 					}
 					
 					currentConfig.assessmentModel = txtAssessmentModel.text;
@@ -920,6 +964,15 @@
 						break;
 					}
 				}
+				
+				cboModelType.selectedIndex =0;
+				for each(var mType:Object in cboModelType.dataProvider){
+					if(mType.data==currentConfig.type){
+						cboModelType.selectedItem = mType;
+						break;
+					}
+				}
+				
 				_availableItems = notSelectedItems;
 				_selectedItems = orderSelectedItem;
 			}
@@ -1920,6 +1973,8 @@
 							<mx:columns>
 								<mx:DataGridColumn dataField="assessmentType" headerText="{iAseesment.translate('GLOBAL_ASSESSMENT_TYPE@Assessment Type')}"/>
 								<mx:DataGridColumn dataField="assessmentModel" headerText="{iAseesment.translate('GLOBAL_ASSESSMENT_MODEL@Assessment Model')}"/>
+								<mx:DataGridColumn dataField="type" labelFunction="{modelLabel}" headerText="{iAseesment.translate('GLOBAL_ASSESSMENT_MODEL_TYPE@Type')}"/>
+								<mx:DataGridColumn dataField="sumType" labelFunction="{sumTypeLabel}" headerText="{iAseesment.translate('GLOBAL_SUM_TYPE@Sum Type')}"/>
 								<mx:DataGridColumn width="80"  headerText="{iAseesment.translate('GLOBAL_ASSESSMENT_DELETIONS@Deletions')}">
 									<mx:itemRenderer>
 										<mx:Component>
@@ -1958,7 +2013,12 @@
 								<mx:ComboBox id="cboMapModelTotal" width="200" visible="false"  labelFunction="{getTotalModelFieldDisplayName}" />-->
 							</mx:HBox>
 						</mx:FormItem>
-						
+						<mx:FormItem required="true" width="100%">
+							<mx:HBox width="100%">
+								<mx:Label width="180" text="{iAseesment.translate('GLOBAL_ASSESSMENT_MODEL_TYPE@Type')}"/>
+								<mx:ComboBox id="cboModelType" width="200" dataProvider="{getModelTypeProvider()}" selectedIndex="0"/>
+							</mx:HBox>
+						</mx:FormItem>
 						<mx:FormItem required="true" width="100%">
 							<mx:HBox>
 								<mx:Label width="180" text="{iAseesment.translate('GLOBAL_SUM_TYPE@Sum Type')}"/>
@@ -1973,7 +2033,7 @@
 								
 								<mx:VBox width="100%">
 									<mx:Label text="{iAseesment.translate('GLOBAL_PAGE@Page')}"/>
-									<mx:List enabled="false" dataProvider="{_availableItems}" id="listAssessment" labelField="pageName" doubleClickEnabled="true" height="180" allowMultipleSelection="true" width="{(this.width-155)/2}" doubleClick="aList_doubleClickHandler(event,MODEL)"  />
+									<mx:List enabled="false" dataProvider="{_availableItems}" id="listAssessment" labelField="pageName" doubleClickEnabled="true" height="150" allowMultipleSelection="true" width="{(this.width-155)/2}" doubleClick="aList_doubleClickHandler(event,MODEL)"  />
 								</mx:VBox>
 								<mx:VBox id="boxModelMove" enabled="false"  width="15">
 									
@@ -1988,7 +2048,7 @@
 								</mx:VBox> 
 								<mx:VBox width="100%">
 									<mx:Label text="{iAseesment.translate('GLOBAL_PAGE_SELECTED@Page Selected')}"/>
-									<mx:List enabled="false" labelField="pageName" doubleClick="sList_doubleClickHandler(event,MODEL)" dataProvider="{_selectedItems}" doubleClickEnabled="true" height="180" allowMultipleSelection="true"  width="{(this.width-155)/2}" id="listAssessmentSelected"/>
+									<mx:List enabled="false" labelField="pageName" doubleClick="sList_doubleClickHandler(event,MODEL)" dataProvider="{_selectedItems}" doubleClickEnabled="true" height="150" allowMultipleSelection="true"  width="{(this.width-155)/2}" id="listAssessmentSelected"/>
 								</mx:VBox>
 								<mx:VBox id="boxModelUpDown" enabled="false" width="100%">
 									
@@ -2046,7 +2106,7 @@
 							</mx:HBox>
 							
 							<mx:HBox width="100%" top="10"  paddingRight="10">
-								<mx:AdvancedDataGrid editable="true"  height="125" id="datagridQuestion" top="0" width="100%" doubleClickEnabled="true">
+								<mx:AdvancedDataGrid sortExpertMode="true" editable="true"  height="125" id="datagridQuestion" top="0" width="100%" doubleClickEnabled="true">
 									
 								</mx:AdvancedDataGrid>
 							</mx:HBox>
@@ -2072,7 +2132,7 @@
 						
 						<mx:FormItem width="100%">
 							<mx:HBox width="100%" top="20"  paddingRight="10">
-								<mx:AdvancedDataGrid change="{btnSaveSumField.enabled = true;}" editable="true"  height="125" id="datagridTotalField" top="0" width="100%" doubleClickEnabled="true">
+								<mx:AdvancedDataGrid sortExpertMode="true" change="{btnSaveSumField.enabled = true;}" editable="true"  height="125" id="datagridTotalField" top="0" width="100%" doubleClickEnabled="true">
 									
 								</mx:AdvancedDataGrid>
 							</mx:HBox>
@@ -2188,7 +2248,7 @@
 				</mx:FormItem>
 				<mx:FormItem width="100%">
 					<mx:HBox width="100%">
-						<mx:AdvancedDataGrid height="250" id="datagridPDFHeader"  top="0" dataProvider="{lstPDFHeaderField}" width="100%" doubleClickEnabled="true" click="selectedItemPDFHeader(event)" >
+						<mx:AdvancedDataGrid sortExpertMode="true" height="250" id="datagridPDFHeader"  top="0" dataProvider="{lstPDFHeaderField}" width="100%" doubleClickEnabled="true" click="selectedItemPDFHeader(event)" >
 							<mx:columns>
 								<mx:AdvancedDataGridColumn labelFunction="getEntityDisplayName" dataField="entity" headerText="{iAseesment.translate('GLOBAL_ENTITY@Entity')}"/>
 								<mx:AdvancedDataGridColumn labelFunction="getHeaderDisplayName" dataField="elementName" headerText="{iAseesment.translate('GLOBAL_FIELD_NAME@Field Name')}"/>

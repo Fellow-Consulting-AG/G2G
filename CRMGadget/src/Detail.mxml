@@ -463,7 +463,7 @@
 							var acuOODId:String = DAOUtils.getOracleId(Database.activityUserDao.entity);
 							//no need to create on ood because it will auto created by ood
 							acu[acuOODId]=""+acu.gadget_id;
-							Database.activityContactDao.update(acu);
+							Database.activityUserDao.update(acu);
 						}
 					}else if(entity==Database.accountDao.entity||entity==Database.contactDao.entity){
 						var accoundId:String = Utils.ensureOracleId(item.AccountId);

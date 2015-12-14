@@ -4,9 +4,12 @@ package gadget.sync.outgoing
 	
 	
 	
+	import com.adobe.utils.StringUtil;
+	
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import gadget.dao.ActivityContactDAO;
 	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
@@ -133,6 +136,16 @@ package gadget.sync.outgoing
 					faulted++;
 					doRequest();
 					return;
+				}
+				
+				if(getDao() is ActivityContactDAO){
+					var contactId:String = records[0]['Id'];
+					if(StringUtils.isEmpty(contactId)||contactId.length<11){
+						//invalid contactId--error in version <1.521
+						faulted++;
+						doRequest();
+						return;
+					}
 				}
 				
 			}

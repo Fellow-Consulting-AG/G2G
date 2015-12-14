@@ -513,6 +513,7 @@
 						var parentRec:Object = Database.getDao(type).findByOracleId(record[oraId]);
 						if(parentRec!=null){
 							record = parentRec;
+							loggingDetail.item.record = record;
 						}
 					}
 					

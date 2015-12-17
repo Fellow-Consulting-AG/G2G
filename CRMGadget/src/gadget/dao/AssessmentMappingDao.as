@@ -22,8 +22,8 @@ package gadget.dao
 					name_column: [ 'Oraclefield' ],
 					search_columns: [ 'Oraclefield' ],
 					display_name : "Oraclefield",
-					drop_table:true,
-					unique:['Oraclefield,AssessmentId,ModelId'],				
+					drop_table:false,
+					unique:['Oraclefield,AssessmentId,ModelId,QuestionId'],				
 					columns: {	'TEXT' : ['Oraclefield','ColumnProperty','QuestionId','AssessmentId'],'INTEGER':['ModelId'],'BOOLEAN':['isCheckbox','CanSum','visible'] }
 				});
 				

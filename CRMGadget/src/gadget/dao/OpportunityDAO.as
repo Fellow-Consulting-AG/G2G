@@ -1136,7 +1136,7 @@ package gadget.dao
 			var today:Date = new Date();
 			
 			//quater cannot null
-			var q:Object = MAP_MONTH[today.month.toFixed()];
+			var q:Object = MAP_MONTH[today.month.toString()];
 			var minDate:Date = new Date(today.fullYear,q.min,1);//min date of the mon
 			var maxDate:Date = new Date(today.fullYear,q.max+1,0);//get max date of the month
 			

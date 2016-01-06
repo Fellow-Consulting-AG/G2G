@@ -1,5 +1,6 @@
 package com.fellow.main;
 
+import java.awt.Font;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -464,19 +465,45 @@ public class ExportExcel {
 	private int createTableHeader(DtoModel dtoModel,int startRow){
 		DtoHeaders header = dtoModel.getHeader();
 		
-		if(isFoersaeljningsledare && StringUtils.isNotBlank(header.getTitle())){
-			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 9));
-		    sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 9));
-			// replace title
-			HSSFRow row=sheet.getRow(2);
-			if(row == null){
-				row=sheet.createRow(2);
+		if(StringUtils.isNotBlank(header.getTitle())){
+			if(isFoersaeljningsledare){
+				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 9));
+			    sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 9));
+				// replace title
+				HSSFRow row=sheet.getRow(2);
+				if(row == null){
+					row=sheet.createRow(2);
+				}
+				HSSFCellStyle style =  styleBlackBoldCenter;
+				
+			    
+				fillCell(row, 0, header.getTitle(), HSSFCell.CELL_TYPE_STRING, true,style);
+				startRow = 4;
+			}else{
+				
+				HSSFRow row=sheet.getRow(0);//head row cannot null,because we have default font
+				String title = StringUtils.trim(header.getTitle());
+				if(StringUtils.startsWithIgnoreCase(title, "ICA")){
+					HSSFFont redFont = sheet.getWorkbook().createFont();					
+					redFont.setColor(HSSFColor.RED.index);					
+					redFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+					
+					HSSFFont witheFont = workBook.createFont();						
+					witheFont.setColor(IndexedColors.WHITE.getIndex());
+					witheFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);					
+					// override the parts of the text that you want to
+					// color differently by applying a different font.
+					HSSFRichTextString richString = new HSSFRichTextString(header.getTitle());
+					richString.applyFont(0, 3, redFont);
+					richString.applyFont(3, title.length(), witheFont);
+					HSSFCell cell = row.getCell(0);
+					cell.setCellValue(richString);
+				}else{
+					fillCell(row, 0, header.getTitle(), HSSFCell.CELL_TYPE_STRING, true,styleBlackBoldCenter);
+				}
+				
+				
 			}
-			HSSFCellStyle style =  styleBlackBoldCenter;
-			
-		    
-			fillCell(row, 0, header.getTitle(), HSSFCell.CELL_TYPE_STRING, true,style);
-			startRow = 4;
 		}
 		
 		//HSSFCellStyle styleVal = sheet.getRow(2).getCell(1).getCellStyle();

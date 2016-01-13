@@ -15,7 +15,9 @@
 			import gadget.dao.PreferencesDAO;
 			import gadget.i18n.i18n;
 			import gadget.service.PicklistService;
+			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.ObjectUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			
@@ -174,12 +176,12 @@
 				//show header
 				var headerLocal:FormItem = new FormItem();
 				headerLocal.percentWidth = 100;
-				headerLocal.addChild( createLableHeader("Local Record", -130) );
+				headerLocal.addChild( createLableHeader(i18n._("LOCAL_RECORD@Local Record"), -130) );
 				frmLocal.addChild(headerLocal);
 				
 				var headerServer:FormItem = new FormItem();
 				headerServer.percentWidth = 100;
-				headerServer.addChild( createLableHeader("External Record", -30) );
+				headerServer.addChild( createLableHeader(i18n._("EXTERNAL_RECORD@External Record"), -30) );
 				frmServer.addChild(headerServer);
 				
 				numberof.text = (i+1) + " of " + datas.length;
@@ -192,11 +194,21 @@
 				serModifiedBy = serModifiedBy.substr(0,serModifiedBy.indexOf(','));
 				
 				var locModifiedBy:String = owner['FirstName']+" " + owner['LastName'];
+				var mdBy:String = FieldUtils.getFieldDisplayName(entity,"ModifiedBy");
+				var mdDate:String = FieldUtils.getFieldDisplayName(entity,"ModifiedDate");
+				var nameRec:Boolean = i18n._("GLOBAL_NAME");
+				var rowIdDisplay:String = i18n._("GLOBAL_ROWID@Row Id");
+				var serverName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));
+				var localName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));
+				frmLocal.addChild( createLabelFormItem(rowIdDisplay, localeRec[DAOUtils.getOracleId(entity)]) );
+				frmServer.addChild( createLabelFormItem(rowIdDisplay, serverRec[DAOUtils.getOracleId(entity)], false) );
+				frmLocal.addChild( createLabelFormItem(nameRec, localName) );
+				frmServer.addChild( createLabelFormItem(nameRec, serverName, false) );
 				
-				frmLocal.addChild( createLabelFormItem("Last Modified By", locModifiedBy) );
-				frmServer.addChild( createLabelFormItem("Last Modified By", serModifiedBy, false) );
-				frmLocal.addChild( createLabelFormItem("Last Modified Date", item.localeModified) );
-				frmServer.addChild( createLabelFormItem("Last Modified Date", item.serverModified, false) );
+				frmLocal.addChild( createLabelFormItem(mdBy, locModifiedBy) );
+				frmServer.addChild( createLabelFormItem(mdBy, serModifiedBy, false) );
+				frmLocal.addChild( createLabelFormItem(mdDate, item.localeModified) );
+				frmServer.addChild( createLabelFormItem(mdDate, item.serverModified, false) );
 				
 				//show conflict fields
 				for each (var field:Object in fields){

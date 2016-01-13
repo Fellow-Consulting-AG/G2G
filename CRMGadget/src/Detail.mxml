@@ -20,6 +20,8 @@
 			import gadget.control.MultiSelectList;
 			import gadget.control.SampleItemView;
 			import gadget.dao.AccountDAO;
+			import gadget.dao.ActivityContactDAO;
+			import gadget.dao.ActivityUserDAO;
 			import gadget.dao.BaseDAO;
 			import gadget.dao.BlockLayoutDAO;
 			import gadget.dao.CustomFieldDAO;
@@ -171,6 +173,7 @@
 			private static const SAVE_STR:String = i18n._('GLOBAL_SAVE');
 			
 			public var isRefreshList:Boolean = true;
+			private var _isCopy:Boolean = true;
 			private var userOwner:Object;
 			
 			// HSC 6656
@@ -550,6 +553,64 @@
 				return true;
 			}
 			
+			//save copy relation
+			private function  saveCopyRelation(oriItem:Object):void{
+				Database.begin();
+				try{
+					for(var i:int=0;i<fields.length;i++){
+						if(fields[i].column_name.indexOf(CustomLayout.RELATION_CODE)>-1){
+							var relation:Object = Relation.getMNRelation(item.gadget_type, fields[i].custom);
+							var parentField:String ='';
+							if(relation==null){
+								relation = Relation.getRelation(fields[i].custom,item.gadget_type);
+								if(relation==null){
+									return;
+								}
+								//relation cannot null;
+								parentField = relation.keyDest;
+							}else{
+								parentField=relation.keySrc;
+							}
+							var subDao:BaseDAO  = null;
+							if(relation.supportTable!=null){
+								if(relation.supportTable==Database.accountAddressDao.entity){
+									subDao = Database.addressDao;
+								}else{
+									subDao = Database.getDao(relation.supportTable);	
+								}
+							}else{
+								subDao = Database.getDao(relation.entitySrc)
+							}
+							var grid:AdvancedDataGrid = fields[i].component as AdvancedDataGrid;
+							if(grid!=null && grid.dataProvider!=null){
+								var criteria:Object = {};
+								criteria[parentField]=oriItem[parentField];
+								var result:Array = subDao.getByParentId(criteria);
+								var oracleId:String = DAOUtils.getOracleId(subDao.entity);
+								for each(var rec:Object in result){
+									rec[relation.keySrc]=item[relation.keySrc];
+									delete rec['gadget_id']
+									delete rec[DAOUtils.getOracleId(subDao.entity)];
+									subDao.insert(rec);
+									rec = subDao.selectLastRecord()[0];									
+									// by default, sets the OracleId as gadget_id
+									rec[DAOUtils.getOracleId(subDao.entity)] = "#" + rec.gadget_id;									
+									
+									subDao.update(rec);
+								}
+							}
+						}
+					}
+					Database.commit();
+				}catch(e:SQLError){
+					Database.rollback();
+					controlError(e);
+					
+				}
+				
+				
+			}
+			
 			private function commit():Boolean {
 				
 				if(entity==Database.customObject11Dao.entity && Database.preferencesDao.isEnableSampleOrder()){
@@ -820,9 +881,10 @@
 							item[obj.entityField] = item[obj.entityField] == null || item[obj.entityField]=="" ? Database.allUsersDao.ownerUser()[obj.userField] : item[obj.entityField];
 						}
 					}
-					
-					
+					//we need original oracle id for copy function to get relation
+					var origItem:Object =Utils.copyModel(item); 
 					delete item[oidName];
+					delete item['gadget_id'];
 					dao.insert(item);					
 					item = Database.getDao(entity).selectLastRecord()[0];
 					// by default, sets the OracleId as gadget_id
@@ -834,7 +896,10 @@
 					// update support entities OracleId
 					// we should also update normal entities...
 					handleSupportEntities(false);
-					
+					if(isCopy && entity==Database.activityDao.entity){
+						saveCopyRelation(origItem);
+						
+					}
 					// HSC Todo
 					// Bug 6656 call, add sample dropped / products / contacts
 					/*
@@ -1163,6 +1228,7 @@
 						
 						if(comboAction.selectedItem.data == SAVE_STR){
 							this.create = false;
+							this.isCopy = false;//reset copy
 							(comboAction.dataProvider as ArrayCollection).removeItemAt(0);
 							setTitle(titleDetail);
 							setIcon();
@@ -1875,7 +1941,9 @@
 							}
 							
 							objHeight = 185;
-							displayObj = GUIUtils.getRelationGrid(this, item, fields[i].custom, fields[i].readonly, refreshLinkList);					
+							displayObj = GUIUtils.getRelationGrid(this, item, fields[i].custom, fields[i].readonly, refreshLinkList);	
+							//store relation grid to field
+							fields[i].component = VBox(displayObj).getChildAt(0);
 						}
 							
 						else if(fields[i].column_name.indexOf("#")>-1){
@@ -3128,6 +3196,17 @@
 							}
 						}
 					}
+
+			public function get isCopy():Boolean
+			{
+				return _isCopy;
+			}
+
+			public function set isCopy(value:Boolean):void
+			{
+				_isCopy = value;
+			}
+
 		]]>		
 		
 	</mx:Script>

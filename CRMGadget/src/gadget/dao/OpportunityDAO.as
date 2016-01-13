@@ -106,7 +106,7 @@ package gadget.dao
 						return true;
 					}
 					
-					//"CustomDate26",//Stard Date
+					//"CustomDate26",//Stard Dat
 					//"CustomDate25",//end date
 					var dbStartDate:Date =DateUtils.parse(dbVal.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);					
 					var uStartDate:Date =DateUtils.parse(uObj.CustomDate26,DateUtils.DATABASE_DATE_FORMAT);
@@ -1634,24 +1634,25 @@ package gadget.dao
 		public function saveImpactCalendar(recordChanges:ArrayCollection,opField:Array,co7Fields:Array,allRows:ArrayCollection):void{
 			initOpTotal(allRows);
 			var totalDic:Dictionary = calculateOpportunityTotal(allRows);
+			var oppSaved:Dictionary = new Dictionary();
 			Database.begin();
 			try{
 				for each(var row:Object in recordChanges){
 					if(row.isTotal){
 						continue;//total not save
 					}
-					if(row.editable||row.isNoCo7){
+					//update opportunity--no need to check
+					if(!oppSaved.hasOwnProperty(row.OpportunityId)){
 						var totalObj:Object = totalDic[row.OpportunityId];
+						oppSaved[row.OpportunityId]=row.OpportunityId;
 						if(totalObj!=null){
 							for(var tf:String in totalObj){
 								var total:Number =totalObj[tf];
 								row[tf] = total.toFixed(2);
 							}
-						}
-													
-							//update opportunity--no need to check
-							super.updateByField(opField,row,'gadget_id',true);
-							row.origOP=Utils.copyModel(row,false);
+						}	
+						super.updateByField(opField,row,'gadget_id',true);
+						row.origOP=Utils.copyModel(row,false);
 						
 					}
 					//save product usage

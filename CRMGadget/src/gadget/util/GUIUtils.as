@@ -1008,6 +1008,7 @@ package gadget.util
 				grid.selectedItem=null;
 				var deleteBtn:Button = new Button();
 				deleteBtn.label = i18n._('GLOBAL_REMOVE');
+				deleteBtn.enabled = !isCreate;
 				deleteBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void{	
 					relationGridHandler(detail, grid, deleteBtn.label, grid.selectedItem);
 				});
@@ -1023,13 +1024,15 @@ package gadget.util
 				});
 				
 				addBtn.enabled = !isCreate && RightService.canCreate(relation.supportTable);
+				
 //				deleteBtn.enabled = !isCreate && RightService.canDelete(relation.supportTable);
 				
 				
 				hbox.addChild(deleteBtn);
 			}
-			displayObj.addChild(hbox);			
-			displayObj.addChildAt(grid, 0);
+						
+			displayObj.addChild(grid);
+			displayObj.addChild(hbox);
 			return displayObj;
 		}
 		

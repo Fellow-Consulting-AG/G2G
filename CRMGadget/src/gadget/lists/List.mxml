@@ -561,7 +561,7 @@
 						screenDetail.create = true;
 						//#11944
 						screenDetail.subtype = LayoutUtils.getSubtypeIndex(screenDetail.item);
-						screenDetail.item.gadget_id = null;
+						screenDetail.isCopy = isCopy;
 					}
 					WindowManager.openModal(screenDetail);
 				}else{

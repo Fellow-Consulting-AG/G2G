@@ -8,6 +8,7 @@ package gadget.sync.incoming
 	import gadget.dao.ActivityContactDAO;
 	import gadget.dao.ActivityUserDAO;
 	import gadget.dao.BusinessPlanTeamDAO;
+	import gadget.dao.ContactAccountDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.dao.SupportDAO;
@@ -17,12 +18,17 @@ package gadget.sync.incoming
 	import gadget.sync.WSProps;
 	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.FieldUtils;
+	import gadget.util.OOPS;
+	import gadget.util.OOPSthrow;
+	import gadget.util.OOPStrace;
 	import gadget.util.ObjectUtils;
 	import gadget.util.SodUtils;
 	import gadget.util.SodUtilsTAO;
 	import gadget.util.StringUtils;
 	
 	import mx.collections.ArrayCollection;
+	
+	
 
 	public class IncomingSubobjects extends IncomingSubBase
 	{
@@ -266,7 +272,32 @@ package gadget.sync.incoming
 						subDao.insert(rec);
 						subDao.fix_sync_add(rec, null);
 					}catch(e:Error){
-						//maybe dupldate recode 
+						try{
+							//maybe dupldate recode
+							//we need to update oracle id for duplicate record
+							if(subDao is ActivityUserDAO){
+							 	var acusers:Array = subDao.getByParentId({parentFieldId:this.pid,"UserId":rec.UserId});
+							 	if(acusers!=null && acusers.length>0){
+									var actuser:Object = acusers[0];
+									actuser[subId]=rec[subId];
+									subDao.update(actuser);
+								}
+							}else if(subDao is ContactAccountDAO){
+								var childField:String='ContactId';
+								if(parentFieldId=='ContactId'){
+									childField='AccountId';
+								}
+								var result:Array = subDao.getByParentId({parentFieldId:this.pid,childField:rec[childField]});
+								if(result!=null && result.length>0){
+									var dbRec:Object = result[0];
+									dbRec[subId]=rec[subId];
+									subDao.update(dbRec);
+								}
+							}
+						}catch(e:Error){
+							//nothing todo
+							OOPStrace(e.getStackTrace());
+						}
 					}
 				}else {
 					

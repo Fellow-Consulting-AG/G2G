@@ -433,7 +433,8 @@ package gadget.sync
 			}			
 		}
 		public function get progress():int {
-			return _progress;
+			//default right now is 1
+			return _progress<1?1:_progress;
 		}
 		
 		public function get finished():Boolean {

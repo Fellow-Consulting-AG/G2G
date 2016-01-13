@@ -2442,7 +2442,7 @@
 	<mx:Canvas styleName="main" left="0" top="0" right="0" bottom="0" id="hiddenCanvas" width="100%" height="100%">
 		<mx:Canvas id="windowTitleBar" backgroundColor = "#EEEEEE" styleName="titleBar" doubleClickEnabled="true" doubleClick="viewRestoreMaxWindow()" mouseDown="nativeWindow.startMove()" height="24" top="2" left="2" right="2">			
 			<mx:Label id="titleLabel" text="CRM Gadget" top="0" left="24" />
-			<mx:Button styleName="iconBack" height="16" width="16" top="3" left="4" click="backListener"/>
+			<mx:Button styleName="iconBack" height="16" width="16" top="3" left="4" click="backListener(event)"/>
 			<mx:Button styleName="iconMinimize" height="16" width="16" top="2" right="36" click="minimize()"/>
 			<mx:Button styleName="iconMaximize" height="16" width="16" top="2" right="20" click="viewRestoreMaxWindow()"/>
 			<mx:Button styleName="iconClose" height="16" width="16" top="2" right="4" click="closeMain();"/>

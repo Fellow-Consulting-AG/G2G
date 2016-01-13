@@ -155,7 +155,7 @@
 				*/
 				
 				var isVisible:Boolean = false;
-				if(item!=null && !item.isChild && !item.isNew && !item.isTotal && item.editable){
+				if(item!=null && !item.isChild && !item.isNew && !item.isTotal && item.editable && item.origOP!=null){
 					isVisible = true;
 				}
 				

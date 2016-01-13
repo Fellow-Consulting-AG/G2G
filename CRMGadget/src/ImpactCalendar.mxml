@@ -655,7 +655,9 @@
 						//gridListAll.dataProvider = rows;
 					}
 					private function visibleBtnDelete(item:Object,col:AdvancedDataGridColumn=null):Boolean{
-						return item!=null && (!StringUtils.isEmpty(item.co7_gadget_id)||!StringUtils.isEmpty(item[OpportunityDAO.CO7_PREFIX+'CustomPickList31']));
+						return item!=null && ((item.origOP==null && !item.isTotal)/*bug#11943--empty line*/||
+							(!StringUtils.isEmpty(item.co7_gadget_id)||
+								!StringUtils.isEmpty(item[OpportunityDAO.CO7_PREFIX+'CustomPickList31'])));
 					}
 					private function deleteFunction(item:Object,col:AdvancedDataGridColumn=null):void{
 						Database.begin();

@@ -196,7 +196,7 @@
 				var locModifiedBy:String = owner['FirstName']+" " + owner['LastName'];
 				var mdBy:String = FieldUtils.getFieldDisplayName(entity,"ModifiedBy");
 				var mdDate:String = FieldUtils.getFieldDisplayName(entity,"ModifiedDate");
-				var nameRec:Boolean = i18n._("GLOBAL_NAME");
+				var nameRec:String = i18n._("GLOBAL_NAME");
 				var rowIdDisplay:String = i18n._("GLOBAL_ROWID@Row Id");
 				var serverName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));
 				var localName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));

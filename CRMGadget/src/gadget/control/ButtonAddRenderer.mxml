@@ -28,6 +28,7 @@
 			private var _list:List;
 			public static const OP_COPY_FIELD:Array=[
 				"OwnerFullName",
+				"gadget_id",
 				"OpportunityId",
 				"OpportunityName",
 				"AccountName",

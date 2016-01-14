@@ -37,7 +37,7 @@ package gadget.sync.incoming
 			
 			var ignoreFields:Dictionary = dao.incomingIgnoreFields;
 			
-			for each (var field:Object in FieldUtils.allFields(entityIDsod)) {
+			for each (var field:Object in getFields()) {
 				if(ignoreFields.hasOwnProperty(field.element_name)) continue;
 				if (ignoreQueryFields.indexOf(field.element_name)<0) {
 					var ws20name:String = WSProps.ws10to20(getEntityName(), field.element_name);
@@ -98,7 +98,21 @@ package gadget.sync.incoming
 			
 		}
 		
-		
+		override protected function getFields(alwaysRead:Boolean=false):ArrayCollection{
+			var fields:ArrayCollection = FieldUtils.allFields(entityIDsod,alwaysRead);
+			var foundMDBy:Boolean = false;
+			for each(var f:Object in fields){
+				if(f.element_name=='ModifiedBy'){
+					foundMDBy= true;
+					break;
+				}
+			}
+			//for check conflict we alway need modifiedby
+			if(!foundMDBy){
+				fields.addItem({'element_name':'ModifiedBy'});
+			}
+			return fields;
+		}
 		override protected function nextPage(lastPage:Boolean):void {
 			
 			showCount();
@@ -132,7 +146,7 @@ package gadget.sync.incoming
 		override protected function importRecord(entitySod:String, data:XML, googleListUpdate:ArrayCollection=null):int {
 			var tmpOb:Object={};
 			
-			for each (var field:Object in FieldUtils.allFields(entitySod)) {
+			for each (var field:Object in getFields()) {
 				var xmllist:XMLList = data.child(new QName(ns2.uri,WSProps.ws10to20(entitySod,field.element_name)));
 				if (xmllist.length()>1)
 					trace(field.element_name,xmllist.length());

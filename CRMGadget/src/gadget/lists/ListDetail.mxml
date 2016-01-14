@@ -152,7 +152,7 @@
 				var fields:ArrayCollection = Database.subColumnLayoutDao.fetchColumnLayout(this.entity,entity);
 				if(fields == null || fields.length < 1){
 					var subFilter:Object = Database.filterDao.getDefaultFilter(entity);
-					var type:String = filter.type;
+					var type:String = filter==null?"":filter.type;
 					if(subFilter!=null){
 						type = subFilter.type;
 					}

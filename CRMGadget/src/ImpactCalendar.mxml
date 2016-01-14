@@ -45,6 +45,7 @@
 			import gadget.util.LocaleUtils;
 			import gadget.util.NumberLocaleUtils;
 			import gadget.util.NumberUtils;
+			import gadget.util.OOPS;
 			import gadget.util.SalesStageUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -660,7 +661,7 @@
 								!StringUtils.isEmpty(item[OpportunityDAO.CO7_PREFIX+'CustomPickList31'])));
 					}
 					private function deleteFunction(item:Object,col:AdvancedDataGridColumn=null):void{
-						Database.begin();
+						//Database.begin();
 						try{
 						Database.customObject7Dao.deleteTemporaryFromOppt(item.co7_gadget_id);
 						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
@@ -669,9 +670,17 @@
 								Database.customObject7Dao.deleteTemporaryFromOppt(objQ.co7_gadget_id);
 							}
 						}
-						Database.commit();
+						var listRow:ArrayCollection = new ArrayCollection();						
+						for each(var r:Object in rows){
+							if(r.group ==item.group && r!=item){
+								listRow.addItem(r);
+							}
+						}
+						Database.opportunityDao.updateOpportunityTotal(listRow);
+						//Database.commit();
 						}catch(e:Error){
-							Database.rollback();
+							//Database.rollback();
+							OOPS(e.getStackTrace());
 						}
 						
 					}

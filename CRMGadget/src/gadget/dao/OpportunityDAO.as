@@ -1631,6 +1631,38 @@ package gadget.dao
 			return -1;
 		}
 		
+		public function updateOpportunityTotal(oppRows:ArrayCollection):void{
+			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);
+			var oppSaved:Dictionary = new Dictionary();
+			Database.begin();
+			try{
+				for each(var row:Object in oppRows){
+					if(row.isTotal){
+						continue;//total not save
+					}
+					//update opportunity--no need to check
+					if(!oppSaved.hasOwnProperty(row.OpportunityId)){
+						var totalObj:Object = totalDic[row.OpportunityId];
+						oppSaved[row.OpportunityId]=row.OpportunityId;
+						if(totalObj!=null){
+							for(var tf:String in totalObj){
+								var total:Number =totalObj[tf];
+								row[tf] = total.toFixed(2);
+							}
+						}	
+						super.updateByField(OP_IMP_CAL_FIELD,row,'gadget_id',true);
+						row.origOP=Utils.copyModel(row,false);
+						
+					}
+					
+				}
+				Database.commit();
+			}catch(e:SQLError){
+				
+				Database.rollback();
+			}
+		}
+		
 		public function saveImpactCalendar(recordChanges:ArrayCollection,opField:Array,co7Fields:Array,allRows:ArrayCollection):void{
 			initOpTotal(allRows);
 			var totalDic:Dictionary = calculateOpportunityTotal(allRows);

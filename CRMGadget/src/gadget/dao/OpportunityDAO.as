@@ -15,6 +15,7 @@ package gadget.dao
 	import gadget.service.UserService;
 	import gadget.util.DateUtils;
 	import gadget.util.NumberLocaleUtils;
+	import gadget.util.OOPS;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
 	
@@ -1633,8 +1634,7 @@ package gadget.dao
 		
 		public function updateOpportunityTotal(oppRows:ArrayCollection):void{
 			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);
-			var oppSaved:Dictionary = new Dictionary();
-			Database.begin();
+			var oppSaved:Dictionary = new Dictionary();			
 			try{
 				for each(var row:Object in oppRows){
 					if(row.isTotal){
@@ -1656,10 +1656,10 @@ package gadget.dao
 					}
 					
 				}
-				Database.commit();
+				
 			}catch(e:SQLError){
 				
-				Database.rollback();
+				OOPS(e.getStackTrace());
 			}
 		}
 		

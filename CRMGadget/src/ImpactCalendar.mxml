@@ -31,6 +31,7 @@
 			import gadget.control.MyAdvancedDataGridHeaderRenderer;
 			import gadget.control.ProbabilityColNumRenderer;
 			import gadget.control.QTextRenderer;
+			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
 			import gadget.dao.ImpactManualTotalInput;
 			import gadget.dao.OpportunityDAO;
@@ -660,14 +661,30 @@
 							(!StringUtils.isEmpty(item.co7_gadget_id)||
 								!StringUtils.isEmpty(item[OpportunityDAO.CO7_PREFIX+'CustomPickList31'])));
 					}
+					
+					private function getCo7OracleId(co7:Object):String{
+						return co7[OpportunityDAO.CO7_PREFIX+DAOUtils.getOracleId(Database.customObject7Dao.entity)];
+					}
+					
+					private function deleteCo7FromOppt(co7:Object):void{
+						var oracId:String = getCo7OracleId(co7);						
+						if (oracId == null || StringUtils.startsWith(oracId, "#")){
+							Database.customObject7Dao.delete_({'gadget_id':co7.co7_gadget_id});
+						}else{
+							Database.customObject7Dao.deleteTemporaryFromOppt(co7.co7_gadget_id);
+						}
+						
+						
+					}
+					
 					private function deleteFunction(item:Object,col:AdvancedDataGridColumn=null):void{
-						//Database.begin();
+						Database.begin();
 						try{
-						Database.customObject7Dao.deleteTemporaryFromOppt(item.co7_gadget_id);
+							deleteCo7FromOppt(item);
 						for each(var q:String in OpportunityDAO.ALL_FY_QUATER){
 							var objQ:Object = item[q];
 							if(objQ!=null){
-								Database.customObject7Dao.deleteTemporaryFromOppt(objQ.co7_gadget_id);
+								deleteCo7FromOppt(objQ);
 							}
 						}
 						var listRow:ArrayCollection = new ArrayCollection();						
@@ -676,10 +693,18 @@
 								listRow.addItem(r);
 							}
 						}
-						Database.opportunityDao.updateOpportunityTotal(listRow);
-						//Database.commit();
+						if(listRow.length==0 && !StringUtils.isEmpty( item.OpportunityId)){
+							//reset total if no product usage
+							for each(var ft:String in OpportunityDAO.TOTAL_FIELD){
+								item[ft]=0;
+							}
+							Database.opportunityDao.updateByField(OpportunityDAO.OP_IMP_CAL_FIELD,item,'gadget_id',true);
+						}else{
+							Database.opportunityDao.updateOpportunityTotal(listRow);
+						}
+						Database.commit();
 						}catch(e:Error){
-							//Database.rollback();
+							Database.rollback();
 							OOPS(e.getStackTrace());
 						}
 						

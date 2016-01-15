@@ -687,6 +687,12 @@
 								deleteCo7FromOppt(objQ);
 							}
 						}
+						if(!StringUtils.isEmpty(item.co7_CustomPickList31)){
+							var oldIndex:int = ArrayCollection(item.categorySelected).getItemIndex(item.co7_CustomPickList31);
+							if(oldIndex>=0){
+								ArrayCollection(item.categorySelected).removeItemAt(oldIndex);
+							}
+						}
 						var listRow:ArrayCollection = new ArrayCollection();						
 						for each(var r:Object in rows){
 							if(r.group ==item.group && r!=item){
@@ -1438,7 +1444,7 @@
 							//clear the new data from object
 							if(!row.co7Change && StringUtils.isEmpty(row.co7_Id)){
 								for each(var clearQ:String in OpportunityDAO.ALL_FY_QUATER){
-									row[q]=null;
+									row[clearQ]=null;
 								}
 								continue;
 							}

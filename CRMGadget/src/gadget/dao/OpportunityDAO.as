@@ -1423,6 +1423,7 @@ package gadget.dao
 				item[DAOUtils.getOracleId(Database.customObject7Dao.entity)]="#"+item.gadget_id;
 				Database.customObject7Dao.updateByField([DAOUtils.getOracleId(Database.customObject7Dao.entity)],item);
 				obj.co7_gadget_id = item.gadget_id;
+				obj.co7_Id= "#"+item.gadget_id;
 				
 			}else{
 				//if(isChange(obj.origCo7,objSav,fields,true)){					
@@ -1689,7 +1690,7 @@ package gadget.dao
 					}
 					//save product usage
 					if(row.co7Change){
-						saveCo7(co7Fields,row);					
+						saveCo7(co7Fields,row);		
 					}
 					
 					for each(var f:String in ALL_FY_QUATER){

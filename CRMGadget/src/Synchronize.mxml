@@ -199,9 +199,10 @@
 				if(mainWindow.syncProcess!=null && mainWindow.syncProcess.finished && !mainWindow.syncProcess.isStopped){
 					var full:Boolean = fullSync.selected || mainWindow.syncProcess.full;
 					var oldLogs:ArrayCollection = mainWindow.syncProcess.logs;
-					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CHECK_CONFLICTS,0)){
+					//bug#12123
+					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_CHECK_CONFLICTS,0) && checkObjects!=null && checkObjects.length>0){
 						mainWindow.syncProcess = new SyncProcess(full,metadata.selected,fullCompare.selected,false,null,checkObjects);	
-						syncProgressBar.value=0;
+						syncProgressBar.value=1;
 						mainWindow.syncProcess.bindFunctions(logInfo, null, logCount, syncEvent, [checkConflicts,initButtons], mainWindow.fieldComplete);											
 					}else{
 						mainWindow.syncProcess = new SyncProcess(full,metadata.selected,fullCompare.selected,false);	

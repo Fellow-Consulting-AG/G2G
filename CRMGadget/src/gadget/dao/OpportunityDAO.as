@@ -946,7 +946,7 @@ package gadget.dao
 					return obj.toString();
 				}else if( obj is Number){
 					if(!formatNum){
-						return Number(obj).toFixed(2);
+						return Number(obj).toFixed(4);
 					}
 					return NumberLocaleUtils.format(obj);
 				}else{
@@ -972,7 +972,7 @@ package gadget.dao
 							}
 						}
 						if(!formatNum){
-							return Number(total).toFixed(2);
+							return Number(total).toFixed(4);
 						}else{
 							return NumberLocaleUtils.format(total);
 						}
@@ -1505,6 +1505,7 @@ package gadget.dao
 				var results:ArrayCollection =findImpactCalendar();
 				var currentYear:Date = getCurrentYearOfImpCal();
 				var listChange:ArrayCollection = new ArrayCollection();
+				var listUpdateTotal:ArrayCollection = new ArrayCollection();
 				for each(var row:Object in results){
 					if(isMandatory(row)){
 						continue;//is mandatory mean that row no product
@@ -1549,10 +1550,13 @@ package gadget.dao
 						
 					
 					}
+					listUpdateTotal.addItem(row);
 				}
 				if(listChange.length>0){
 					saveImpactCalendar(listChange,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,results);
 				}
+				//bug#12095
+				checkOpportunityTotal(listUpdateTotal);
 				
 			}
 		}
@@ -1633,6 +1637,51 @@ package gadget.dao
 			return -1;
 		}
 		
+		private function checkOpportunityTotal(oppRows:ArrayCollection):void{
+			initOpTotal(oppRows);
+			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);
+			var oppSaved:Dictionary = new Dictionary();		
+			try{
+				Database.begin();
+				for each(var row:Object in oppRows){
+					if(row.isTotal){
+						continue;//total not save
+					}
+					//update opportunity--no need to check
+					if(!oppSaved.hasOwnProperty(row.OpportunityId)){
+						var totalObj:Object = totalDic[row.OpportunityId];
+						oppSaved[row.OpportunityId]=row.OpportunityId;
+						if(totalObj!=null){
+							var isSave:Boolean = false;
+							var oldOpp:Object = findByOracleId(row.OpportunityId);
+							if(oldOpp!=null){
+								for(var tf:String in totalObj){
+									var total:Number =totalObj[tf];
+									var oldTotal:Number = parseFloat(oldOpp[tf]);
+									if( isNaN(oldTotal)){
+										oldTotal = 0;//because total no null
+									}
+									//may old data store only .2
+									if(oldTotal!=total&& oldTotal.toFixed(2)!=total.toFixed(2)){
+										row[tf] = total.toFixed(4);
+										isSave = true;
+									}
+								}
+								if(isSave){
+									super.updateByField(OP_IMP_CAL_FIELD,row,'gadget_id',true);
+								}
+							}
+						}	
+					}
+				}
+				Database.commit();
+				
+			}catch(e:Error){
+				Database.rollback();
+				OOPS(e.getStackTrace());
+			}
+		}
+		
 		public function updateOpportunityTotal(oppRows:ArrayCollection):void{
 			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);
 			var oppSaved:Dictionary = new Dictionary();			
@@ -1648,7 +1697,7 @@ package gadget.dao
 						if(totalObj!=null){
 							for(var tf:String in totalObj){
 								var total:Number =totalObj[tf];
-								row[tf] = total.toFixed(2);
+								row[tf] = total.toFixed(4);
 							}
 						}	
 						super.updateByField(OP_IMP_CAL_FIELD,row,'gadget_id',true);
@@ -1681,7 +1730,7 @@ package gadget.dao
 						if(totalObj!=null){
 							for(var tf:String in totalObj){
 								var total:Number =totalObj[tf];
-								row[tf] = total.toFixed(2);
+								row[tf] = total.toFixed(4);
 							}
 						}	
 						super.updateByField(opField,row,'gadget_id',true);

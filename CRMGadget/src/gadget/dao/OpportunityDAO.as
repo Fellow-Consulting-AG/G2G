@@ -1636,7 +1636,21 @@ package gadget.dao
 			
 			return -1;
 		}
-		
+		/**
+		 * 
+		 * OppId cannot null
+		 */ 
+		public function checkOpportunityTotalByOppId(oppId:String):void{
+			var results:ArrayCollection =findImpactCalendar(null,null,oppId);
+			var listUpdateTotal:ArrayCollection = new ArrayCollection();
+			for each(var row:Object in results){
+				if(isMandatory(row)){
+					continue;//is mandatory mean that row no product
+				}
+				listUpdateTotal.addItem(row);
+			}
+			checkOpportunityTotal(listUpdateTotal);
+		}
 		private function checkOpportunityTotal(oppRows:ArrayCollection):void{
 			initOpTotal(oppRows);
 			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);

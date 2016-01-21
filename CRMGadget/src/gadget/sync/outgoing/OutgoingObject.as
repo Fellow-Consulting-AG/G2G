@@ -268,6 +268,15 @@ package gadget.sync.outgoing
 //						delete outgoingIgnoreFields['CustomObject14Name'];
 //					}
 //				}
+				if(entity==Database.opportunityDao.entity && UserService.getCustomerId()==UserService.COLOPLAST && Database.preferencesDao.isEnableImpactCalendar()){
+					//we check only update record
+					if(records[i].OpportunityType=='Forecast' && updated){
+						//checking opportunity for ic total before send to ood
+						Database.opportunityDao.checkOpportunityTotalByOppId(records[i].OpportunityId);
+						//re-read opportunity from db
+						records[i] = Database.opportunityDao.findByOracleId(records[i].OpportunityId);
+					}
+				}
 				var hasOracleId:Boolean = false;
 				for each (var field:Object in field_list) {
 					var fieldData:String = records[i][field.element_name];

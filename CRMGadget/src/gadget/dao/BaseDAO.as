@@ -39,6 +39,7 @@ package gadget.dao
 		private var stmtSelectLastRecord:SQLStatement;
 		private var stmtFindCreated:SQLStatement;
 		private var stmtFindUpdated:SQLStatement;
+		private var stmtFindUpdatedIds:SQLStatement;
 		private var stmtDeleteTemporary:SQLStatement;
 		private var stmtUndeleteTemporary:SQLStatement;
 		private var stmtFindDeleted:SQLStatement;
@@ -200,7 +201,12 @@ package gadget.dao
 			// Find all items updated locally
 			stmtFindUpdated = new SQLStatement();
 			stmtFindUpdated.sqlConnection = sqlConnection;
-			stmtFindUpdated.text = "SELECT '" + entity + "' gadget_type, *, " + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " WHERE local_update is not null AND (deleted = 0 OR deleted IS null)" + msId + " ORDER BY local_update LIMIT :limit OFFSET :offset";	
+			stmtFindUpdated.text = "SELECT '" + entity + "' gadget_type, *, " + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " WHERE local_update is not null AND (deleted = 0 OR deleted IS null)" + msId + " ORDER BY local_update LIMIT :limit OFFSET :offset";
+			
+			// Find all items updated locally
+			stmtFindUpdatedIds = new SQLStatement();
+			stmtFindUpdatedIds.sqlConnection = sqlConnection;
+			stmtFindUpdatedIds.text = "SELECT '" + entity + "' gadget_type, "+fieldOracleId +"," + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " WHERE local_update is not null AND (deleted = 0 OR deleted IS null)" + msId + " ORDER BY local_update";	
 
 			// Find all items created locally
 			stmtFindCreated = new SQLStatement();
@@ -483,6 +489,13 @@ package gadget.dao
 				
 			}
 			return result;
+		}
+		
+		
+		public function findAllUpdateIds():ArrayCollection{			
+			exec(stmtFindUpdatedIds);
+			return new ArrayCollection(stmtFindUpdatedIds.getResult().data);			
+			
 		}
 		
 		public function findAllIdsAsDictionary():Dictionary{

@@ -54,7 +54,10 @@
 					var localeMergFields:Object = localeObj.serverMergFields;
 					var serverMergFields:Object = serverObj.localeMergFields;
 					if(localeMergFields==null && serverMergFields==null){
-						localeObj.local_update=null;	
+						//should be copy all field from server because server is winner
+						for(var field:String in serverObj){
+							localeObj[field] = serverObj[field];
+						}
 					}else{
 						var fieldsMergs:Object = localeObj.listFieldMerg;
 						if(fieldsMergs != null ){

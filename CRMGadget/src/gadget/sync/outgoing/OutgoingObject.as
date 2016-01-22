@@ -630,8 +630,7 @@ package gadget.sync.outgoing
 					//Bug #6755
 					var currentDao:BaseDAO = getDao();
 					var item:Object;
-					if(UserService.getCustomerId().toUpperCase() != UserService.COLOPLAST){
-						
+					if(UserService.getCustomerId().toUpperCase() != UserService.COLOPLAST){						
 						var fOraId:String = DAOUtils.getOracleId(currentDao.entity);
 						var oracId:String =deletedObj[fOraId]; 
 						if(oracId!=null && oracId.indexOf("#")==-1){
@@ -642,9 +641,6 @@ package gadget.sync.outgoing
 								Utils.deleteChild(item,currentDao.entity);
 								Utils.removeRelation(item,currentDao.entity,false);
 							}
-							
-							doRequest();
-							return true;
 						}
 					}
 					else{
@@ -653,13 +649,12 @@ package gadget.sync.outgoing
 							item.deleted = false;
 							item.local_update = null;
 							item.error = false;
-							currentDao.update(item);
-						}
-						faulted++;
-						doRequest();
-						return true;
-						
+							//update only modified field
+							currentDao.updateByField([],item);
+						}	
 					}
+					doRequest();
+					return true;
 				}												
 				oops ="cannot {4} {1} with Id {2}: missing server record '{3}': {6}";
 				

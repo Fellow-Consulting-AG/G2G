@@ -22,7 +22,7 @@ package gadget.sync.incoming {
 			this._dependOnParent = false;
 
 		}
-		override protected function canSave(incomingObject:Object):Boolean{
+		override protected function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			var save:Boolean = super.canSave(incomingObject);
 			delete mapIds[incomingObject[DAOUtils.getOracleId(entityIDour)]];
 			return save;

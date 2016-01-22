@@ -88,7 +88,7 @@ package gadget.sync.incoming
 		
 		
 		
-		protected override function canSave(incomingObject:Object):Boolean{
+		protected override function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			if(parentTask!=null && parentRelationField!=null){
 				var parentId:String=incomingObject[parentRelationField.ParentRelationId];
 				var issave:Boolean = false;

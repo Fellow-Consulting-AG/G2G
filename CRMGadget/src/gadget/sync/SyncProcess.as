@@ -15,6 +15,7 @@ package gadget.sync
 	import gadget.sync.group.TaskGroupBase;
 	import gadget.sync.incoming.IncomingContactNotExistInAccCon;
 	import gadget.sync.incoming.IncomingObject;
+	import gadget.sync.incoming.IncomingProductUsageForIC;
 	import gadget.sync.incoming.JDIncomingObject;
 	import gadget.sync.incoming.JDIncomingPlant;
 	import gadget.sync.incoming.ModificationTracking;
@@ -114,6 +115,15 @@ package gadget.sync
 						_groups.addItem(new OutgoingGCalendarUpdate());
 					}
 					
+					//check impact calendar change on ood
+					if(UserService.COLOPLAST==UserService.getCustomerId() && Database.preferencesDao.isEnableImpactCalendar()){
+						_groups.addItem(new TaskGroupBase(
+							this,
+							[new IncomingProductUsageForIC()],
+							_full
+							,_metaSyn
+						));
+					}
 					
 					_groups.addItem(new TaskGroupBase(	//VAHI Parallel with OutgoingTaskGroup, but it cannot run parallely
 						this,

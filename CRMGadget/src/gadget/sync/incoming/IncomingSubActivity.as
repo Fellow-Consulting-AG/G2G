@@ -47,7 +47,7 @@ package gadget.sync.incoming
 			return criteria;
 		}
 		
-		override protected function canSave(incomingObject:Object):Boolean{
+		override protected function canSave(incomingObject:Object,local:Object=null):Boolean{
 			var obj:Object = Database.transactionDao.find(subIDour);
 			if(StringUtils.isEmpty(obj.parent_entity)){
 				return true;

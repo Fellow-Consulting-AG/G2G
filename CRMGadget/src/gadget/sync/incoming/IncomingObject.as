@@ -39,7 +39,7 @@ package gadget.sync.incoming {
 			this._listRetrieveId = listObj;
 		}
 
-		protected override function canSave(incomingObject:Object):Boolean{
+		protected override function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			
 			listRetrieveId.addItem(incomingObject);
 			

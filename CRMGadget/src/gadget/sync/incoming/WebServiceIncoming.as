@@ -642,7 +642,7 @@ package gadget.sync.incoming {
 			}
 		}
 		
-		protected function canSave(incomingObject:Object):Boolean{
+		protected function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			return true;
 		}
 		
@@ -679,7 +679,7 @@ package gadget.sync.incoming {
 			if(this is JDIncomingObject){
 				return 0;
 			}
-			if(!canSave(tmpOb)){
+			if(!canSave(tmpOb,localRecord)){
 				return 0;
 			}
 			//only jd user		

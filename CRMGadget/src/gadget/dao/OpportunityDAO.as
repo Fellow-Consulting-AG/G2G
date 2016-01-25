@@ -47,6 +47,7 @@ package gadget.dao
 		}
 		
 		
+		
 		public override function updateByField(fields:Array,object:Object,fieldCriteria:String = 'gadget_id',addLocalUpdate:Boolean=false):void{
 			var isCalImpactC:Boolean = isCalculateImpactCalendar(object,fieldCriteria);
 			super.updateByField(fields,object,fieldCriteria,addLocalUpdate);
@@ -58,17 +59,18 @@ package gadget.dao
 		protected function calCulateImpactByOppId(optId:String):void{
 			var impacs:ArrayCollection = findImpactCalendar(null,null,optId);
 			if(impacs!=null && impacs.length>0){
-				
+				var recordsChange:ArrayCollection = new ArrayCollection();
 				for each(var r:Object in impacs){
-					
+					if(!isMandatory(r)){
 						//mark every row as change
 						r.co7Change=true;
 						calImpactCalMonth(r);
-						
-					
+						recordsChange.addItem(r);
+					}
 				}
-				
-					saveImpactCalendar(impacs,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,impacs);
+				if(recordsChange.length>0){
+					saveImpactCalendar(impacs,OP_IMP_CAL_FIELD,CO7_IMP_CAL_FIELD,recordsChange);
+				}
 				
 			}
 		}

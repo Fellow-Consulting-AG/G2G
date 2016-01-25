@@ -54,10 +54,12 @@
 					var localeMergFields:Object = localeObj.serverMergFields;
 					var serverMergFields:Object = serverObj.localeMergFields;
 					if(localeMergFields==null && serverMergFields==null){
-						//should be copy all field from server because server is winner
-						for(var field:String in serverObj){
-							localeObj[field] = serverObj[field];
-						}
+						//???should be copy all field from server to local or keep local for replace to server
+						//for(var field:String in serverObj){
+						//	localeObj[field] = serverObj[field];
+						//}
+						trace("keep as default");
+						//nothing to do
 					}else{
 						var fieldsMergs:Object = localeObj.listFieldMerg;
 						if(fieldsMergs != null ){

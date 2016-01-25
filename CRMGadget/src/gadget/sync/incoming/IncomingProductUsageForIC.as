@@ -18,8 +18,11 @@ package gadget.sync.incoming
 		protected override function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			//we save only recorde from ood but not exist in local and local no change,
 			//for exist we do it on merge step already
-			if(localRec.ood_lastmodified!=incomingObject.ModifiedDate){
-				return localRec==null || (StringUtils.isEmpty(localRec.local_update) && !localRec.deleted );
+			if(localRec==null){
+				return true;
+			}
+			if( localRec.ood_lastmodified!=incomingObject.ModifiedDate){
+				return (StringUtils.isEmpty(localRec.local_update) && !localRec.deleted );
 			}
 			
 			return false;

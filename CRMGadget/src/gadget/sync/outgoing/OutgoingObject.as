@@ -650,7 +650,7 @@ package gadget.sync.outgoing
 							item.local_update = null;
 							item.error = false;
 							//update only modified field
-							currentDao.updateByField([],item);
+							currentDao.clearErrorAndLocalChange(item);
 						}	
 					}
 					doRequest();

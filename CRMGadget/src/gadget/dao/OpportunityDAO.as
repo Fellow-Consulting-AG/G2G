@@ -1678,12 +1678,16 @@ package gadget.dao
 										oldTotal = 0;//because total no null
 									}
 									//may old data store only .2
-									if(oldTotal!=total&& oldTotal.toFixed(2)!=total.toFixed(2)){
-										row[tf] = total.toFixed(4);
+									if(oldTotal!=total&& oldTotal.toFixed(2)!=total.toFixed(2)){										
 										isSave = true;
+										break;
 									}
 								}
 								if(isSave){
+									for(var f:String in totalObj){
+										var totalVal:Number =totalObj[f];
+										row[f] = totalVal.toFixed(4);
+									}
 									super.updateByField(OP_IMP_CAL_FIELD,row,'gadget_id',true);
 								}
 							}
@@ -1699,6 +1703,7 @@ package gadget.dao
 		}
 		
 		public function updateOpportunityTotal(oppRows:ArrayCollection):void{
+			initOpTotal(oppRows);
 			var totalDic:Dictionary = calculateOpportunityTotal(oppRows);
 			var oppSaved:Dictionary = new Dictionary();			
 			try{

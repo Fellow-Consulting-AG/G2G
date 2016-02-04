@@ -463,6 +463,7 @@
 			public function syncEnd(isUpdateTrans:Boolean=true):void {
 				
 				createLastSync();
+				Database.opportunityDao.triggerUpdateImpCal();
 				syncBtn1.visible = false;
 				syncBtn1.includeInLayout = false;
 				syncBtn2.visible = true;

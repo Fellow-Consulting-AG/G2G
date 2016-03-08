@@ -43,7 +43,7 @@ package gadget.sync.task {
 		protected static var nextRequest:Number, nextAdjust:int = 0;
 		protected var retries:int;		
 		protected var requestStarted:Number;
-		private var isInited:Boolean = false;		
+		protected var isInited:Boolean = false;		
 		private var prefFault:Array=[{'<ErrorMessage>':'</ErrorMessage>'},{'<siebelf:errormsg>':'</siebelf:errormsg>'},
 			{'<faultstring>':'</faultstring>'}];//MONY key is start prefix and value is end prefix	
 		protected const RETRY_WAIT_BACKOFF:int = 2000;	//VAHI ms, wait retry* this when retrying

@@ -57,10 +57,11 @@ package gadget.sync.incoming {
 			};
 		}
 		
-		override protected function tweak_vars():void {
+		override protected function initOnce():void {
 			if (entityIDour == "User") {
 				withFilters	= false;
 			}
+			super.initOnce();
 		}
 		
 		override public function getMyClassName():String {

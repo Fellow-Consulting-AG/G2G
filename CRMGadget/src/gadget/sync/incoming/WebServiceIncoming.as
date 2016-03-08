@@ -86,7 +86,8 @@ package gadget.sync.incoming {
 		protected var useCreatedDate:Boolean = false;
 		protected var checkOwner:Boolean = true;
 		private var _dao:BaseDAO;
-
+		private var rebuildRequest:Boolean = true;
+		private var useCountRec:Boolean = true;
 		public function WebServiceIncoming(ID:String, daoName:String=null) {
 			isUnboundedTask = false;
 
@@ -126,15 +127,15 @@ package gadget.sync.incoming {
 			startTime		= Utils.calculateStartTime(Database.transactionDao.getAdvancedFilterType(entityIDour)); 
 			viewMode		= getViewmode();
 			viewType  		= Database.transactionDao.getTransactionViewType(entityIDour);
-			tweak_vars();
+//			tweak_vars();
 
 			//SEEALSO[1] Keep this in sync (field ModifiedDate)
 			//<{ModifiedDate}>{DatePlaceholder}</{ModifiedDate}>
 			trace(wsID);
-			if (stdXML==null) {
-				stdXML = buildStdXML();					
-				
-			}
+//			if (stdXML==null) {
+//				stdXML = buildStdXML();					
+//				
+//			}
 			
 			
 
@@ -156,15 +157,21 @@ package gadget.sync.incoming {
 				checkOwner = false;
 				
 				if(param.range!=null && !(param.fullCompare||param.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
-					var minD:String = ServerTime.toSodIsoDate(param.range.start);				
+					var minD:String = ServerTime.toSodIsoDate(param.range.start);		
+					//waiting getting records change form server
 					new GetDeltaRecordChange("["+MODIFIED_DATE+"] &gt;= '"+minD+"'",entityIDour,finishReadDeltaChange).start();
 					return;
 				}
 				
 				
 			}
-			buildAndSendRequest();		
 			
+			buildAndSendRequest();	
+			if(rebuildRequest){
+				rebuildRequest = false;//we need cound for only first time
+				//rebuild response
+				initOnce();
+			}
 		}
 		
 		protected function buildAndSendRequest():void{
@@ -240,10 +247,21 @@ package gadget.sync.incoming {
 		protected function getNS2():Namespace{
 			return new Namespace("urn:/crmondemand/xml/"+entityIDns+"/Data");
 		}
-		protected function buildStdXML():XML{
+		private function buildStdXML():XML{
+			if(useCountRec){
+				//we need count record at the first time only
+				useCountRec = false;
+				return <{wsID} xmlns={ns1.uri}>						
+										<ViewMode>{viewMode}</ViewMode>						
+										<{listID} recordcountneeded="1"  pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
+											<{entityIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>
+											</{entityIDns}>
+										</{listID}>
+									</{wsID}>;
+			}
 			return <{wsID} xmlns={ns1.uri}>						
 						<ViewMode>{viewMode}</ViewMode>						
-						<{listID} recordcountneeded="1" pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
+						<{listID}  pagesize={pageSize} startrownum={ROW_PLACEHOLDER}>
 							<{entityIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>
 							</{entityIDns}>
 						</{listID}>
@@ -400,7 +418,7 @@ package gadget.sync.incoming {
 		
 		//VAHI We need late initalization (just before the run) to be able to access all the fields etc.
 		override protected function initOnce():void {
-			
+			stdXML = buildStdXML();	
 			initXML(stdXML);
 		}
 
@@ -613,8 +631,12 @@ package gadget.sync.incoming {
 			var ns:Namespace = getResponseNamespace();
 			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
 			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';
-			var recordcount:int = parseInt(listObject.attribute("recordcount")[0].toString());
-			
+			var recordcount:int =-1; 
+				try{
+					recordcount = parseInt(listObject.attribute("recordcount")[0].toString());
+				}catch(e:Error){
+					//noting todo
+				}
 			
 			return doProcessResponse(recordcount,lastPage,listObject);
 		}
@@ -882,7 +904,7 @@ package gadget.sync.incoming {
 		/**
 		 * Override to tweak variables in constructor
 		 */
-		protected function tweak_vars():void {}
+		//protected function tweak_vars():void {}
 
 		protected function handleInlineData(data:XML, tmpOb:Object, info:Object):void {
 
@@ -975,6 +997,17 @@ package gadget.sync.incoming {
 				once = false;
 				nextPage(true);
 				return true;
+			}else if(mess.indexOf("SBL-DAT-00407")!=-1 ||
+				mess.indexOf("SBL-EAI-04376")!=-1){
+				/**
+				 * Method 'Count Records' Business Component 'Action' (Integration Component 'Activity') returned number:
+						"This operation is not allowed for SQL objects in the 'Forward only mode.
+					Ask your system administrator to check your application configuration if the problem persists. (SBL-DAT 00407) "(SBL-EAI-04 376)
+				 * */
+				rebuildRequest = false;
+				//rebuild request without count
+				initOnce();
+				
 			}
 			OOPS("=unhandled(in)", soapAction, mess);
 			return false;

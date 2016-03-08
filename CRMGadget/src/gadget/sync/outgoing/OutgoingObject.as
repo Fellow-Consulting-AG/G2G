@@ -677,7 +677,12 @@ package gadget.sync.outgoing
 						sup.update(rec);
 					oops = "cannot {4} {1} with Id {2}: handled in next sync '{3}': {6}";
 				}
-			}else {
+			}else if(faultString.indexOf("SBL-ODU-01008")>0){
+				oops ="cannot {4} {1} with Id {2}: data error in '{3}': {6}";
+				short = "Invalid Character";
+			}
+			
+			else {
 				OOPS("=unhandled(out)",faultString.toString());
 //				failErrorHandler("BUG CHECK",event);
 				return false;

@@ -37,11 +37,6 @@ package gadget.sync.incoming {
 //			};
 //		}
 		
-		override protected function tweak_vars():void {
-			if (entityIDour == "User") {
-				withFilters	= false;
-			}
-		}
 		
 		override public function getMyClassName():String {
 			return getQualifiedClassName(this) + entityIDour;
@@ -73,7 +68,10 @@ package gadget.sync.incoming {
 		}
 		
 		override protected function initOnce():void {
-			initXML(stdXML);
+			if (entityIDour == "User") {
+				withFilters	= false;
+			}
+			super.initOnce();
 			mapIds = Database.modificationTrackingDao.getTestIdsByEntity(entityIDour);
 			_ids=[];
 			for(var id:String in mapIds) {

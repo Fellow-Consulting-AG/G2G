@@ -16,10 +16,12 @@ package gadget.sync.incoming
 		protected var finishFunc:Function;
 		protected var listIds:ArrayCollection = new ArrayCollection();
 		protected var oracleFieldId:String;
+		protected var recCount:int =0;
 		public function GetDeltaRecordChange(searchSpec:String,entity:String,finishFunc:Function)
 		{
 			this.finishFunc = finishFunc;
 			this.oracleFieldId = DAOUtils.getOracleId(entity);
+			recCount = Database.getDao(entity,false).count();
 			super(searchSpec,entity);
 		}
 	
@@ -41,9 +43,21 @@ package gadget.sync.incoming
 		override protected function handleResponse(request:XML, response:XML):int {
 			var ns:Namespace = getResponseNamespace();
 			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
-			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';			
-			var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)));			
-			nextPage(lastPage);
+			var lastPage:Boolean = listObject.attribute("lastpage")[0].toString() == 'true';	
+			var recordcount:int =-1; 
+			try{
+				recordcount = parseInt(listObject.attribute("recordcount")[0].toString());
+			}catch(e:Error){
+				//noting todo
+			}
+			if(recCount<=recordcount){
+				listIds=dao.findAllIds();
+				nextPage(true);
+			}else{
+				var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)));			
+				nextPage(lastPage);
+			}
+			
 			return cnt;
 		}
 	

@@ -46,7 +46,10 @@ package gadget.sync.incoming
 		protected var _listParents:ArrayCollection;
 		private var _currentRequestIds:ArrayCollection;
 		
-		
+		override protected function initOnce():void {
+			tweak_vars();	
+			initXML(stdXML);
+		}
 		protected function getSubIdSod(pId:String,subId:String):String{
 			var oodId:String = subId;
 			var objSod:SodUtilsTAO = SodUtils.transactionProperty(subId);
@@ -108,7 +111,7 @@ package gadget.sync.incoming
 			return getQualifiedClassName(this)+entityIDour+subIDour;
 		}
 		
-		override protected function tweak_vars():void {
+		protected function tweak_vars():void {
 			
 			if(this is IncomingAttachment){
 				pageSize = Math.max(1, Math.min(100, Database.preferencesDao.getIntValue(getEntityName()+"_page",50)));

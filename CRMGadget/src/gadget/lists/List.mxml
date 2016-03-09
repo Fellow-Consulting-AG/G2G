@@ -1334,6 +1334,7 @@
 			
 			public static function displayPicklistValue(item:Object,col:AdvancedDataGridColumn,entityName:String):String{
 				var code:String = item[col.dataField];
+				var objFiel:Object = FieldUtils.getField(entityName, col.dataField);
 				if(StringUtils.isEmpty(code)){
 					return "";
 				}else{
@@ -1343,7 +1344,24 @@
 					if(MainWindow.VISIT_CUSTOMER ==entityName){
 						entityName = "Activity";
 					}
-					var value:String= PicklistService.getValue(entityName,col.dataField,code);
+					var value:String= "";
+					if (objFiel.data_type == "Multi-Select Picklist" && code.indexOf(";") >0) { // #12567
+						var arr:Array = code.split(";");
+						var i:int = 1;
+						for each(var key:String in arr){
+							var v:String = PicklistService.getValue(entityName,col.dataField,key);
+							if(i < arr.length){
+								value = value + v + ";" ;
+							}else{
+								value = value + v;
+							}
+							i++;
+						}
+						
+					}else{
+						value= PicklistService.getValue(entityName,col.dataField,code);
+					}
+					
 					if(UserService.COLOPLAST==UserService.getCustomerId()){
 						//bug#10110
 						if(entityName==Database.accountDao.entity && col.dataField==AccountDAO.CUST_SEGMENT_FIELD){

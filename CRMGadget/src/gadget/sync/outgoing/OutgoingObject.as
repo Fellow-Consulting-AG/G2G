@@ -174,13 +174,13 @@ package gadget.sync.outgoing
 					}else{
 						str = null;
 					}
-				}else if(dataType=="Number"||"Integer"){
-					str = str.replace(/\'/gi, '');//remove ' to empty
+				}else if(dataType=="Number"||dataType=="Integer"||dataType=="Checkbox"){
+					str = str.replace(/\'/gi, '').replace(/\’/gi, '').replace(/\‘/gi, '');//remove ' ,’ and ‘ to empty
 				
 				}else{
-					if(str=="'Y'"){
+					if(str=="'Y'" ||str=="‘Y’"){
 						return 'true';
-					}else if(str=="'N'"){
+					}else if(str=="'N'" || str=="‘N’"){
 						return 'false';
 					}
 				}

@@ -99,13 +99,17 @@ package gadget.dao
 
 		protected static function begin(conn:SQLConnection):void {
 			retried(function():void{
-				conn.begin(SQLTransactionLockType.EXCLUSIVE);
+				if(!conn.inTransaction){
+					conn.begin(SQLTransactionLockType.EXCLUSIVE);
+				}
 			});
 		}
 		
 		protected static function commit(conn:SQLConnection):void {
 			retried(function():void{
-				conn.commit();
+				if(conn.inTransaction){
+					conn.commit();
+				}
 			});
 		}
 

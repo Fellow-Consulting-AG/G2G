@@ -49,7 +49,9 @@ package gadget.sync.incoming
 		}
 		
 		
-		
+		override public function done():void{
+			//nothing todo
+		}
 		
 		override protected function doRequest():void {
 					

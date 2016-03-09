@@ -158,7 +158,9 @@ package gadget.sync.incoming
 			_subpage=0;
 			nextPage(lastPage);
 		}
-		
+		override public function done():void{
+			//nothing todo
+		}
 		
 		protected override function nextPage(lastPage:Boolean):void {			
 				showCount();

@@ -274,7 +274,7 @@ package gadget.sync.incoming {
 			//bug#11731--remove hard code for opportunity
 			//bug#8928--resync if full compare=true and viewtype=defaultbook
 			//bug#10624---full sync. do the same full compare
-			if(oldIds==null && (p.fullCompare||p.full) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
+			if(oldIds==null && (p.fullCompare||p.full) && !(this is CheckConflictObject) && !(this is IncomingObjectPerId) && !(this is IncomingSubBase)  ){
 				if(viewType == TransactionDAO.DEFAULT_BOOK_TYPE || checkinrange ||entityIDour == Database.accountDao.entity){
 					oldIds = dao.findAllIdsAsDictionary();				
 					Database.incomingSyncDao.unsync_one(getEntityName(),getMyClassName());

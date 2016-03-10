@@ -298,7 +298,7 @@
 				mainwindow.filterList.listFilters();
 				loadData();
 			}
-			private function createSegmentTargetLayout(){
+			private function createSegmentTargetLayout():void{
 				var segmentationTarget:SegmentationTarget = new SegmentationTarget();
 				segmentationTarget.list = this;
 				boxList.removeAllChildren();

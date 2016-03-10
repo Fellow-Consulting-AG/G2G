@@ -298,6 +298,12 @@
 				mainwindow.filterList.listFilters();
 				loadData();
 			}
+			private function createSegmentTargetLayout(){
+				var segmentationTarget:SegmentationTarget = new SegmentationTarget();
+				segmentationTarget.list = this;
+				boxList.removeAllChildren();
+				boxList.addChild(segmentationTarget);
+			}
 			private function init():void {
 				//bug #1679 CRO add new tab
 				if(entity == MainWindow.DASHBOARD){
@@ -307,10 +313,7 @@
 					boxList.addChild(dashboard);
 					mainwindow.refreshDashboard = dashboard.reload;
 				}else if(entity == MainWindow.SEGMENTATION_TARGET){
-					var segmentationTarget:SegmentationTarget = new SegmentationTarget();
-					segmentationTarget.list = this;
-					boxList.removeAllChildren();
-					boxList.addChild(segmentationTarget);
+					createSegmentTargetLayout();
 				}else if(entity == MainWindow.REVENUE_REPORT){
 					var dashboardRevenue:DashboardRevenue = new DashboardRevenue();
 					dashboardRevenue.list = this;
@@ -383,6 +386,8 @@
 							colTitle.headerRenderer = colTitle.headerRenderer;
 							DailyAgenda(adc).loadDataOfSelectedDate();
 						}
+					}else if(entity == MainWindow.SEGMENTATION_TARGET){
+						createSegmentTargetLayout();
 					}else{
 						if( viewStack.selectedIndex==1){
 							if(calendarIlog != null){

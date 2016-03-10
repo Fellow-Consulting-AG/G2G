@@ -15,7 +15,11 @@
 			import gadget.sync.incoming.GetContentCustomTab;
 			[Bindable] public var list:List;
 			private function onError(htmlText:String,error:Object=null):void{
-				myHtml.htmlText = htmlText;
+				if(htmlText != null && htmlText.indexOf("#2032")>0){
+					myHtml.htmlText = i18n._("GLOBAL_NO_INTERNET_CONNECTION@No internet connection");
+				}else{
+					myHtml.htmlText = htmlText;
+				}				
 			}
 			private function callback(urlReq:URLRequest):void{
 				//var html:HTMLLoader = new HTMLLoader();

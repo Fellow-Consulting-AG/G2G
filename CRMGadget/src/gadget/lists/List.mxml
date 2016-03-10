@@ -21,6 +21,7 @@
 			import gadget.dao.DAO;
 			import gadget.dao.DAOUtils;
 			import gadget.dao.Database;
+			import gadget.dao.OpportunityDAO;
 			import gadget.dao.PreferencesDAO;
 			import gadget.dao.SupportDAO;
 			import gadget.dao.SupportRegistry;
@@ -1337,9 +1338,18 @@
 				return "";
 			}
 			
-			public static function displayPicklistValue(item:Object,col:AdvancedDataGridColumn,entityName:String):String{
-				var code:String = item[col.dataField];
-				var objFiel:Object = FieldUtils.getField(entityName, col.dataField);
+			public static function displayPicklistValue(item:Object,col:AdvancedDataGridColumn,entityName:String,isFromIC:Boolean = false):String{
+				var fieldName:String = col.dataField;
+				var code:String = item[fieldName];
+				var objFiel:Object = FieldUtils.getField(entityName, fieldName);
+				if(objFiel==null && isFromIC){					
+					objFiel=FieldUtils.getField(entityName, fieldName.replace(OpportunityDAO.CO7_PREFIX,""));
+					
+				}
+				if(objFiel!=null){
+					fieldName = objFiel.element_name;
+				}
+				
 				if(StringUtils.isEmpty(code)){
 					return "";
 				}else{
@@ -1350,11 +1360,11 @@
 						entityName = "Activity";
 					}
 					var value:String= "";
-					if (objFiel.data_type == "Multi-Select Picklist" && code.indexOf(";") >0) { // #12567
+					if (objFiel!=null && objFiel.data_type == "Multi-Select Picklist" && code.indexOf(";") >0) { // #12567
 						var arr:Array = code.split(";");
 						var i:int = 1;
 						for each(var key:String in arr){
-							var v:String = PicklistService.getValue(entityName,col.dataField,key);
+							var v:String = PicklistService.getValue(entityName,fieldName,key);
 							if(i < arr.length){
 								value = value + v + ";" ;
 							}else{
@@ -1369,13 +1379,13 @@
 					
 					if(UserService.COLOPLAST==UserService.getCustomerId()){
 						//bug#10110
-						if(entityName==Database.accountDao.entity && col.dataField==AccountDAO.CUST_SEGMENT_FIELD){
+						if(entityName==Database.accountDao.entity && fieldName==AccountDAO.CUST_SEGMENT_FIELD){
 							value = PicklistService.getValue(Database.customObject15Dao.entity,'IndexedPick0',code);
 						}
 					}
 					
 					if(StringUtils.isEmpty(value)){
-						return item[col.dataField];
+						return code;
 					}else{
 						
 						return value;

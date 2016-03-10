@@ -394,7 +394,11 @@
 					
 				
 					private function displayPicklistValue(item:Object,col:AdvancedDataGridColumn):String{
-						return List.displayPicklistValue(item,col,Database.opportunityDao.entity);
+						var f:String = col.dataField;
+						if(f.indexOf(OpportunityDAO.CO7_PREFIX)!=-1){
+							return List.displayPicklistValue(item,col,Database.customObject7Dao.entity,true);
+						}
+						return List.displayPicklistValue(item,col,Database.opportunityDao.entity,true);
 					}
 					private function labelRMFunction(item:Object,col:AdvancedDataGridColumn):String{
 						if(item.isTotal){

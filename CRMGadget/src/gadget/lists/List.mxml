@@ -26,6 +26,7 @@
 			import gadget.dao.SupportDAO;
 			import gadget.dao.SupportRegistry;
 			import gadget.i18n.i18n;
+			import gadget.service.LocaleService;
 			import gadget.service.PicklistService;
 			import gadget.service.RightService;
 			import gadget.service.UserService;
@@ -96,6 +97,8 @@
 			private static const LIST_LABEL_EDIT_LAYOUT:String = 'GLOBAL_EDIT_LAYOUT';
 			private static const GLOBAL_NEW:String = 'GLOBAL_NEW';
 			private static const GLOBAL_NEW_TASK:String = 'GLOBAL_NEW_FOR_TASK';
+			private static const GLOBAL_NEW_FOR_CALL = 'GLOBAL_NEW_FOR_CALL';
+			private static const GLOBAL_NEW_FOR_APPOINTMENT = 'GLOBAL_NEW_FOR_APPOINTMENT';
 			//CRO 05.01.2011
 			private static const LIST_LABEL_PDF_EXPORT:String = 'GLOBAL_PDF_EXPORT';
 			private static const LIST_LABEL_CSV_EXPORT:String = 'GLOBAL_CSV_EXPORT';
@@ -1921,11 +1924,18 @@
 					}
 					buttons.addItem({label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, 
 						data:ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE)});
-					buttons.addItem({label:i18n._(GLOBAL_NEW) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity,1), disabled: !canCreate, subtype:1, 
+					buttons.addItem({label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity,1), disabled: !canCreate, subtype:1, 
 						data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
 					// Change Request #440
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_BUTTON_ACTIVITY_CREATE_CALL)) {
-						buttons.addItem({label:i18n._(GLOBAL_NEW) + " " + Database.customLayoutDao.getDisplayName(entity, 2), icon:ImageUtils.getImage(entity,2), disabled: !canCreate, subtype:2, 
+						var lng:String = LocaleService.getLanguageCode();
+						var disN:String = "";
+						if("PTG" == lng){
+							disN = Database.customLayoutDao.getDisplayName(entity, 2) + " " + i18n._(GLOBAL_NEW_FOR_CALL);
+						}else{
+							disN = i18n._(GLOBAL_NEW_FOR_CALL) + " " + Database.customLayoutDao.getDisplayName(entity, 2);
+						}
+						buttons.addItem({label:disN, icon:ImageUtils.getImage(entity,2), disabled: !canCreate, subtype:2, 
 							data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
 					}
 				} else {
@@ -1988,9 +1998,16 @@
 						labelName =  (displayName==entity? i18n._("GLOBAL_TASK"):displayName);
 					}
 					buttons.addItem({label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, data:ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE)});
-					buttons.addItem({label:i18n._(GLOBAL_NEW) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity, 1), disabled: !canCreate, subtype:1, data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
+					buttons.addItem({label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity, 1), disabled: !canCreate, subtype:1, data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_BUTTON_ACTIVITY_CREATE_CALL)) {
-						buttons.addItem({label:i18n._(GLOBAL_NEW) + " " + Database.customLayoutDao.getDisplayName(entity, 2), icon:ImageUtils.getImage(entity, 2), disabled: !canCreate, subtype:2, data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
+						var lng:String = LocaleService.getLanguageCode();
+						var disN:String = "";
+						if("PTG" == lng){
+							disN = Database.customLayoutDao.getDisplayName(entity, 2) + " " + i18n._(GLOBAL_NEW_FOR_CALL);
+						}else{
+							disN = i18n._(GLOBAL_NEW_FOR_CALL) + " " + Database.customLayoutDao.getDisplayName(entity, 2);
+						}
+						buttons.addItem({label:disN, icon:ImageUtils.getImage(entity, 2), disabled: !canCreate, subtype:2, data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
 					}
 					
 				}

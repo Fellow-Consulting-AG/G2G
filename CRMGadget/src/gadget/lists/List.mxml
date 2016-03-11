@@ -2009,7 +2009,7 @@
 						}
 						buttons.addItem({label:disN, icon:ImageUtils.getImage(entity, 2), disabled: !canCreate, subtype:2, data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
 					}
-					
+
 				}
 				return buttons;
 			}

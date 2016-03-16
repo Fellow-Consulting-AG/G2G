@@ -630,10 +630,12 @@ package gadget.sync.outgoing
 					//Bug #6755
 					var currentDao:BaseDAO = getDao();
 					var item:Object;
-					if(UserService.getCustomerId().toUpperCase() != UserService.COLOPLAST){						
+					//sub we should be delete when missing some relation
+					if(UserService.getCustomerId().toUpperCase() != UserService.COLOPLAST || this is OutgoingSubBase){						
 						var fOraId:String = DAOUtils.getOracleId(currentDao.entity);
 						var oracId:String =deletedObj[fOraId]; 
-						if(oracId!=null && oracId.indexOf("#")==-1){
+						//sub record we don't care about id
+						if(oracId!=null && oracId.indexOf("#")==-1 || this is OutgoingSubBase ){
 							item= getCurrentRecordError();
 							currentDao.delete_(item);
 							if(!(currentDao is SupportDAO)){

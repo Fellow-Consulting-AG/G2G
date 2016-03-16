@@ -1583,10 +1583,10 @@ package gadget.dao
 					if(isNaN(cmV) && !isNaN(rmV)){
 						return true;
 					}
-					if(cmV==0 && rmV!=0){
+					if(cmV==0 && (rmV!=0 && !isNaN(rmV))){
 						return true;
 					}
-					if(rmV==0 && cmV!=0){
+					if(rmV==0 &&(cmV!=0 && !isNaN(cmV))){
 						return true;
 					}			
 				}				

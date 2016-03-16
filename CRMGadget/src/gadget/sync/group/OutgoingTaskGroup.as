@@ -1,5 +1,6 @@
 package gadget.sync.group
 {
+	import gadget.i18n.i18n;
 	import gadget.sync.SyncProcess;
 	import gadget.sync.group.TaskGroupBase;
 	import gadget.sync.task.WebServiceBase;
@@ -11,7 +12,7 @@ package gadget.sync.group
 		}
 		
 		override protected function hello(task:WebServiceBase):void {
-			info(_("{1} (in parallel)", task.getName()));
+			info(i18n._("{1} (in parallel)", task.getName()));
 		}
 		
 		override protected function doSessionStart(taskIgnore:WebServiceBase):void {
@@ -21,7 +22,7 @@ package gadget.sync.group
 				} catch (e:Error) {
 					trace(e);
 					trace(e.getStackTrace());
-					err(_("cannot start task for {1}: {2}", task.getEntityName(), e.message), null);
+					err(i18n._("cannot start task for {1}: {2}", task.getEntityName(), e.message), null);
 					taskFinished(task);
 				}
 			}

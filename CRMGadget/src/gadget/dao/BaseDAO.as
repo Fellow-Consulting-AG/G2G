@@ -442,9 +442,12 @@ package gadget.dao
 			for (var name:String in readOnlyFields){				
 				dic[name] = name;
 			}
+			//
 			//always ignore field =ModId
 			dic["ModId"]="ModId";
 			
+			//oracle id cannot ignore
+			delete dic[fieldOracleId];
 			return dic;
 			
 		}

@@ -31,6 +31,7 @@ package gadget.sync.incoming
 		protected var _existRetrieved:Dictionary = null;
 		protected var _switchToDependOnParent:Boolean = true;
 		protected var _usemodfiedDateAscriteria:Boolean = false;
+		protected var _maxParentIdCriteria:int;
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -42,6 +43,7 @@ package gadget.sync.incoming
 			this._parentRelationField = parentFieldIds;
 			_existRetrieved = new Dictionary();
 			_readParentIds = Database.incomingSyncDao.is_unsynced(getEntityName());
+			this._maxParentIdCriteria = pageSize;
 		}
 		
 		override public function set param(p:TaskParameterObject):void
@@ -173,7 +175,7 @@ package gadget.sync.incoming
 			}else{				
 				var first:Boolean = true;
 				var searchProductSpec:String = "";
-				var maxIndex:int = Math.min(pageSize,(parentTask.listRetrieveId.length));
+				var maxIndex:int = Math.min(_maxParentIdCriteria,(parentTask.listRetrieveId.length));
 				_currentRequestIds=new ArrayCollection();
 				for(var i:int=1;i<=maxIndex;i++){
 					
@@ -245,6 +247,12 @@ package gadget.sync.incoming
 		
 		override protected function handleErrorGeneric(soapAction:String, request:XML, response:XML, mess:String, errors:XMLList):Boolean {
 			var notRretry:Boolean = super.handleErrorGeneric(soapAction,request,response,mess,errors);
+			if(mess.indexOf("SBL-DAT-00407")!=-1 ||
+				mess.indexOf("SBL-EAI-04376")!=-1){
+				//reset page--we need to split the request
+				_maxParentIdCriteria = _maxParentIdCriteria/2;
+				this._page=0;
+			}
 			if(!notRretry || mess.indexOf("SBL-DBC-00112")!=-1){
 				notRretry = false;
 				restoreRequest();

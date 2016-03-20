@@ -9,7 +9,7 @@ package gadget.sync.incoming
 
 	public class JDIncomingProduct extends IncomingObject
 	{
-		private var searchSpec:String='';
+		protected var searchSpec:String='';
 		public function JDIncomingProduct(searchSpec:String,entity:String = null)
 		{			
 			if(entity==null){
@@ -26,8 +26,12 @@ package gadget.sync.incoming
 			//VAHI another poor man's workaround for missing late binding in XML templates			
 			sendRequest("\""+getURN()+"\"", new XML(getRequestXML().toXMLString()
 				.replace(ROW_PLACEHOLDER, pagenow*pageSize)
-				.replace(SEARCHSPEC_PLACEHOLDER, searchSpec)
+				.replace(SEARCHSPEC_PLACEHOLDER, getSearchSpec())
 			));
+		}
+		
+		protected function getSearchSpec():String{
+			return this.searchSpec;
 		}
 //		override protected function initXML(baseXML:XML):void {
 //			

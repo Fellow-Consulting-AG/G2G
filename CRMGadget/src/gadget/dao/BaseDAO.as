@@ -855,6 +855,9 @@ package gadget.dao
 		
 		
 		public function deleteByOracleId(oracleId:String):void	{
+			if(this is OpportunityDAO){
+				trace("___");
+			}
 			stmtDeleteOracle.parameters[":" + fieldOracleId] = oracleId;
 			exec(stmtDeleteOracle);
 		}

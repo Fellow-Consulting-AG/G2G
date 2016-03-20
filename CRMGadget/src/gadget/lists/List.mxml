@@ -1318,11 +1318,14 @@
 				if(fieldInfo==null){
 					//bug#8718 try to read custom field
 					fieldInfo = FieldUtils.getField(entityName,col.dataField,false,true);
-				}
-				var isDateTime:Boolean = fieldInfo.data_type == 'Date/Time';
+				}				
 				var fieldValue:String = item[col.dataField];	
-				if(!StringUtils.isEmpty(fieldValue)){
-					var date:Date = DateUtils.guessAndParse(fieldValue);
+				return getDateTimeFormat(fieldValue,fieldInfo);
+			}
+			public static function getDateTimeFormat(val:String,fieldInfo:Object){
+				var isDateTime:Boolean = fieldInfo!=null && fieldInfo.data_type == 'Date/Time';					
+				if(!StringUtils.isEmpty(val)){
+					var date:Date = DateUtils.guessAndParse(val);
 					if(date!=null){
 						var currentUserDatePattern:Object = DateUtils.getCurrentUserDatePattern();
 						
@@ -1333,9 +1336,6 @@
 							var format:String = currentUserDatePattern.dateFormat + ' ' + currentUserDatePattern.timeFormat ;
 							return DateUtils.format(date, format);
 						}
-						
-						
-						
 					}
 				}
 				return "";

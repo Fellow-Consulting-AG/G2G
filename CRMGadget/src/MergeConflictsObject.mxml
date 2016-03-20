@@ -14,9 +14,12 @@
 			import gadget.dao.Database;
 			import gadget.dao.PreferencesDAO;
 			import gadget.i18n.i18n;
+			import gadget.lists.List;
 			import gadget.service.PicklistService;
+			import gadget.util.DateUtils;
 			import gadget.util.FieldUtils;
 			import gadget.util.ImageUtils;
+			import gadget.util.NumberLocaleUtils;
 			import gadget.util.ObjectUtils;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
@@ -89,16 +92,22 @@
 			}
 			
 		
-		   private function checkDiferrent(val1:Object,val2:Object):Boolean{
+		   private function checkDiferrent(val1:Object,val2:Object,fieldInfo:Object):Boolean{
 			   if(val1==val2){
 				   return false;
 			   }
 			   if((val1==null && val2=='') ||(val1=='' && val2==null)){
 				   return false;
 			   } 
+			   
+			  if(fieldInfo.data_type=="Integer" || fieldInfo.data_type=="Number"||fieldInfo.data_type=="Currency"){
+				  var str1:String = NumberLocaleUtils.format(val1);
+				  var str2:String = NumberLocaleUtils.format(val2);
+				  
+				  return str1!=str2;
+			   }
+			   
 			   return true;
-			   
-			   
 		   }
 			
 			private function init():void{
@@ -163,7 +172,7 @@
 
 			private function createScreen():void{
 				
-				var fieldInfo:Object;
+				
 				var item:Object = datas.getItemAt(i);
 				var serverRec:Object = item.serverRec;
 				var localeRec:Object = item.localeRec;
@@ -214,13 +223,9 @@
 					if (field.custom != null) continue;
 
 					var element_name:String=field.column_name;					
-					
-					if(!checkDiferrent(localeRec[element_name],serverRec[element_name])) continue;
-					
-					fieldInfo = Database.fieldDao.findFieldByPrimaryKey(entity, element_name);
-					
+					var fieldInfo:Object= Database.fieldDao.findFieldByPrimaryKey(entity, element_name);					
 					if(fieldInfo!=null){
-						
+						if(!checkDiferrent(localeRec[element_name],serverRec[element_name],fieldInfo)) continue;
 						if(localeRec.listFieldMerg==null) localeRec.listFieldMerg=new Object();
 						localeRec.listFieldMerg[element_name] = element_name;
 						
@@ -348,6 +353,12 @@
 					if(val!=''){
 						valMerg = val;
 					}
+				}else if(field.data_type=="Integer"){
+					valMerg = NumberLocaleUtils.format(valMerg,0)
+				}else if(field.data_type=="Number"||field.data_type=="Currency"){
+					valMerg = NumberLocaleUtils.format(valMerg)
+				}else if("Date/Time"==field.data_type || field.data_type=="Number"){
+					valMerg= List.getDateTimeFormat(valMerg,field);
 				}
 				return valMerg;
 			}

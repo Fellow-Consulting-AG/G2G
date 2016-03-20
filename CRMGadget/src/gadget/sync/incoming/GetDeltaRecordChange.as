@@ -17,6 +17,8 @@ package gadget.sync.incoming
 		protected var listIds:ArrayCollection = new ArrayCollection();
 		protected var oracleFieldId:String;
 		protected var recCount:int =0;
+		protected var currentIds:ArrayCollection = new ArrayCollection();
+		protected var readById:Boolean = false;
 		public function GetDeltaRecordChange(searchSpec:String,entity:String,finishFunc:Function)
 		{
 			this.finishFunc = finishFunc;
@@ -25,7 +27,33 @@ package gadget.sync.incoming
 			super(searchSpec,entity);
 		}
 	
-		
+		override protected function getSearchSpec():String{
+			var searchSpec:String = super.getSearchSpec();
+			if(readById){
+				var first:Boolean = true;
+				var searchProductSpec:String = "";
+				var maxIndex:int = Math.min(pageSize,currentIds.length);
+				for(var i:int=1;i<=maxIndex;i++){				
+					var id:Object = currentIds.removeItemAt(0);
+					if(id==null){
+						continue;
+					}
+					if(!first){
+						searchProductSpec=searchProductSpec+" OR ";
+					}
+					searchProductSpec=searchProductSpec+"["+WSProps.ws10to20(entityIDsod, oracleFieldId)+"] = \'"+id+'\'';
+					
+					
+					first = false;
+				}			
+				
+				
+				searchSpec+=' AND ('+searchProductSpec+')';
+			}
+			
+			return searchSpec;
+			
+		}
 		
 		
 		protected override function getViewmode():String{
@@ -40,6 +68,19 @@ package gadget.sync.incoming
 		}
 		
 		
+		override protected function doRequest():void {		
+			if(readById){
+				_page =0;//read by id page must be start with zero
+				if(currentIds.length<1){
+					nextPage(true);
+					return;
+				}
+				
+			}
+			
+			super.doRequest();
+		}
+		
 		override protected function handleResponse(request:XML, response:XML):int {
 			var ns:Namespace = getResponseNamespace();
 			var listObject:XML = response.child(new QName(ns.uri,listID))[0];
@@ -50,12 +91,14 @@ package gadget.sync.incoming
 			}catch(e:Error){
 				//noting todo
 			}
-			if(recCount<=recordcount){
-				listIds=dao.findAllIds();
-				nextPage(true);
+			if(recCount<=recordcount && !readById){
+				readById = true;
+				currentIds=dao.findAllIds();
+				_page = 0;//reset page
+				doRequest();
 			}else{
 				var cnt:int = importRecords(entityIDsod, listObject.child(new QName(ns.uri,entityIDns)));			
-				nextPage(lastPage);
+				nextPage(lastPage && currentIds.length<1);
 			}
 			
 			return cnt;
@@ -81,14 +124,8 @@ package gadget.sync.incoming
 					}
 				}
 			}
-		
-			
-			
 			
 		}
-		
-		
-		
 		
 		protected override function importRecord(entitySod:String, data:XML, googleListUpdate:ArrayCollection=null):int {
 			var tmpOb:Object={};
@@ -109,8 +146,10 @@ package gadget.sync.incoming
 				if(finishFunc!=null){
 					finishFunc(listIds);
 				}
-			}else{				
-				_page ++;
+			}else{	
+				if(!readById){
+					_page ++;
+				}
 				doRequest();//next paage
 			}
 			

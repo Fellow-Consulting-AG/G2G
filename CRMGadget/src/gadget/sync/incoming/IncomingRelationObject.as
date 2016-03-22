@@ -176,6 +176,7 @@ package gadget.sync.incoming
 				var first:Boolean = true;
 				var searchProductSpec:String = "";
 				var maxIndex:int = Math.min(_maxParentIdCriteria,(parentTask.listRetrieveId.length));
+				_maxParentIdCriteria = maxIndex;
 				_currentRequestIds=new ArrayCollection();
 				for(var i:int=1;i<=maxIndex;i++){
 					
@@ -249,9 +250,11 @@ package gadget.sync.incoming
 			var notRretry:Boolean = super.handleErrorGeneric(soapAction,request,response,mess,errors);
 			if(mess.indexOf("SBL-DAT-00407")!=-1 ||
 				mess.indexOf("SBL-EAI-04376")!=-1){
-				//reset page--we need to split the request
-				_maxParentIdCriteria = _maxParentIdCriteria/2;
-				this._page=0;
+				if(	_currentRequestIds.length>1){
+					//reset page--we need to split the request
+					_maxParentIdCriteria = _maxParentIdCriteria/2;
+					this._page=0;
+				}
 			}
 			if(!notRretry || mess.indexOf("SBL-DBC-00112")!=-1){
 				notRretry = false;

@@ -50,5 +50,6 @@ package gadget.sync.task {
 		public var running:Boolean = false;
 		public var waiting:Boolean = false;			//VAHI task is waiting until it can run the first time
 		public var syncProcess:SyncProcess;
+		public var server_time:Date;
 	}
 }

@@ -47,7 +47,7 @@ package gadget.sync.group
 			}
 			
 			// On failing tasks, try to fetch something older (task.param.maximumTime)
-			var range:Object = { start:null, end:task.param.maximumTime ? task.param.maximumTime : startTime };
+			var range:Object = { start:task.getStartDate(), end:task.param.maximumTime ? task.param.maximumTime : startTime };
 			var nextRange:Object = Database.incomingSyncDao.getDateRange(task.getEntityName(), range);
 			
 			if (!nextRange) {
@@ -63,6 +63,7 @@ package gadget.sync.group
 			task.param.minRec	= nextRange.end;	// preset minimum date to the maximum of the range
 			task.param.maxRec	= nextRange.start;	// preset maximum to minimum, so it grows
 			trace("running",task.getEntityName(),"with range",task.param.range.start,"to",task.param.range.end);
+			task.nextRange();
 			task.requestCall();
 		}
 		

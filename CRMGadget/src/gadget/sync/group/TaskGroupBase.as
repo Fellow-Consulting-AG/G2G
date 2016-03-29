@@ -312,6 +312,7 @@ package gadget.sync.group
 				task.param.waiting	= false;
 			}
 			task.param.running	= true;
+			task.param.server_time =startTime;
 			doTaskImpl(task);
 		}
 

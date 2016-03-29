@@ -942,10 +942,9 @@ package gadget.util {
 				date = new Date();
 			}
 			
-			var returnDate:Date = new Date(date.time);;
-			
-			switch (datepart.toLowerCase()) {
-				case "fullyear":
+			var returnDate:Date = new Date(date.time);			
+			switch (datepart) {
+				case "fullYear":
 				case "month":
 				case "date":				
 					returnDate[datepart] += number;

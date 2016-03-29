@@ -296,9 +296,12 @@
 						var serverComp:TextInput = o.server;
 						var entity:String = localComp.data.type;
 						var field:Object =  localComp.data.objField;
-						
-						localComp.text = getDisplayValue(entity,field,obj.localeObj);
-						serverComp.text = getDisplayValue(entity,field,obj.serverObj);
+						var localTxt:String = getDisplayValue(entity,field,obj.localeObj);
+						var serverTxt:String = getDisplayValue(entity,field,obj.serverObj);
+						localComp.text = localTxt;
+						localComp.toolTip = localTxt;
+						serverComp.text = serverTxt;
+						serverComp.toolTip = serverTxt;
 						
 					}
 				});
@@ -366,6 +369,7 @@
 			private function setMerg(inputText:TextInput, mergFields:Object,valMerg:String,field:String):void{
 				mergFields[field] ={val:valMerg,merg:true} ;							
 				inputText.text = valMerg;
+				inputText.toolTip=valMerg;
 			}
 			
 			private function next():void{

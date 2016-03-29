@@ -84,7 +84,9 @@ package gadget.sync.task {
 			return noPreSplit;
 		}
 		
-		
+		public function nextRange():void{}
+		//we can define start date for incoming
+		public function getStartDate():Date{return null};
 		public function requestCall():void {
 
 			
@@ -363,7 +365,7 @@ package gadget.sync.task {
 				
 			}
 			(request.data.NS0::Body[0] as XML).appendChild(xml);
-			
+			request.idleTimeout=MAX_TIMEOUT;
 			var loader:URLLoader = new URLLoader();
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
 			/*

@@ -41,7 +41,7 @@ package gadget.sync.incoming {
 		protected var isFormulaError:Boolean = false;
 		protected const SEARCHSPEC_PLACEHOLDER:String = "___HERE__THE__SEARCH__SPEC___";
 		protected const ROW_PLACEHOLDER:String = "___HERE__THE__ROW__NUMBER___";
-		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 400;
+		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 5;
 		protected const MODIFIED_DATE:String = "ModifiedDate"; // ModifiedDate or ModifiedByDate
 		protected const CREATED_DATE:String ="CreatedDate";
 		
@@ -174,6 +174,13 @@ package gadget.sync.incoming {
 			}
 		}
 		
+		override public function getStartDate():Date{
+			if(startTime!=-1){
+				return new Date(startTime);
+			}
+			return null;
+		}
+		
 		protected function buildAndSendRequest():void{
 			if(startTime!=-1){
 				if(param.range){
@@ -218,7 +225,7 @@ package gadget.sync.incoming {
 			var pagenow:int = _page;
 			
 			isLastPage=false;
-			if (pagenow==0 && haveLastPage==false && param.force==false && isUnboundedTask==false) {
+			if (isTestData()) {
 				isLastPage = true;
 				pagenow	= SUCCESSFULLY_FAIL_UNFORCED_PAGES;
 			}
@@ -232,6 +239,16 @@ package gadget.sync.incoming {
 				.replace(ROW_PLACEHOLDER, pagenow*pageSize)
 				.replace(SEARCHSPEC_PLACEHOLDER, searchSpec)
 			));
+		}
+		
+		override public function nextRange():void{
+			//re-init parent-id
+			//param.force = false;
+			
+		}
+		
+		protected function isTestData():Boolean{
+			return _page==0 && haveLastPage==false && param.force==false && isUnboundedTask==false;
 		}
 		
 		protected function getSodName():String{
@@ -470,6 +487,7 @@ package gadget.sync.incoming {
 					doSplit();
 					return;
 				}
+				_page =0;//start do from page=0
 				showCount();
 				haveLastPage	= true;
 				doRequest();	// Now fetch _page=0
@@ -545,7 +563,7 @@ package gadget.sync.incoming {
 			if (param.range && byModiDate) {
 				var minD:String = ServerTime.toSodIsoDate(param.range.start);
 				var maxD:String = ServerTime.toSodIsoDate(param.range.end);
-				if(!useCreatedDate){
+				if(!useCreatedDate || startTime!=-1){
 					searchSpec = "(["+MODIFIED_DATE+"] &gt;= '"+minD+"'"
 						+ " AND ["+MODIFIED_DATE+"] &lt;= '"+maxD+"')";
 				}else{

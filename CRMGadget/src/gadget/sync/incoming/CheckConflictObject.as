@@ -48,7 +48,10 @@ package gadget.sync.incoming
 			}
 		}
 		
-		
+		override protected function getViewmode():String{
+			
+			return "Broadest";
+		}
 		override public function done():void{
 			//nothing todo
 		}

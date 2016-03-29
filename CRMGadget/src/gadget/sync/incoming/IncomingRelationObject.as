@@ -13,6 +13,7 @@ package gadget.sync.incoming
 	import gadget.dao.TransactionDAO;
 	import gadget.service.UserService;
 	import gadget.sync.task.TaskParameterObject;
+	import gadget.util.DateUtils;
 	import gadget.util.ObjectUtils;
 	import gadget.util.StringUtils;
 	import gadget.util.Utils;
@@ -25,13 +26,19 @@ package gadget.sync.incoming
 		protected var _parentTask:IncomingObject;
 		protected var _parentRelationField:Object;
 		protected var _dependOnParent:Boolean = false;
-		
+		protected var DATE_RANGE:int=30;
 		protected var _currentRequestIds:ArrayCollection;
 		protected var _readParentIds:Boolean = true;
 		protected var _existRetrieved:Dictionary = null;
 		protected var _switchToDependOnParent:Boolean = true;
 		protected var _usemodfiedDateAscriteria:Boolean = false;
-		protected var _maxParentIdCriteria:int;
+		protected var _maxParentIdCriteria:int=50;
+		protected var _parentIds:ArrayCollection=new ArrayCollection();
+		protected var _test_data:Boolean = true;
+		protected var MIN_PARENT_IDS:int =10;
+		protected var _startDate:Date;
+		
+		
 		/**
 		 * parentFieldIds has properties ChildRelationId,ParentRelationId
 		 * */
@@ -43,7 +50,16 @@ package gadget.sync.incoming
 			this._parentRelationField = parentFieldIds;
 			_existRetrieved = new Dictionary();
 			_readParentIds = Database.incomingSyncDao.is_unsynced(getEntityName());
-			this._maxParentIdCriteria = pageSize;
+			if(_readParentIds){
+				_test_data = false;
+				//we use startitme only one time at the firttime
+				this._startDate = Utils.getStartDateByType(Database.transactionDao.getAdvancedFilterType(entityIDour));
+				
+			}else{
+				this.startTime =-1;
+			}
+			
+			this.isUnboundedTask = startTime==-1;
 		}
 		
 		override public function set param(p:TaskParameterObject):void
@@ -62,6 +78,7 @@ package gadget.sync.incoming
 			
 			
 		}
+	
 	
 		public function get dependOnParent():Boolean
 		{
@@ -136,23 +153,62 @@ package gadget.sync.incoming
 				fields.removeItemAt(fields.length-1);//remove last column
 				parentTask.listRetrieveId = Database.getDao(parentTask.entityIDour).findAll(fields,null,null,0);
 			}
+			
+			copyParentIds();
 		}
+		
+		protected function copyParentIds():void{
+			_maxParentIdCriteria = 50;
+			this._parentIds = new ArrayCollection();
+			if(parentTask.listRetrieveId!=null && dependOnParent){
+				for each(var o:Object in parentTask.listRetrieveId){
+					this._parentIds.addItem(o);
+				}
+			}
+		}
+		
+		override public function nextRange():void{
+			//re-init parent-id			
+//			if(startTime!=-1){
+//				_test_data = !param.force;
+//				_maxParentIdCriteria =25;
+//				copyParentIds();
+//			}
+		}
+		
 		
 		override protected function doRequest():void {		
 			//if(!dependOnParent){
-				var count:int = Database.getDao(entityIDour).count();					
-				if(_readParentIds &&(count<=0 ||dependOnParent)){
-					_readParentIds= false;
-					_dependOnParent = true;
-					
-					initParentIds();
-				}
+			var count:int = Database.getDao(entityIDour).count();					
+			if(_readParentIds &&(count<=0 ||dependOnParent)){
+				_readParentIds= false;
+				_dependOnParent = true;
+				
+				initParentIds();
+			}
 				
 			//}
-			if( dependOnParent && (parentTask.listRetrieveId.length<=0)){
+			if( dependOnParent && (this._parentIds.length<=0)){
 				super.nextPage(true);
 			}else{
-				
+				if(startTime!=-1){
+					if(param.range){
+						var start:Date = _startDate;						
+						var end:Date = Utils.calculateDate(DATE_RANGE,start,"date");	
+						if(end.getTime()>param.server_time.getTime()){
+							end = param.server_time;							
+						}
+						if(start.getTime()>end.getTime()){
+							start = end;
+							super.nextPage(true);
+							return;
+						}
+						
+						param.range.start = start;
+						param.range.end = end;
+								
+					}
+				}
 				super.doRequest();
 			}
 		}
@@ -167,33 +223,40 @@ package gadget.sync.incoming
 		}
 		
 		
+		override public function get checkinrange():Boolean
+		{
+			return _checkinrange && !dependOnParent;
+		}
+
+		
 		protected override function generateSearchSpec(byModiDate:Boolean=true):String{		
 			
-			this.isUnboundedTask = true;
+			
 			if(!dependOnParent){
 				return super.generateSearchSpec();
 			}else{				
 				var first:Boolean = true;
-				var searchProductSpec:String = "";
-				var maxIndex:int = Math.min(_maxParentIdCriteria,(parentTask.listRetrieveId.length));
+				var searchspec:String = "";
+				var maxIndex:int = Math.min(_maxParentIdCriteria,(this._parentIds.length));
 				_maxParentIdCriteria = maxIndex;
 				_currentRequestIds=new ArrayCollection();
+				var oracleId:String = DAOUtils.getOracleId(entityIDour);
 				for(var i:int=1;i<=maxIndex;i++){
 					
-					var parentObj:Object = parentTask.listRetrieveId.removeItemAt(0);
+					var parentObj:Object = this._parentIds.removeItemAt(0);
 					if(parentObj==null){
 						continue;
 					}
 					_currentRequestIds.addItem(parentObj);
 					if(!first){
-						searchProductSpec=searchProductSpec+" OR ";
+						searchspec=searchspec+" OR ";
 					}
-					searchProductSpec=searchProductSpec+"["+parentRelationField.ParentRelationId+"] = \'"+parentObj[DAOUtils.getOracleId(parentTask.entityIDour)]+'\'';
-					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
+					searchspec=searchspec+"["+parentRelationField.ParentRelationId+"] = \'"+parentObj[DAOUtils.getOracleId(parentTask.entityIDour)]+'\'';
+					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && oracleId==parentRelationField.ChildRelationId && parentObj.hasOwnProperty(oracleId)){
 						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
 						if(!StringUtils.isEmpty(thisId) && !_existRetrieved.hasOwnProperty(thisId)){							
-							searchProductSpec=searchProductSpec+" OR ";
-							searchProductSpec=searchProductSpec+"[Id]=\'"+thisId+"\'";
+							searchspec=searchspec+" OR ";
+							searchspec=searchspec+"[Id]=\'"+thisId+"\'";
 							this._existRetrieved[thisId] = thisId;
 							
 						}
@@ -204,9 +267,9 @@ package gadget.sync.incoming
 				
 				var superCriteria:String = super.generateSearchSpec((startTime!=-1 || _usemodfiedDateAscriteria));
 				if(StringUtils.isEmpty(superCriteria)){
-					superCriteria=searchProductSpec;
+					superCriteria=searchspec;
 				}else{
-					superCriteria+=' AND ('+searchProductSpec+')';
+					superCriteria+=' AND ('+searchspec+')';
 				}
 				
 				return superCriteria;
@@ -215,11 +278,11 @@ package gadget.sync.incoming
 		protected override function doProcessResponse(recordCount:int,lastPage:Boolean,listObject:XML):int{
 			
 			if(_switchToDependOnParent && !dependOnParent){
+				_switchToDependOnParent = false;
 				initParentIds();
-				if(recordCount>parentTask.listRetrieveId.length){
+				if(recordCount>this._parentIds.length){
 					_page =0;//reset page
-					_dependOnParent = true;
-					_switchToDependOnParent = false;
+					_dependOnParent = true;					
 					_readParentIds = false;
 					_usemodfiedDateAscriteria=true;//use modifidate
 					//start sync depend parent
@@ -233,7 +296,7 @@ package gadget.sync.incoming
 		}
 		protected function restoreRequest():void{
 			if(dependOnParent){
-				parentTask.listRetrieveId.addAllAt(_currentRequestIds,0);
+				this._parentIds.addAllAt(_currentRequestIds,0);
 				for each(var parentObj:Object in _currentRequestIds){
 					if(!StringUtils.isEmpty(parentRelationField.ChildRelationId) && parentObj.hasOwnProperty(parentRelationField.ChildRelationId)){
 						var thisId:String = parentObj[parentRelationField.ChildRelationId];	
@@ -248,31 +311,65 @@ package gadget.sync.incoming
 		
 		override protected function handleErrorGeneric(soapAction:String, request:XML, response:XML, mess:String, errors:XMLList):Boolean {
 			var notRretry:Boolean = super.handleErrorGeneric(soapAction,request,response,mess,errors);
-			if(mess.indexOf("SBL-DAT-00407")!=-1 ||
+			
+			if(!notRretry || mess.indexOf("SBL-DBC-00112")!=-1||mess.indexOf("SBL-DAT-00407")!=-1 ||
 				mess.indexOf("SBL-EAI-04376")!=-1){
-				if(	_currentRequestIds.length>1){
-					//reset page--we need to split the request
-					_maxParentIdCriteria = _maxParentIdCriteria/2;
-					this._page=0;
+				if(startTime!=-1 && !param.force){					
+					doSplit();
+					return true;
+				}else{
+					notRretry = false;
+					restoreRequest();
 				}
-			}
-			if(!notRretry || mess.indexOf("SBL-DBC-00112")!=-1){
-				notRretry = false;
-				restoreRequest();
+				
 			}
 			return notRretry;
 		}
 		
+		override protected function isTestData():Boolean{
+			return this._test_data;
+		}
 		
+		override protected function doSplit():void {
+			restoreRequest();
+			if(_maxParentIdCriteria>MIN_PARENT_IDS){
+				_maxParentIdCriteria =Math.max(MIN_PARENT_IDS, _maxParentIdCriteria/2);					
+				this._test_data=true;					
+			}
+			_page=0;
+			doRequest();
+		}
 		
 		protected override function nextPage(lastPage:Boolean):void {
 			if(!dependOnParent){
+				this._test_data=false;
 				super.nextPage(lastPage);
 			}else{
 				showCount();
+				if (this._test_data) {
+					this._test_data=false;
+					if (lastPage==false) {
+						doSplit();
+						return;
+					}
+					restoreRequest();
+					_page=0;					
+					haveLastPage	= true;
+					doRequest();	// Now fetch _page=0
+					return;
+				}
+				
 				if(lastPage){
-					if(parentTask.listRetrieveId.length<=0){						
-						super.nextPage(true);
+					if(this._parentIds.length<=0){	
+						if(_startDate==null ||_startDate.getTime()>=_parentTask.param.server_time.getTime() ){
+							super.nextPage(true);
+						}else{
+							//increase 15day for next request
+							_startDate = Utils.calculateDate(DATE_RANGE,_startDate,"date");
+							copyParentIds();
+							_page=0;
+							doRequest();
+						}
 					}else{				
 						
 						_page=0;

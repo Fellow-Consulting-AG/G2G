@@ -1,5 +1,7 @@
 package gadget.sync.tasklists
 {
+	import avmplus.getQualifiedClassName;
+	
 	import flash.utils.Dictionary;
 	
 	import gadget.dao.Database;
@@ -138,7 +140,7 @@ package gadget.sync.tasklists
 					}
 					
 					if(!dependOn){
-						var lastSyncObj:Object = Database.lastsyncDao.find(parentTask.getMyClassName());
+						var lastSyncObj:Object = Database.lastsyncDao.find(getQualifiedClassName(IncomingRelationObject)+child.entity);
 						if(lastSyncObj!=null && lastSyncObj.sync_date!='01/01/1970 00:00:00'){
 							childTask = createProcess(child.entity,parentTask,objParentField,false);							
 						}else{

@@ -71,7 +71,9 @@ package gadget.dao
 				"ReferredByExternalSystemId",
 				"ReferredByFirstName",
 				"ReferredByFullName",				
-				"ReferredByLastName"				
+				"ReferredByLastName",
+				'SalesProcess',
+				'SalesStage'
 				]);
 		public function checkExistContact(contactId:String, campaignId:String):Boolean{
 			stmtFindContact.parameters[":contactId"] = contactId;

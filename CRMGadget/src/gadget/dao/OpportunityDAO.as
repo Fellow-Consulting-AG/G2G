@@ -186,7 +186,8 @@ package gadget.dao
 				'OwnerPartnerLocation',
 				'OwnerPartnerName',
 				'OwnershipStatus',
-				'SalesProcess'
+				'SalesProcess',
+				'SalesStage'
 			
 			]);
 		

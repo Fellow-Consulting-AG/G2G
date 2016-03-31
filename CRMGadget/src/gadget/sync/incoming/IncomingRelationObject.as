@@ -279,11 +279,11 @@ package gadget.sync.incoming
 			
 			if(_switchToDependOnParent && !dependOnParent){
 				_switchToDependOnParent = false;
-				initParentIds();
-				if(recordCount>this._parentIds.length){
+				var localCount = dao.count();
+				if(recordCount>=localCount){
 					_page =0;//reset page
 					_dependOnParent = true;					
-					_readParentIds = false;
+					_readParentIds = true;
 					_usemodfiedDateAscriteria=true;//use modifidate
 					//start sync depend parent
 					doRequest();

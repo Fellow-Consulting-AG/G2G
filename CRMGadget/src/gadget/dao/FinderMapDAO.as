@@ -40,7 +40,9 @@ package gadget.dao
 			stmtInsert.parameters[":column"] = finderMap.column;
 			exec(stmtInsert);
 		}
-		
+		public function findById(id:String):ArrayCollection{
+			return read({'id':id});
+		}
 		public function read(finderMap:Object):ArrayCollection
 		{
 			stmtRead.parameters[":id"] = finderMap.id;

@@ -21,6 +21,7 @@
 			import gadget.util.ImageUtils;
 			import gadget.util.NumberLocaleUtils;
 			import gadget.util.ObjectUtils;
+			import gadget.util.Relation;
 			import gadget.util.StringUtils;
 			import gadget.util.Utils;
 			
@@ -64,9 +65,9 @@
 						trace("keep as default");
 						//nothing to do
 					}else{
-						var fieldsMergs:Object = localeObj.listFieldMerg;
-						if(fieldsMergs != null ){
-							for (var f:String in fieldsMergs){
+						//var fieldsMergs:Object = localeObj.listFieldMerg;
+						if(localeMergFields != null ){
+							for (var f:String in localeMergFields){
 								
 								if(serverMergFields!=null && serverMergFields[f]!=null) continue;
 								
@@ -192,8 +193,8 @@
 				
 				
 				numberof.text = (i+1) + " of " + datas.length;
-					
-				var fields:ArrayCollection = Database.layoutDao.selectLayout(entity, 0);
+				var name2FieldInfo:Dictionary = FieldUtils.allFieldsAsMap(entity);
+				var fields:ArrayCollection = Database.layoutDao.selectAllFields(entity);
 				var listDifferencts:ArrayCollection = new ArrayCollection();
 				var owner:Object = Database.allUsersDao.ownerUser();
 				
@@ -206,7 +207,7 @@
 				var nameRec:String = i18n._("GLOBAL_RECORD_NAME@Record name");
 				var rowIdDisplay:String = i18n._("GLOBAL_ROWID@Row id");
 				var serverName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));
-				var localName:String = ObjectUtils.joinFields(serverRec, DAOUtils.getNameColumns(entity));
+				var localName:String = ObjectUtils.joinFields(localeRec, DAOUtils.getNameColumns(entity));
 				frmLocal.addChild( createLabelFormItem(rowIdDisplay, localeRec[DAOUtils.getOracleId(entity)]) );
 				frmServer.addChild( createLabelFormItem(rowIdDisplay, serverRec[DAOUtils.getOracleId(entity)], false) );
 				frmLocal.addChild( createLabelFormItem(nameRec, localName) );
@@ -223,11 +224,11 @@
 					if (field.custom != null) continue;
 
 					var element_name:String=field.column_name;					
-					var fieldInfo:Object= Database.fieldDao.findFieldByPrimaryKey(entity, element_name);					
-					if(fieldInfo!=null){
+					var fieldInfo:Object= name2FieldInfo[element_name];					
+					if(fieldInfo!=null && fieldInfo.data_type!="ID"){//hiden id field
 						if(!checkDiferrent(localeRec[element_name],serverRec[element_name],fieldInfo)) continue;
-						if(localeRec.listFieldMerg==null) localeRec.listFieldMerg=new Object();
-						localeRec.listFieldMerg[element_name] = element_name;
+//						if(localeRec.listFieldMerg==null) localeRec.listFieldMerg=new Object();
+//						localeRec.listFieldMerg[element_name] = element_name;
 						
 						var txtInputLocal:TextInput = createTextInput(entity,localeRec,localeRec.serverMergFields,fieldInfo);											
 						var txtInputServer:TextInput = createTextInput(entity,serverRec,serverRec.localeMergFields,fieldInfo);;
@@ -238,32 +239,32 @@
 						nextImage.width = 16;
 						nextImage.height = 16;
 						nextImage.source = ImageUtils.nextDayIcon;
-						nextImage.data = {localComponent:txtInputLocal, fieldName:element_name, serverComponent:txtInputServer, serverObj:serverRec, localeObj:localeRec};
+						nextImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer, 'serverObj':serverRec, 'localeObj':localeRec};
 						nextImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
 							var image:Image = Image(event.currentTarget);
 							var obj:Object = image.data;
-							var fieldName:String = obj.fieldName;
+							var fieldObj:Object = obj.field;
 							var serverObj:Object = obj.serverObj;
 							if(serverObj.localeMergFields==null){
 								serverObj.localeMergFields=new Object();
 							}
-							setMerg(obj.serverComponent,serverObj.localeMergFields,obj.localComponent.text,fieldName);
+							setMerg(obj.serverComponent,serverObj.localeMergFields,obj.localComponent.text,obj.entity,fieldObj,obj.localeObj);
 						});
 
 						var prevImage:Image = new Image();
 						prevImage.width = 16;
 						prevImage.height = 16;
 						prevImage.source = ImageUtils.previousDayIcon;
-						prevImage.data = {localComponent:txtInputLocal, fieldName:element_name, serverComponent:txtInputServer,serverObj:serverRec, localeObj:localeRec};
+						prevImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer,'serverObj':serverRec, 'localeObj':localeRec};
 						prevImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
 							var image:Image = Image(event.currentTarget);
 							var obj:Object = image.data;
-							var fieldName:String = obj.fieldName;
+							var fieldObj:Object = obj.field;
 							var localeObj:Object = obj.localeObj;
 							if(localeObj.serverMergFields == null){
 								localeObj.serverMergFields = new Object();
 							}							
-							setMerg(obj.localComponent,localeObj.serverMergFields,obj.serverComponent.text,fieldName);							
+							setMerg(obj.localComponent,localeObj.serverMergFields,obj.serverComponent.text,obj.entity,fieldObj,obj.serverObj);							
 						});
 						
 						var localDisplayObject:HBox = new HBox();
@@ -366,10 +367,31 @@
 				return valMerg;
 			}
 			
-			private function setMerg(inputText:TextInput, mergFields:Object,valMerg:String,field:String):void{
-				mergFields[field] ={val:valMerg,merg:true} ;							
+			private function setMerg(inputText:TextInput, mergFields:Object,valMerg:String,entity:String,fieldInfo:Object,item:Object):void{
+				mergFields[fieldInfo.element_name] ={val:valMerg,merg:true} ;							
 				inputText.text = valMerg;
 				inputText.toolTip=valMerg;
+				if(fieldInfo.data_type=='Picklist'){
+					var relation:Object = Relation.getFieldRelation(entity, fieldInfo.element_name);
+					if (relation != null) {	
+						//copy relation field
+						mergFields[relation.keySrc] = {val:item[relation.keySrc],merg:true} ;
+						for each(var f:String in relation.labelSrc){
+							mergFields[f] = {val:item[f],merg:true};
+						}
+					}else{
+						var finderName:String = Database.fieldFinderDAO.getFinderTableName({'entity':entity, 'element_name':fieldInfo.element_name});
+						if(!StringUtils.isEmpty(finderName)){
+							var fields:ArrayCollection = Database.finderMapDAO.findById(finderName);
+							if(fields!=null){
+								for each(var map:Object in fields){
+									mergFields[map.field] = {val:item[map.field],merg:true};;
+								}
+							}
+						}
+					}
+				}
+				
 			}
 			
 			private function next():void{

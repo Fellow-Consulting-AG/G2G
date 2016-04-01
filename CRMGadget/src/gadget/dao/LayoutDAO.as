@@ -1,6 +1,8 @@
 package gadget.dao {
 	
 	import flash.data.SQLConnection;
+	import flash.data.SQLResult;
+	import flash.data.SQLStatement;
 	import flash.utils.Dictionary;
 	
 	import gadget.service.LocaleService;
@@ -9,6 +11,8 @@ package gadget.dao {
 	import mx.collections.ArrayCollection;
 	
 	public class LayoutDAO extends SimpleTable {		
+		
+		var stmtSelectAllFields:SQLStatement;
 		public function LayoutDAO(sqlConnection:SQLConnection, work:Function) {
 			super(sqlConnection, work, {
 				table: 'detail_layout',
@@ -16,6 +20,9 @@ package gadget.dao {
 				unique : ["entity, subtype, col, row"],
 				columns: { 'TEXT' : textColumns, "INTEGER": integerColumns, "BOOLEAN" : booleanColumns, 'TEXT' : "max_chars"}
 			});
+			stmtSelectAllFields = new SQLStatement();
+			stmtSelectAllFields.text = "select  entity,column_name, custom, readonly from detail_layout where entity=:entity and custom is NULL or custom ='' group by entity,column_name order by column_name";
+			stmtSelectAllFields.sqlConnection = sqlConnection;
 		}
 		
 		private var textColumns:Array = [
@@ -58,7 +65,16 @@ package gadget.dao {
 			}
 			return list;
 		}
-		
+		public function selectAllFields(entity:String):ArrayCollection{
+			var lst:ArrayCollection = new ArrayCollection();
+			stmtSelectAllFields.parameters[":entity"]=entity;
+			exec(stmtSelectAllFields);
+			var result:SQLResult = stmtSelectAllFields.getResult();
+			if (result.data == null || result.data.length == 0) {
+				return new ArrayCollection();
+			}
+			return new ArrayCollection(result.data);
+		}
 		
 		
 		public function copyLayout(entity:String, srcSubType:String,destSubtype:String):void{

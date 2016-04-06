@@ -59,7 +59,8 @@
 				{data:"JPN", label:"Japanese"},
 				{data:"PTG", label:"Portuguese"},
 				{data:"ESN", label:"Spanish"},
-				{data:"SVE", label:"Swedish"}
+				{data:"SVE", label:"Swedish"},
+				{data:"RUS", label:"Russian"}
 			]);	
 			[Bindable] public static var entityNameList:ArrayCollection = new ArrayCollection(
 				[ {data:"", label:""},

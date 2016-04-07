@@ -58,7 +58,7 @@
 				}
 				if (searchInput.text.length >= 2 || !StringUtils.isEmpty(currentFilter)) {
 					
-					allItems = Database.linkDao.allItems(new ArrayCollection([entity]), searchInput.text.toUpperCase(), currentFilter);
+					allItems = Database.linkDao.allItems(new ArrayCollection([entity]), searchInput.text, currentFilter);
 				} else {
 					allItems = null;
 				}

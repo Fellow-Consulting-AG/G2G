@@ -62,7 +62,7 @@
 			
 			private function doSearch():void {
 				if (searchInput.text.length >= 2) {
-					allItems = Database.linkDao.allItems(entities, searchInput.text.toUpperCase());
+					allItems = Database.linkDao.allItems(entities, searchInput.text);
 				} else {
 					allItems = null;
 				}

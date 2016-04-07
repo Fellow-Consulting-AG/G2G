@@ -1,5 +1,7 @@
 package gadget.dao {
 	
+	import com.adobe.utils.StringUtil;
+	
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
 	
@@ -36,6 +38,7 @@ package gadget.dao {
 			if (entities == null) {
 				entities = ALL_ENTITIES;
 			}
+			name = StringUtil.trim(name);
 			name = name.replace(/\'/gi,"''");
 			var query:String = "";
 			for each (var entity:String in entities) {
@@ -45,8 +48,7 @@ package gadget.dao {
 					
 				var nameCondition :String = "";
 				if(entity == "User"){
-					nameCondition = "( upper(FirstName) >='" + name + "' AND upper(FirstName) <= '" + name + "zzzz'" +
-						" OR upper(LastName) >='" + name + "' AND upper(LastName) <= '" + name + "zzzz')";
+					nameCondition = "( FirstName LIKE '%" + name + "%' OR LastName LIKE '%" + name + "%')";
 				}else{
 					var i:int=0;
 					for each(var col:String in DAOUtils.getSearchColumns(entity)){
@@ -54,12 +56,12 @@ package gadget.dao {
 							// if it has several columns
 							nameCondition +=" OR ";
 						}
-						nameCondition += "("+ col + ">='" + name + "' AND "+ col + " <= '" + name + "zzzz')";
+						nameCondition += "("+ col + " LIKE '%" + name + "%')";
 						i++;
 					}
 				}
 				
-				nameCondition = Utils.replaceGermanCharacter( nameCondition,Utils.charUpperGermanAccents,Utils.charGerman);
+				nameCondition = Utils.replaceGermanCharacter( nameCondition,Utils.charUpperGermanAccents,Utils.charLowerGermanAccents,Utils.charGerman);
 				var userFields:String = entity == "User" ? ",FirstName,LastName ":"" ;
 				
 				query += "SELECT '" + entity + "' gadget_type, " + DAOUtils.getNameForSearch(entity) + " name, gadget_id, " +
@@ -94,6 +96,7 @@ package gadget.dao {
 				entities = ALL_ENTITIES;
 			}
 			var name:String = StringUtils.replaceAll_(wildcardName, "*", "");
+			name = StringUtil.trim(name);
 			name = name.replace(/\'/gi,"''");
 			var query:String = "";
 			for each (var entity:String in entities) {
@@ -103,8 +106,8 @@ package gadget.dao {
 				
 				var nameCondition :String = "";
 				if(entity == "User"){
-					var colFirstName:String = "upper(FirstName)";
-					var colLastName:String = "upper(LastName)";
+					var colFirstName:String = "FirstName";
+					var colLastName:String = "LastName";
 					
 					/*if(wildcardName.indexOf("*")==0){
 						nameCondition += "(" + colFirstName + " LIKE '%" + name + "%' OR " + colLastName + " LIKE '%" + name + "%' )";
@@ -134,7 +137,7 @@ package gadget.dao {
 					}
 				}
 				
-				nameCondition = Utils.replaceGermanCharacter( nameCondition,Utils.charUpperGermanAccents,Utils.charGerman);
+				nameCondition = Utils.replaceGermanCharacter( nameCondition,Utils.charUpperGermanAccents,Utils.charLowerGermanAccents,Utils.charGerman);
 				var userFields:String = entity == "User" ? ",FirstName,LastName ":"" ;
 				
 				query += "SELECT '" + entity + "' gadget_type, " + DAOUtils.getNameForSearch(entity) + " name, gadget_id, " +

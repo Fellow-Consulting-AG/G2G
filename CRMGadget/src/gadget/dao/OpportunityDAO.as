@@ -61,7 +61,7 @@ package gadget.dao
 			if(impacs!=null && impacs.length>0){
 				var recordsChange:ArrayCollection = new ArrayCollection();
 				for each(var r:Object in impacs){
-					if(!isMandatory(r)){
+					if(!isMandatory(r,true)){
 						//mark every row as change
 						r.co7Change=true;
 						calImpactCalMonth(r);
@@ -1474,13 +1474,13 @@ package gadget.dao
 		}
 		//check co7 mandatoryfield
 
-		private function isMandatory(r:Object):Boolean{
+		private function isMandatory(r:Object,mustCheckMan:Boolean=false):Boolean{
 			
 			for each (var type:String in ENTITY_CHECKS){
-				if(!r.opChange && type==Database.opportunityDao.entity){
+				if(!r.opChange && type==Database.opportunityDao.entity && !mustCheckMan){
 					continue;
 				}
-				if(!r.co7Change && type==Database.customObject7Dao.entity){
+				if(!r.co7Change && type==Database.customObject7Dao.entity&& !mustCheckMan){
 					continue;
 				}
 				var fields:Array = OpportunityDAO.MANDATORY_FIELD[type];

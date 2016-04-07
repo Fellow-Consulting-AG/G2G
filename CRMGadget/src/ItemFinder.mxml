@@ -101,7 +101,7 @@
 					
 					
 					allItems = Database.linkDao.allItemFinders(new ArrayCollection([relation.entityDest]), 
-						searchInput.text.toUpperCase(), currentFilter);
+						searchInput.text, currentFilter);
 					
 					if(relation.entityDest ==  Database.contactDao.entity && (allItems == null || allItems.length<1)){
 						btnAdd.visible = true;

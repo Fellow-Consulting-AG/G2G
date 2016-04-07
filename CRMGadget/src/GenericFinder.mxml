@@ -112,16 +112,16 @@
 			private function doSearch():void {
 				if (searchInput.text.length > 0) {
 					var filter:String = '';
-					var name:String = searchInput.text.toUpperCase();
+					var name:String = searchInput.text;
 					// CH : # Bug 372 // Alias : change from Alias to FirstName,LastName #Bug 26 
 					if(finder.display_column == "FirstName,LastName" && finder.finder_table == "AllUsers"){
 						//should be search by link field is better
-						var searchColumn:String = "upper("+displayMap.column+")";
-						filter=searchColumn+">='" + name + "' AND "+searchColumn+" <= '" + name + "zzzz'"
-						filter += " OR ( upper(FirstName) >='" + name + "' AND upper(FirstName) <= '" + name + "zzzz'" +
-								" OR upper(LastName) >='" + name + "' AND upper(LastName) <= '" + name + "zzzz')";
+						var searchColumn:String = displayMap.column;
+						filter=searchColumn+" LIKE '%" + name + "%'"
+						filter += " OR ( FirstName LIKE '%" + name + "%'" +
+								" OR LastName LIKE '%" + name + "%')";
 					}else{
-						filter = "upper(" + finder.display_column + ") >='" + name + "' AND upper(" + finder.display_column + ") <= '" + name + "zzzz'";
+						filter = finder.display_column + " LIKE '%" + name + "%'";
 						
 					}
 					if(finder.finder_table == "Address"){

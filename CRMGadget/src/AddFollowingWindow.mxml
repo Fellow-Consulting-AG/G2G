@@ -46,7 +46,7 @@
 					return;
 				}
 
-				var filter:String = "uppername like '" + txtSearch.text.toUpperCase() + "%' AND Id !='" + currentUser.id + "'";
+				var filter:String = "uppername like '" + txtSearch.text + "%' AND Id !='" + currentUser.id + "'";
 				allUsers = Database.allUsersDao.filter(columns, filter);
 			}
 			

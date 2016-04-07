@@ -166,6 +166,7 @@
 			[Bindable]private var isLstVisibleHomeTask:Boolean;
 			private var mapSortColHeader:Object = new Object();
 			private var impactCalendar:ImpactCalendar = null;
+			private var _booleanAdvanceSearchMode:Boolean = false;
 			//Bug #1728 CRO
 			public function showListTasks():void{
 				homeTask.visible = false;
@@ -506,7 +507,7 @@
 						searchFeilds += " OR (uppername3 LIKE " + StringUtils.sqlStrArg(startCriteria) + ")";
 					}
 					//#1010 CRO search German characters (Ä or AE)
-					searchFeilds = Utils.replaceGermanCharacter(searchFeilds,Utils.charUpperGermanAccents,Utils.charGerman);
+					searchFeilds = Utils.replaceGermanCharacter(searchFeilds,Utils.charUpperGermanAccents,Utils.charLowerGermanAccents,Utils.charGerman);
 					if(!StringUtils.isEmpty(filterQuery)){
 						searchFeilds="("+searchFeilds+")"+" AND " + filterQuery
 					}
@@ -2184,11 +2185,18 @@
 				}
 			}
 			private function filterDataGridResult(item:Object):Boolean {
-				var key:Array = Utils.replaceGermanCharacter(entityFilterInput.text, Utils.charUpperGermanAccents, Utils.charGerman).toUpperCase().split(/\sOR\s/);
+				var keys:Array = Utils.replaceGermanChar(entityFilterInput.text, Utils.charUpperGermanAccents,Utils.charLowerGermanAccents, Utils.charGerman);
 				for each(var o:Object in fieldsDB) {
 					var value:String = item.hasOwnProperty(o.element_name) ? item[o.element_name] : "";
-					if(!StringUtils.isEmpty(value) && (value.toUpperCase().indexOf(key[0]) != -1 || value.toUpperCase().indexOf(key[1]) != -1))
-						return true;
+					if(!StringUtils.isEmpty(value)){
+						for each(var k:String in keys){
+							if(value.toUpperCase().indexOf(k.toUpperCase())!=-1){
+								return true;
+							}
+						}
+						
+					}
+						
 				}
 				return false;
 			}
@@ -2220,11 +2228,18 @@
 						}
 						
 					}	
-					
+					_booleanAdvanceSearchMode = true;
 					records = dao.findAll(columns, filter, null, 1001,null);
+					
 					//we use label function instead of load all data
 //					Utils.parseDateTime(entity, columns, records);
 //					Utils.parsePicklistValues(entity, columns, records);
+				}else{
+					if(_booleanAdvanceSearchMode){
+						_booleanAdvanceSearchMode = false;
+						//reload data again
+						filterData();
+					}
 				}
 				
 			}

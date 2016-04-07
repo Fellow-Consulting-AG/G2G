@@ -72,7 +72,6 @@ package gadget.util {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ObjectProxy;
-	import mx.utils.StringUtil;
 	
 	import org.igniterealtime.xiff.data.Message;
 	
@@ -217,25 +216,25 @@ package gadget.util {
 			
 		}
 		//replace German Character for searching both AE or Ä
-		public static function replaceGermanCharacter(str:String,oldChars:Array,newChars:Array):String{
-			
-			str = str.toUpperCase();
-			
-			for(var i:int = 0 ;i<oldChars.length;i++){
-				var reg:RegExp = new RegExp(oldChars[i] , "gi");
-				str = str.replace(reg, newChars[i]);
+		public static function replaceGermanCharacter(origSql:String,oldUpperChars:Array,oldLowerChars:Array,newChars:Array):String{
+			if(!StringUtils.isEmpty(origSql)){
+				var sqls:Array = replaceGermanChar(origSql,oldUpperChars,oldLowerChars,newChars);
+				var txtSql:String = '('+origSql+')';
+				var first:Boolean = true;
+				for each(var sql:String in sqls){
+					if(origSql!=sql){
+						
+						txtSql= txtSql +' OR ('+sql+')';
+					}
+				}				
+				return txtSql;
 			}
-			var strTwo:String = str;
-			for(var j:int = 0 ;j<newChars.length;j++){
-				var reg2:RegExp = new RegExp(newChars[j] , "gi");
-				strTwo = strTwo.replace(reg2, oldChars[j]);
-			}
-			return str +' OR ' + strTwo;
+			return origSql;
 			
 		}
 		// Bug #1840 CRO
 		public static function replaceGermanChar(str:String,oldUpperChars:Array,oldLowerChars:Array,newChars:Array):Array{
-			str = str!=null? str.toUpperCase():"";
+			str = str!=null? StringUtil.trim(str):"";
 			for(var i:int = 0 ;i<oldUpperChars.length;i++){
 				var reg:RegExp = new RegExp(oldUpperChars[i] , "gi");
 				str = str.replace(reg, newChars[i]);

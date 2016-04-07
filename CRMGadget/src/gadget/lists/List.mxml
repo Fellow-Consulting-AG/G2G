@@ -953,7 +953,7 @@
 					return;
 				}
 				
-				if (StringUtils.startsWith(event.label, i18n._(GLOBAL_NEW) + " ") || StringUtils.startsWith(event.label, i18n._(GLOBAL_NEW_TASK) + " ")) {
+				if (event.item.create ||StringUtils.startsWith(event.label, i18n._(GLOBAL_NEW) + " ") || StringUtils.startsWith(event.label, i18n._(GLOBAL_NEW_TASK) + " ")) {
 					openScreenCreate(event.item.data, event.item.subtype);
 					// checkLayoutRecordType(event.item.data, event.item.subtype);
 					return;
@@ -1923,9 +1923,9 @@
 					if(entity==Database.activityDao.entity){
 						labelName =  (displayName==entity? i18n._("GLOBAL_TASK"):displayName);
 					}
-					buttons.addItem({label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, 
+					buttons.addItem({create:true,label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, 
 						data:ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE)});
-					buttons.addItem({label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity,1), disabled: !canCreate, subtype:1, 
+					buttons.addItem({create:true,label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity,1), disabled: !canCreate, subtype:1, 
 						data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
 					// Change Request #440
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_BUTTON_ACTIVITY_CREATE_CALL)) {
@@ -1936,11 +1936,11 @@
 						}else{
 							disN = i18n._(GLOBAL_NEW_FOR_CALL) + " " + Database.customLayoutDao.getDisplayName(entity, 2);
 						}
-						buttons.addItem({label:disN, icon:ImageUtils.getImage(entity,2), disabled: !canCreate, subtype:2, 
+						buttons.addItem({create:true,label:disN, icon:ImageUtils.getImage(entity,2), disabled: !canCreate, subtype:2, 
 							data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
 					}
 				} else {
-					buttons.addItem({label:i18n._(GLOBAL_NEW_TASK) + " " + displayName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0});
+					buttons.addItem({create:true,label:i18n._(GLOBAL_NEW_TASK) + " " + displayName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0});
 				} 
 				// disable_list_layout = disable List Layout, View Layout and Edit Layout 
 				var disable_list_layout:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_LIST_LAYOUT);
@@ -1998,8 +1998,8 @@
 					if(entity==Database.activityDao.entity){
 						labelName =  (displayName==entity? i18n._("GLOBAL_TASK"):displayName);
 					}
-					buttons.addItem({label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, data:ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE)});
-					buttons.addItem({label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity, 1), disabled: !canCreate, subtype:1, data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
+					buttons.addItem({create:true,label:i18n._(GLOBAL_NEW_TASK) + " " + labelName, icon:ImageUtils.getImage(entity), disabled: !canCreate, subtype:0, data:ActivityDataUtils.getActivityData(ActivityDataUtils.TASK_SUBTYPE)});
+					buttons.addItem({create:true,label:i18n._(GLOBAL_NEW_FOR_APPOINTMENT) + " " + Database.customLayoutDao.getDisplayName(entity, 1), icon:ImageUtils.getImage(entity, 1), disabled: !canCreate, subtype:1, data:ActivityDataUtils.getActivityData(ActivityDataUtils.APPOINTMENT_SUBTYPE)});
 					if(Database.preferencesDao.getBooleanValue(PreferencesDAO.ENABLE_BUTTON_ACTIVITY_CREATE_CALL)) {
 						var lng:String = LocaleService.getLanguageCode();
 						var disN:String = "";
@@ -2008,7 +2008,7 @@
 						}else{
 							disN = i18n._(GLOBAL_NEW_FOR_CALL) + " " + Database.customLayoutDao.getDisplayName(entity, 2);
 						}
-						buttons.addItem({label:disN, icon:ImageUtils.getImage(entity, 2), disabled: !canCreate, subtype:2, data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
+						buttons.addItem({create:true,label:disN, icon:ImageUtils.getImage(entity, 2), disabled: !canCreate, subtype:2, data:ActivityDataUtils.getActivityData(ActivityDataUtils.CALL_SUBTYPE)});
 					}
 
 				}

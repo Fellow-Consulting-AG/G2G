@@ -2501,19 +2501,22 @@
 					
 					if(newfield!=null){	
 						var addrFields:Array = getListFields(df,true);
-						var newIdx:int=0;
-						//draw new layout
-						for each(var newf:String in newfield){
-							var displayName:String = null;
-							if(addrFields!=null && newIdx<addrFields.length){
-								displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
+						if(addrFields!=null ){
+							var newIdx:int=0;
+							
+							//draw new layout
+							for each(var newf:String in newfield){	
+								var displayName:String = null;
+								if( newIdx<addrFields.length){
+									displayName = Database.addressfieldtranslatorDao.getDisplayName(addrFields[newIdx]);
+								}
+								var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB,displayName);
+								if(ndisplayObj!=null){
+									//vbox.height = vbox.height+27;
+									vbox.addChild(ndisplayObj);	
+								}	
+								newIdx++;
 							}
-							var ndisplayObj:DisplayObject = createDisplayObject(newf,field.readonly,dicB,displayName);
-							if(ndisplayObj!=null){
-								//vbox.height = vbox.height+27;
-								vbox.addChild(ndisplayObj);	
-							}	
-							newIdx++;
 						}
 						
 						

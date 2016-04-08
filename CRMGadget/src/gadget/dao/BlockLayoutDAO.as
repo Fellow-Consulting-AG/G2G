@@ -38,6 +38,17 @@ package gadget.dao
 			province:{'Address':'Province','Main':'PrimaryBillToProvince','Shipping':'PrimaryShipToProvince','Contact Address':'AlternateProvince','Main Address':'PrimaryProvince'}
 		};
 		
+		public static const ADDRESS2REALFIELD:Object = {'address':'Address',
+			'address2':'StreetAddress2',
+			'address3':'StreetAddress3',
+			'city':'City',
+			'county':'County',
+			'state':'StateProvince',
+			'zip':'ZipCode',
+			'province':'Province',
+			'country':'Country'
+		};
+		
 		private static const DYNAMIC_GROUP:Object ={
 			DEFAULT:[ADDRESS,ADDRESS2,ZIP,CITY],
 			Germany:[ADDRESS,ADDRESS2,ZIP,CITY],

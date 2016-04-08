@@ -5,6 +5,7 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.utils.Dictionary;
 	
+	import gadget.util.FieldUtils;
 	import gadget.util.StringUtils;
 
 	public class AddressFieldTranslatorDAO extends SimpleTable
@@ -132,8 +133,19 @@ package gadget.dao
 			return word;
 		}
 		public function getDisplayName(name:String,country:String=null):String{
-			var lang:String = Database.allUsersDao.ownerUser().LanguageCode;
-			return translator(name,lang);
+			var realAddressField:String = BlockLayoutDAO.ADDRESS2REALFIELD[name];
+			var displayName:String = null;
+			if(!StringUtils.isEmpty(realAddressField)){
+				displayName = FieldUtils.getFieldDisplayName(Database.addressDao.entity,realAddressField);
+				if(displayName==realAddressField){
+					displayName = null;
+				}
+			}
+			if(StringUtils.isEmpty(displayName)){
+				var lang:String = Database.allUsersDao.ownerUser().LanguageCode;
+				return translator(name,lang);
+			}
+			return displayName;
 		}
 		
 		

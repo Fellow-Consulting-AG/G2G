@@ -60,6 +60,11 @@ package gadget.sync.incoming {
 						
 					}
 				}
+				//retrieve Address field
+				var address:SodUtilsTAO = new SodUtilsTAO();
+				address.our_name = Database.addressDao.entity;							
+				address.sod_name = Database.addressDao.entity;
+				allEntities.push(address);
 			}
 				
 

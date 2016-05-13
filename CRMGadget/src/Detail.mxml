@@ -2006,7 +2006,13 @@
 						if(fieldInfo.data_type.indexOf("Currency") != -1 && item.CurrencyCode != null && item.CurrencyCode != ""){
 							(displayObj as BetterFormItem).label = fieldInfo.display_name + " (" + item.CurrencyCode + ")";
 						}else{
-							(displayObj as BetterFormItem).label = fieldInfo.display_name;
+							var google_map_type = "{" + CustomLayout.GOOGLEMAP_CODE + "}";
+							if( google_map_type==fieldInfo.data_type){
+								(displayObj as BetterFormItem).label =i18n._("GLOBAL_GOOGLE_MAP"); 
+							}else{
+								(displayObj as BetterFormItem).label = fieldInfo.display_name;
+							}
+							
 						}
 						
 						if (fieldInfo.required != true && fields[i].mandatory != null) fieldInfo.required = fields[i].mandatory;

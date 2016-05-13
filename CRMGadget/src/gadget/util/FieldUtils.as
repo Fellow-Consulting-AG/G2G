@@ -868,7 +868,7 @@ package gadget.util {
 				field = new Object();
 				field.entity = entity;
 				field.element_name = '{' + CustomLayout.GOOGLEMAP_CODE + '}';
-				field.display_name = 'Google Map';
+				field.display_name = i18n._("GLOBAL_GOOGLE_MAP");
 				field.data_type = '{' + CustomLayout.GOOGLEMAP_CODE + '}';
 				return field;	
 			}else {

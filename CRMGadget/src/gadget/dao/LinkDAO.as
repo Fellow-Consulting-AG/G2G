@@ -56,7 +56,7 @@ package gadget.dao {
 							// if it has several columns
 							nameCondition +=" OR ";
 						}
-						nameCondition += "("+ col + " LIKE '%" + name + "%')";
+						nameCondition += "("+ col + " LIKE '%" + name + "%' OR "+col+" LIKE '%"+StringUtils.toUpperCase(name)+"%')";
 						i++;
 					}
 				}
@@ -131,8 +131,8 @@ package gadget.dao {
 							nameCondition += "("+ col + ">='" + name + "' AND "+ col + " <= '" + name + "zzzz')";
 						}*/
 						
-						nameCondition += "("+ col + " LIKE '%" + name + "%')";
-						
+						//nameCondition += "("+ col + " LIKE '%" + name + "%')";
+						nameCondition += "("+ col + " LIKE '%" + name + "%' OR "+col+" LIKE '%"+StringUtils.toUpperCase(name)+"%')";
 						i++;
 					}
 				}

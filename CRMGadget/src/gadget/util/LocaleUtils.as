@@ -54,7 +54,21 @@ package gadget.util
 			'0-213':'de_DE'
 			
 		};
-		
+		public static const LANGCODE_TO_LOCALS:Object = {
+			DEU:'de_DE',
+			ENU:'en_US',
+			ESN:'es_ES',
+			FRA:'fr_FR',
+			PTG:'pt_BR',
+			PTB:'pt_BR',
+			NLD:'nl_NL',
+			JPN:'ja_JP',
+			CHS:'zh_CN',
+			SVE:'sv_SE',			
+			RUS:'ru_RU',
+			ITA:'it_IT'
+			
+		};
 		public function LocaleUtils()
 		{
 		}
@@ -62,7 +76,7 @@ package gadget.util
 			if(langCode == null || langCode == ""){
 				return 'en_US';
 			}else{
-				return LOCALES[langCode]==null?'en_US':StringUtil.trim(LOCALES[langCode]);
+				return LANGCODE_TO_LOCALS[langCode]==null?'en_US':StringUtil.trim(LANGCODE_TO_LOCALS[langCode]);
 			}
 			
 		}

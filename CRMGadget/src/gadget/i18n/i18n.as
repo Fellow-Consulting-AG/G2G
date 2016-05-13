@@ -17,21 +17,7 @@ package gadget.i18n {
 
 		private static const RESOURCE_FILE_NAME:String = "localization";
 		
-		private static const LOCALS:Object = {
-			DEU:'de_DE',
-			ENU:'en_US',
-			ESN:'es_ES',
-			FRA:'fr_FR',
-			PTG:'pt_PT',
-			NLD:'nl_NL',
-			JPN:'jp_JP',
-			CHS:'ch_CH',
-			SVE:'sv_SV',
-			PLK:'pl_PL',
-			RUS:'ru_RU',
-			ITA:'it_IT'
-			
-		};
+		
 		
 		private static var _cache:CacheUtils = new CacheUtils("i18n");
 

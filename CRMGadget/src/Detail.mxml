@@ -1436,7 +1436,7 @@
 				}
 				comboAction.invalidateSize();
 				nextLayout.setVisible(showNextAction);
-				
+				nextLayout.includeInLayout=showNextAction;
 			}
 			
 			public function setTitleAsEdit(initForm:Boolean=false):void {

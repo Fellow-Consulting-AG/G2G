@@ -121,7 +121,7 @@
 						filter += " OR ( FirstName LIKE '%" + name + "%'" +
 								" OR LastName LIKE '%" + name + "%')";
 					}else{
-						filter = finder.display_column + " LIKE '%" + name + "%'";
+						filter = "("+finder.display_column + " LIKE '%" + name + "%' OR "+ finder.display_column + " LIKE '%" + StringUtils.toUpperCase(name) + "%')";
 						
 					}
 					if(finder.finder_table == "Address"){

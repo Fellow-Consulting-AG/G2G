@@ -24,7 +24,7 @@ package gadget.util
 		// entityDest : referenced entity.
 		// supportTable (optional) : support table that handles m-n relationship between entities.
 		//
-		private static const RELATIONS:ArrayCollection = new ArrayCollection([
+		public static const RELATIONS:ArrayCollection = new ArrayCollection([
 			{entitySrc:"Contact", keySrc:"ContactId", keySupport:"UserId", keyDest:"Id", labelSrc:["ContactId"], labelSupport:["UserLastName","UserFirstName","UserRole","ContactAccess"],isColDynamic:true, labelDest:["LastName","FirstName"], entityDest:"User", supportTable:"Contact.Team"},
 			{entitySrc:"Contact", keySrc:"ReferredById", keyDest:"ContactId", labelSrc:["ReferredByFullName","ReferredByFirstName","ReferredByLastName"], labelDest:["ContactFullName","ContactFirstName", "ContactLastName"], entityDest:"Contact"},
 			{entitySrc:"Contact", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName", "PrimaryCity", "PrimaryCountry", "PrimaryAddress", "AccountLocation", "PrimaryZipCode",'PrimaryProvince','PrimaryStateProvince','PrimaryCounty','PrimaryStreetAddress3','PrimaryStreetAddress2'], labelDest:["AccountName", "PrimaryBillToCity", "PrimaryBillToCountry", "PrimaryBillToStreetAddress", "Location", "PrimaryBillToPostalCode",'PrimaryBillToProvince','PrimaryBillToState','PrimaryBillToCounty','PrimaryBillToStreetAddress3','PrimaryBillToStreetAddress2'], entityDest:"Account"},

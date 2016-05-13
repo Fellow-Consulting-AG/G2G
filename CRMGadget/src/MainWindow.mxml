@@ -84,7 +84,7 @@
 			public static const DASHBOARD:String = "Dashboard";
 			public static const REVENUE_REPORT:String = "RevenueReport";
 			public static const SEGMENTATION_TARGET:String = "SegmentationTarget";
-			public static const LABEL_SEGMENTATION_TARGET:String = "S and T Dashboard";
+			public static const LABEL_SEGMENTATION_TARGET:String = "LABEL_SEGMENTATION_TARGET@S and T Dashboard";
 			public static const LABEL_REVENUE_REPORT:String = "Revenue Report";
 			// CH 24-July-2013
 			public static const DASHBOARD_REPORT:String = "DashboardReport";
@@ -808,6 +808,7 @@
 				}
 			}	
 			private function createTabCustom(entity:String,navTabsData:ArrayList,tabName:String):void{
+				tabName = i18n._(tabName);
 				menuTabData.push(tabMenuItem(entity,tabName));
 				viewMenuData.push(createViewMenuItem(entity, tabName));
 				if(Database.preferencesDao.read().interface_style=="icons"){

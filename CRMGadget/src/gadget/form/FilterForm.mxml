@@ -327,6 +327,10 @@
 				}
 			}
 			
+			private function getOperationLabel(item:Object):String{
+				return i18n._(item.label);
+			}
+			
 		]]>
 	</mx:Script><!--CRO 05.01.2011-->
 	<mx:FormItem required="true" label="{i18n._('GLOBAL_NAME')}">
@@ -347,7 +351,7 @@
 			<mx:ComboBox width="160" id="filterCol1" dataProvider="{Utils.getColumns(filter.entity)}" labelField="label" 
 						 creationComplete="filterCol1.selectedIndex=Utils.getComboColIndex(criteria1.column_name, filter.entity)" change="changeAction(event);" />
 			<control:DisabledComboBox width="110" id="filterOp1" dataProvider="{Utils.operatorData}"
-						 selectedIndex="{Utils.getComboOpIndex(criteria1.operator)}" change="operatorChangeHandler(event)"/>
+						 selectedIndex="{Utils.getComboOpIndex(criteria1.operator)}" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam1"/>
 			<mx:ComboBox includeInLayout="false" width="120" id="cboFilterFormula1" dataProvider="{Utils.dateFormulaFn}" change="formulaChangeHandler(event)"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam1"/>
@@ -363,7 +367,7 @@
 			<mx:ComboBox width="160" id="filterCol2" dataProvider="{Utils.getColumns(filter.entity)}" labelField="label" 
 						 creationComplete="filterCol2.selectedIndex=Utils.getComboColIndex(criteria2.column_name, filter.entity)" change="changeAction(event);" />
 			<control:DisabledComboBox width="110" id="filterOp2" dataProvider="{Utils.operatorData}" 
-						 selectedIndex="{Utils.getComboOpIndex(criteria2.operator)}" change="operatorChangeHandler(event)"/>
+						 selectedIndex="{Utils.getComboOpIndex(criteria2.operator)}" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam2"/>
 			<mx:ComboBox includeInLayout="false" width="120" id="cboFilterFormula2" dataProvider="{Utils.dateFormulaFn}" change="formulaChangeHandler(event)"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam2"/>
@@ -379,7 +383,7 @@
 			<mx:ComboBox width="160" id="filterCol3" dataProvider="{Utils.getColumns(filter.entity)}" labelField="label" 
 						 creationComplete="filterCol3.selectedIndex=Utils.getComboColIndex(criteria3.column_name, filter.entity)" change="changeAction(event);" />
 			<control:DisabledComboBox width="110" id="filterOp3" dataProvider="{Utils.operatorData}" 
-						 selectedIndex="{Utils.getComboOpIndex(criteria3.operator)}" change="operatorChangeHandler(event)"/>
+						 selectedIndex="{Utils.getComboOpIndex(criteria3.operator)}" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam3"/>
 			<mx:ComboBox includeInLayout="false" width="120" id="cboFilterFormula3" dataProvider="{Utils.dateFormulaFn}" change="formulaChangeHandler(event)"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam3"/>
@@ -395,7 +399,7 @@
 			<mx:ComboBox width="160" id="filterCol4" dataProvider="{Utils.getColumns(filter.entity)}" labelField="label" 
 						 creationComplete="filterCol4.selectedIndex=Utils.getComboColIndex(criteria4.column_name, filter.entity)" change="changeAction(event);" />
 			<control:DisabledComboBox width="110" id="filterOp4" dataProvider="{Utils.operatorData}" 
-						 selectedIndex="{Utils.getComboOpIndex(criteria4.operator)}" change="operatorChangeHandler(event)"/>
+						 selectedIndex="{Utils.getComboOpIndex(criteria4.operator)}" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam4"/>
 			<mx:ComboBox includeInLayout="false" width="120" id="cboFilterFormula4" dataProvider="{Utils.dateFormulaFn}" change="formulaChangeHandler(event)"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam4"/>
@@ -405,12 +409,12 @@
 		
 	</mx:FormItem>
 	<mx:HRule width="100%" />
-	<mx:FormItem label="{i18n._('Order By')}">
+	<mx:FormItem label="{i18n._('GLOBAL_ORDER_BY')}">
 		<mx:HBox id="itemCriteria5">
 		<mx:ComboBox width="160" id="filterCol5" dataProvider="{Utils.getColumns(filter.entity)}" labelField="label" 
 					 creationComplete="filterCol5.selectedIndex=Utils.getComboColIndex(criteria5.column_name, filter.entity)"/>
-		<mx:RadioButton id="sortbyasc" groupName="sortType" value="asc" label="{i18n._('Ascending')}"  />
-		<mx:RadioButton id="sortbydesc" groupName="sortType" value="desc" label="{i18n._('Descending')}"  />
+		<mx:RadioButton id="sortbyasc" groupName="sortType" value="asc" label="{i18n._('GLOBAL_ASCENDING')}"  />
+		<mx:RadioButton id="sortbydesc" groupName="sortType" value="desc" label="{i18n._('GLOBAL_DESCENDING')}"  />
 			</mx:HBox>
 	</mx:FormItem>
 	<mx:StringValidator id="nameValidator" source="{nameInput}" property="text"/>

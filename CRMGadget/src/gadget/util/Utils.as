@@ -655,18 +655,17 @@ package gadget.util {
 		}
 		
 		
-		
 		public static const operatorData:ArrayCollection = new ArrayCollection(
 			
 			[ {label:"", data:""},
-				{label:"equals", data:"="},
-				{label:"different", data:"!="}, 
-				{label:"contains", data:"LIKE"},
-				{label:"less than", data:"<"},
-				{label:"greater than", data:">"},
-				{label:"is empty", data:"is null"},
-				{label:"is not empty", data:"is not null"},	
-				{label:"begins with", data:"LIKE%"}	
+				{label:"OP_EQUALS@equals", data:"="},
+				{label:"OP_DIFFERENT@different", data:"!="}, 
+				{label:"OP_CONTAINS@contains", data:"LIKE"},
+				{label:"OP_LESS_THAN@less than", data:"<"},
+				{label:"OP_GREATER_THAN@greater than", data:">"},
+				{label:"OP_IS_EMPTY@is empty", data:"is null"},
+				{label:"OP_IS_NOT_EMPTY@is not empty", data:"is not null"},	
+				{label:"OP_BEGINS_WITH@begins with", data:"LIKE%"}	
 			]);
 		
 		

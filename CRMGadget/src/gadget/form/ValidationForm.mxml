@@ -80,6 +80,9 @@
 					cbovalue_rule.visible = show;
 				}
 			}
+			private function getOperationLabel(item:Object):String{
+				return i18n._(item.label);
+			}
 					
 		]]>
 	</mx:Script><!--CRO 05.01.2011-->
@@ -89,7 +92,7 @@
 	<mx:FormItem required="true" label="{i18n._('VALIDATIONFORM_FORMITEM_LABEL_CRITERIA')}">
 		<mx:HBox>
 			<mx:ComboBox width="160" id="field_rule" change="changeAction(event);"/>
-			<mx:ComboBox width="120" id="operator_rule" change="operatorChange(event)"/>
+			<mx:ComboBox width="120" id="operator_rule" change="operatorChange(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="160" id="value_rule"/>		
 			<mx:ComboBox includeInLayout="false" width="160" id="cbovalue_rule"/>
 		</mx:HBox>

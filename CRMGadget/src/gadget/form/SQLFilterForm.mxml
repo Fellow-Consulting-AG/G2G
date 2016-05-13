@@ -251,6 +251,9 @@
 					}
 				}
 			}
+			private function getOperationLabel(item:Object):String{
+				return i18n._(item.label);
+			}
 			
 		]]>
 	</mx:Script>
@@ -273,7 +276,7 @@
 	<mx:FormItem label="{i18n._('FILTER_FOMR_FORM_ITEM_CRITERIA1')}">
 		<mx:HBox>
 			<mx:ComboBox width="160" id="filterCol1" labelField="label" change="changeAction(event);" />
-			<mx:ComboBox width="110" id="filterOp1" change="operatorChangeHandler(event)"/>
+			<mx:ComboBox width="110" id="filterOp1" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam1"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam1"/>
 		</mx:HBox>
@@ -286,7 +289,7 @@
 	<mx:FormItem label="{i18n._('FILTER_FOMR_FORM_ITEM_CRITERIA2')}">
 		<mx:HBox>
 			<mx:ComboBox width="160" id="filterCol2" labelField="label" change="changeAction(event);" />
-			<mx:ComboBox width="110" id="filterOp2" change="operatorChangeHandler(event)"/>
+			<mx:ComboBox width="110" id="filterOp2" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam2"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam2"/>
 		</mx:HBox>
@@ -299,7 +302,7 @@
 	<mx:FormItem label="{i18n._('FILTER_FOMR_FORM_ITEM_CRITERIA3')}">
 		<mx:HBox>
 			<mx:ComboBox width="160" id="filterCol3" labelField="label" change="changeAction(event);" />
-			<mx:ComboBox width="110" id="filterOp3" change="operatorChangeHandler(event)"/>
+			<mx:ComboBox width="110" id="filterOp3" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam3"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam3"/>
 		</mx:HBox>
@@ -312,7 +315,7 @@
 	<mx:FormItem label="{i18n._('FILTER_FOMR_FORM_ITEM_CRITERIA4')}">
 		<mx:HBox>
 			<mx:ComboBox width="160" id="filterCol4" labelField="label" change="changeAction(event);" />
-			<mx:ComboBox width="110" id="filterOp4" change="operatorChangeHandler(event)"/>
+			<mx:ComboBox width="110" id="filterOp4" change="operatorChangeHandler(event)" labelFunction="{getOperationLabel}"/>
 			<mx:TextInput includeInLayout="false" width="260" id="filterParam4"/>
 			<mx:ComboBox includeInLayout="false" width="160" id="cboFilterParam4"/>
 		</mx:HBox>

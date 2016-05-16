@@ -3,12 +3,13 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="460" height="468"
+	width="620" height="468"
 	title="{Database.customLayoutDao.getDisplayName(relation.entityDest) +' '+ i18n._('GLOBAL_FINDER')}" 
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="updateInfo(); init()">
 	
 	<mx:Script>
 		<![CDATA[
+			
 			import gadget.dao.BaseDAO;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
@@ -196,7 +197,7 @@
 		]]>
 	</mx:Script>
 	<mx:Style source="styles.css"/>
-	<mx:Canvas styleName="main" left="0" top="0" width="460" height="468" right="0" bottom="0"><!--CRO 05.01.2011-->
+	<mx:Canvas styleName="main" left="0" top="0" width="100%" height="100%" right="0" bottom="0"><!--CRO 05.01.2011-->
 		<control:TitleBar icon="@Embed(source='/assets/search.png')" title="{GUIUtils.getItemFinderLabel(Database.customLayoutDao.getDisplayName(relation.entityDest) , ' ' + i18n._('GLOBAL_FINDER'))}"/>
 		<mx:VBox top="32" left="16" right="16">
 			<mx:Form width="100%" paddingBottom="8">
@@ -213,7 +214,7 @@
 				<!--CRO 05.01.2011-->
 				<mx:FormItem label="{i18n._('GLOBAL_RESULTS')}" width="100%">
 					<mx:List id="resultList" width="100%" dataProvider="{allItems}" rowHeight="27" rowCount="10" click="selectItem(resultList.selectedItem)">
-						<mx:itemRenderer>
+					<mx:itemRenderer>
 							<mx:Component>
 								<mx:HBox horizontalScrollPolicy="off" horizontalAlign="left" horizontalGap="0">
 									<mx:Script>
@@ -222,7 +223,7 @@
 										]]>
 									</mx:Script>
 									<mx:Image id="albumImage" source="{ImageUtils.getImage(data.gadget_type)}"/>
-									<mx:Label text="{data.name}" width="100%"/>
+									<mx:Label text="{data.name}" width="100%" toolTip="{data.name}"/>
 								</mx:HBox>								
 							</mx:Component>
 						</mx:itemRenderer>

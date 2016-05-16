@@ -3,6 +3,7 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.net.dns.SRVRecord;
 	
 	import gadget.util.StringUtils;
 	
@@ -51,11 +52,17 @@ package gadget.dao
 			return result.data[0].total;
 		}*/
 		
-		public function filterAll(columns:ArrayCollection, tableName:String, filter:String = null):ArrayCollection {
+		public function filterAll(columns:ArrayCollection, tableName:String, filter:String = null,params:Object=null):ArrayCollection {
 			var cols:String = '';
 			for each (var column:Object in columns) {
 				if(cols != '') cols += ", ";
 				cols += column.element_name;
+			}
+			stmtFindAll.clearParameters();
+			if(filter!=null){
+				for(var p:String in params){
+					stmtFindAll.parameters[":"+p]=params[p];
+				}
 			}
 			stmtFindAll.text = "SELECT " + cols + " FROM " + tableName + " WHERE " + (StringUtils.isEmpty(filter) ? "" : filter + " AND ") + " (deleted != 1)";
 			trace(stmtFindAll);

@@ -3,11 +3,12 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="470" height="458"	
+	width="620" height="458"	
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="updateInfo(); init()">
 	
 	<mx:Script>
 		<![CDATA[
+			
 			import gadget.control.ImageTextInput;
 			import gadget.dao.DAO;
 			import gadget.dao.Database;
@@ -116,8 +117,9 @@
 											import gadget.util.ImageUtils;
 										]]>
 									</mx:Script>
+									
 									<mx:Image id="albumImage" source="{ImageUtils.getImage(data.gadget_type)}"/>
-									<mx:Label text="{data.name}" width="100%"/>
+									<mx:Label text="{data.name}" width="100%" toolTip="{data.name}"/>
 								</mx:HBox>								
 							</mx:Component>
 						</mx:itemRenderer>

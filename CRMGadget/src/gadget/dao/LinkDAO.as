@@ -40,6 +40,8 @@ package gadget.dao {
 			}
 			name = StringUtil.trim(name);
 			name = name.replace(/\'/gi,"''");
+			var params:Object = new Object();
+			params["name"]="%"+name+"%";
 			var query:String = "";
 			for each (var entity:String in entities) {
 				if (query != "") {
@@ -48,15 +50,16 @@ package gadget.dao {
 					
 				var nameCondition :String = "";
 				if(entity == "User"){
-					nameCondition = "( FirstName LIKE '%" + name + "%' OR LastName LIKE '%" + name + "%')";
+					nameCondition = "( FirstName LIKE :name  OR LastName LIKE :name )";
 				}else{
+					params["nameupper"]="%"+StringUtils.toUpperCase(name)+"%";
 					var i:int=0;
 					for each(var col:String in DAOUtils.getSearchColumns(entity)){
 						if(i > 0 ){	
 							// if it has several columns
 							nameCondition +=" OR ";
 						}
-						nameCondition += "("+ col + " LIKE '%" + name + "%' OR "+col+" LIKE '%"+StringUtils.toUpperCase(name)+"%')";
+						nameCondition += "("+ col + " LIKE :name  OR "+col+" LIKE :nameupper)";
 						i++;
 					}
 				}
@@ -80,6 +83,10 @@ package gadget.dao {
 			//query += " ORDER BY name LIMIT 1000";
 			query += " LIMIT 1000";
 			stmtAllItems.text = query;
+			stmtAllItems.clearParameters();
+			for(var f:String in params){
+				stmtAllItems.parameters[":"+f]=params[f];
+			}
 			trace(query);
 			exec(stmtAllItems);
 			
@@ -98,6 +105,9 @@ package gadget.dao {
 			var name:String = StringUtils.replaceAll_(wildcardName, "*", "");
 			name = StringUtil.trim(name);
 			name = name.replace(/\'/gi,"''");
+			var params:Object = new Object();
+			params["name"]="%"+name+"%";
+			
 			var query:String = "";
 			for each (var entity:String in entities) {
 				if (query != "") {
@@ -116,8 +126,9 @@ package gadget.dao {
 							" OR " + colLastName + " >='" + name + "' AND " + colLastName + " <= '" + name + "zzzz')";
 					}*/
 					
-					nameCondition += "(" + colFirstName + " LIKE '%" + name + "%' OR " + colLastName + " LIKE '%" + name + "%' )";
+					nameCondition += "(" + colFirstName + " LIKE :name  OR " + colLastName + " LIKE :name )";
 				}else{
+					params["nameupper"]="%"+StringUtils.toUpperCase(name)+"%";
 					var i:int=0;
 					for each(var col:String in DAOUtils.getSearchColumns(entity)){
 						if(i > 0 ){	
@@ -132,7 +143,7 @@ package gadget.dao {
 						}*/
 						
 						//nameCondition += "("+ col + " LIKE '%" + name + "%')";
-						nameCondition += "("+ col + " LIKE '%" + name + "%' OR "+col+" LIKE '%"+StringUtils.toUpperCase(name)+"%')";
+						nameCondition += "("+ col + " LIKE :name  OR "+col+" LIKE :nameupper)";
 						i++;
 					}
 				}
@@ -156,6 +167,10 @@ package gadget.dao {
 			//query += " ORDER BY name LIMIT 1000";
 			query += " LIMIT 1000";
 			stmtAllItems.text = query;
+			stmtAllItems.clearParameters();
+			for(var f:String in params){
+				stmtAllItems.parameters[":"+f]=params[f];
+			}
 			trace(query);
 			exec(stmtAllItems);
 			

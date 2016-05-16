@@ -2,7 +2,7 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="480" height="450"
+	width="520" height="450"
 	title="Finder" 
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="init()">
 	

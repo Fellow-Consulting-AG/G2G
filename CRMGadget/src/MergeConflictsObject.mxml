@@ -38,8 +38,9 @@
 			[binable]public var datas:ArrayCollection;
 			
 			public var startSyn:Function;
-			private var i:int=0;
+			private var currentIndex:int=0;
 			private var isStop:Boolean=true;
+			protected var scanAll:Boolean = false;
 			private function dispose():void{
 
 				if(syncEnd!=null && isStop){
@@ -53,34 +54,21 @@
 
 				Database.begin();
 				for each (var obj:Object in datas){
+					var isCRMWin:Boolean = obj.crm;
 					var localeObj:Object = obj.localeRec;
 					var serverObj:Object = obj.serverRec;
-					var localeMergFields:Object = localeObj.serverMergFields;
-					var serverMergFields:Object = serverObj.localeMergFields;
-					if(localeMergFields==null && serverMergFields==null){
-						//???should be copy all field from server to local or keep local for replace to server
-						//for(var field:String in serverObj){
-						//	localeObj[field] = serverObj[field];
-						//}
-						trace("keep as default");
-						//nothing to do
-					}else{
-						//var fieldsMergs:Object = localeObj.listFieldMerg;
-						if(localeMergFields != null ){
-							for (var f:String in localeMergFields){
-								
-								if(serverMergFields!=null && serverMergFields[f]!=null) continue;
-								
-								localeObj[f] = serverObj[f];
-								
-								
-							} 
+					if(isCRMWin){
+						//reset mark as update
+						localeObj.deleted = false;
+						localeObj.local_update = null;
+						localeObj.error = false;
+						for(var f:String in serverObj){
+							localeObj[f] = serverObj[f];
 						}
+						var dao:BaseDAO = Database.getDao(localeObj.gadget_type);
+						dao.updateByOracleId(localeObj);
 					}
 					
-					
-					var dao:BaseDAO = Database.getDao(localeObj.gadget_type);
-					dao.updateByOracleId(localeObj);
 					
 				}
 				
@@ -112,7 +100,12 @@
 		   }
 			
 			private function init():void{
-				i=0;
+				currentIndex=0;
+				//init default select to crm
+				for each(var obj:Object in datas){
+					//default is crm selected
+					obj.crm=true;
+				}
 				createScreen();
 			}
 			
@@ -135,12 +128,12 @@
 					return;
 				}
 				
-				if(i==0){
+				if(currentIndex==0){
 					btnNext.enabled=true;
 					btnPreviouse.enabled=false;
 					return;				
 				}
-				if(i==datas.length-1){
+				if(currentIndex==datas.length-1){
 					btnNext.enabled=false;
 					btnPreviouse.enabled=true;
 					return;
@@ -171,10 +164,14 @@
 				return frmItm;
 			}
 
+			protected function getCurrentObject():Object{
+				return datas.getItemAt(currentIndex);
+			}
+			
 			private function createScreen():void{
 				
 				
-				var item:Object = datas.getItemAt(i);
+				var item:Object = getCurrentObject();
 				var serverRec:Object = item.serverRec;
 				var localeRec:Object = item.localeRec;
 				var entity:String = item.gadget_type;
@@ -192,7 +189,7 @@
 				
 				
 				
-				numberof.text = (i+1) + " of " + datas.length;
+				numberof.text = (currentIndex+1) + i18n._("GLOBAL_OF@ of ") + datas.length;
 				var name2FieldInfo:Dictionary = FieldUtils.allFieldsAsMap(entity);
 				var fields:ArrayCollection = Database.layoutDao.selectAllFields(entity);
 				var listDifferencts:ArrayCollection = new ArrayCollection();
@@ -235,44 +232,44 @@
 						
 						listDifferencts.addItem({local:txtInputLocal,server:txtInputServer});
 						
-						var nextImage:Image = new Image();
-						nextImage.width = 16;
-						nextImage.height = 16;
-						nextImage.source = ImageUtils.nextDayIcon;
-						nextImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer, 'serverObj':serverRec, 'localeObj':localeRec};
-						nextImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
-							var image:Image = Image(event.currentTarget);
-							var obj:Object = image.data;
-							var fieldObj:Object = obj.field;
-							var serverObj:Object = obj.serverObj;
-							if(serverObj.localeMergFields==null){
-								serverObj.localeMergFields=new Object();
-							}
-							setMerg(obj.serverComponent,serverObj.localeMergFields,obj.localComponent.text,obj.entity,fieldObj,obj.localeObj);
-						});
-
-						var prevImage:Image = new Image();
-						prevImage.width = 16;
-						prevImage.height = 16;
-						prevImage.source = ImageUtils.previousDayIcon;
-						prevImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer,'serverObj':serverRec, 'localeObj':localeRec};
-						prevImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
-							var image:Image = Image(event.currentTarget);
-							var obj:Object = image.data;
-							var fieldObj:Object = obj.field;
-							var localeObj:Object = obj.localeObj;
-							if(localeObj.serverMergFields == null){
-								localeObj.serverMergFields = new Object();
-							}							
-							setMerg(obj.localComponent,localeObj.serverMergFields,obj.serverComponent.text,obj.entity,fieldObj,obj.serverObj);							
-						});
-						
+//						var nextImage:Image = new Image();
+//						nextImage.width = 16;
+//						nextImage.height = 16;
+//						nextImage.source = ImageUtils.nextDayIcon;
+//						nextImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer, 'serverObj':serverRec, 'localeObj':localeRec};
+//						nextImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
+//							var image:Image = Image(event.currentTarget);
+//							var obj:Object = image.data;
+//							var fieldObj:Object = obj.field;
+//							var serverObj:Object = obj.serverObj;
+//							if(serverObj.localeMergFields==null){
+//								serverObj.localeMergFields=new Object();
+//							}
+//							setMerg(obj.serverComponent,serverObj.localeMergFields,obj.localComponent.text,obj.entity,fieldObj,obj.localeObj);
+//						});
+//
+//						var prevImage:Image = new Image();
+//						prevImage.width = 16;
+//						prevImage.height = 16;
+//						prevImage.source = ImageUtils.previousDayIcon;
+//						prevImage.data = {'localComponent':txtInputLocal,'entity':entity, 'field':fieldInfo, 'serverComponent':txtInputServer,'serverObj':serverRec, 'localeObj':localeRec};
+//						prevImage.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void{
+//							var image:Image = Image(event.currentTarget);
+//							var obj:Object = image.data;
+//							var fieldObj:Object = obj.field;
+//							var localeObj:Object = obj.localeObj;
+//							if(localeObj.serverMergFields == null){
+//								localeObj.serverMergFields = new Object();
+//							}							
+//							setMerg(obj.localComponent,localeObj.serverMergFields,obj.serverComponent.text,obj.entity,fieldObj,obj.serverObj);							
+//						});
+//						
 						var localDisplayObject:HBox = new HBox();
 						var serverDisplayObject:HBox = new HBox();
 						
 						localDisplayObject.addChild(txtInputLocal);
-						localDisplayObject.addChild(prevImage);
-						serverDisplayObject.addChild(nextImage);
+						//localDisplayObject.addChild(prevImage);
+						//serverDisplayObject.addChild(nextImage);
 						serverDisplayObject.addChild(txtInputServer);
 						
 						var lblConflict:String = fieldInfo.display_name;
@@ -283,31 +280,31 @@
 				}
 				
 				//add undo button
-				var btnUndo:Button = new Button();				
-				btnUndo.label = "Undo";
-				btnUndo.data = {localeObj:localeRec,serverObj:serverRec,listDef:listDifferencts};
-				btnUndo.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{
-					var btn:Button = Button(e.currentTarget);
-					var obj:Object = btn.data;
-					obj.localeObj.serverMergFields = null;
-					obj.serverObj.localeMergFields = null;
-					//refref textbox
-					for each(var o:Object in obj.listDef){
-						var localComp:TextInput = o.local;
-						var serverComp:TextInput = o.server;
-						var entity:String = localComp.data.type;
-						var field:Object =  localComp.data.objField;
-						var localTxt:String = getDisplayValue(entity,field,obj.localeObj);
-						var serverTxt:String = getDisplayValue(entity,field,obj.serverObj);
-						localComp.text = localTxt;
-						localComp.toolTip = localTxt;
-						serverComp.text = serverTxt;
-						serverComp.toolTip = serverTxt;
-						
-					}
-				});
-								
-				hboxUndo.addChild(btnUndo);
+//				var btnUndo:Button = new Button();				
+//				btnUndo.label = "Undo";
+//				btnUndo.data = {localeObj:localeRec,serverObj:serverRec,listDef:listDifferencts};
+//				btnUndo.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{
+//					var btn:Button = Button(e.currentTarget);
+//					var obj:Object = btn.data;
+//					obj.localeObj.serverMergFields = null;
+//					obj.serverObj.localeMergFields = null;
+//					//refref textbox
+//					for each(var o:Object in obj.listDef){
+//						var localComp:TextInput = o.local;
+//						var serverComp:TextInput = o.server;
+//						var entity:String = localComp.data.type;
+//						var field:Object =  localComp.data.objField;
+//						var localTxt:String = getDisplayValue(entity,field,obj.localeObj);
+//						var serverTxt:String = getDisplayValue(entity,field,obj.serverObj);
+//						localComp.text = localTxt;
+//						localComp.toolTip = localTxt;
+//						serverComp.text = serverTxt;
+//						serverComp.toolTip = serverTxt;
+//						
+//					}
+//				});
+//								
+//				hboxUndo.addChild(btnUndo);
 				
 			}
 			
@@ -394,22 +391,67 @@
 				
 			}
 			
-			private function next():void{
-				i=i+1;
-				if(i>datas.length-1){
-					i=datas.length-1;
+			private function chkClieckEvent(event:MouseEvent):void{
+				var target:CheckBox = event.currentTarget as CheckBox;
+				if(target.selected){
+					var obj:Object = getCurrentObject();
+					
+					if(chkCRM!=target){
+						chkCRM.selected=!target.selected;
+					}
+					if(chkG2G!=target){
+						chkG2G.selected=!target.selected;
+					}
+					
 				}
-				if(i==datas.length-1){
+				btnNext.enabled=target.selected && currentIndex<datas.length-1;
+				btnPreviouse.enabled=target.selected&&currentIndex>0;
+				if(scanAll){
+					btnOk.enabled=target.selected;
+				}
+			}
+			
+			private function next():void{
+				//mark select for current selected
+				var obj:Object = getCurrentObject();
+				obj.crm=chkCRM.selected;
+				
+				currentIndex=currentIndex+1;
+				if(currentIndex>datas.length-1){
+					currentIndex=datas.length-1;
+				}
+				if(currentIndex==datas.length-1){
+					scanAll = true;
 					btnOk.enabled = true;
 				}
+				obj= getCurrentObject();
+				if(obj.hasOwnProperty('crm')){
+					chkCRM.selected = obj.crm;
+					chkG2G.selected = !obj.crm;
 					
+				}else{
+					chkCRM.selected=true;//default	
+				}
+				
 				createScreen();
 			}
 			
 			private function previouse():void{
-				i=i-1;
-				if(i<0){
-					i=0;
+				//mark select for current selected
+				var obj:Object = getCurrentObject();
+				obj.crm=chkCRM.selected;
+				
+				currentIndex=currentIndex-1;
+				if(currentIndex<0){
+					currentIndex=0;
+				}
+				obj = getCurrentObject();
+				if(obj.hasOwnProperty('crm')){
+					chkCRM.selected = obj.crm;
+					chkG2G.selected = !obj.crm;
+					
+				}else{
+					chkCRM.selected=true;//default	
 				}
 				createScreen();
 			}
@@ -447,16 +489,18 @@
 	<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" styleName="main" left="0" top="0" bottom="0">
 		<control:TitleBar id="titlebar" y="2" x="25"/>
 		<mx:VBox width="100%" height="100%" paddingTop="35" paddingBottom="10" paddingLeft="10" paddingRight="10">
-			<mx:Panel title="Merge Conflict Set Up" width="100%" height="100%">
-				<mx:VBox width="100%" height="100%">
+			<mx:Panel title="{i18n._('SELECT_MOST_ACCURATE_DATA_SET@Select the most accurate data set')}" width="100%" fontSize="16" fontWeight="bold" height="100%">
+				<mx:VBox width="100%" height="100%" fontSize="12" fontWeight="normal">
 					<mx:HBox width="100%" height="100%">
 						<mx:VBox width="50%" height="100%">
-							<mx:Label text="{i18n._('LOCAL_RECORD@Local Record')}" textAlign="center" width="100%" fontSize="15" fontWeight="bold"/>
-							<mx:Form id="frmLocal" width="100%" height="100%"/>
+							
+								<mx:CheckBox id="chkG2G" label="{i18n._('YOURS_G2G@Yours G2G')}" color="#87CEEB" textAlign="center"  width="100%" fontSize="16" fontWeight="bold" click="chkClieckEvent(event)"/>							
+							
+								<mx:Form id="frmLocal" width="100%" height="100%"/>
 						</mx:VBox>						
 						<mx:VRule height="100%"/>
 						<mx:VBox width="50%" height="100%">
-							<mx:Label text="{i18n._('EXTERNAL_RECORD@External Record')}" textAlign="center" width="100%" fontSize="15" fontWeight="bold"/>
+							<mx:CheckBox id="chkCRM" selected="true" label="{i18n._('CRM (The main system)')}"  color="#87CEEB" textAlign="center" width="100%" fontSize="16" fontWeight="bold" click="chkClieckEvent(event)"/>
 							<mx:Form id="frmServer" width="100%" height="100%"/>
 						</mx:VBox>
 						
@@ -466,15 +510,15 @@
 			</mx:Panel>
 			<mx:HBox width="100%" >
 				<mx:HBox width="100%" horizontalAlign="left" paddingTop="4" paddingRight="0">
-					<mx:Button id = "btnPreviouse" label="Previous" click="previouse()" />
-					<mx:Button id = "btnNext" label="Next" click="next()" />
+					<mx:Button id = "btnPreviouse" label="{i18n._('GLOBAL_PREVIOUS@Previous')}" click="previouse()" />
+					<mx:Button id = "btnNext" label="{i18n._('GLOBAL_NEXT@Next')}" click="next()" />
 				</mx:HBox>
 				<mx:HBox width="100%" horizontalAlign="center" paddingTop="4" paddingRight="0">
 					<mx:Label id ="numberof"/>
 				</mx:HBox>
 				<mx:HBox width="100%" horizontalAlign="right" paddingTop="4" paddingRight="8">
-					<mx:Button label="Cancel" click="dispose()" />
-					<mx:Button id = "btnOk" label="Continue" click="save()" enabled="false" />
+					<mx:Button label="{i18n._('GLOBAL_CANCEL@Cancel')}" click="dispose()" />
+					<mx:Button id = "btnOk" label="{i18n._('CONTINUE@Continue')}" click="save()" enabled="false" />
 				</mx:HBox>
 			</mx:HBox>
 		</mx:VBox>

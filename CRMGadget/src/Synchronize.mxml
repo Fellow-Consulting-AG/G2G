@@ -234,7 +234,7 @@
 					conflicts.addAll(obj.getConflicts());
 				}
 				if(conflicts.length>0){
-					var mergeConflicts:MergeConflictsObject=new MergeConflictsObject();
+					var mergeConflicts:ConflictOverview=new ConflictOverview();
 					mergeConflicts.datas=conflicts;
 					mergeConflicts.syncEnd=mainWindow.syncEnd;
 					mergeConflicts.startSyn=startSyn;

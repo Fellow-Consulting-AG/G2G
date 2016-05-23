@@ -18,6 +18,8 @@
 			private var maxMin:Boolean = false;
 			[Bindable]
 			public var maximizeable:Boolean=false;
+			[Bindable]
+			public var closeable:Boolean=true;
 //		creationComplete="closeWinWithEscKey()"
 		
 //		private function closeWinWithEscKey():void {
@@ -65,5 +67,5 @@
 	<mx:Image top="3" left="3" source="{icon}"/>
 	<mx:Label text="{StringUtils.reduceTextLength(title, 30)}" top="0" left="{icon == null ? 0 : 20}" />
 	<mx:Button visible="{maximizeable}" styleName="iconMaximize" height="16" width="16" top="2" right="20" click="maximizeHandler();"/>
-	<mx:Button styleName="iconClose" height="16" width="16" top="2" right="4" click="closeHandler();"/>	
+	<mx:Button visible="{closeable}" styleName="iconClose" height="16" width="16" top="2" right="4" click="closeHandler();"/>	
 </mx:Canvas>

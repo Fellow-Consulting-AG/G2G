@@ -3,8 +3,7 @@
 		xmlns:mx="http://www.adobe.com/2006/mxml"
 		xmlns:control="gadget.control.*"
 		showFlexChrome="false" systemChrome="none" 
-		resizable="false"	
-		close="dispose()"
+		resizable="false"			
 		layout="absolute" width="800" height="600" creationComplete="init()"  showStatusBar="false">
 	<mx:Script>
 		<![CDATA[
@@ -25,11 +24,12 @@
 			[binable]public var datas:ArrayCollection;
 			
 			public var startSyn:Function;
-			
+			protected var cancel:Boolean = false;
 			
 			private function dispose():void{
 
 				if(syncEnd!=null){
+					cancel = true;
 					syncEnd(false);					
 				}
 				this.close();
@@ -66,27 +66,29 @@
 		
 			
 			private function init():void{
-				
+				cancel = false;
 				var recCount:int=0;
 				if(datas!=null){
 					recCount = datas.length;
 				}
-				lblInfo.text = i18n._('YOURS_G2G_HAS_REC_CONFLICT_WITH_CRM@Yours G2G has {1} records that conflict with CRM.',recCount);
+				lblInfo.text = i18n._('YOURS_G2G_HAS_REC_CONFLICT_WITH_CRM@Your G2G has {1} record(s) that conflict with CRM.',recCount);
 				addEventListener(Event.CLOSE,closeListener);
 			}
 			private function closeListener(event:Event):void{
-				if(chkUnsure.selected){
-					var mergeConflicts:MergeConflictsObject=new MergeConflictsObject();
-					mergeConflicts.datas=datas;
-					mergeConflicts.syncEnd=syncEnd;
-					mergeConflicts.startSyn=startSyn;
-					WindowManager.openModal(mergeConflicts);
-				}else if(chkCRM.selected){
-					updateDataFromCRM();
-					startSyn();
-				}else{
-					//nothing to do when chkg2g selected
-					startSyn();
+				if(!cancel){
+					if(chkUnsure.selected){
+						var mergeConflicts:MergeConflictsObject=new MergeConflictsObject();
+						mergeConflicts.datas=datas;
+						mergeConflicts.syncEnd=syncEnd;
+						mergeConflicts.startSyn=startSyn;
+						WindowManager.openModal(mergeConflicts);
+					}else if(chkCRM.selected){
+						updateDataFromCRM();
+						startSyn();
+					}else{
+						//nothing to do when chkg2g selected
+						startSyn();
+					}
 				}
 			}
 			private function setTitle(title:String):void {
@@ -126,11 +128,11 @@
 					<mx:Label id="lblInfo" width="100%" height="38" color="#87CEEB" fontSize="20" fontWeight="bold"
 							  textAlign="center" />
 					<mx:Label id="lblsync" width="100%" height="30" fontSize="16" fontWeight="bold"
-							  text="{i18n._('SYNC_YOUR_G2G_OFTEN_TO_AVOID_CONFLICTS@Sync your G2G oftem to avoid conflicts')}" textAlign="center"/>
+							  text="{i18n._('SYNC_YOUR_G2G_OFTEN_TO_AVOID_CONFLICTS@Sync your G2G often to avoid conflicts.')}" textAlign="center"/>
 					<mx:Label height="60"/>
 					<mx:Label paddingLeft="15" height="38" width="100%"  color="#87CEEB" fontSize="20" fontWeight="bold"
 							  horizontalCenter="11" text="{i18n._('WHICH_DATA_MORE_ACCURATE@Which data is more accurate?')}"/>
-					<mx:CheckBox id="chkG2G" paddingLeft="15"   width="100%" height="26" label="{i18n._('YOURS_G2G@Yours G2G')}" fontSize="16" click="chkClieckEvent(event)" />
+					<mx:CheckBox id="chkG2G" paddingLeft="15"   width="100%" height="26" label="{i18n._('YOURS_G2G@Your G2G')}" fontSize="16" click="chkClieckEvent(event)" />
 					<mx:CheckBox paddingLeft="15" id="chkCRM" width="100%" height="26" label="{i18n._('CRM (The main system)')}" fontSize="16" click="chkClieckEvent(event)"/>
 					<mx:CheckBox paddingLeft="15" id="chkUnsure" width="100%" height="26" label="{i18n._('UNSURE_REVIEW_EACH_CONFLICT@Unsure; review each conflict')}" click="chkClieckEvent(event)" fontSize="16"/>
 					

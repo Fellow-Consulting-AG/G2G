@@ -39,7 +39,7 @@
 			public var startSyn:Function;
 			private var currentIndex:int=0;
 			private var isStop:Boolean=true;
-			protected var scanAll:Boolean = false;
+			
 			private function dispose():void{
 
 				if(syncEnd!=null && isStop){
@@ -100,11 +100,11 @@
 			
 			private function init():void{
 				currentIndex=0;
-				//init default select to crm
-				for each(var obj:Object in datas){
-					//default is crm selected
-					obj.crm=true;
-				}
+//				//init default select to crm
+//				for each(var obj:Object in datas){
+//					//default is crm selected
+//					obj.crm=true;
+//				}
 				createScreen();
 			}
 			
@@ -123,7 +123,6 @@
 				if(datas.length==1){
 					btnNext.enabled=false;
 					btnPreviouse.enabled=false;		
-					btnOk.enabled = true;
 					return;
 				}
 				
@@ -390,11 +389,22 @@
 				}
 				
 			}
+			private function enableBtnContinue():void{
+				var enable:Boolean = true;
+				for each(var obj:Object in datas){
+					if(!obj.hasOwnProperty('crm')){
+						enable = false;
+						break;
+					}
+				}
+				btnOk.enabled = enable;
+			}
 			
 			private function chkClieckEvent(event:MouseEvent):void{
 				var target:CheckBox = event.currentTarget as CheckBox;
+				var obj:Object = getCurrentObject();
 				if(target.selected){
-					var obj:Object = getCurrentObject();
+					
 					
 					if(chkCRM!=target){
 						chkCRM.selected=!target.selected;
@@ -402,57 +412,46 @@
 					if(chkG2G!=target){
 						chkG2G.selected=!target.selected;
 					}
+					obj['crm']=chkCRM.selected;
 					
+				}else{
+					delete obj['crm'];
 				}
-				btnNext.enabled=target.selected && currentIndex<datas.length-1;
-				btnPreviouse.enabled=target.selected&&currentIndex>0;
-				if(scanAll){
-					btnOk.enabled=target.selected;
-				}
+				enableBtnContinue();
 			}
 			
 			private function next():void{
-				//mark select for current selected
-				var obj:Object = getCurrentObject();
-				obj.crm=chkCRM.selected;
 				
 				currentIndex=currentIndex+1;
 				if(currentIndex>datas.length-1){
 					currentIndex=datas.length-1;
 				}
-				if(currentIndex==datas.length-1){
-					scanAll = true;
-					btnOk.enabled = true;
-				}
-				obj= getCurrentObject();
+				
+				selectCheckBoxByCurrentRecord();
+				
+				createScreen();
+			}
+			
+			private function selectCheckBoxByCurrentRecord(){
+				var obj:Object= getCurrentObject();
 				if(obj.hasOwnProperty('crm')){
 					chkCRM.selected = obj.crm;
 					chkG2G.selected = !obj.crm;
 					
 				}else{
-					chkCRM.selected=true;//default	
+					chkCRM.selected =false;
+					chkG2G.selected = false;
 				}
-				
-				createScreen();
 			}
 			
 			private function previouse():void{
-				//mark select for current selected
-				var obj:Object = getCurrentObject();
-				obj.crm=chkCRM.selected;
+				
 				
 				currentIndex=currentIndex-1;
 				if(currentIndex<0){
 					currentIndex=0;
 				}
-				obj = getCurrentObject();
-				if(obj.hasOwnProperty('crm')){
-					chkCRM.selected = obj.crm;
-					chkG2G.selected = !obj.crm;
-					
-				}else{
-					chkCRM.selected=true;//default	
-				}
+				selectCheckBoxByCurrentRecord();
 				createScreen();
 			}
 			
@@ -500,7 +499,7 @@
 						</mx:VBox>						
 						<mx:VRule height="100%"/>
 						<mx:VBox width="50%" height="100%">
-							<mx:CheckBox id="chkCRM" selected="true" label="{i18n._('CRM (The main system)')}"  color="#87CEEB" textAlign="center" width="100%" fontSize="16" fontWeight="bold" click="chkClieckEvent(event)"/>
+							<mx:CheckBox id="chkCRM"  label="{i18n._('CRM (The main system)')}"  color="#87CEEB" textAlign="center" width="100%" fontSize="16" fontWeight="bold" click="chkClieckEvent(event)"/>
 							<mx:Form id="frmServer" width="100%" height="100%"/>
 						</mx:VBox>
 						

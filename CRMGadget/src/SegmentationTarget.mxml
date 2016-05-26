@@ -15,18 +15,16 @@
 			import gadget.sync.incoming.GetContentCustomTab;
 			[Bindable] public var list:List;
 			private function onError(htmlText:String,error:Object=null):void{
-				if(htmlText != null && htmlText.indexOf("#2032")>0){
+				if(htmlText != null && htmlText.indexOf("#2032")!=-1){
 					myHtml.htmlText = i18n._("GLOBAL_NO_INTERNET_CONNECTION@No internet connection");
 				}else{
 					myHtml.htmlText = htmlText;
 				}				
 			}
 			private function callback(urlReq:URLRequest):void{
-				//var html:HTMLLoader = new HTMLLoader();
-			//	html.load(urlReq); 
-				myHtml.htmlLoader.load(urlReq);
+				
 				myHtml.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
-					trace(e.toString());
+					onError(e.text,e);
 				});
 				myHtml.addEventListener(Event.COMPLETE,function onBack(e:Event):void{
 					var document:Object = myHtml.htmlLoader.window.document;
@@ -38,21 +36,7 @@
 					body[0].onmousedown = function(o:Object):void
 					{
 						var parentNode:Object = o.target.parentNode;
-						/*if(o.target.className=="NQWMenuItem"){
-							var str:String = o.target.getAttribute('onclick');
-							if(str == null || str == "") return;
-							var urlPrint:String = str.substring(str.indexOf("saw.dll?"),str.indexOf("',"));
-							
-							urlPrint = "https://secure-vmsomxkfa.crmondemand.com/OnDemand/user/analytics/" + urlPrint;
-							var viewStateDiv:Object = document.getElementById("idViewStateDiv");
-							if (viewStateDiv)
-							{
-								urlPrint += "&ViewState=" + viewStateDiv.getAttribute("stateID");
-							}
-//							myHtml.htmlLoader.window.href = urlPrint;
-							openBrowser(urlPrint);
-						}else 
-						*/
+						
 						if(parentNode != null){
 							var href:String = parentNode.href;
 							if(href != null && href != "" && parentNode.href.indexOf("javascript:void") != 0){
@@ -63,6 +47,7 @@
 						
 					}
 				});
+				myHtml.htmlLoader.load(urlReq);
 			}
 			private function init():void {
 				var getCustomTab:GetContentCustomTab = new GetContentCustomTab(callback,onError);

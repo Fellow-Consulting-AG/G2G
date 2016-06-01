@@ -3,7 +3,7 @@
 <mx:Window 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:control="gadget.control.*"
-	width="620" height="458"	
+	width="780" height="458"	
 	showFlexChrome="false" transparent="true" systemChrome="none" creationComplete="updateInfo(); init()">
 	
 	<mx:Script>

@@ -278,10 +278,15 @@ package gadget.sync.outgoing
 					}
 				}
 				var hasOracleId:Boolean = false;
+				
 				for each (var field:Object in field_list) {
 					var fieldData:String = records[i][field.element_name];
 					if(fieldData==null ||((field.element_name == SodID || StringUtils.isEmpty(fieldData)) && !updated)){
-						continue;//when not updating, the ID need not be sent with WS2.0
+						//bug#13893--hard code when IndexedPick4 is empty need to sent it on createMode
+						if(UserService.getCustomerId()!=UserService.COLOPLAST || field.element_name != 'IndexedPick4' || entity!=Database.customObject11Dao.entity){
+							continue;//when not updating, the ID need not be sent with WS2.0
+						}
+						
 					}
 					if (fieldData != "No Match Row Id") {
 						

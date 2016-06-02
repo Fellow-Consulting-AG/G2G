@@ -121,13 +121,13 @@ package gadget.util
 		public static function getGoogleMapControl(apiKey:Object, info:Object):DisplayObject {
 			var htmlComponent:HTML = new HTML();
 			htmlComponent.height = 300;
-			var file:File = Utils.writeStringFile( 'googlemap_' + DateUtils.getCurrentDateAsSerial() + '.html', getGoogleMapHTML( info.addr ) );
+			var file:File = Utils.writeStringFile( 'googlemap_' + DateUtils.getCurrentDateAsSerial() + '.html', getGoogleMapHTML( info.addr,apiKey.key ) );
 			if(file!=null) htmlComponent.location = file.url;
 			htmlComponent.validateNow();
 			return htmlComponent;
 		}
 		
-		private static function getGoogleMapHTML(addr:String):String {
+		private static function getGoogleMapHTML(addr:String,key:String):String {
 			var strHTML:String = 
 				'<html>' + 
 					'<head>' +
@@ -139,7 +139,7 @@ package gadget.util
 						'	#map_canvas { height: 100% }' +
 						'</style>' +
 						'<title>Google Maps JavaScript API v3 Example: Map Simple</title>' +
-						'<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>' +
+						'<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&key="'+key+'></script>' +
 						'<script type="text/javascript">' +
 							'function initialize() {' +
 								//'var myLatlng = new google.maps.LatLng(48.8903420, 2.3285920);' +

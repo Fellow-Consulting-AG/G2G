@@ -2768,7 +2768,11 @@ package gadget.util
 							if (addr.length > 0) {
 								addr += " ";
 							}
-							addr += item[part];
+							//remove invalid address path
+							var strPath:String = item[part];
+							strPath = strPath.replace(PATTERN_ADRESS_IGNORE,"");
+							strPath = StringUtil.trim(strPath);
+							addr += strPath;
 						}
 					}
 					return addr;
@@ -2776,7 +2780,7 @@ package gadget.util
 			}
 			return '';
 		}	
-		
+		private static  const PATTERN_ADRESS_IGNORE:RegExp=/Road/gi;
 		
 		public static function setupCascadingCombo(childObj:DisplayObject, fieldInfo:Object, inputFields:ArrayCollection):void {
 			if (childObj is ComboBox) {

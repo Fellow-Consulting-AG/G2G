@@ -7,6 +7,7 @@ package gadget.sync.incoming {
 	import flash.utils.Dictionary;
 	
 	import gadget.dao.ActivityDAO;
+	import gadget.dao.AllUsersDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -687,6 +688,20 @@ package gadget.sync.incoming {
 		protected function canSave(incomingObject:Object,localRec:Object=null):Boolean{
 			return true;
 		}
+		//hard code for Activity
+		protected function isCanGoToDetail(localRec:Object, incomObj:Object):Boolean{
+			if(this is IncomingSubActivity && Database.allUsersDao.ownerUser()['Id']!=incomObj['OwnerId']){
+				//bug#14090------Activity - Detail Access for records i cannot access in OOD
+				if(localRec==null){
+					return false;
+				}else{
+					//return old right for sub
+					return localRec.right_goto_detail?localRec.right_goto_detail:false;
+				}
+			}
+			//default is true
+			return true;
+		}
 		
 		protected function importRecord(entitySod:String, data:XML, googleListUpdate:ArrayCollection=null):int {
 			var tmpOb:Object={};
@@ -724,6 +739,7 @@ package gadget.sync.incoming {
 			if(!canSave(tmpOb,localRecord)){
 				return 0;
 			}
+			tmpOb.right_goto_detail = isCanGoToDetail(localRecord,tmpOb);
 			//only jd user		
 			if(entityIDour== Database.serviceDao.entity 
 				&& UserService.DIVERSEY==UserService.getCustomerId()){

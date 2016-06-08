@@ -204,9 +204,14 @@ package gadget.sync.incoming
 			var dateSpec:String = "";
 			var startDate:Date = null;
 			if(startTime!=-1){
-				if(parentLastSynch!=null && parentLastSynch.getTime()>=startTime){
-					startDate = parentLastSynch;
-				}else{
+				if(isUsedLastModified){
+					if(parentLastSynch!=null && parentLastSynch.getTime()>=startTime){
+						startDate = parentLastSynch;
+					}else{
+						startDate = new Date(startTime);
+					}
+				}
+				else{
 					startDate = new Date(startTime);
 				}
 			}else{

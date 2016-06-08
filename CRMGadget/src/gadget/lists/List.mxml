@@ -549,31 +549,37 @@
 					}
 					
 					var baseDOA:BaseDAO = Database.getDao(seletedEntity);
-					var screenDetail:Detail = new Detail();
-//					screenDetail.isReadOnlyFields = isOpen;
-					screenDetail.list = this;
-					if(refreshFunction==null){
-						refreshFunction = selectItem;
-						isRefreshList = false;
+					var rec:Object = baseDOA.findByGadgetId(item.gadget_id); 
+					if(rec.right_goto_detail==null || rec.right_goto_detail){
+						var screenDetail:Detail = new Detail();
+						screenDetail.item=rec;
+	//					screenDetail.isReadOnlyFields = isOpen;
+						screenDetail.list = this;
+						if(refreshFunction==null){
+							refreshFunction = selectItem;
+							isRefreshList = false;
+						}
+						screenDetail.isRefreshList = isRefreshList;
+						if(viewStack.selectedIndex==1){//refresh on calendar view
+							screenDetail.calendar = calendar;
+							screenDetail.calendarIlog = calendarIlog;	
+						}					
+					
+						screenDetail.entity = seletedEntity;
+						baseDOA.increaseImportant(screenDetail.item);
+						screenDetail.mainWindow = parentApplication as MainWindow;
+						screenDetail.refreshFunction = refreshFunction;
+						// screenDetail.closeRecordTypePopup = closeRecordType;
+						if(isCopy){
+							screenDetail.create = true;
+							//#11944
+							screenDetail.subtype = LayoutUtils.getSubtypeIndex(screenDetail.item);
+							screenDetail.isCopy = isCopy;
+						}
+						WindowManager.openModal(screenDetail);
+					}else{
+						Alert.show(i18n._('NO_ACCESST@No access.'),i18n._("GLOBAL_ERROR@Error") , Alert.OK ,this.parentApplication as MainWindow);
 					}
-					screenDetail.isRefreshList = isRefreshList;
-					if(viewStack.selectedIndex==1){//refresh on calendar view
-						screenDetail.calendar = calendar;
-						screenDetail.calendarIlog = calendarIlog;	
-					}
-					screenDetail.item = baseDOA.findByGadgetId(item.gadget_id); 
-					screenDetail.entity = seletedEntity;
-					baseDOA.increaseImportant(screenDetail.item);
-					screenDetail.mainWindow = parentApplication as MainWindow;
-					screenDetail.refreshFunction = refreshFunction;
-					// screenDetail.closeRecordTypePopup = closeRecordType;
-					if(isCopy){
-						screenDetail.create = true;
-						//#11944
-						screenDetail.subtype = LayoutUtils.getSubtypeIndex(screenDetail.item);
-						screenDetail.isCopy = isCopy;
-					}
-					WindowManager.openModal(screenDetail);
 				}else{
 					Alert.show(i18n._(LIST_ALERT_MSG_PLEASE_SELECT_THE) + " " + displayName + " " + i18n._(LIST_ALERT_MSG_TO_EDIT),"" , Alert.OK ,this.parentApplication as MainWindow);
 				}

@@ -7,6 +7,7 @@ package gadget.sync.incoming
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
 	import gadget.sync.WSProps;
+	import gadget.sync.task.TaskParameterObject;
 	import gadget.util.FieldUtils;
 	import gadget.util.Hack;
 	import gadget.util.ObjectUtils;
@@ -29,6 +30,14 @@ package gadget.sync.incoming
 			
 			
 			return { rowid:ob[DAOUtils.getOracleId(subIDour)], name:ObjectUtils.joinFields(ob, DAOUtils.getNameColumns(subIDour)) }
+			
+		}
+		override public function set param(p:TaskParameterObject):void
+		{			
+			super.param = p;
+			if( p.fullCompare){
+				isUsedLastModified = false;
+			}
 			
 		}
 		
@@ -65,6 +74,7 @@ package gadget.sync.incoming
 			return false;
 			
 		}
+		
 		
 		override protected function getFields(alwaysRead:Boolean=false):ArrayCollection{
 			return FieldUtils.allFields(subIDsod,alwaysRead);

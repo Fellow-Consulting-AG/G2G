@@ -104,7 +104,8 @@ package gadget.dao
 				ood_lastmodified:"string",
 				sync_number: "integer",
 				important: "integer",
-				favorite: "boolean"
+				favorite: "boolean",
+				right_goto_detail:"boolean"
 			};
 			if (structure.search_columns) {
 				for (var i:int = 0; i < structure.search_columns.length; i++) {
@@ -756,7 +757,7 @@ package gadget.dao
 		}
 		public function updateByFieldRelation(fields:Array,object:Object,relationId:String):void{
 			stmtUpdateByFieldRelation.clearParameters();
-			var sql:String  =  'UPDATE ' + tableName + " SET  local_update = :local_update,checkRelation=:checkRelation, deleted = :deleted, error = :error, sync_number = :sync_number,ood_lastmodified =:ood_lastmodified";
+			var sql:String  =  'UPDATE ' + tableName + " SET  local_update = :local_update,checkRelation=:checkRelation, deleted = :deleted, error = :error, sync_number = :sync_number,ood_lastmodified =:ood_lastmodified,right_goto_detail=:right_goto_detail";
 			
 			for (var i:int=0 ;i<fields.length;i++) {
 				stmtUpdateByFieldRelation.parameters[":" + fields[i] ] = object[fields[i]];
@@ -769,6 +770,7 @@ package gadget.dao
 			stmtUpdateByFieldRelation.parameters[':error'] = object.error;
 			stmtUpdateByFieldRelation.parameters[':sync_number'] = object.sync_number;
 			stmtUpdateByFieldRelation.parameters[':ood_lastmodified']=object.ood_lastmodified;
+			stmtUpdateByFieldRelation.parameters[':right_goto_detail']=object.right_goto_detail==null?true:object.right_goto_detail;
 			stmtUpdateByField.parameters[':checkRelation'] = object.checkRelation==null?false:object.checkRelation;
 			
 			exec(stmtUpdateByFieldRelation);
@@ -929,7 +931,7 @@ package gadget.dao
 		}
 	
 		private function  insertQuery(listField:ArrayCollection):String {
-			var sql:String = 'INSERT INTO ' + tableName + "(local_update, deleted, error, sync_number,ood_lastmodified,checkRelation";
+			var sql:String = 'INSERT INTO ' + tableName + "(local_update, deleted, error, sync_number,ood_lastmodified,checkRelation,right_goto_detail";
 			if(this is ActivityDAO){
 				sql+=", Owner";
 			}
@@ -944,7 +946,7 @@ package gadget.dao
 			for each (field in listField) {
 				sql += ", " + field.element_name;
 			}			
-			sql += ") VALUES (:local_update, :deleted, :error, :sync_number,:ood_lastmodified,:checkRelation";
+			sql += ") VALUES (:local_update, :deleted, :error, :sync_number,:ood_lastmodified,:checkRelation,:right_goto_detail";
 			if(this is ActivityDAO){
 				sql+=", :Owner";
 			}
@@ -961,7 +963,7 @@ package gadget.dao
 		}
 		
 		private function updateQuery(fields:ArrayCollection):String {
-			var sql:String = 'UPDATE ' + tableName + " SET checkRelation=:checkRelation, local_update = :local_update, deleted = :deleted, error = :error, sync_number = :sync_number,ood_lastmodified =:ood_lastmodified";
+			var sql:String = 'UPDATE ' + tableName + " SET checkRelation=:checkRelation, local_update = :local_update, deleted = :deleted, error = :error, sync_number = :sync_number,ood_lastmodified =:ood_lastmodified,right_goto_detail=:right_goto_detail";
 			if (daoStructure.search_columns) {
 				for (var i:int = 0; i < daoStructure.search_columns.length; i++) {
 					sql += ", " + getUppernameCol(i) + " = :" + getUppernameCol(i);
@@ -1020,6 +1022,7 @@ package gadget.dao
 			stmt.parameters[':error'] = object.error;
 			stmt.parameters[':sync_number'] = object.sync_number;
 			stmt.parameters[':ood_lastmodified']=object.ood_lastmodified;
+			stmt.parameters[':right_goto_detail']=object.right_goto_detail==null?true:object.right_goto_detail;
 			stmt.parameters[':checkRelation']=object.checkRelation==null?false:object.checkRelation;
 			
 			exec(stmt);

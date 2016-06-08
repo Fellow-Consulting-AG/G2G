@@ -479,7 +479,7 @@
 				var item:Object = event != null ? event.itemRenderer.data : dateSetPanel.dataProvider.getItemAt(0);
 				selectedItem = item;
 				// refreshLayout(item);
-				var screenDetail:Detail = new Detail();
+				//var screenDetail:Detail = new Detail();
 				
 				if (item == null) {
 					return;
@@ -550,7 +550,7 @@
 				
 			}
 			private function openDetail(id:String):void{
-				var screenDetail:Detail = new Detail();
+				//var screenDetail:Detail = new Detail();
 				var item:Object = mapObj[id];
 				if (item == null) {
 					return;

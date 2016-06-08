@@ -71,7 +71,7 @@ package gadget.sync.incoming {
 		
 		
 		private function fixName(s:String):String {
-			if (s == "Action***Task" || s=="Action***Appointment") {
+			if (s == "Action***Task" || s=="Action***Appointment" || s=="VONDMED Call") {
 				return "Activity";
 			}else if(s =="Revenue"){
 				return Database.opportunityProductRevenueDao.entity;

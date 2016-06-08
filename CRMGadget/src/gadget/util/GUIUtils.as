@@ -720,8 +720,9 @@ package gadget.util
 		
 		
 		public static function openDetailScreen(isCreate:Boolean,mainWindow:MainWindow,entity:String,refreshFunction:Function,item:Object = null,isRefreshList:Boolean=false, subtype:int = 0,checkDoublicate:Function=null,showNext:Boolean=true):void {
-			var screenDetail:Detail = new Detail();			
+			var screenDetail:Detail = null;		
 			if(isCreate){
+				screenDetail = new Detail();	
 				screenDetail.item = Utils.copyModel(item);							
 				Utils.doFomulaField(entity,screenDetail.item,false,subtype);
 				Utils.setDefaultValue(screenDetail.item,entity);
@@ -733,12 +734,20 @@ package gadget.util
 					return;
 				}
 				var baseDOA:BaseDAO = Database.getDao(entity);
-				screenDetail.item = baseDOA.findByGadgetId(item.gadget_id); 
-				baseDOA.increaseImportant(screenDetail.item);
+				var rec:Object = baseDOA.findByGadgetId(item.gadget_id); 
+				if(rec.right_goto_detail==null || rec.right_goto_detail){
+					screenDetail = new Detail();	
+					screenDetail.item = rec; 
+					baseDOA.increaseImportant(screenDetail.item);
+				}else{
+					Alert.show(i18n._('NO_ACCESST@No access.'),i18n._("GLOBAL_ERROR@Error"),Alert.OK,Window(WindowManager.getTopWindow()));
+					return;
+				}
+				
 			}
 			screenDetail.controlError = function(e:SQLError):void{
 				if(e.errorID==3131){//SQLError: 'Error #3131: Abort due to constraint violation.', details:'', operation:'execute'
-					Alert.show("The record already exists.","Duplicate",Alert.OK,screenDetail);
+					Alert.show(i18n._("THE_RECORD_ALREADY_EXIST@The record already exists."),i18n._("GLOBAL_DUPLICATE@Duplicate"),Alert.OK,screenDetail);
 				}
 			
 			};
@@ -1110,7 +1119,7 @@ package gadget.util
 					detail.innerListUpdate();
 				
 				}else{
-					Alert.show("The record already exists.","Duplicate",Alert.OK,detail);
+					Alert.show(i18n._("THE_RECORD_ALREADY_EXIST@The record already exists."),i18n._("GLOBAL_DUPLICATE@Duplicate"),Alert.OK,detail);
 				}
 				
 			}

@@ -52,14 +52,8 @@ package gadget.sync.incoming
 			_readParentIds = Database.incomingSyncDao.is_unsynced(getEntityName());
 			if(_readParentIds){
 				_test_data = false;
-				//we use startitme only one time at the firttime
-				this._startDate = Utils.getStartDateByType(Database.transactionDao.getAdvancedFilterType(entityIDour));
-				
-			}else{
-				this.startTime =-1;
 			}
-			
-			this.isUnboundedTask = startTime==-1;
+			this._startDate = Utils.getStartDateByType(Database.transactionDao.getAdvancedFilterType(entityIDour));
 		}
 		
 		override public function set param(p:TaskParameterObject):void
@@ -191,12 +185,13 @@ package gadget.sync.incoming
 			if( dependOnParent && (this._parentIds.length<=0)){
 				super.nextPage(true);
 			}else{
-				if(startTime!=-1){
+				if(_startDate!=null){
 					if(param.range){
-						var start:Date = _startDate;						
+						
+						var start:Date = ensureStartDate(param.range,_startDate);;						
 						var end:Date = Utils.calculateDate(DATE_RANGE,start,"date");	
 						if(end.getTime()>param.server_time.getTime()){
-							end = param.server_time;							
+							end = param.range.end;							
 						}
 						if(start.getTime()>end.getTime()){
 							start = end;
@@ -211,6 +206,14 @@ package gadget.sync.incoming
 				}
 				super.doRequest();
 			}
+		}
+		
+		protected function ensureStartDate(range:Object,minStartDate:Date):Date{
+			var currentStartDate:Date = range.start;
+			if(currentStartDate.getTime()>minStartDate.getTime()){
+				return currentStartDate;
+			}
+			return minStartDate;
 		}
 		
 		override public function stop():void
@@ -279,7 +282,7 @@ package gadget.sync.incoming
 			
 			if(_switchToDependOnParent && !dependOnParent){
 				_switchToDependOnParent = false;
-				var localCount = dao.count();
+				var localCount:int = dao.count();
 				if(recordCount>=localCount){
 					_page =0;//reset page
 					_dependOnParent = true;					
@@ -327,17 +330,29 @@ package gadget.sync.incoming
 		}
 		
 		override protected function isTestData():Boolean{
-			return this._test_data;
+			if(dependOnParent){
+				return this._test_data;
+			}
+			
+			return super.isTestData();
 		}
 		
 		override protected function doSplit():void {
-			restoreRequest();
-			if(_maxParentIdCriteria>MIN_PARENT_IDS){
-				_maxParentIdCriteria =Math.max(MIN_PARENT_IDS, _maxParentIdCriteria/2);					
-				this._test_data=true;					
-			}
 			_page=0;
-			doRequest();
+			if(dependOnParent){
+				restoreRequest();
+				if(_maxParentIdCriteria>MIN_PARENT_IDS){
+					_maxParentIdCriteria =Math.max(MIN_PARENT_IDS, _maxParentIdCriteria/2);					
+					this._test_data=true;					
+				}else{
+					this._test_data=false
+				}
+				
+				doRequest();
+			}else{
+				
+				super.doSplit();
+			}
 		}
 		
 		protected override function nextPage(lastPage:Boolean):void {

@@ -103,7 +103,8 @@ package gadget.sync.incoming
 					{element_name:'TimeZoneId'},
 					{element_name:'TimeZoneName'},
 					{element_name:'UserLoginId'},
-					{element_name:'UserSignInId'}]);	
+					{element_name:'UserSignInId'},
+					{element_name:'DefaultBookId'}]);	
 		
 			}
 			return fields;

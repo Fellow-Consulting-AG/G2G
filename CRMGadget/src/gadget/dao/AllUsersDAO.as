@@ -22,7 +22,6 @@ package gadget.dao{
 				search_columns: [ 'UserLoginId' ],
 				display_name:"users",
 				index: [ 'Id', 'UserLoginId' ],
-				create_cb: function(structure:Object):void {Database.incomingSyncDao.unsync_one(ent)},
 				columns: { "TEXT" : textColumns }
 			});
 			// Deletes an item
@@ -639,6 +638,7 @@ package gadget.dao{
 			"UserLoginId",
 			"UserSignInId",
 			"WorkFax",
+			"DefaultBookId"
 			];
 	}
 }

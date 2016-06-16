@@ -42,7 +42,7 @@ package gadget.sync.incoming {
 		protected var isFormulaError:Boolean = false;
 		protected const SEARCHSPEC_PLACEHOLDER:String = "___HERE__THE__SEARCH__SPEC___";
 		protected const ROW_PLACEHOLDER:String = "___HERE__THE__ROW__NUMBER___";
-		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 5;
+		protected const SUCCESSFULLY_FAIL_UNFORCED_PAGES:int = 3;
 		protected const MODIFIED_DATE:String = "ModifiedDate"; // ModifiedDate or ModifiedByDate
 		protected const CREATED_DATE:String ="CreatedDate";
 		
@@ -453,6 +453,8 @@ package gadget.sync.incoming {
 		}
 		
 		protected function doSplit():void {
+			//reset page when we do split
+			_page	= 0;
 			setFailed();				// failed success, do a split
 			successHandler(null);
 		}

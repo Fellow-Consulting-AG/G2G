@@ -20,7 +20,7 @@ package gadget.dao
 				columns: { 'TEXT' : textColumns }
 			});
 			stmtSelectDefault=new SQLStatement();
-			stmtSelectDefault.text = "select * from sod_book where (booktype is null or booktype ='') limit 1";
+			stmtSelectDefault.text = "select * from sod_book where BookName=:BookName";
 			stmtSelectDefault.sqlConnection=sqlConnection;
 		}
 
@@ -32,8 +32,10 @@ package gadget.dao
 			
 		}
 		
-		//TODO later
+		
 		public function getDefaultBookId():String{
+			var owner:Object = Database.allUsersDao.ownerUser();
+			stmtSelectDefault.parameters[":BookName"]=owner.DefaultBookName;
 			exec(stmtSelectDefault);
 			var result:SQLResult = stmtSelectDefault.getResult();
 			if(result==null){

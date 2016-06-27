@@ -2811,7 +2811,8 @@ package gadget.dao {
 				{name: "isowner", type: "BOOLEAN"},
 				{name: "type", type: "INTEGER"}
 			]);
-			XcheckTableAndRecreate(sqlConnection, "filter", columns, null, "filter_criteria");
+			//we don't need delete old data when we add new column
+			XcheckTable(sqlConnection, "filter", columns);
 			
 			// CustomTableWidthConfiguration table
 			columns = new ArrayCollection([

@@ -49,7 +49,7 @@ package gadget.dao
 			stmtSelectContact.text = "SELECT 'Contact' gadget_type, * FROM Contact WHERE ContactId in (SELECT Id FROM activity_contact WHERE ( deleted = 0 OR deleted IS null ) AND ActivityId = :ActivityId);";
 			stmtSelectActivity = new SQLStatement();
 			stmtSelectActivity.sqlConnection = sqlConnection;
-			stmtSelectActivity.text = "SELECT 'Activity' gadget_type, * FROM Activity WHERE ActivityId in (SELECT ActivityId FROM activity_contact WHERE ( deleted = 0 OR deleted IS null ) AND Id = :ContactId);";
+			stmtSelectActivity.text = "SELECT 'Activity' gadget_type, * FROM Activity WHERE ActivityId in (SELECT ActivityId FROM activity_contact WHERE ( deleted = 0 OR deleted IS null ) AND Id = :ContactId) OR PrimaryContactId=:ContactId";
 			
 		}
 		public override function getLinkFields():Dictionary{

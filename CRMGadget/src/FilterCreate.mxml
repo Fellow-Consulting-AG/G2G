@@ -45,6 +45,7 @@
 					
 					filter.name = filterForm.nameInput.text;
 					filter.predefined = 0;
+					filter.isowner=1;
 					filter.type = Database.filterDao.increaseType(filter.entity);
 					var rowid:Number = Database.filterDao.insert(filter);
 					//bug fixing 469 CRO

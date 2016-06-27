@@ -32,7 +32,7 @@ package gadget.dao {
 		public function FilterDAO(sqlConnection:SQLConnection) {
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
-			stmtInsert.text = "INSERT INTO filter (name, entity, predefined, type) VALUES (:name, :entity, :predefined, :type)";
+			stmtInsert.text = "INSERT INTO filter (name, entity, predefined, type,isowner) VALUES (:name, :entity, :predefined, :type,:isowner)";
 			
 			stmtListFilters = new SQLStatement();
 			stmtListFilters.sqlConnection = sqlConnection;
@@ -40,7 +40,7 @@ package gadget.dao {
 			
 			stmtUpdate = new SQLStatement();
 			stmtUpdate.sqlConnection = sqlConnection;
-			stmtUpdate.text = "UPDATE filter SET name = :name, entity = :entity, predefined = :predefined, type = :type WHERE id = :id";
+			stmtUpdate.text = "UPDATE filter SET name = :name, entity = :entity, predefined = :predefined, type = :type,isowner=:isowner WHERE id = :id";
 			
 			stmtDelete = new SQLStatement();
 			stmtDelete.sqlConnection = sqlConnection;
@@ -100,6 +100,7 @@ package gadget.dao {
 			stmtInsert.parameters[":entity"] = filter.entity;
 			stmtInsert.parameters[":predefined"] = filter.predefined;
 			stmtInsert.parameters[":type"] = filter.type;
+			stmtInsert.parameters[":isowner"]=filter.isowner==null?0:filter.isowner;
 			//			stmtInsert.parameters[":bookmarked"] = filter.bookmarked;
 			exec(stmtInsert);
 			var id:Number = stmtInsert.getResult().lastInsertRowID;
@@ -125,6 +126,7 @@ package gadget.dao {
 			stmtUpdate.parameters[":entity"] = filter.entity;
 			stmtUpdate.parameters[":predefined"] = filter.predefined;
 			stmtUpdate.parameters[":type"] = filter.type;
+			stmtUpdate.parameters[":isowner"]=filter.isowner==null?0:filter.isowner;
 			//			stmtUpdate.parameters[":bookmarked"] = filter.bookmarked;
 			exec(stmtUpdate);
 		}

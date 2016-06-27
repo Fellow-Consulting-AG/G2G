@@ -2112,6 +2112,7 @@ package gadget.util {
 					objectFilter.entity = entityFilter;
 					objectFilter.name = fieldFilter.children()[0].toString();
 					objectFilter.predefined = fieldFilter.predefined.children()[0].toString()=="true"? 1 : 0;
+					objectFilter.isowner=0;//filter come with import always false
 					var oldFilter:Object = Database.filterDao.findByName(objectFilter.name);
 					//delete old and add new from xml
 					if(oldFilter!=null){

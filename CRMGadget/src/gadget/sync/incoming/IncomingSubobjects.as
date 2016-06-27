@@ -126,6 +126,9 @@ package gadget.sync.incoming
 		}
 		
 		protected function deleteOracleRecordByParentId(parentId:String):void{
+			if(parentId=='AKFA-ADJMEO'){
+				trace('AKFA-ADJMEO');
+			}
 			var criteria:Object = {};
 			criteria[entityIDour+"Id"] = parentId;
 			subDao.deleteOnlyRecordeNotErrorByParent(criteria);

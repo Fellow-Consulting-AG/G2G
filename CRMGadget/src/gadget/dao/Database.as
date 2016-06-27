@@ -2808,6 +2808,7 @@ package gadget.dao {
 				{name: "name", type: "TEXT"},
 				{name: "entity", type: "TEXT"},
 				{name: "predefined", type: "BOOLEAN"},
+				{name: "isowner", type: "BOOLEAN"},
 				{name: "type", type: "INTEGER"}
 			]);
 			XcheckTableAndRecreate(sqlConnection, "filter", columns, null, "filter_criteria");
@@ -2990,6 +2991,7 @@ package gadget.dao {
 			XcheckColumn(sqlConnection, 'custom_layout','custom_layout_title','TEXT'); // Change Request #747
 			XcheckColumn(sqlConnection, 'custom_layout','layout_depend_on','TEXT');
 			XcheckColumn(sqlConnection, 'question','isHeader','TEXT', '0');
+			XcheckColumn(sqlConnection, 'filter','isowner','BOOLEAN', '0');
 		}
 		
 		private function XchangedDateToDatabaseDateFormat(sqlConnection:SQLConnection, entity:String, columns:Array):void {

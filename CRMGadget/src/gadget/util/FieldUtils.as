@@ -14,6 +14,7 @@ package gadget.util {
 	import gadget.dao.BookDAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
+	import gadget.dao.PreferencesDAO;
 	import gadget.dao.SupportDAO;
 	import gadget.i18n.i18n;
 	import gadget.service.LocaleService;
@@ -1411,6 +1412,18 @@ package gadget.util {
 							query = "(" + query.substring(0,query.length - conjunction.length) + ")";
 						}else{
 							query = "";
+						}
+						/**
+						 *bug#14292 Please hardcode for Coloplast.
+Only for Activity object: Users cannot edit Filter Layouts (all filters)
+but they should still be able to create their own Activity filters - BUT should see ONLY their own Activities (ownership) in their new lists
+						*/
+						var disable_list_layout:Boolean = Database.preferencesDao.getBooleanValue(PreferencesDAO.DISABLE_LIST_LAYOUT);
+						//only user no right to edit filter then it always show only personal data
+						if(UserService.getCustomerId()==UserService.COLOPLAST && disable_list_layout){
+							if(filter.isowner && filter.entity==Database.activityDao.entity){
+								query="("+query+") AND OwnerId = '"+Database.allUsersDao.ownerUser().Id+"'";
+							}
 						}
 						return query;
 					}

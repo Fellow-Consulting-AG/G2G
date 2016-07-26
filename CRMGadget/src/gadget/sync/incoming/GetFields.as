@@ -215,6 +215,15 @@ package gadget.sync.incoming {
 				};
 				Database.fieldDao.insert(fieldObj);
 				fieldExist["UserId"]="UserId";
+			}else if(tao.our_name==Database.allUsersDao.entity){
+				var fieldObj:Object ={
+					'entity': entity,
+					'element_name': "ManagerId",
+					'display_name': "Report to Id",
+					'data_type':   'ID'
+				};
+				Database.fieldDao.insert(fieldObj);
+				fieldExist["ManagerId"]="ManagerId";
 			}
 			
 			

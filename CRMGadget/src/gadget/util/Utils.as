@@ -4,6 +4,7 @@ package gadget.util {
 	import com.assessment.DtoColumn;
 	import com.assessment.DtoConfiguration;
 	import com.crmgadget.eval.Evaluator;
+	import com.google.analytics.debug._Style;
 	import com.hurlant.crypto.Crypto;
 	import com.hurlant.crypto.symmetric.CBCMode;
 	import com.hurlant.crypto.symmetric.ICipher;
@@ -3440,6 +3441,20 @@ package gadget.util {
 		}
 		
 		return String.fromCharCode.apply(null, uid);
+	}
+	
+	public static function isCanGotoDetail(item:Object):Boolean{
+		//right now we diable it 
+//		if(item!=null && item.right_goto_detail!=null && !item.right_goto_detail){
+//			var owner:Object = Database.allUsersDao.ownerUser(true);
+//			if(item.Owner==owner.Alias){
+//				return true;
+//			}else{
+//				var subUser:Object = owner["sub_user"];
+//				return subUser.hasOwnProperty(item.Owner);
+//			}
+//		}
+		return true;
 	}
 	
 	}

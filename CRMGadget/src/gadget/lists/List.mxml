@@ -550,7 +550,7 @@
 					
 					var baseDOA:BaseDAO = Database.getDao(seletedEntity);
 					var rec:Object = baseDOA.findByGadgetId(item.gadget_id); 
-					if(rec.right_goto_detail==null || rec.right_goto_detail){
+					if(Utils.isCanGotoDetail(rec)){
 						var screenDetail:Detail = new Detail();
 						screenDetail.item=rec;
 	//					screenDetail.isReadOnlyFields = isOpen;

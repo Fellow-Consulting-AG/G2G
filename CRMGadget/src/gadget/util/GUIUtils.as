@@ -735,7 +735,8 @@ package gadget.util
 				}
 				var baseDOA:BaseDAO = Database.getDao(entity);
 				var rec:Object = baseDOA.findByGadgetId(item.gadget_id); 
-				if(rec.right_goto_detail==null || rec.right_goto_detail){
+				//bug#14090--disable no access
+				if(Utils.isCanGotoDetail(rec)){
 					screenDetail = new Detail();	
 					screenDetail.item = rec; 
 					baseDOA.increaseImportant(screenDetail.item);

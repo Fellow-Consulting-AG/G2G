@@ -58,24 +58,61 @@ package gadget.dao{
 			return "User"; // AM entity is user, table is allusers
 		}
 	
-		public function ownerUser():Object{
+		private function generateSubuserFilter(parents:ArrayCollection):String{
+			var filter:String = "";
+			if(parents!=null && parents.length>0){
+				var alias:String = "";
+				var ids:String = "";
+				var first:Boolean = true;
+				for each(var u:Object in parents){
+					if(!first){
+						alias+=",";
+						ids+=",";
+					}
+					ids+="'"+u.Id+"'";
+					alias+="'"+u.Alias+"'";
+					first = false;
+				}
+				filter="ManagerId in ("+ids+") OR ManagerAlias in("+alias+")";
+			}
+			
+			return filter;
+		}
+		
+		public function ownerUser(readSub:Boolean=false):Object{
 			var cache_owner:CacheUtils = new CacheUtils("owner_user");
 			
 			var owner:Object =cache_owner.get("currentUser");
-			if(owner!=null){
-				return owner;
-			}			
-			var currentUser:Object =  Database.userDao.read();
-			if(currentUser!=null){	
-				var userDataList:ArrayCollection= Database.allUsersDao.findAll(new ArrayCollection([{element_name:"*"}]), "userSignInId = '" + currentUser.user_sign_in_id + "'");
-				if (userDataList && userDataList.length > 0) {
-					cache_owner.put("currentUser",userDataList.getItemAt(0));
-					return(userDataList.getItemAt(0));	
-				}else{
-					cache_owner.put("currentUser",new Object());
+			if(owner==null){		
+				var currentUser:Object =  Database.userDao.read();
+				if(currentUser!=null){	
+					var userDataList:ArrayCollection= Database.allUsersDao.findAll(new ArrayCollection([{element_name:"*"}]), "userSignInId = '" + currentUser.user_sign_in_id + "'");
+					if (userDataList && userDataList.length > 0) {					
+						owner = userDataList.getItemAt(0);	
+						cache_owner.put("currentUser",owner);
+					}else{
+						cache_owner.put("currentUser",new Object());
+					}
 				}
+				if(owner==null){
+					owner= new Object();
+				}	
 			}
-			return new Object();
+			
+			if(owner.Id!=null && readSub && !owner.hasOwnProperty("sub_user")){
+				var subUser:Object = new Object();						
+				var subs:ArrayCollection = filter(new ArrayCollection([{"element_name":"Alias,Id"}]),generateSubuserFilter(new ArrayCollection([owner])));
+				while(subs!=null && subs.length>0){
+					for each(var sub:Object in subs){
+						subUser[sub.Alias]=sub;
+					}
+					subs = filter(new ArrayCollection([{"element_name":"Alias,Id"}]),generateSubuserFilter(subs));
+				}
+				owner["sub_user"]=subUser;
+			}
+			
+			return owner;
+			
 		}
 		public function setOwnerUser(owner:Object):void{
 			var cache_owner:CacheUtils = new CacheUtils("owner_user");

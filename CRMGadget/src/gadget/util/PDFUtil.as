@@ -357,7 +357,7 @@ package gadget.util
 			}
 			
 			//add items title
-			addTitle(document,Database.customLayoutDao.getPlural(Database.customObject14Dao.entity),table);			
+			addTitle(document,Database.customLayoutDao.getPlural(Database.customObject7Dao.entity),table);			
 			//write items
 			
 			var newLine:PdfPCell = new PdfPCell();
@@ -388,15 +388,15 @@ package gadget.util
 		}
 		
 		private static function getItemFields():Array{
-			var tempFields:Array =['CustomObject14Name','CustomObject14ExternalSystemId','IndexedNumber0'];
+			var tempFields:Array =['CustomObject1Name','CustomText3','CustomNumber0'];
 			var fields:Array  = new Array();
 			var first:Boolean = true;
 			for each(var f:String in tempFields){
 				var obj:Object = new Object();
-				if(!first){
-					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,f);
+				if(first){
+					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject1Dao.entity,"Name");
 				}else{
-					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject14Dao.entity,"Name");//user item description instead
+					obj.display_name = FieldUtils.getFieldDisplayName(Database.customObject7Dao.entity,f);
 				}
 				obj.element_name = f;
 				fields.push(obj);

@@ -1406,7 +1406,7 @@
 			
 			private static function isValidSampleOrder(sampleOrderId:String):Boolean{
 				
-				var count:int = Database.customObject12Dao.countByField('CustomObject11Id',sampleOrderId)
+				var count:int = Database.customObject7Dao.countByField('CustomObject11Id',sampleOrderId)
 				
 				return count>0;
 			}

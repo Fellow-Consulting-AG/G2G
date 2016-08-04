@@ -735,7 +735,7 @@
 						refreshImage(image);
 						break;
 					case 'Opportunity':
-						var records:ArrayCollection = Database.salesStageDao.findAll();
+						var records:ArrayCollection = Utils.getSalesStageByOpptType(item.OpportunityType);
 						var statusRed:Boolean = true;
 						statusProgress.visible = true;
 						statusProgress.removeAllChildren();
@@ -745,19 +745,21 @@
 						var previous:String = null;
 						for (var i:int=0; i<records.length; i++) {
 							var s:Object = records[i];
+							var lblText = shorten(s.label);
 							// small hack to manage "Closed/Won" and "Closed/Lost" stages.
-							if (shorten(s.name) == previous) {
+							if (lblText==""||lblText == previous) {
 								continue;
 							}
-							previous = shorten(s.name);
+							
+							previous = lblText;
 							
 							var h:HBox = new HBox();
 							var lbl:Label = new Label();
 							
 							lbl.setStyle("color", 0xFFFFFF);
 							lbl.setStyle("fontWeight", "bold");
-							lbl.text = shorten(s.name);
-							h.width = (measureText(shorten(s.name)) as TextLineMetrics).width + 20; //returnSize(s.name as String);
+							lbl.text = lblText;
+							h.width = (measureText(lblText) as TextLineMetrics).width + 20; //returnSize(s.name as String);
 							mainWidth += h.width;
 							
 							h.setStyle("verticalAlign", "middle");
@@ -784,7 +786,7 @@
 								}
 							}
 							
-							if(shorten(s.name)==shorten(item.SalesStage)){
+							if(lblText==shorten(item.SalesStage)){
 								statusRed = false;
 							}
 							

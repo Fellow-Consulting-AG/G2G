@@ -112,6 +112,7 @@ package gadget.dao
 					indexes = indexes.concat(getUppernameCol(i));
 					columns[getUppernameCol(i)] = { type:"TEXT", init:"upper(" + structure.search_columns[i] + ")"};
 				}
+				structure.meta_entity=metaDataEntity;
 			}
 			super(work, sqlConnection, structure, {
 				table: (structure && structure.table) ? structure.table : entity,	//VAHI XXX TODO actually this is a hack, let it vanish if everything has been refactored

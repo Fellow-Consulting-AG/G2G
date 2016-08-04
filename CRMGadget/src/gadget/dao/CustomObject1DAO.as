@@ -19,6 +19,7 @@ package gadget.dao{
 				search_columns: [ 'Name' ],
 				display_name : "CustomObject1s",
 				index: [ 'CustomObject1Id', "UpperName", "Deleted", "local_update" ],
+				record_type2:"CustomObject1",
 				//VAHI20101113 For WS2.0 transition, you must populate the "Id" column here
 				// Perhaps look into ActivityUserDAO to see how this was done with DummySiebelRowId 
 				columns: { 'TEXT' : textColumns }

@@ -51,7 +51,7 @@
 			
 			private function createColumn(dataField:String,width:Number,editable:Boolean=false):AdvancedDataGridColumn{
 				var col:AdvancedDataGridColumn = new AdvancedDataGridColumn();
-				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject12Dao.entity,dataField);
+				col.headerText = FieldUtils.getFieldDisplayName(Database.customObject1Dao.entity,dataField);
 				col.dataField = dataField;
 				col.editable = editable;
 				col.width=width;
@@ -97,11 +97,11 @@
 				col.headerText=i18n._('GLOBAL_DESCRIPTION');
 				cols.push(col);
 				
-				col=createColumn('CustomObject14ExternalSystemId',15,false);
+				col=createColumn('QuickSearch1',15,false);
 				col.dataField = 'ItemNo';
 				cols.push(col);		
 				
-				col=createColumn('CustomObject13Name',25,false);
+				col=createColumn('IndexedPick2',25,false);
 				col.dataField = 'PlantName';
 				cols.push(col);			
 				//deleted column
@@ -142,19 +142,16 @@
 				if(importItems!=null){
 					var items:ArrayCollection = new ArrayCollection();
 					var newObject:Object = new Object();	
-					Utils.executeFomulaFields(Database.customObject12Dao.entity,newObject,new ArrayCollection([{column_name:'IndexedNumber0'},
-						{column_name:'CustomCurrency1'},
-						{column_name:'CustomCurrency2'},
+					Utils.executeFomulaFields(Database.customObject7Dao.entity,newObject,new ArrayCollection([
 						{column_name:'Name'},
-						{column_name:'CustomCurrency0'}]));	
+						{column_name:'CustomNumber0'}]));	
 					for each(var o:Object in obj.children){
 						var item:Object = Utils.copyModel(newObject);						
-						item.CustomObject14Name = o.ItemName;
-						item.CustomObject14ExternalSystemId =o.ItemNo;
-						item.IndexedNumber0 = o.Qty;
-						item.CustomObject13Id = o.PlantId;
-						item.CustomObject13Name = o.PlantName;
-						item.CustomObject14Id = o.ItemId;
+						item.CustomObject1Name = o.ItemName;
+						item.CustomText3 =o.ItemNo;
+						item.CustomNumber0 = o.Qty;
+						item.IndexedPick2 = o.PlantName;
+						item.CustomObject1Id = o.ItemId;
 						items.addItem(item);
 					}
 					importItems(items);

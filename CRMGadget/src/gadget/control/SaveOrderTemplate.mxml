@@ -85,21 +85,21 @@
 			private function initColumns():void{
 				var cols:Array = new Array();				
 				//itemname
-				var col:DataGridColumn =SampleItemView.createColumn('Name',43,Database.customObject14Dao.entity,false);				
+				var col:DataGridColumn =SampleItemView.createColumn('Name',43,Database.customObject1Dao.entity,false);				
 				col.dataField="ItemName";
 				cols.push(col);
 				
 				//item no
-				col=SampleItemView.createColumn('CustomObject14ExternalSystemId',30,Database.customObject12Dao.entity,false);
+				col=SampleItemView.createColumn('QuickSearch1',30,Database.customObject1Dao.entity,false);
 				col.dataField = 'ItemNo';
 				cols.push(col);
 				
 				//item qty
-				col=SampleItemView.createColumn('IndexedNumber0',20,Database.customObject12Dao.entity,false);
+				col=SampleItemView.createColumn('CustomNumber0',20,Database.customObject7Dao.entity,false);
 				col.dataField = 'Qty';
 				cols.push(col);			
 				//deleted column
-				var deleteCol:DataGridColumn = SampleItemView.createColumn("",7,Database.customObject12Dao.entity,false);
+				var deleteCol:DataGridColumn = SampleItemView.createColumn("",7,Database.customObject7Dao.entity,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={parentComp:this,addEmptyRow:false};
 				deleteCol.itemRenderer=deleteRender;				

@@ -16,6 +16,7 @@ package gadget.dao
 				name_column: [ 'Name' ],
 				search_columns: [ 'Name' ],
 				display_name : "custom object 2",
+				record_type2:"CustomObject2",
 				index: ["Id" ],
 				columns: { 'TEXT' : textColumns }
 			});

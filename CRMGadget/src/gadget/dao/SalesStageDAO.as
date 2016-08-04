@@ -13,6 +13,7 @@ package gadget.dao
 		private var stmtFind:SQLStatement;
 		private var stmtFindAll:SQLStatement;
 		private var stmtFindBySalesPro:SQLStatement;
+		private var stmtGetSaleProByOptType:SQLStatement;
 		public function SalesStageDAO(sqlConnection:SQLConnection) {
 			stmtInsert = new SQLStatement();
 			stmtInsert.sqlConnection = sqlConnection;
@@ -36,6 +37,9 @@ package gadget.dao
 			stmtFindBySalesPro = new SQLStatement();
 			stmtFindBySalesPro.sqlConnection = sqlConnection;
 			stmtFindBySalesPro.text = "SELECT * FROM salesstage where sales_proc_id =:sales_proc_id order by sales_stage_order/1";
+			stmtGetSaleProByOptType  = new SQLStatement();
+			stmtGetSaleProByOptType.sqlConnection = sqlConnection;
+			stmtGetSaleProByOptType.text = "SELECT s.* FROM salesstage as s INNER JOIN process_opportunity as po ON s.sales_proc_id=po.process_id where po.opportunity_type_name=:OpportunityType order by sales_stage_order/1";
 
 		}
 
@@ -43,6 +47,13 @@ package gadget.dao
 			stmtFindBySalesPro.parameters[":sales_proc_id"] = sales_proc_id;
 			exec(stmtFindBySalesPro);
 			var result:SQLResult = stmtFindBySalesPro.getResult();
+			return new ArrayCollection(result.data);
+		}
+		
+		public function findBySalesByOpptType(optType:String):ArrayCollection{
+			stmtGetSaleProByOptType.parameters[":OpportunityType"] = optType;
+			exec(stmtGetSaleProByOptType);
+			var result:SQLResult = stmtGetSaleProByOptType.getResult();
 			return new ArrayCollection(result.data);
 		}
 		

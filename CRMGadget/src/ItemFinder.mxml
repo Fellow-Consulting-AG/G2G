@@ -9,8 +9,8 @@
 	
 	<mx:Script>
 		<![CDATA[
-			
 			import gadget.dao.BaseDAO;
+			import gadget.dao.CustomObject1DAO;
 			import gadget.dao.Database;
 			import gadget.i18n.i18n;
 			import gadget.util.FieldUtils;
@@ -45,6 +45,19 @@
 					if(StringUtils.isEmpty(filter)){
 						filter = "Status != 'Closed'";
 					}
+					
+				}else if(relation.entitySrc == Database.customObject7Dao.entity && Database.customObject1Dao.entity == dao.entity){
+					//bug#14699---(IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true'))
+						var type:String = item.Type;
+						if(type=="Sample Item" || type=="Sample Dropped"){
+							if(!StringUtils.isEmpty(filter)){
+								filter +=" AND ";
+							}else{
+								filter="";
+							}
+							filter += "(IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true')) "
+						}
+						
 					
 				}else{
 					optionItem.setVisible(false);

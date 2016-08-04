@@ -541,7 +541,7 @@
 					if(StringUtils.isTrue(item[CustomObject11DAO.READY_FOR_APPROVAL_F])){
 						var sampleItems:ArrayCollection = null;
 						if(sampleView!=null){
-							sampleItems = sampleView.getSampleItems();
+							sampleItems = sampleView.getSampleItems(item);
 						}
 						if(sampleView==null|| sampleItems==null||sampleItems.length<1){								
 							Alert.show(i18n._("MISSING_SAMPLE_ITEM_MSG@Please add at least one Sample Detail to the Sample Order!"),i18n._('GLOBAL_SAMPLE_ITEM_ERROR@Error Sample Order'),Alert.OK,Window(WindowManager.getTopWindow()));

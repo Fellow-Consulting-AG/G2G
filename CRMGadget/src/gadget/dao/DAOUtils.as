@@ -41,10 +41,10 @@ package gadget.dao
 			return null;
 		}
 		
-		public static function getEntityByRecordType(recordType:String){
+		public static function getEntityByRecordType(recordType:String):String{
 			for(var e:String in structures){
 				var s:Object = structures[e];					
-				if(!StringUtils.isEmpty(s.record_type) && s.record_type==recordType){
+				if(s.record_type==recordType||s.record_type2==recordType||s.meta_entity==recordType){
 					return e;
 				}
 			}
@@ -69,7 +69,7 @@ package gadget.dao
 			}else{
 				for(var e:String in structures){
 					var s:Object = structures[e];					
-					if(!StringUtils.isEmpty(s.record_type) && s.record_type==entity){
+					if(s.record_type==entity||s.record_type2==entity||s.meta_entity==entity){
 						return s.oracle_id;
 					}
 				}

@@ -338,6 +338,7 @@ package gadget.dao
 			"CustomObject1Id",
 			"CustomObject1IntegrationId",
 			"CustomObject1Name",
+			"CustomObject1Type",
 			"CustomObject2ExternalSystemId",
 			"CustomObject2Id",
 			"CustomObject2IntegrationId",

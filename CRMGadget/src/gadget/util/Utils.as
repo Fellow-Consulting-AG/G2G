@@ -431,7 +431,7 @@ package gadget.util {
 						if(!StringUtils.isEmpty( fieldManagement.DefaultValue )){
 							var defaultValue:String = fieldManagement.DefaultValue;
 							if(afterSave){
-								if((fieldManagement.PostDefault=='false'||StringUtils.isEmpty(fieldManagement.PostDefault))||!Database.postDefaultFieldDao.isPostDefault(entity,fieldInfo.element_name)){
+								if((fieldManagement.PostDefault=='false'||StringUtils.isEmpty(fieldManagement.PostDefault))&&!Database.postDefaultFieldDao.isPostDefault(entity,fieldInfo.element_name)){
 									continue;
 								}
 							}else{
@@ -2542,9 +2542,10 @@ package gadget.util {
 			var tmp:ArrayCollection ;
 			picklist.addItem({data:"", label:""});
 			if(!StringUtils.isEmpty(roleName)){
-				var saleProId:String = Database.salesProcDao.getSalesProId(Database.roleServiceDao.getDefaultSaleProcess(roleName));
-				if(!StringUtils.isEmpty(saleProId)){
-					tmp= Database.salesStageDao.findBySalesProId(saleProId); 
+				//bug#14830--default sales process store in the role_service is opportunityType
+				var opptType:String = Database.roleServiceDao.getDefaultSaleProcess(roleName);
+				if(!StringUtils.isEmpty(opptType)){
+					tmp= Database.salesStageDao.findBySalesByOpptType(opptType);
 					
 				}
 			}
@@ -2634,11 +2635,12 @@ package gadget.util {
 			var tmp:ArrayCollection ;
 			picklist.addItem({data:"", label:""});
 			if(!StringUtils.isEmpty(opptType)){
-				var saleProId:String = Database.processOpportunityDao.getSalesProIdByOpptType(opptType);
-				if(!StringUtils.isEmpty(saleProId)){
-					tmp= Database.salesStageDao.findBySalesProId(saleProId); 
-					
-				}
+//				var saleProId:String = Database.processOpportunityDao.getSalesProIdByOpptType(opptType);
+//				if(!StringUtils.isEmpty(saleProId)){
+//					tmp= Database.salesStageDao.findBySalesProId(saleProId); 
+//					
+//				}
+				tmp = Database.salesStageDao.findBySalesByOpptType(opptType);
 			}
 			if(tmp == null || tmp.length  == 0 ){
 				return getDefaultSalesStage();

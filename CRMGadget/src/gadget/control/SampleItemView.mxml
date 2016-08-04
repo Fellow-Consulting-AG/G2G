@@ -34,13 +34,13 @@
 			private var deletedItems:ArrayCollection = new ArrayCollection();
 			private var field2Label:Dictionary = new Dictionary();
 			private var templateNewItem:Object;
-			private var itemId2CO14:Dictionary = new Dictionary();
+			private var itemId2CO1:Dictionary = new Dictionary();
 			private var items:ArrayCollection = null;
 			protected function init(event:FlexEvent):void
 			{
 				
 				for each(var obj:Object in getItems()){
-					itemId2CO14[obj.Id] = obj;
+					itemId2CO1[obj.CustomObject1Id] = obj;
 				}
 				
 				
@@ -59,7 +59,7 @@
 					}else if(evt.keyCode == Keyboard.TAB){
 						var oldColIndex:int = editableGrid.editedItemPosition.columnIndex;
 						var editColumn:DataGridColumn = editableGrid.columns[oldColIndex];
-						if(editColumn.dataField=='IndexedNumber0'){
+						if(editColumn.dataField=='CustomNumber0'){
 							addEmptyRow(true);
 						}
 					}
@@ -84,7 +84,7 @@
 						}
 					}else{
 						
-						rows = new ArrayCollection(Database.customObject12Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
+						rows = new ArrayCollection(Database.customObject7Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
 						
 					}
 				}
@@ -157,7 +157,7 @@
 			
 			private function createEmptyObject():Object{
 				var obj:Object = new Object();
-//				Utils.executeFomulaFields(Database.customObject12Dao.entity,obj,new ArrayCollection([{column_name:'IndexedNumber0'},
+//				Utils.executeFomulaFields(Database.customObject7Dao.entity,obj,new ArrayCollection([{column_name:'CustomNumber0'},
 //					{column_name:'CustomCurrency1'},
 //					{column_name:'CustomCurrency2'},
 //					{column_name:'Name'},
@@ -220,12 +220,10 @@
 						if(item['isNew']){
 							if(templateNewItem==null){
 								templateNewItem = new Object();
-								Utils.executeFomulaFields(Database.customObject12Dao.entity,templateNewItem,new ArrayCollection([{column_name:'IndexedNumber0'},
-									{column_name:'CustomCurrency1'},
-									{column_name:'CustomCurrency2'},
-									{column_name:'Name'},
-									{column_name:'CustomCurrency0'}]));		
-								Utils.setDefaultValue(templateNewItem,Database.customObject12Dao.entity);
+								Utils.executeFomulaFields(Database.customObject7Dao.entity,templateNewItem,new ArrayCollection([{column_name:'CustomNumber0'},
+									{column_name:'CustomNumber0'},									
+									{column_name:'Name'}]));		
+								Utils.setDefaultValue(templateNewItem,Database.customObject7Dao.entity);
 							}
 							
 							Utils.copyObject(item,templateNewItem);
@@ -234,26 +232,32 @@
 						
 						if(selectedItem!=null){						
 							delete item['isNew'];
-							item.CustomObject14Name = selectedItem.Name;
-							item.CustomObject14ExternalSystemId = selectedItem.ExternalSystemId;
+							item.CustomObject1Name = selectedItem.Name;
+							item.CustomText3 = selectedItem.QuickSearch1;
 							if(!StringUtils.isEmpty(colLabelFunction(item,col))){								
-								item.CustomCurrency1 = selectedItem.CustomCurrency0;
-								item.CustomObject13Name = selectedItem.CustomObject13Name;
-								item.CustomObject13Id = selectedItem.CustomObject13Id;
-								item.CustomObject14Id = selectedItem.Id;
+								item.IndexedPick3 = selectedItem.IndexedPick3;
+								item.IndexedPick2 = selectedItem.IndexedPick2;
+								item.CustomObject1Id = selectedItem.CustomObject1Id;
+								item.IndexedBoolean0 = selectedItem.IndexedBoolean0;
+								item.CustomObject1Type = selectedItem.Type;
+							}
+							if(StringUtils.isEmpty(item.CustomNumber0)){
+								item.CustomNumber0="1";//hard code default quantity is 1
 							}
 						}else{
-							item.CustomObject14Name =null;
-							item.CustomObject14ExternalSystemId = null;
-							item.CustomCurrency1 = 0;
-							item.CustomObject13Name = null;
-							item.CustomObject13Id = null;
-							item.CustomObject14Id = null;
+							item.CustomObject1Name =null;							
+							item.CustomNumber0 = 0;
+							item.IndexedPick3 = null;
+							item.IndexedPick2 = null;
+							item.CustomText3 = null;
+							item.CustomObject1Id = null;
+							item.IndexedBoolean0=null;
+							item.CustomObject1Type=null;
 						}
 						//addEmptyRow();
 					},
 					'labelFunction':function(item:Object):String{
-						return item[renderName];
+						return item[renderName]?item[renderName]:"";
 					},'labelField':renderName};
 				col.labelFunction = colLabelFunction;				
 				col.itemEditor = colRenderer;	
@@ -262,31 +266,32 @@
 			}
 			
 			
-			
+			private static const  IGNORE_FIELD:Array =["IndexedPick2","IndexedPick3","IndexedBoolean0","Name"];
 			protected function initColumns():void{
 				
 				var cols:Array = new Array();				
 				//itemname
 				
-				var itemNo:DataGridColumn = createItemColumn('CustomObject14ExternalSystemId',100,getItemNo,'ExternalSystemId',getItems(),Database.customObject12Dao.entity);
-				var itemName:DataGridColumn =createItemColumn('Name', 250,getItemName,'Name',getItems(),Database.customObject14Dao.entity);
-					itemName.dataField = 'CustomObject14Name';
+				var itemNo:DataGridColumn = createItemColumn('QuickSearch1',100,getItemNo,'QuickSearch1',getItems(),Database.customObject1Dao.entity);
+					itemNo.dataField = 'CustomText3';
+				var itemName:DataGridColumn =createItemColumn('Name', 250,getItemName,'Name',getItems(),Database.customObject1Dao.entity);
+					itemName.dataField = 'CustomObject1Name';
 				cols.push(itemName);
 				cols.push(itemNo);
 				//edit:275, 197,90,111,113,112,38
 				//new:314,202,108,86,87,104,35
 				//item no
-				//cols.push(createColumn('CustomObject14ExternalSystemId',25,false));
-				cols.push(createColumn('IndexedNumber0',80,Database.customObject12Dao.entity,true,'0-9'));
-				cols.push(createColumn('CustomText31',100,Database.customObject14Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('CustomObject13Name',171,Database.customObject14Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('CustomObject13ExternalSystemId',80,Database.customObject14Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('CustomText30',130,Database.customObject14Dao.entity,false,null,defaultLabel));
+				//cols.push(createColumn('QuickSearch1',25,false));
+				cols.push(createColumn('CustomNumber0',80,Database.customObject7Dao.entity,true,'0-9'));
+				cols.push(createColumn('IndexedPick2',100,Database.customObject1Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('IndexedPick3',171,Database.customObject1Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('Type',80,Database.customObject1Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('IndexedBoolean0',130,Database.customObject1Dao.entity,false,null,defaultLabel));
 //				cols.push(createColumn('CustomCurrency1',10,false));
 //				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
 //				cols.push(createColumn('CustomCurrency0',10,false));
 				//deleted column
-				var deleteCol:DataGridColumn = createColumn("",25,Database.customObject14Dao.entity,false);
+				var deleteCol:DataGridColumn = createColumn("",25,Database.customObject1Dao.entity,false);
 				var deleteRender:ClassFactory = new ClassFactory(DeleteColRender);
 				deleteRender.properties={'parentComp':this,'addEmptyRow':true,'createEmptyRow':createEmptyObject,'postDelete':function(d:Object):void{
 					if(d!=null && d.gadget_id!=null){
@@ -304,7 +309,7 @@
 					if(!StringUtils.isEmpty(display)){
 						return display;
 					}
-					var item:Object = itemId2CO14[obj.CustomObject14Id];
+					var item:Object = itemId2CO1[obj.CustomObject1Id];
 					if(item!=null){
 						return item[col.dataField]==null?'':item[col.dataField];
 					}
@@ -332,12 +337,12 @@
 			}
 			
 			private function getItemNo(item:Object, col:DataGridColumn):String{
-				return getItemName(item,col,'ExternalSystemId');
+				return getItemName(item,col,'QuickSearch1');
 			}
 										 
 			private function getItemName(item:Object, col:DataGridColumn,name:String ='Name'):String {
 				if(item == null) return "";
-				var dataField:String = 'CustomObject14Name';
+				var dataField:String = 'CustomObject1Name';
 				if(col!=null){
 					dataField = col.dataField;
 				}
@@ -350,7 +355,7 @@
 			}
 			public function cloneItems():ArrayCollection{
 				var newDataProvider:ArrayCollection = new ArrayCollection();
-				var ignoreCopiedFields:ArrayCollection = Database.customObject12Dao.getIgnoreCopyFields();
+				var ignoreCopiedFields:ArrayCollection = Database.customObject7Dao.getIgnoreCopyFields();
 				for each(var tmp:Object in editableGrid.dataProvider){
 					var t:Object = new Object;
 					if(tmp.isNew){
@@ -360,8 +365,11 @@
 						if(p=='mx_internal_uid' ||ignoreCopiedFields.contains(p) ){
 							continue;//ignore copy field
 						}
+						if(IGNORE_FIELD.indexOf(p)!=-1){
+							continue;
+						}
 						
-						if(p=='CustomObject14Name'){
+						if(p=='CustomObject1Name'){
 							var itemObj:Object = tmp[p];
 							if(itemObj is String){
 								t[p]=itemObj;
@@ -369,19 +377,19 @@
 								t[p] = itemObj.Name;										
 							}else{
 								t[p] = null;
-								t.CustomObject14ExternalSystemId=null;
-								t.CustomObject14Id=null;
+								t.QuickSearch1=null;
+								t.CustomObject1Id=null;
 							}
-						}else if(p=='CustomObject14ExternalSystemId'){
+						}else if(p=='CustomText3'){
 							var itemObj2:Object = tmp[p];
 							if(itemObj2 is String){
 								t[p]=itemObj2;
 							}else if(itemObj2!=null){
-								t[p] = itemObj2.ExternalSystemId;										
+								t[p] = itemObj2.QuickSearch1;										
 							}else{
 								t[p] = null;
-								t.CustomObject14Name=null;
-								t.CustomObject14Id=null;
+								t.CustomObject1Name=null;
+								t.CustomObject1Id=null;
 							}
 						
 						}else{
@@ -397,13 +405,29 @@
 				return newDataProvider;
 			}
 			
-			public function getSampleItems():ArrayCollection{
+			
+			
+			
+			public function getSampleItems(co11:Object):ArrayCollection{
 				var dp:ArrayCollection = new ArrayCollection( (editableGrid.dataProvider as ArrayCollection).source);		
 				var newDataProvider:ArrayCollection = new ArrayCollection();
+				var templateNewItem:Object = new Object();
+				
+				//set-relation to customobject11
+				templateNewItem['CustomObject11Id']=co11['Id'];
+				templateNewItem['CustomObject11Name']=co11['Name'];
+				Utils.executeFomulaFields(Database.customObject7Dao.entity,templateNewItem,null);		
+				Utils.setDefaultValue(templateNewItem,Database.customObject7Dao.entity);
 				for each(var tmp:Object in dp){
-					var t:Object = new Object;
+					if(tmp==null ||tmp.isNew){
+						continue;
+					}
+					var t:Object =Utils.cloneObject(templateNewItem);					
 					for(var p:String in tmp){
-						if(p=='CustomObject14Name'){
+						if(IGNORE_FIELD.indexOf(p)!=-1){
+							continue;
+						}
+						if(p=='CustomObject1Name'){
 							var itemObj:Object = tmp[p];
 							if(itemObj is String){
 								t[p]=itemObj;
@@ -411,19 +435,19 @@
 								t[p] = itemObj.Name;										
 							}else{
 								t[p] = null;
-								t.CustomObject14ExternalSystemId = null;
-								t.CustomObject14Id=null;
+								t.CustomText3 = null;
+								t.CustomObject1Id=null;
 							}
-						}else if(p=='CustomObject14ExternalSystemId'){
+						}else if(p=='CustomText3'){
 							var itemObj:Object = tmp[p];
 							if(itemObj is String){
 								t[p]=itemObj;
 							}else if(itemObj!=null){
-								t[p] = itemObj.ExternalSystemId;										
+								t[p] = itemObj.QuickSearch1;										
 							}else{
 								t[p] = null;
-								t.CustomObject14Name=null;
-								t.CustomObject14Id=null;
+								t.CustomObject1Name=null;
+								t.CustomObject1Id=null;
 							}
 							
 						}else{
@@ -456,37 +480,35 @@
 						try{
 							if(deletedItems!=null){
 								for each(var dObj:Object in deletedItems){
-									var oracleId:String=dObj[DAOUtils.getOracleId(Database.customObject12Dao.entity)];
+									var oracleId:String=dObj[DAOUtils.getOracleId(Database.customObject7Dao.entity)];
 									if(oracleId==null || oracleId.indexOf('#')!=-1){
-										Database.customObject12Dao.delete_(dObj);
+										Database.customObject7Dao.delete_(dObj);
 									}else{
-										Database.customObject12Dao.deleteTemporary(dObj);
+										Database.customObject7Dao.deleteTemporary(dObj);
 									}
 								}
 							}
-							var newDataProvider:ArrayCollection  = getSampleItems();
+							var newDataProvider:ArrayCollection  = getSampleItems(co11);
 							var owner:Object = Database.allUsersDao.ownerUser();
 							for each(var itemSave:Object in newDataProvider){
 								
 								var isUpdate:Boolean = itemSave.gadget_id!=null;
 								if(!isUpdate){
 									//set owner field
-									for each(var obj:Object in Database.customObject12Dao.getOwnerFields()){						
+									for each(var obj:Object in Database.customObject7Dao.getOwnerFields()){						
 										itemSave[obj.entityField] = owner[obj.userField];
 									}
-									//set-relation to customobject11
-									itemSave['CustomObject11Id']=co11['Id'];
-									itemSave['CustomObject11Name']=co11['Name']
-									Database.customObject12Dao.insert(itemSave);
-									var dbItem:Object = Database.customObject12Dao.selectLastRecord()[0];
+									
+									Database.customObject7Dao.insert(itemSave);
+									var dbItem:Object = Database.customObject7Dao.selectLastRecord()[0];
 									itemSave['Id']='#'+dbItem.gadget_id;
 									dbItem.Id = itemSave.Id;
 									itemSave.gadget_id = dbItem.gadget_id;
-									Database.customObject12Dao.update(dbItem);
+									Database.customObject7Dao.update(dbItem);
 								}else{
 									itemSave["deleted"] = false;
-									itemSave["error"] = false;
-									Database.customObject12Dao.update(itemSave);
+									itemSave["error"] = false;									
+									Database.customObject7Dao.update(itemSave);
 								}
 								
 								
@@ -546,8 +568,8 @@
 				for each(var item:Object in lstItems){
 					
 					index++;
-					if( checkEmpty(item,"CustomObject14Name") ||
-						checkEmpty(item,"IndexedNumber0") ){
+					if( checkEmpty(item,"CustomObject1Name") ||
+						checkEmpty(item,"CustomNumber0") ){
 						isMissing = true;						
 						break;
 					}
@@ -572,9 +594,10 @@
 			
 			private function getItems():ArrayCollection {
 				if(items==null){
-					items = Database.customObject14Dao.findAll(new ArrayCollection([{element_name:"Id,Name,ExternalSystemId,CustomCurrency0,CustomObject13Name,CustomObject13Id,CustomText30,CustomText31,CustomObject13ExternalSystemId"}]),null,null,-1);
+					//bug#14699---(IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true'))
+					items = Database.customObject1Dao.findAll(new ArrayCollection([{element_name:"CustomObject1Id,Name,QuickSearch1,IndexedPick2,IndexedPick3,Type,IndexedBoolean0"}])," (IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true')) ",null,-1);
 					if(items!=null){
-						items.addItemAt({Name:'',Id:'',ExternalSystemId:''},0);
+						items.addItemAt({Name:'',CustomObject1Id:'',QuickSearch1:''},0);
 					}
 				}
 				return items;
@@ -628,7 +651,7 @@
 					if(!rec.isNew){
 					
 						var obj:Object = new Object();
-						var name:Object = rec['CustomObject14Name'];
+						var name:Object = rec['CustomObject1Name'];
 						if(name is String){
 							obj.ItemName = name;
 						}else{
@@ -636,18 +659,18 @@
 								obj.ItemName = name.Name;
 							}
 						}	
-						obj.ItemId = rec.CustomObject14Id;
-						var no:Object = rec.CustomObject14ExternalSystemId;
+						obj.ItemId = rec.CustomObject1Id;
+						var no:Object = rec.CustomText3;
 						if(no is String){
 							obj.ItemNo = no;
 						}else{
 							if(no!=null){
-								obj.ItemNo=no.ExternalSystemId;
+								obj.ItemNo=no.QuickSearch1;
 							}
 						}
-						obj.Qty = rec.IndexedNumber0;
-						obj.PlantId = rec.CustomObject13Id;
-						obj.PlantName = rec.CustomObject13Name;
+						var co11:Object = itemId2CO1[rec.CustomObject1Id];
+						obj.Qty = rec.CustomNumber0;
+						obj.PlantName = co11!=null?co11.IndexedPick2:"";
 						lstTemplate.addItem(obj);
 					
 					}

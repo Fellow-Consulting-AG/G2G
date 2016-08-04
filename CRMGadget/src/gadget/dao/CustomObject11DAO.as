@@ -770,6 +770,7 @@ package gadget.dao
 			"VehicleId",
 			"VehicleIntegrationId",
 			"VehicleVIN",
+			"CustomObject1Type"
 			];
 	}
 }

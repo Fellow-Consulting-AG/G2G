@@ -90,8 +90,7 @@ package gadget.dao
 			if(Database.preferencesDao.isEnableSampleOrder()){
 			//need to implement in subclass
 			return new ArrayCollection(["CustomObject12Name",
-				"CustomObject13ExternalSystemId",
-				"CustomObject13Id",
+				"CustomObject13ExternalSystemId",				
 				"CustomObject13IntegrationId",
 				"CustomObject13Name"]);
 			}

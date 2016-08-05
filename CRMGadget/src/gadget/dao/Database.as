@@ -3403,7 +3403,8 @@ package gadget.dao {
 			{entity:"Custom Object 2",sync_order:11, rank:10},
 			{entity:"Custom Object 3",sync_order:12, rank:11},						
 			{entity:"CustomObject14",sync_order:13, rank:12},
-			{entity:"CustomObject7",sync_order:14, rank:13},
+			//right now co7 is the leaf so we set sync order to last
+			{entity:"CustomObject7",sync_order:99, rank:13},
 			{entity:"CustomObject4",sync_order:15, rank:14},
 			{entity:"CustomObject5",sync_order:16, rank:15},
 			{entity:"CustomObject6",sync_order:17, rank:16},

@@ -4,10 +4,16 @@ package gadget.dao
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
 	
+	import gadget.service.UserService;
+	
 	import mx.collections.ArrayCollection;
 
 	public class CustomObject7DAO extends CustomeObjectBaseDao {
 		private var stmtDeleteTemp:SQLStatement;
+		private var stmtFindUpdateWithoutCo11:SQLStatement;
+		private var stmtFindCreateWithoutCo11:SQLStatement;
+		private var stmtColoPlastFindUpdated:SQLStatement;
+		private var stmtColoPlastFindCreated:SQLStatement;
 		public function CustomObject7DAO(sqlConnection:SQLConnection, work:Function) {
 			super(work, sqlConnection, {
 				table: 'sod_customobject7',
@@ -18,7 +24,25 @@ package gadget.dao
 				index: [ 'Id' ],
 				columns: { 'TEXT' : textColumns }
 			});
+			// Find all items updated locally
+			stmtColoPlastFindUpdated = new SQLStatement();
+			stmtColoPlastFindUpdated.sqlConnection = sqlConnection;
+			stmtColoPlastFindUpdated.text = "SELECT '" + entity + "' gadget_type, co7.*, co7." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co7 inner join sod_customobject11 co11 on co7.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( co7.local_update is not null) AND (co7.deleted = 0 OR co7.deleted IS null) ORDER BY co7.local_update LIMIT :limit OFFSET :offset";	
 			
+			//find all recorde update without c011
+			stmtFindUpdateWithoutCo11 = new SQLStatement();
+			stmtFindUpdateWithoutCo11.sqlConnection = sqlConnection;
+			stmtFindUpdateWithoutCo11.text = "SELECT '" + entity + "' gadget_type, co7.*, co7." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co7 WHERE (co7.CustomObject11Id is null OR co7.CustomObject11Id='') AND ( co7.local_update is not null) AND (co7.deleted = 0 OR co7.deleted IS null) ORDER BY co7.local_update LIMIT :limit OFFSET :offset";
+			
+			// Find all items created locally
+			stmtColoPlastFindCreated = new SQLStatement();
+			stmtColoPlastFindCreated.sqlConnection = sqlConnection;			
+			stmtColoPlastFindCreated.text = "SELECT '" + entity + "' gadget_type, co7.*, co7." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co7 inner join sod_customobject11 co11 on co7.CustomObject11Id=co11.Id WHERE (co11.CustomBoolean2='1' OR co11.CustomBoolean2='true') AND ( (co7.Id >= '#' AND co7.Id <= '#zzzz') OR co7.Id IS NULL ) AND (co7.deleted = 0 OR co7.deleted IS null) ORDER BY  co7.Id LIMIT :limit OFFSET :offset";
+			
+			// Find all items created locally without c011
+			stmtFindCreateWithoutCo11 = new SQLStatement();
+			stmtFindCreateWithoutCo11.sqlConnection = sqlConnection;			
+			stmtFindCreateWithoutCo11.text = "SELECT '" + entity + "' gadget_type, co7.*, co7." + DAOUtils.getNameColumn(entity) + " name FROM " + tableName + " co7  WHERE (co7.CustomObject11Id is null OR co7.CustomObject11Id='') AND ( (co7.Id >= '#' AND co7.Id <= '#zzzz') OR co7.Id IS NULL ) AND (co7.deleted = 0 OR co7.deleted IS null) ORDER BY  co7.Id LIMIT :limit OFFSET :offset";
 			// Delete temporary just updates the field deleted to true
 			stmtDeleteTemp = new SQLStatement();
 			stmtDeleteTemp.sqlConnection = sqlConnection;
@@ -28,6 +52,57 @@ package gadget.dao
 		override public function get entity():String {
 			return "CustomObject7";
 		}
+		//for coloplace only
+		public function findCreateWithoutCo11(offset:int, limit:int):ArrayCollection {
+			stmtFindCreateWithoutCo11.parameters[":offset"] = offset; 
+			stmtFindCreateWithoutCo11.parameters[":limit"] = limit; 
+			exec(stmtFindCreateWithoutCo11, false);
+			return new ArrayCollection(stmtFindCreateWithoutCo11.getResult().data);
+		}
+		//for coloplase only
+		public function findUpdateWithoutCo11(offset:int, limit:int):ArrayCollection {
+			stmtFindUpdateWithoutCo11.parameters[":offset"] = offset; 
+			stmtFindUpdateWithoutCo11.parameters[":limit"] = limit; 
+			exec(stmtFindUpdateWithoutCo11, false);
+			return new ArrayCollection(stmtFindUpdateWithoutCo11.getResult().data);
+		}
+		
+		override public function findCreated(offset:int, limit:int):ArrayCollection {
+			
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+				stmtColoPlastFindCreated.parameters[":offset"] = offset; 
+				stmtColoPlastFindCreated.parameters[":limit"] = limit; 
+				exec(stmtColoPlastFindCreated, false);
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindCreated.getResult().data);				
+				return list;
+			}else{
+				return super.findCreated(offset,limit);
+			}
+			
+		}
+		
+		override public function findUpdated(offset:int, limit:int):ArrayCollection {
+			if(UserService.getCustomerId()==UserService.COLOPLAST){
+				stmtColoPlastFindUpdated.parameters[":offset"] = offset; 
+				stmtColoPlastFindUpdated.parameters[":limit"] = limit; 
+				exec(stmtColoPlastFindUpdated, false);
+				var list:ArrayCollection = new ArrayCollection(stmtColoPlastFindUpdated.getResult().data);					
+				return list;
+			}else{
+				return super.findUpdated(offset,limit);
+			}
+		}
+		
+		override protected function getOutgoingIgnoreFields():ArrayCollection{
+			if(Database.preferencesDao.isEnableSampleOrder()){
+				//need to implement in subclass
+				return new ArrayCollection(["CustomObject1Name","CustomObject1Type",					
+					"CustomObject11Name"]);
+			}
+			
+			return super.getOutgoingIgnoreFields();
+		}
+
 		
 //		protected override function getOutgoingIgnoreFields():ArrayCollection{
 //			

@@ -16,6 +16,7 @@ package gadget.sync.outgoing
 	import gadget.dao.AttachmentDAO;
 	import gadget.dao.BaseDAO;
 	import gadget.dao.CustomObject12DAO;
+	import gadget.dao.CustomObject7DAO;
 	import gadget.dao.DAO;
 	import gadget.dao.DAOUtils;
 	import gadget.dao.Database;
@@ -69,7 +70,7 @@ package gadget.sync.outgoing
 		protected var do_user:Boolean;
 
 		protected var updated:Boolean;
-		protected var _co12FindWithoutCo11:Boolean = false;
+		protected var _co7FindWithoutCo11:Boolean = false;
 		protected var faulted:int;
 		protected var _nbItems:int;
 
@@ -195,26 +196,26 @@ package gadget.sync.outgoing
 		protected function readRecords():Boolean{
 			records = new ArrayCollection();//clear records
 			if (updated) {
-				if(!_co12FindWithoutCo11){
+				if(!_co7FindWithoutCo11){
 					records = dao.findUpdated(faulted, PAGE_SIZE);
 				}
-				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject12DAO){
-					if(!_co12FindWithoutCo11){
+				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject7DAO){
+					if(!_co7FindWithoutCo11){
 						faulted = 0;
-						_co12FindWithoutCo11=true;
+						_co7FindWithoutCo11=true;
 					}
-					records = (dao as CustomObject12DAO).findUpdateWithoutCo11(faulted,PAGE_SIZE);
+					records = (dao as CustomObject7DAO).findUpdateWithoutCo11(faulted,PAGE_SIZE);
 				}
 			} else {
-				if(!_co12FindWithoutCo11){
+				if(!_co7FindWithoutCo11){
 					records = dao.findCreated(faulted, PAGE_SIZE);
 				}
-				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject12DAO){
-					if(!_co12FindWithoutCo11){
+				if(records.length==0 && UserService.getCustomerId()==UserService.COLOPLAST && dao is CustomObject7DAO){
+					if(!_co7FindWithoutCo11){
 						faulted = 0;
-						_co12FindWithoutCo11=true;
+						_co7FindWithoutCo11=true;
 					}
-					records = (dao as CustomObject12DAO).findCreateWithoutCo11(faulted,PAGE_SIZE);
+					records = (dao as CustomObject7DAO).findCreateWithoutCo11(faulted,PAGE_SIZE);
 				}
 			}
 			if (records.length == 0) {
@@ -224,7 +225,7 @@ package gadget.sync.outgoing
 				}
 				updated = true;
 				faulted = 0;
-				_co12FindWithoutCo11=false;
+				_co7FindWithoutCo11=false;
 				doRequest();
 				return false;
 			}

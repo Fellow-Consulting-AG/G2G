@@ -33,6 +33,9 @@ package gadget.sync.incoming {
 				allTransactions = new ArrayCollection() ;
 				//should be add user
 				allTransactions.addItem(Database.allUsersDao.entity);
+				sodname2ourname[Database.allUsersDao.entity] = Database.allUsersDao.entity;
+				allTransactions.addItem(Database.divisionDao.entity);
+				sodname2ourname[Database.divisionDao.entity] = Database.divisionDao.entity;
 				for each(var transaction:Object in tmpTransaction) {
 					if (transaction.enabled) {
 //						var entityTran:String = transaction.entity;

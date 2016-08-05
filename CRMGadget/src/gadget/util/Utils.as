@@ -5,6 +5,7 @@ package gadget.util {
 	import com.assessment.DtoConfiguration;
 	import com.crmgadget.eval.Evaluator;
 	import com.google.analytics.debug._Style;
+	import com.google.analytics.utils.UserAgent;
 	import com.hurlant.crypto.Crypto;
 	import com.hurlant.crypto.symmetric.CBCMode;
 	import com.hurlant.crypto.symmetric.ICipher;
@@ -2384,6 +2385,12 @@ package gadget.util {
 					
 					
 				}
+			}
+			//hard code set default picklist value group because on ood do like this
+			if(entity==Database.customObject7Dao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
+				var defaultDivision:Object = Database.divisionUserDao.getDefaultDivision();
+				item["PickValueGroupFullName"]=defaultDivision.DivisionName;
+				item["PickValueGroupId"]=defaultDivision.DivisionId;
 			}
 		}
 		private static function getDefaultSyncOrder(entity:String):String {

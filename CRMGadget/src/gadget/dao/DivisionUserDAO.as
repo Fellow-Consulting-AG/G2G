@@ -29,11 +29,16 @@ package gadget.dao
 		}
 		
 	
-		public function getPVGId():String{
+		public function getPVGId():String{			
+			var div:Object = getDefaultDivision();
+			return div.DivisionId;
+			
+		}
+		public function getDefaultDivision():Object{
 			var cache_owner:CacheUtils = new CacheUtils("division_user");			
 			var div:Object =cache_owner.get("currentpvg");
 			if(div!=null){
-				return div.PickValueGroupId;
+				return div;
 			}else{			
 				var pvgs:ArrayCollection = findAll(new ArrayCollection([{element_name:"*"}]));
 				if(pvgs!=null&& pvgs.length>0){
@@ -42,7 +47,7 @@ package gadget.dao
 					div = new Object();				
 				}
 				cache_owner.put("currentpvg",div);
-				return div.PickValueGroupId;
+				return div;
 			}
 		}
 		public function setPVG(div:Object):void{

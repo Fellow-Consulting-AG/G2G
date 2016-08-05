@@ -1784,9 +1784,9 @@
 				//				}
 				//== SIEMEN Only ==//
 				
-				
-				if(!create){
-					subtype = getSubtypeLayout(item);
+				var foundSubType:int= getSubtypeLayout(item);
+				if(!create ||( foundSubType!=-1 && foundSubType!=subtype)){
+					subtype = foundSubType;
 					subtypeActivity = subtype;
 					item.subtype = subtypeActivity;
 				}

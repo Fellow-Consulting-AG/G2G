@@ -12,6 +12,7 @@ package gadget.sync.tasklists {
 	import gadget.sync.incoming.GetConfigXml;
 	import gadget.sync.incoming.GetFields;
 	import gadget.sync.incoming.IncomingCurrentUserData;
+	import gadget.sync.incoming.IncomingDivision;
 	import gadget.sync.incoming.IncomingObject;
 	import gadget.sync.incoming.IncomingSalesProcess;
 	import gadget.sync.incoming.IncomingUser;
@@ -101,7 +102,7 @@ package gadget.sync.tasklists {
 		if (Database.transactionDao.find("Opportunity").enabled || Database.transactionDao.find("Lead").enabled) {
 			all.addItem(new IncomingSalesProcess());
 		}
-		
+		all.addItem(new IncomingDivision());
 		all.addItem(new IncomingUserDivision());
 		
 		return all.source;

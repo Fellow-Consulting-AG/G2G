@@ -743,7 +743,9 @@ package gadget.dao
 			"VehicleExternalSystemId",
 			"VehicleId",
 			"VehicleIntegrationId",
-			"VehicleVIN"
+			"VehicleVIN",
+			"PickValueGroupFullName",
+			"PickValueGroupId"
 			];
 	}
 }

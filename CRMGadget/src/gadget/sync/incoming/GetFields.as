@@ -224,6 +224,17 @@ package gadget.sync.incoming {
 				};
 				Database.fieldDao.insert(fieldObj);
 				fieldExist["ManagerId"]="ManagerId";
+			}else if(tao.our_name==Database.customObject7Dao.entity){
+				if(!fieldExist.hasOwnProperty("PickValueGroupId")){
+					var fieldObj:Object ={
+						'entity': entity,
+						'element_name': "PickValueGroupId",
+						'display_name': "Picklist Value GroupId",
+						'data_type':   'ID'
+					};
+					Database.fieldDao.insert(fieldObj);
+					fieldExist["PickValueGroupId"]="PickValueGroupId";
+				}
 			}
 			
 			

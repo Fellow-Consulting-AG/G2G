@@ -276,33 +276,33 @@ package gadget.dao
 			if (customLayout != null) {
 				var col_name:String = CustomLayoutDetail.getColumnName(false,entity,subtype);
 				var cusDis:String = getCustomTranslateField(entity,col_name,subtype);
-				var display_name:String = cusDis=="" ? customLayout.display_name : cusDis;
-				//CRO Bug fixing 84 19.01.2011
-				if (display_name == null || display_name == '') {
-					objName = entity;
-					if(entity == 'Activity'){
-						if(subtype == 0){
-							objName = i18n._("GLOBAL_TASK");
-						}else if(subtype == 1){
-							objName = i18n._("GLOBAL_APPOINTMENT");
-						}else if(subtype == 2){
-							objName =  i18n._("GLOBAL_CALL");
-						}
-					}else{
-						var obj:Object=Database.customRecordTypeTranslationsDao.selectCustomRecordTypeByEntity(entity,
-										LocaleService.getLanguageInfo().LanguageCode);
-						if(obj==null){
-							objName = entity == "Note" ? i18n._("PREFERENCE_TRANSACTION_NOTE@Note") : i18n._("GLOBAL_" + entity.replace(/\s/gi,"_").toUpperCase());
-						}else{
-							objName=obj.SingularName;
-						}
-					}
-					return objName;
-				
-				}
-				return display_name;
+				objName = cusDis=="" ? customLayout.display_name : cusDis;
 			}
-			return entity == "Note" ? i18n._("PREFERENCE_TRANSACTION_NOTE@Note") : i18n._("GLOBAL_" + entity.replace(/\s/gi,"_").toUpperCase());
+			//CRO Bug fixing 84 19.01.2011
+			if (objName == null || objName == '') {
+				objName = entity;
+				if(entity == 'Activity'){
+					if(subtype == 0){
+						objName = i18n._("GLOBAL_TASK");
+					}else if(subtype == 1){
+						objName = i18n._("GLOBAL_APPOINTMENT");
+					}else if(subtype == 2){
+						objName =  i18n._("GLOBAL_CALL");
+					}
+				}else{
+					var obj:Object=Database.customRecordTypeTranslationsDao.selectCustomRecordTypeByEntity(entity,
+						LocaleService.getLanguageInfo().LanguageCode);
+					if(obj==null){
+						objName = entity == "Note" ? i18n._("PREFERENCE_TRANSACTION_NOTE@Note") : i18n._("GLOBAL_" + entity.replace(/\s/gi,"_").toUpperCase());
+					}else{
+						objName=obj.SingularName;
+					}
+				}
+				
+				
+			}
+			
+			return objName;
 		}
 		
 		public function getPlural(entity:String, subtype:int=0):String{   

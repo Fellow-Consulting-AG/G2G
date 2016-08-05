@@ -231,7 +231,7 @@
 						}
 						
 						if(selectedItem!=null){						
-							delete item['isNew'];
+								delete item['isNew'];
 							item.CustomObject1Name = selectedItem.Name;
 							item.CustomText3 = selectedItem.QuickSearch1;
 							if(!StringUtils.isEmpty(colLabelFunction(item,col))){								
@@ -241,7 +241,7 @@
 								item.IndexedBoolean0 = selectedItem.IndexedBoolean0;
 								item.CustomObject1Type = selectedItem.Type;
 							}
-							if(StringUtils.isEmpty(item.CustomNumber0)){
+							if(StringUtils.isEmpty(StringUtil.trim(item.CustomNumber0))){
 								item.CustomNumber0="1";//hard code default quantity is 1
 							}
 						}else{
@@ -266,7 +266,7 @@
 			}
 			
 			
-			private static const  IGNORE_FIELD:Array =["IndexedPick2","IndexedPick3","IndexedBoolean0","Name"];
+			private static const  IGNORE_FIELD:Array =["IndexedPick2","Type","IndexedPick3","IndexedBoolean0","Name"];
 			protected function initColumns():void{
 				
 				var cols:Array = new Array();				
@@ -304,11 +304,7 @@
 			}
 			
 			private function defaultLabel(obj:Object,col:DataGridColumn):String{
-				if(obj!=null){
-					var display:String = obj[col.dataField] as String;
-					if(!StringUtils.isEmpty(display)){
-						return display;
-					}
+				if(obj!=null){					
 					var item:Object = itemId2CO1[obj.CustomObject1Id];
 					if(item!=null){
 						return item[col.dataField]==null?'':item[col.dataField];
@@ -699,7 +695,7 @@
 			<mx:LinkButton id="btnImport" icon="@Embed(source='/assets/upload_config.png')" toolTip="{i18n._('IMPORT_TEMPLATE@Import Template')}" click="openImportTemplate(event)" />		
 		</mx:HBox>
 		<mx:HBox width="100%" height="100%">
-			<mx:DataGrid id="editableGrid" editable="true" sortableColumns="false" width="936" height="100%"/>
+			<control:MyDataGrid id="editableGrid" editable="true" sortableColumns="false" width="936" height="100%"/>
 		</mx:HBox>
 		
 		

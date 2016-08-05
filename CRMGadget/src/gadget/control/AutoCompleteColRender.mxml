@@ -11,7 +11,7 @@
 			import mx.controls.dataGridClasses.DataGridListData;
 			import mx.controls.listClasses.BaseListData;
 			public var column:DataGridColumn;	
-			
+			public var grid:DataGrid;
 
 			public function set labelFunction(value:Function):void
 			{
@@ -77,7 +77,7 @@
 			override public function set listData(value:BaseListData):void{
 				super.listData = value;
 				if(value!=null){
-					var grid:DataGrid = value.owner as DataGrid;
+					this.grid = value.owner as DataGrid;
 					var list:DataGridListData = value as DataGridListData;
 					if(list!=null){					
 						column = grid.columns[list.columnIndex];
@@ -92,6 +92,9 @@
 					data[column.dataField] = cborender.selectedItem;
 					if(updateRelateField!=null){
 						updateRelateField(data,cborender.selectedItem);
+						if(grid is MyDataGrid){
+							MyDataGrid(grid).refreshRow(super.listData.rowIndex);
+						}
 					}
 				}
 			}
@@ -102,7 +105,10 @@
 			
 			protected function onSelectedItem(selectedObj:Object):void{
 				if(column!=null && data!=null && selectedObj!=null && updateRelateField!=null){					
-					updateRelateField(data,selectedObj);					
+					updateRelateField(data,selectedObj);	
+					if(grid is MyDataGrid){
+						MyDataGrid(grid).refreshRow(super.listData.rowIndex);
+					}
 				}
 			}
 			

@@ -412,6 +412,7 @@ package gadget.util {
 			
 			return false;
 		}
+		public static const QOUTE_CHAR:Array =["'" ,"’" ,"‘" ];
 		public static function executeFomulaFields(entity:String,enityObject:Object,fields:ArrayCollection ,afterSave:Boolean=false,subtype:int=0):void {
 			
 			var fieldsManagement:Dictionary = Database.fieldManagementServiceDao.readAllDefaultValueFields(entity);
@@ -446,6 +447,15 @@ package gadget.util {
 								if( defaultValue.indexOf("CreatedDate")!=-1 ){
 									enityObject[fieldInfo.element_name] =new Date();
 								}else{
+									//remove ' ,’ and ‘ at first char and end char
+									var firstChar:String = defaultValue.charAt(0);
+									if(QOUTE_CHAR.indexOf(firstChar)!=-1){
+										defaultValue = defaultValue.substr(1);
+									}
+									var endChar:String = defaultValue.charAt(defaultValue.length-1);
+									if(QOUTE_CHAR.indexOf(endChar)!=-1){
+										defaultValue = defaultValue.substr(0,defaultValue.length-1);
+									}
 									enityObject[fieldInfo.element_name] = defaultValue;
 								}
 								

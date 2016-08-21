@@ -175,14 +175,29 @@ package gadget.sync.outgoing
 					}else{
 						str = null;
 					}
-				}else if(dataType=="Number"||dataType=="Integer"||dataType=="Checkbox"){
+				}else if(dataType=="Number"||
+					dataType=="Integer"||
+					dataType=="Checkbox"){
 					str = str.replace(/\'/gi, '').replace(/\’/gi, '').replace(/\‘/gi, '');//remove ' ,’ and ‘ to empty
 				
 				}else{
-					if(str=="'Y'" ||str=="‘Y’"){
-						return 'true';
-					}else if(str=="'N'" || str=="‘N’"){
-						return 'false';
+					if(dataType=="Multi-Select Picklist"||
+						dataType=="Picklist"){
+						//remove ' ,’ and ‘ at first char and end char
+						var firstChar:String = str.charAt(0);
+						if(Utils.QOUTE_CHAR.indexOf(firstChar)!=-1){
+							str = str.substr(1);
+						}
+						var endChar:String = str.charAt(str.length-1);
+						if(Utils.QOUTE_CHAR.indexOf(endChar)!=-1){
+							str = str.substr(0,str.length-1);
+						}
+					}else{
+						if(str=="'Y'" ||str=="‘Y’"){
+							return 'true';
+						}else if(str=="'N'" || str=="‘N’"){
+							return 'false';
+						}
 					}
 				}
 			}else{

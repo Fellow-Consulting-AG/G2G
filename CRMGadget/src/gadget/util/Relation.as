@@ -405,7 +405,7 @@ package gadget.util
 			{entitySrc:"CustomObject6", keySrc:"CustomObject15Id", keyDest:"Id", labelSrc:["CustomObject15Name"], labelDest:["Name"], entityDest:"CustomObject15"},
 			
 			{entitySrc:"CustomObject7", keySrc:"AccountId", keyDest:"AccountId", labelSrc:["AccountName"], labelDest:["AccountName"], entityDest:"Account"},
-			{entitySrc:"CustomObject7", keySrc:"PickValueGroupId", keyDest:"Id", labelSrc:["PickValueGroupFullName"], labelDest:["PickValueGroupFullName"], entityDest:"Division"},
+			{entitySrc:"CustomObject7", keySrc:"PickValueGroupId", keyDest:"PicklistValueGroupId", labelSrc:["PickValueGroupFullName"], labelDest:["PicklistValueGroupName"], entityDest:"PiclistValueGroup"},
 			{entitySrc:"CustomObject7", keySrc:"ProductId", keyDest:"ProductId", labelSrc:["ProductName","CustomCurrency20"], labelDest:["ProductName","ListPrice"], entityDest:"PriceListLineItem"},
 			{entitySrc:"CustomObject7", keySrc:"ContactId", keyDest:"ContactId", labelSrc:["ContactFullName"], labelDest:["ContactFullName"], entityDest:"Contact"},
 			{entitySrc:"CustomObject7", keySrc:"OpportunityId", keyDest:"OpportunityId", labelSrc:["OpportunityName","OpportunityAccountName"], labelDest:["OpportunityName","AccountName"], entityDest:"Opportunity"},

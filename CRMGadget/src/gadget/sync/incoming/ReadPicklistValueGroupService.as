@@ -18,10 +18,13 @@ package gadget.sync.incoming {
 	import gadget.util.CacheUtils;
 	import gadget.util.FieldUtils;
 	import gadget.util.Hack;
+	import gadget.util.Utils;
 	
 	import mx.collections.ArrayCollection;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.soap.WebService;
+	
+	import org.flexunit.runner.Description;
 	
 	public class ReadPicklistValueGroupService extends SyncTask {
 		
@@ -55,6 +58,7 @@ package gadget.sync.incoming {
 			var cnt:int = 0;
 			if(isClearData){			
 				Database.pvgDao.delete_all();
+				Database.pvgObjectDao.deleteAll();
 				isClearData=false;
 			}
 			Database.begin();		
@@ -69,7 +73,10 @@ package gadget.sync.incoming {
 				
 				put(set, "PicklistValueGroupId");
 				put(set, "PicklistValueGroupName");
-				
+				put(set, "Description");
+				Database.pvgObjectDao.insert(Utils.cloneObject(data));
+				//remove description
+				delete data["Description"];
 				for each (var picklist:XML in set.ns2::ListOfPicklistTypeSet[0].ns2::PicklistTypeSet) {
 					put(picklist, "ObjectName");
 					put(picklist, "FieldName");

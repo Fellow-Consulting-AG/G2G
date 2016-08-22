@@ -57,7 +57,7 @@ package gadget.dao
 		
 
 		override protected function getIncomingIgnoreFields():ArrayCollection{			
-			return new ArrayCollection(["PickValueGroupId" ]);
+			return new ArrayCollection(["PickValueGroupId","PickValueGroupFullName" ]);
 		}
 		private const TEXTCOLUMNS:Array = [
 			"ModifiedDate",
@@ -73,6 +73,7 @@ package gadget.dao
 			"FullName",
 			"IsPrimary",
 			"PickValueGroupId",
+			"PickValueGroupFullName",
 			"DivisionId",
 			"DivisionName",			
 			"UpdatedByFirstName",

@@ -41,10 +41,18 @@ package gadget.sync.incoming
 		}
 		
 		protected override function readParentInfo(parentRec:XML):void{
-			pid2pvg[parentRec.child(new QName(ns2.uri,"Id"))[0].toString()]=parentRec.child(new QName(ns2.uri,"PickValueGroupId"))[0].toString();
+			var obj:Object = new Object();
+			pid2pvg[parentRec.child(new QName(ns2.uri,"Id"))[0].toString()]=obj;
+			obj["PickValueGroupId"]=parentRec.child(new QName(ns2.uri,"PickValueGroupId"))[0].toString();
+			obj["PickValueGroupFullName"]=parentRec.child(new QName(ns2.uri,"PickValueGroupFullName"))[0].toString();
 		}
 		protected override function addParentInfo(rec:Object,parentId:String):void{
-			rec["PickValueGroupId"]=pid2pvg[parentId];
+			var pObj:Object = pid2pvg[parentId];
+			if(pObj!=null){
+				rec["PickValueGroupId"]=pObj.PickValueGroupId;
+				rec["PickValueGroupFullName"]=pObj.PickValueGroupFullName;
+			}
+			
 			Database.divisionUserDao.setPVG(rec);
 		}
 		
@@ -114,6 +122,7 @@ package gadget.sync.incoming
 							<{entityIDns} searchspec={PARENT_SEARCH_SPEC}>
 								<Id/>								
 								<PickValueGroupId/>
+								<PickValueGroupFullName/>
 								<{subList} pagesize={SUB_PAGE_SIZE} startrownum={SUBROW_PLACEHOLDER}>
 									<{subIDns} searchspec={SEARCHSPEC_PLACEHOLDER}>										
 									</{subIDns}>

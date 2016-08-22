@@ -2399,8 +2399,8 @@ package gadget.util {
 			//hard code set default picklist value group because on ood do like this
 			if(entity==Database.customObject7Dao.entity && UserService.getCustomerId()==UserService.COLOPLAST){
 				var defaultDivision:Object = Database.divisionUserDao.getDefaultDivision();
-				item["PickValueGroupFullName"]=defaultDivision.DivisionName;
-				item["PickValueGroupId"]=defaultDivision.DivisionId;
+				item["PickValueGroupFullName"]=defaultDivision.PickValueGroupFullName;
+				item["PickValueGroupId"]=defaultDivision.PickValueGroupId;
 			}
 		}
 		private static function getDefaultSyncOrder(entity:String):String {

@@ -203,12 +203,16 @@ package gadget.dao {
 		private var _defaultFieldValueDao:DefaultFieldValueDAO;
 		private var _postDefaultFieldDao:PostDefaultFieldValueDAO;
 		private var _icManualTotal:ImpactManualTotalInput;
+		private var _pvgObjectDao:PvgDAO;
 		
 		public static function get templateDao():OrderTemplate
 		{
 			return database._templateDao;
 		}
-
+		public static function get pvgObjectDao():PvgDAO
+		{
+			return database._pvgObjectDao;
+		}
 		
 
 		public static function get templateItemDao():OrderTemplateItem
@@ -1671,6 +1675,7 @@ package gadget.dao {
 			_revenueDao = new RevenueDao(_sqlConnection, _work);
 			_revenueMappingProductFamilyDao = new RevenueMappingProductFamilyDao(_sqlConnection, _work);
 			_templateDao=new OrderTemplate(_sqlConnection,_work);
+			_pvgObjectDao = new PvgDAO(_sqlConnection,_work);
 			_templateItemDao=new OrderTemplateItem(_sqlConnection,_work);
 			_blockLayoutDao = new BlockLayoutDAO(_sqlConnection,_work);
 			_blockDependField = new BlockDependFieldDAO(_sqlConnection,_work);
@@ -3354,7 +3359,12 @@ package gadget.dao {
 					trace("entity : " + entity);
 					trace("SodUtils.transactionProperty(entity) : " + SodUtils.transactionProperty(entity).dao);
 					d2 = database["_" + SodUtils.transactionProperty(entity).dao];
-				} catch (e:Error) { }
+				} catch (e:Error) {
+					
+				}
+			}
+			if(d2==null && entity==pvgObjectDao.entity){
+				d2 = pvgObjectDao;
 			}
 			if (d2 == null && throwError)
 				throw(Error("DAO "+entity+" could not be found!"));

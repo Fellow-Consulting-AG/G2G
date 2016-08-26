@@ -2482,7 +2482,8 @@ package gadget.util
 		}
 		//CR #6664 select primary contact code was selected account 
 		private static function selectPrimaryAccount(itemSource:Object,oracleId:String):void{
-			if(oracleId != null){
+			//bug#15186----override when account is empty
+			if(StringUtils.isEmpty(itemSource["AccountId"]) && oracleId != null){
 				var con:Object = Database.accountDao.findByOracleId(oracleId);
 				if(con != null){
 					itemSource["AccountId"] = oracleId;

@@ -3464,15 +3464,15 @@ package gadget.util {
 	
 	public static function isCanGotoDetail(item:Object):Boolean{
 		//right now we diable it 
-//		if(item!=null && item.right_goto_detail!=null && !item.right_goto_detail){
-//			var owner:Object = Database.allUsersDao.ownerUser(true);
-//			if(item.Owner==owner.Alias){
-//				return true;
-//			}else{
-//				var subUser:Object = owner["sub_user"];
-//				return subUser.hasOwnProperty(item.Owner);
-//			}
-//		}
+		if(item!=null && item.right_goto_detail!=null && !item.right_goto_detail){
+			var owner:Object = Database.allUsersDao.ownerUser(true);
+			if(item.Owner==owner.Alias){
+				return true;
+			}else{
+				var subUser:Object = owner["sub_user"];
+				return subUser.hasOwnProperty(item.Owner);
+			}
+		}
 		return true;
 	}
 	

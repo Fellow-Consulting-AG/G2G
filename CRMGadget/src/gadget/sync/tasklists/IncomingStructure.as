@@ -56,7 +56,7 @@ package gadget.sync.tasklists
 				
 			}
 			
-			//level of co2
+			//level of co11
 			for(lev=99;;lev++){
 				listLevel = levelTask[lev] as Array;
 				if(listLevel==null){
@@ -81,6 +81,10 @@ package gadget.sync.tasklists
 			var mapDependOn:Object = new Object();
 			var listNotDepentOn:ArrayCollection = new ArrayCollection();
 			for each(var obj:Object in enablesTrans){
+				if(UserService.getCustomerId()==UserService.COLOPLAST && dependOn && obj.entity==Database.customObject7Dao.entity){
+					//when we do full sync we sync co7 depend on activity,oppt and co11
+					continue;
+				}
 				if(StringUtils.isEmpty(obj.parent_entity)){
 					listNotDepentOn.addItem(obj);
 				}else{

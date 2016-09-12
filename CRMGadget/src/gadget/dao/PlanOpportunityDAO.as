@@ -505,6 +505,8 @@ package gadget.dao
 			"PlanExternalSystemId",
 			"PlanId",
 			"PlanName",
+			"PlanStatus",
+			"PlanType",
 			"UpdatedByAlias",
 			"UpdatedByEMailAddr",
 			"UpdatedByExternalSystemId",

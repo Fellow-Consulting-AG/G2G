@@ -24,7 +24,7 @@ package gadget.dao
 			
 			stmtSelectByEntity = new SQLStatement();
 			stmtSelectByEntity.sqlConnection = sqlConnection;
-			stmtSelectByEntity.text = "SELECT * FROM daily_agenda_columns_layout WHERE Entity=:entity Order By order_index";
+			stmtSelectByEntity.text = "SELECT * FROM daily_agenda_columns_layout WHERE Entity=:entity Order By order_index asc";
 			
 		}
 		

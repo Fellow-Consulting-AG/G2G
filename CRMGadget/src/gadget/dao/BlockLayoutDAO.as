@@ -38,7 +38,8 @@ package gadget.dao
 			province:{'Address':'Province','Main':'PrimaryBillToProvince','Shipping':'PrimaryShipToProvince','Contact Address':'AlternateProvince','Main Address':'PrimaryProvince'}
 		};
 		
-		public static const ADDRESS2REALFIELD:Object = {'address':'Address',
+		public static const ADDRESS2REALFIELD:Object = {
+			'address':'Address',
 			'address2':'StreetAddress2',
 			'address3':'StreetAddress3',
 			'city':'City',

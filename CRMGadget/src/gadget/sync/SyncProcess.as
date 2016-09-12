@@ -15,6 +15,7 @@ package gadget.sync
 	import gadget.sync.group.TaskGroupBase;
 	import gadget.sync.incoming.IncomingContactNotExistInAccCon;
 	import gadget.sync.incoming.IncomingObject;
+	import gadget.sync.incoming.IncomingProductUsageCP;
 	import gadget.sync.incoming.IncomingProductUsageForIC;
 	import gadget.sync.incoming.JDIncomingObject;
 	import gadget.sync.incoming.JDIncomingPlant;
@@ -162,6 +163,15 @@ package gadget.sync
 						if(stasks!=null && stasks.length>0){
 							addSeriaTask(stasks,IncomingParallelTaskGroup);	
 						}
+					}
+					//coloplase only
+					if(full && UserService.getCustomerId()==UserService.COLOPLAST){
+						_groups.addItem(new TaskGroupBase( // Modification tracking
+							this,
+							[new IncomingProductUsageCP(Database.activityDao.entity,"ActivityId"),new IncomingProductUsageCP(Database.customObject11Dao.entity,"CustomObject11Id"),new IncomingProductUsageCP(Database.opportunityDao.entity,"OpportunityId")],
+							_full
+							,_metaSyn
+						));
 					}
 					
 					var incomingIds:IncomingStructureByIds = IncomingPerIdTasks();					

@@ -84,7 +84,6 @@ package gadget.sync.outgoing
 		}
 		
 		override protected function doRequest():void{
-			
 			if(deleted){
 				records = subDao.findDeleted(faulted,PAGE_SIZE);
 			}else{
@@ -140,8 +139,7 @@ package gadget.sync.outgoing
 				
 				if(getDao() is ActivityContactDAO){
 					var contactId:String = records[0]['Id'];
-					if(StringUtils.isEmpty(contactId)||contactId.length<11){
-						//invalid contactId--error in version <1.521
+					if(StringUtils.isEmpty(contactId)){					
 						faulted++;
 						doRequest();
 						return;

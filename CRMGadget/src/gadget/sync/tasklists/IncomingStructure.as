@@ -81,7 +81,7 @@ package gadget.sync.tasklists
 			var mapDependOn:Object = new Object();
 			var listNotDepentOn:ArrayCollection = new ArrayCollection();
 			for each(var obj:Object in enablesTrans){
-				if(UserService.getCustomerId()==UserService.COLOPLAST && dependOn && obj.entity==Database.customObject7Dao.entity){
+				if(UserService.getCustomerId()==UserService.COLOPLAST  && obj.entity==Database.customObject7Dao.entity){
 					//when we do full sync we sync co7 depend on activity,oppt and co11
 					continue;
 				}

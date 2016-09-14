@@ -165,12 +165,13 @@ package gadget.sync
 						}
 					}
 					//coloplase only
-					if(full && UserService.getCustomerId()==UserService.COLOPLAST){
-						_groups.addItem(new TaskGroupBase( // Modification tracking
+					if( UserService.getCustomerId()==UserService.COLOPLAST){
+						
+						_groups.addItem(new IncomingParallelTaskGroup( // Modification tracking
 							this,
-							[new IncomingProductUsageCP(Database.activityDao.entity,"ActivityId"),new IncomingProductUsageCP(Database.customObject11Dao.entity,"CustomObject11Id"),new IncomingProductUsageCP(Database.opportunityDao.entity,"OpportunityId")],
+							[new IncomingProductUsageCP(Database.activityDao.entity,"ActivityId",full),new IncomingProductUsageCP(Database.customObject11Dao.entity,"CustomObject11Id",full),new IncomingProductUsageCP(Database.opportunityDao.entity,"OpportunityId",full)],
 							_full
-							,_metaSyn
+							,_metaSyn,false
 						));
 					}
 					

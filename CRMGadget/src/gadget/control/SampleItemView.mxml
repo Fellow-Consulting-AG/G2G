@@ -72,7 +72,14 @@
 				
 				
 			}
-			
+			private function updateQuicksearc2(rows:ArrayCollection):void{
+				for each(var obj:Object in rows){
+					var co1:Object = itemId2CO1[obj.CustomObject1Id];
+					if(co1!=null){
+						obj.QuickSearch2=co1.QuickSearch2;
+					}
+				}
+			}
 			public function reloadData(reselectData:Boolean=true,resetRows:Boolean = false):void{
 				if(resetRows){
 					rows = new ArrayCollection();
@@ -85,6 +92,7 @@
 					}else{
 						
 						rows = new ArrayCollection(Database.customObject7Dao.getByParentId({'CustomObject11Id':parentObject['Id']}));
+						updateQuicksearc2(rows);
 						
 					}
 				}
@@ -200,6 +208,7 @@
 						}
 					}
 					
+					updateQuicksearc2(items);
 					items.addItem(createEmptyObject());//add empty row
 					rows = items;
 					editableGrid.dataProvider = rows;
@@ -237,6 +246,7 @@
 							if(!StringUtils.isEmpty(colLabelFunction(item,col))){								
 								item.IndexedPick3 = selectedItem.IndexedPick3;
 								item.IndexedPick2 = selectedItem.IndexedPick2;
+								item.QuickSearch2 = selectedItem.QuickSearch2;
 								item.CustomObject1Id = selectedItem.CustomObject1Id;
 								item.IndexedBoolean0 = selectedItem.IndexedBoolean0;
 								item.CustomObject1Type = selectedItem.Type;
@@ -245,7 +255,8 @@
 								item.CustomNumber0="1";//hard code default quantity is 1
 							}
 						}else{
-							item.CustomObject1Name =null;							
+							item.CustomObject1Name =null;	
+							item.QuickSearch2 =null;
 							item.CustomNumber0 = 0;
 							item.IndexedPick3 = null;
 							item.IndexedPick2 = null;
@@ -266,27 +277,29 @@
 			}
 			
 			
-			private static const  IGNORE_FIELD:Array =["IndexedPick2","Type","IndexedPick3","IndexedBoolean0","Name"];
+			private static const  IGNORE_FIELD:Array =["IndexedPick2","QuickSearch2","Type","IndexedPick3","IndexedBoolean0","Name"];
 			protected function initColumns():void{
 				
 				var cols:Array = new Array();				
 				//itemname
-				
+				var qs2:DataGridColumn =createItemColumn('QuickSearch2', 100,getItemNo2,'QuickSearch2',getItems(),Database.customObject1Dao.entity);
+				cols.push(qs2);
 				var itemNo:DataGridColumn = createItemColumn('QuickSearch1',100,getItemNo,'QuickSearch1',getItems(),Database.customObject1Dao.entity);
 					itemNo.dataField = 'CustomText3';
 				var itemName:DataGridColumn =createItemColumn('Name', 250,getItemName,'Name',getItems(),Database.customObject1Dao.entity);
 					itemName.dataField = 'CustomObject1Name';
 				cols.push(itemName);
 				cols.push(itemNo);
+				
 				//edit:275, 197,90,111,113,112,38
 				//new:314,202,108,86,87,104,35
 				//item no
 				//cols.push(createColumn('QuickSearch1',25,false));
-				cols.push(createColumn('CustomNumber0',80,Database.customObject7Dao.entity,true,'0-9'));
+				cols.push(createColumn('CustomNumber0',60,Database.customObject7Dao.entity,true,'0-9'));
 				cols.push(createColumn('IndexedPick2',100,Database.customObject1Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('IndexedPick3',171,Database.customObject1Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('IndexedPick3',130,Database.customObject1Dao.entity,false,null,defaultLabel));
 				cols.push(createColumn('Type',80,Database.customObject1Dao.entity,false,null,defaultLabel));
-				cols.push(createColumn('IndexedBoolean0',130,Database.customObject1Dao.entity,false,null,defaultLabel));
+				cols.push(createColumn('IndexedBoolean0',80,Database.customObject1Dao.entity,false,null,defaultLabel));
 //				cols.push(createColumn('CustomCurrency1',10,false));
 //				cols.push(createColumn('CustomCurrency2',10,true,'0-9.,'));
 //				cols.push(createColumn('CustomCurrency0',10,false));
@@ -334,6 +347,9 @@
 			
 			private function getItemNo(item:Object, col:DataGridColumn):String{
 				return getItemName(item,col,'QuickSearch1');
+			}
+			private function getItemNo2(item:Object, col:DataGridColumn):String{
+				return getItemName(item,col,'QuickSearch2');
 			}
 										 
 			private function getItemName(item:Object, col:DataGridColumn,name:String ='Name'):String {
@@ -591,7 +607,7 @@
 			private function getItems():ArrayCollection {
 				if(items==null){
 					//bug#14699---(IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true'))
-					items = Database.customObject1Dao.findAll(new ArrayCollection([{element_name:"CustomObject1Id,Name,QuickSearch1,IndexedPick2,IndexedPick3,Type,IndexedBoolean0"}])," (IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true')) ",null,-1);
+					items = Database.customObject1Dao.findAll(new ArrayCollection([{element_name:"CustomObject1Id,Name,QuickSearch1,QuickSearch2,IndexedPick2,IndexedPick3,Type,IndexedBoolean0"}])," (IndexedPick1='Coloplast' AND (CustomBoolean0='Y' OR CustomBoolean0='true')) ",null,-1);
 					if(items!=null){
 						items.addItemAt({Name:'',CustomObject1Id:'',QuickSearch1:''},0);
 					}

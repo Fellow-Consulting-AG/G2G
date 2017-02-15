@@ -36,7 +36,7 @@ package gadget.sync.incoming {
 				<PickValueGroupReadAll_Input xmlns="urn:crmondemand/ws/odesabs/pickvaluegroup/">				
 						<IncludeAll>true</IncludeAll> 
 				</PickValueGroupReadAll_Input>;
-			sendRequest("\"ocument/urn:crmondemand/ws/odesabs/pickvaluegroup/:PickValueGroupReadAll\"", request,"admin","Services/cte/PickValueGroupService");				
+			sendRequest("\"document/urn:crmondemand/ws/odesabs/pickvaluegroup/:PickValueGroupReadAll\"", request,"admin","Services/cte/PickValueGroupService");				
 		}
 		
 		
